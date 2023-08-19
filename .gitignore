@@ -128,3 +128,18 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# JetBrains IDEs
+.idea/
+
+# Vscode
+.vscode/
+
+# Vim
+*.swp
+
+# Mac
+.DS_Store
+
+# Emacs
+*~
