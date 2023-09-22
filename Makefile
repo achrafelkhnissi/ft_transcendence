@@ -18,7 +18,6 @@ env: # Set up environment variables
 credit: # Display credits
 	@echo
 	@echo "\n${GREEN}Welcome to ft_transcendence!${NC}"
-	@echo "${USER} on ${HOSTNAME}"
 
 run:
 	@echo "\n${GREEN}Running ft_transcendence...${NC}"
