@@ -1,0 +1,21 @@
+# Ignore dockerfiles
+dockerfiles/
+.dockerignore
+
+# Ignore compiled output
+dist/
+node_modules/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+
+# Ignore macOS folder attributes
+.DS_Store
+
+# Ignore temporary files
+*.swp
+
+# Versioning and metadata
+.git/
+.gitignore
