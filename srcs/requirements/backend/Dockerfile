@@ -3,26 +3,21 @@
 #
 FROM node:20-alpine as dev
 
-# Set to dev environment
 ENV NODE_ENV development
 
-# Create app folder
+RUN apk update && apk add postgresql
+
+# USER node
+
 WORKDIR /app
 
-# Set permissions for node user to /app directory
 RUN chown -R node:node /app
 
-# Copy source code into app folder
 COPY --chown=node:node . .
 
-# Install dependencies
-RUN npm install
+# RUN npm install && chmod +x ./scripts/entrypoint.sh
 
-# Expose port 3000
-EXPOSE 3000
+EXPOSE 3000 5555
 
-# Set Docker as a non-root user
-USER node
-
-# Run the app
+# ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
 CMD ["npm", "run", "start:dev"]
