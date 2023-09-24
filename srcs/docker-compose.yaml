@@ -26,11 +26,22 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     volumes:
       - ./requirements/backend:/app # for hot reloading
-      - node_modules:/app/node_modules # for faster builds
+      # - node_modules:/app/node_modules # for faster builds
     networks:
       - local_net
     depends_on:
       - db
+    command:
+      - sh
+      - -c
+      - |
+        npm install
+        until pg_isready -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER}; do
+          >&2 echo "Postgres is unavailable - sleeping"
+          sleep 1
+        done
+        npm run prisma
+        npm run start:dev
 
 volumes:
   db-data:
