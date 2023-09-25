@@ -18,11 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prisma:migrate": "npx prisma migrate dev --name init",
-    "prisma:generate": "npx prisma generate",
+    "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:studio": "npx prisma studio &",
-    "prisma": "npm run prisma:migrate && npm run prisma:generate && npm run prisma:seed"
+    "prisma": "npm run prisma:push && npm run prisma:seed && npm run prisma:studio"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

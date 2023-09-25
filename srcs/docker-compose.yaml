@@ -21,6 +21,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
+      - "5555:5555"
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
@@ -36,15 +37,27 @@ services:
       - -c
       - |
         npm install
-        until pg_isready -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER}; do
-          >&2 echo "Postgres is unavailable - sleeping"
-          sleep 1
-        done
         npm run prisma
         npm run start:dev
 
+  pgadmin:
+    image: dpage/pgadmin4:7.7
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "${PGADMIN_PORT:-8080}:80"
+    env_file: .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - local_net
+
 volumes:
   db-data:
+  pgadmin-data:
   node_modules:
 
 networks:
