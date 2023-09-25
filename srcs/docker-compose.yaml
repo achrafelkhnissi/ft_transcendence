@@ -58,7 +58,6 @@ services:
 volumes:
   db-data:
   pgadmin-data:
-  node_modules:
 
 networks:
   local_net:
