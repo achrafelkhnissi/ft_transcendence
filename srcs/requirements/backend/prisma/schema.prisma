@@ -10,48 +10,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// -------------------------------------- TEST --------------------------------------
-
 model User {
-  id String @id @default(cuid())
+  id               Int      @id @default(autoincrement())
+  username         String?  @unique @default(uuid())
+  email            String   @unique
+  password         String
+  avatar           String?  @default("https://i.imgur.com/6VBx3io.png")
+  status           String?  @default("offline")
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?  @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Profile   Profile?
+  // friends Friendship[] @relation("UserFriends")
+
+  // friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
+  // friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
+
+  //   friendships   Friendship[] @relation(fields: [friendshipIds], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  //   friendshipIds Int[]
 }
 
-model Profile {
-  id   String @id @default(cuid())
-  name String
+// model Friendship {
+//   id Int @id @default(autoincrement())
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
+//   user1Id Int
+//   user2Id Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+//   // user1  User                @relation("UserFriends", fields: [user1Id], references: [id])
+//   status FriendRequestStatus @default(PENDING)
 
-// ----------------------------------------------------------------------------------
+//   // user1   User @relation(fields: [user1Id], references: [id]);
+//   // user1Id Int @map("user1_id")
 
-// model User {
-//   id        Int      @id @default(autoincrement())
-//   username  String?  @unique
-//   email     String   @unique
-//   password  String
-//   avatar    String?
-//   // twoFactorEnabled Boolean  @default(false)
-//   // twoFactorSecret  String?
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+//   // user2   User @relation(fields: [user2Id], references: [id]);
+//   // user2Id Int @map("user2_id")
 
-// model Friends {
-//   id        Int      @id @default(autoincrement())
-//   status    String
-//   userId    Int
-//   // user      User     @relation("FriendsSent", fields: [userId], references: [id])
-//   friendId  Int
-//   // friend    User     @relation("FriendsReceived", fields: [friendId], references: [id])
+//   // friend    User     @relation("UserFriend", fields: [friendId], references: [id])
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
@@ -98,3 +93,131 @@ model Profile {
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
+
+// model Channel {
+//   id        Int      @id @default(autoincrement())
+//   name      String
+//   isPrivate Boolean  @default(false)
+//   password  String?
+//   ownerId   Int
+//   // owner     User     @relation("Channels", fields: [ownerId], references: [id])
+//   // members   User[]
+//   // messages  Message[]
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Message {
+//   id        Int      @id @default(autoincrement())
+//   content   String
+//   authorId  Int
+//   // author      User     @relation("Messages", fields: [authorId], references: [id])
+//   channelId Int
+//   // channel   Channel  @relation("Messages", fields: [channelId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Notification {
+//   id        Int      @id @default(autoincrement())
+//   userId    Int
+//   // user      User     @relation("Notifications", fields: [userId], references: [id])
+//   content   String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model UserSettings {
+//   id        Int      @id @default(autoincrement())
+//   userId    Int
+//   // user      User     @relation("UserSettings", fields: [userId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Chat {
+//   id        Int      @id @default(autoincrement())
+//   userId    Int
+//   // user      User     @relation("Chats", fields: [userId], references: [id])
+//   channelId Int
+//   // channel   Channel  @relation("Chats", fields: [channelId], references: [id])
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// ---- ENUMS ----
+enum Status {
+  ONLINE
+  OFFLINE
+  IDLE
+  DONOTDISTURB
+  INVISIBLE
+  INGAME
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+enum GameStatus {
+  PENDING
+  INPROGRESS
+  FINISHED
+}
+
+enum MatchStatus {
+  PENDING
+  INPROGRESS
+  FINISHED
+}
+
+enum ChannelType {
+  PUBLIC
+  PRIVATE
+}
+
+enum NotificationType {
+  FRIENDREQUEST
+  MATCH
+  MESSAGE
+  OTHER
+}
+
+enum Rank {
+  UNRANKED
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+  MASTER
+  GRANDMASTER
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum inviteType {
+  FRIEND
+  CHANNEL
+  GAME
+}
+
+enum inviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}

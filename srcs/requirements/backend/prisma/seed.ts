@@ -4,27 +4,19 @@ import { faker } from '@faker-js/faker';
 const prisma = new PrismaClient();
 
 async function clean() {
-  await prisma.profile.deleteMany();
   await prisma.user.deleteMany();
 }
 
-async function createUserWithProfile() {
-  // await clean();
+async function generateRandomUser() {
+  await clean();
 
   const user = await prisma.user.create({
-    data: {},
-  });
-
-  const profile = await prisma.profile.create({
     data: {
-      name: faker.person.firstName(),
-      userId: user.id,
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+      avatar: faker.image.avatar(),
     },
-  });
-
-  console.log({
-    user,
-    profile,
   });
 
   return prisma.user.findUnique({
@@ -36,10 +28,10 @@ async function createUserWithProfile() {
 
 async function main() {
   const users = await Promise.all(
-    Array.from({ length: 10 }).map(() => createUserWithProfile()),
+    Array.from({ length: 10 }).map(() => generateRandomUser()),
   );
 
-  console.log({ users });
+  console.log('Users created ✅');
 }
 
 main()
