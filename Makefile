@@ -8,12 +8,13 @@ YELLOW	= \033[0;33m
 NC 			= \033[0m
 
 # Import env variables
-include srcs/.env
+# include srcs/.env
 
 all: credit env run
 
 env: # Set up environment variables
 	@echo "\n${GREEN}Setting up environment variables...${NC}"
+	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env-example ./srcs/.env; fi
 
 credit: # Display credits
 	@echo
@@ -21,7 +22,7 @@ credit: # Display credits
 
 run:
 	@echo "\n${GREEN}Running ft_transcendence...${NC}"
-	docker-compose -f srcs/docker-compose.yaml up --build -d
+	docker-compose -f srcs/docker-compose.yaml up --build # -d
 
 up: # Build and start containers
 	@echo "\n${GREEN}Building and starting containers...${NC}"
