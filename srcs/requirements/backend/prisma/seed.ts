@@ -8,8 +8,6 @@ async function clean() {
 }
 
 async function generateRandomUser() {
-  await clean();
-
   const user = await prisma.user.create({
     data: {
       username: faker.internet.userName(),
@@ -27,6 +25,8 @@ async function generateRandomUser() {
 }
 
 async function main() {
+  await clean();
+
   const users = await Promise.all(
     Array.from({ length: 10 }).map(() => generateRandomUser()),
   );
