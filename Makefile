@@ -65,4 +65,7 @@ fclean: clean # Stop and delete containers and volumes and networks and images a
 	docker-compose -f srcs/docker-compose.yaml down --rmi all
 	@# rm -rf ./srcs/.env
 
+prune:
+	docker system prune -a
+
 re: fclean all # Rebuild everything
