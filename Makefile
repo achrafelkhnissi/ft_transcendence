@@ -65,6 +65,10 @@ fclean: clean # Stop and delete containers and volumes and networks and images a
 	docker-compose -f srcs/docker-compose.yaml down --rmi all
 	@# rm -rf ./srcs/.env
 
+frontend: # todo: remove this
+	rm -rf ./srcs/requirements/frontend/node_modules
+	docker-compose -f srcs/docker-compose.yaml up --build frontend
+
 prune:
 	docker system prune -a
 
