@@ -5,21 +5,13 @@ FROM node:20
 
 ENV NODE_ENV development
 
-# Install nextjs dependencies
-RUN apt update && npm install -g npm@10.1.0
-
-# USER node
-
 WORKDIR /app
 
-# RUN chown -R node:node /app
+RUN chown -R node:node /app
 
-# COPY --chown=node:node package.json package-lock.json ./
-# COPY package.json ./
-# RUN npm install
+USER node
 
-# COPY --chown=node:node . .
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 3000
 
