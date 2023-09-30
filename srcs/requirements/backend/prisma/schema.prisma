@@ -14,64 +14,43 @@ model User {
   id        Int      @id @default(autoincrement())
   username  String?  @unique @default(uuid())
   email     String   @unique
-  // password         String
-  // avatar           String?  @default("https://i.imgur.com/6VBx3io.png")
-  // status           String?  @default("offline")
+  password  String
+  avatar    String?  @default("https://i.imgur.com/6VBx3io.png")
+  status    String?  @default("offline")
   // twoFactorEnabled Boolean  @default(false)
   // twoFactorSecret  String?  @default("")
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
-  friends                Friend[]
+  // settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
-  //   followedBy Follows[] @relation("following")
-  //   following  Follows[] @relation("follower")
+  friends                Int[] // TODO: update this everytime a friend request is accepted or deleted or when a user is deleted
 
-  settings UserSettings?
+  // achievements UserAchievement[]
 }
 
-// model Follows {
-//   follower    User @relation("follower", fields: [followerId], references: [id])
-//   followerId  Int
-//   following   User @relation("following", fields: [followingId], references: [id])
-//   followingId Int
-
-//   @@id([followerId, followingId])
+// model UserSettings {
+//   id               Int     @id @default(autoincrement())
+//   user             User    @relation(fields: [userId], references: [id])
+//   userId           Int     @unique
+//   twoFactorEnabled Boolean @default(false)
+//   twoFactorSecret  String?
+//   theme            String  @default("system")
+//   language         String  @default("en")
 // }
 
-model UserSettings {
-  id               Int     @id @default(autoincrement())
-  user             User    @relation(fields: [userId], references: [id])
-  userId           Int     @unique
-  twoFactorEnabled Boolean @default(false)
-  twoFactorSecret  String?
-  theme            String  @default("system")
-  language         String  @default("en")
-}
-
-model Friend {
-  id Int @id @default(autoincrement())
-
-  status FriendRequestStatus @default(PENDING)
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model FriendRequest {
-  id        Int                 @id @default(autoincrement())
-  status    FriendRequestStatus @default(PENDING)
-  // status2   FriendshipStatus    @default(PENDING)
-  userId    Int
-  user      User                @relation("SentFriendRequests", fields: [userId], references: [id])
-  friendId  Int
-  friend    User                @relation("ReceivedFriendRequests", fields: [friendId], references: [id])
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
+  friendshipStatus FriendshipStatus @default(PENDING)
+  userId           Int
+  user             User             @relation("SentFriendRequests", fields: [userId], references: [id], onDelete: Cascade)
+  friendId         Int
+  friend           User             @relation("ReceivedFriendRequests", fields: [friendId], references: [id], onDelete: Cascade)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
+
+  @@id([userId, friendId])
+  @@unique([userId, friendId])
 }
 
 // model Game {
@@ -157,22 +136,24 @@ model FriendRequest {
 //   updatedAt DateTime @updatedAt
 // }
 
-model Achievement {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  image       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+// model Achievement {
+//   id              Int               @id @default(autoincrement())
+//   name            String
+//   description     String
+//   image           String
+//   createdAt       DateTime          @default(now())
+//   updatedAt       DateTime          @updatedAt
+// }
 
-model UserAchievement {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  achievementId Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
+// model UserAchievement {
+//   id            Int         @id @default(autoincrement())
+//   userId        Int
+//   achievementId Int
+//   achievement   Achievement @relation(fields: [achievementId], references: [id])
+//   createdAt     DateTime    @default(now())
+//   updatedAt     DateTime    @updatedAt
+//   User          User        @relation(fields: [userId], references: [id])
+// }
 
 // ---- ENUMS ----
 enum Status {
@@ -185,13 +166,6 @@ enum Status {
 }
 
 enum FriendshipStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-  BLOCKED
-}
-
-enum FriendRequestStatus {
   PENDING
   ACCEPTED
   DECLINED
