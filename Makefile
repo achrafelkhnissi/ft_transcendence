@@ -7,60 +7,57 @@ CYAN		= \033[0;36m
 YELLOW	= \033[0;33m
 NC 			= \033[0m
 
-# Import env variables
-# include srcs/.env
-
 all: credit env run
 
-env: # Set up environment variables
+env:
 	@echo "\n${GREEN}Setting up environment variables...${NC}"
 	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env-example ./srcs/.env; fi
 
-credit: # Display credits
+credit:
 	@echo
 	@echo "\n${GREEN}Welcome to ft_transcendence!${NC}"
 
 run:
 	@echo "\n${GREEN}Running ft_transcendence...${NC}"
-	docker-compose -f srcs/docker-compose.yaml up --build # -d
+	docker-compose -f srcs/docker-compose.yaml up --build
 
-up: # Build and start containers
+up:
 	@echo "\n${GREEN}Building and starting containers...${NC}"
 	docker-compose -f srcs/docker-compose.yaml up -d 
 
-stop: # Stop containers
+stop:
 	@echo "\n${GREEN}Stopping containers...${NC}"
 	docker-compose -f srcs/docker-compose.yaml stop
 
-down: # Stop and remove containers
+down:
 	@echo "\n${GREEN}Stopping and removing containers...${NC}"
 	docker-compose -f srcs/docker-compose.yaml down
 
-build: # Build containers
+build:
 	@echo "\n${GREEN}Building containers...${NC}"
 	docker-compose -f srcs/docker-compose.yaml up --build -d
 
-logs: # Display logs
+logs:
 	@echo "\n${GREEN}Displaying logs...${NC}"
 	docker-compose -f srcs/docker-compose.yaml logs -f
 
-exec: # Execute command in container
+exec:
 	@echo "\n${GREEN}Executing command in container...${NC}"
 	docker-compose -f srcs/docker-compose.yaml exec $(c) $(cmd)
 
-execroot: # Execute command in container as root
+execroot:
 	@echo "\n${RED}Executing command in container as root...${NC}"
 	docker-compose -f srcs/docker-compose.yaml exec --user root $(c) $(cmd)
 
-execuser: # Execute command in container as user
+execuser:
 	@echo "\n${GREEN}Executing command in container as user...${NC}"
 	docker-compose -f srcs/docker-compose.yaml exec --user $(USER) $(c) $(cmd)
 
-clean: down # Stop and delete containers and volumes and networks
+clean: down
 	@echo "\n${YELLOW}Stopping and removing containers and volumes and networks...${NC}"
 	docker-compose -f srcs/docker-compose.yaml rm -fsv
 
-fclean: clean # Stop and delete containers and volumes and networks and images and env files
+fclean: clean
 	@echo "\n${RED}Stopping and removing containers and volumes and networks and images and env files...${NC}"
 	docker-compose -f srcs/docker-compose.yaml down --rmi all
 	@# rm -rf ./srcs/.env
@@ -76,4 +73,4 @@ backend: # todo: remove this
 prune:
 	docker system prune -a
 
-re: fclean all # Rebuild everything
+re: fclean all
