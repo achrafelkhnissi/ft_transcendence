@@ -12,15 +12,15 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String?  @unique @default(uuid())
+  username  String?  @unique
   email     String   @unique
   password  String
   avatar    String?  @default("https://i.imgur.com/6VBx3io.png")
-  status    String?  @default("offline")
+  status    Status?  @default(ONLINE)
   // twoFactorEnabled Boolean  @default(false)
   // twoFactorSecret  String?  @default("")
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
 
   // settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
@@ -47,7 +47,7 @@ model FriendRequest {
   friendId         Int
   friend           User             @relation("ReceivedFriendRequests", fields: [friendId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now()) @updatedAt
+  updatedAt        DateTime         @updatedAt
 
   @@id([userId, friendId])
   @@unique([userId, friendId])
