@@ -20,7 +20,7 @@ services:
     container_name: backend
     restart: always
     ports:
-      - "3000:3000"
+      - "3000:3000" #TODO: change to ${NESTJS_PORT:-3000}:${NESTJS_PORT:=3000}
       - "5555:5555"
     env_file: .env
     volumes:
@@ -45,14 +45,14 @@ services:
     container_name: frontend
     restart: always
     ports:
-      - "3001:3000"
+      - "${NEXTJS_PORT:-3001}:${NEXTJS_PORT:-3001}"
     env_file: .env
     volumes:
       - ./requirements/frontend:/app # for hot reloading
     networks:
       - local_net
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
     command:
       - sh
       - -c
