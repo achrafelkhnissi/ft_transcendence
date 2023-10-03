@@ -63,10 +63,12 @@ fclean: clean
 	@# rm -rf ./srcs/.env
 
 frontend: # todo: remove this
-	rm -rf ./srcs/requirements/frontend/node_modules
+	# @if [ ! -f ./srcs/.env ]; then cp ./srcs/.env-example ./srcs/.env; fi
+	# rm -rf ./srcs/requirements/frontend/node_modules
 	docker-compose -f srcs/docker-compose.yaml up --build frontend
 
 backend: # todo: remove this
+	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env-example ./srcs/.env; fi
 	rm -rf ./srcs/requirements/backend/node_modules
 	docker-compose -f srcs/docker-compose.yaml up --build backend
 

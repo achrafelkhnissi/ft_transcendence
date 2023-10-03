@@ -10,4 +10,9 @@ body,
   background-color:  #17194A;
 }
 
+svg{
+  height: 20px;
+  width: 20px;
+}
+
 /* styles.css */

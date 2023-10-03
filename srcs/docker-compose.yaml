@@ -51,8 +51,8 @@ services:
       - ./requirements/frontend:/app # for hot reloading
     networks:
       - local_net
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
     command:
       - sh
       - -c

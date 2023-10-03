@@ -1,28 +1,42 @@
-import FullScreenSvg from "./components/FullScreenSvg";
-import Image from "next/image";
+import Back from "./components/Back";
+import Logo_42 from "./components/Logo_42";
+import { pixelifySans, press, roboto } from "./fonts";
 
 export default function Home() {
   return (
     <div>
-      <FullScreenSvg />
-      <div className="absolute top-0 left-0 w-full h-full pl-20 pt-80">
-        <p className="text-white">It&apos;s</p>
-        <h1 className="text-white text-7xl font-extrabold ">PongTime</h1>
-
-        <p className="text-white pt-6 text-lg font-extralight">
+      <Back />
+      <div className=" w-full h-full pl-20 pt-96 absolute top-0 left-0 ">
+        <h1
+          className={`text-blue-300 text-9xl font-extrabold text-center ${pixelifySans.className}`}
+        >
+          <span className="text-white text-2xl">It&rsquo;s </span>
+          PongTime
+        </h1>
+        <p
+          className={`text-white pt-6 font-light  text-center mt-4 ${roboto.className}}`}
+        >
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
-        <button className=" flex  px-5 py-3 bg-white text-black font-bold mt-10 rounded-2xl shadow-xl shadow-gray-900/60 gap-2">
+        <button
+          className={` flex m-auto  
+          px-5 py-3 
+          bg-transparent  
+          border-2 
+          border-blue-300
+          text-blue-300 
+          font-bold 
+          mt-16 
+          rounded-2xl 
+          shadow-xl
+          shadow-blue-300/20 
+          gap-2
+          hover:bg-gray-100/10
+          `}
+        >
           <span>Login with intra</span>
-          <Image src="/42-logo.png" alt="Logo" width={26} height={26} />
+          <Logo_42 color="#93C4FD" width="26px" height="26px" />
         </button>
-        <Image
-          src="/pong.jpeg"
-          alt="ong"
-          width={500}
-          height={500}
-          className="absolute  right-10 bottom-50%"
-        />
       </div>
     </div>
   );
