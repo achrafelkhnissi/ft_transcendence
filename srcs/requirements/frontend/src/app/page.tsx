@@ -1,8 +1,13 @@
+"use client";
+
 import Logo_42 from "./components/Logo_42";
 import Back from "./components/Back";
 import { pixelifySans, roboto } from "./fonts";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div>
       <Back />
@@ -48,6 +53,9 @@ export default function Home() {
           active:shadow-blue-300/10 
           
           `}
+          onClick={() => {
+            router.push("/dashboard");
+          }}
         >
           <span>Login with intra</span>
           <Logo_42 color="#93C4FD" width="26px" height="26px" />
