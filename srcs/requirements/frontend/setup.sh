@@ -2,6 +2,6 @@
 
 docker rm ${docker ps -a -q}
 docker build -t frontend .
-docker run --mount  type=bind,source="$(pwd)",target=/app -d -p 1337:1337 --name frontend frontend
+docker run --rm -it --mount type=bind,source="$(pwd)",target=/app -d -p 1337:1337 --name frontend frontend bash
 
 # echo 'export NEXTJS_PORT=1337' >> ~/.bashrc && source ~/.bashrc
