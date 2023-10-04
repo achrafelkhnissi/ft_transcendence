@@ -1,4 +1,4 @@
-import { Pixelify_Sans , Roboto, Press_Start_2P, Russo_One, Bangers, Freckle_Face, Anton} from "next/font/google";
+import { Pixelify_Sans , Roboto, Press_Start_2P} from "next/font/google";
 
 export const pixelifySans = Pixelify_Sans({
     subsets: ["latin"],

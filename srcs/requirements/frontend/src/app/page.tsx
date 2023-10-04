@@ -1,20 +1,32 @@
-import Back from "./components/Back";
 import Logo_42 from "./components/Logo_42";
-import { pixelifySans, press, roboto } from "./fonts";
+import Back from "./components/Back";
+import { pixelifySans, roboto } from "./fonts";
 
 export default function Home() {
   return (
     <div>
       <Back />
-      <div className=" w-full h-full pl-20 pt-96 absolute top-0 left-0 ">
+      <div
+        className={`
+      w-full 
+      h-full 
+      py-96 
+      absolute 
+      top-0 
+      left-0`}
+      >
         <h1
-          className={`text-blue-300 text-9xl font-extrabold text-center ${pixelifySans.className}`}
+          className={`text-blue-300 
+            lg:text-9xl 
+            font-extrabold  
+            text-center text-7xl 
+            ${pixelifySans.className}`}
         >
           <span className="text-white text-2xl">It&rsquo;s </span>
           PongTime
         </h1>
         <p
-          className={`text-white pt-6 font-light  text-center mt-4 ${roboto.className}}`}
+          className={`text-white pt-6 font-light px-6 text-center mt-4 ${roboto.className}}`}
         >
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
@@ -32,6 +44,9 @@ export default function Home() {
           shadow-blue-300/20 
           gap-2
           hover:bg-gray-100/10
+          active:bg-gray-100/5
+          active:shadow-blue-300/10 
+          
           `}
         >
           <span>Login with intra</span>
