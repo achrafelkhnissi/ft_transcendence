@@ -18,11 +18,11 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-full relative w-[400px]  py-1 px-2">
+    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative w-[400px]  py-1 px-2">
       <input
         type="text"
         value={input}
-        className="w-full py-[0.3rem] px-2 bg-transparent outline-none opacity-4 text-light text-sm text-white font-extralight placeholder:italic"
+        className="w-full py-[0.3rem] px-2 bg-transparent outline-none  text-sm text-white/80  font-light placeholder:font-extralight placeholder:italic placeholder:opacity-80 "
         placeholder="search something..."
         onChange={(event) => {
           setSearchQuery(event.target.value);
