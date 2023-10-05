@@ -29,7 +29,7 @@ const SearchInput = () => {
           setInput(event.target.value);
         }}
       />
-      <button className="absolute top-0 bottom-0 right-3" onClick={onSearch}>
+      <button className="absolute top-0 bottom-0 right-2" onClick={onSearch}>
         <CiSearch
           style={{
             color: "white",
