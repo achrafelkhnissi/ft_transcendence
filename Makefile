@@ -62,12 +62,10 @@ fclean: clean
 	docker-compose -f srcs/docker-compose.yaml down --rmi all
 	@# rm -rf ./srcs/.env
 
-frontend: # todo: remove this
-	rm -rf ./srcs/requirements/frontend/node_modules
+frontend: env # todo: remove this
 	docker-compose -f srcs/docker-compose.yaml up --build frontend
 
-backend: # todo: remove this
-	rm -rf ./srcs/requirements/backend/node_modules
+backend: env # todo: remove this
 	docker-compose -f srcs/docker-compose.yaml up --build backend
 
 prune:
