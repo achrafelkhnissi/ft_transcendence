@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+// TODO: add the used hostname/port to the help message
 const HELP = {
   'GET /': 'Get this help message',
   users: {
@@ -8,6 +9,9 @@ const HELP = {
     'POST /users': 'Create a user',
     'PUT /users/:id': 'Update a user by id',
     'DELETE /users/:id': 'Delete a user by id',
+  },
+  authors: {
+    'GET /authors': 'Get all authors',
   },
 };
 
