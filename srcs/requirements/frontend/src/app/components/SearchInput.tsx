@@ -18,7 +18,7 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative w-[400px]  py-1 px-2">
+    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative w-[400px]  py-[0.1rem] px-2">
       <input
         type="text"
         value={input}
