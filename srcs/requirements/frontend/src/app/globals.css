@@ -6,9 +6,10 @@
 html,
 body,
 :root {
+  box-sizing: border-box;
   height: 100%;
   background-color:  #17194A;
-  min-width: 900px;
+  /* min-width: 900px; */
 }
 
 svg{
