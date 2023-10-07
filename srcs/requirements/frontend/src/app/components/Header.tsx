@@ -1,14 +1,34 @@
-import SearchInput from "./SearchInput";
+"use client";
+
+import LgSearchInput from "./LgSearchInput";
 import Notifications from "./Notifications";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
+import { useState, useEffect } from "react";
+import SmSearchInput from "./SmSearchinput";
 
 const Header = () => {
+  const [screenW, setScreenW] = useState(0);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setScreenW(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
   return (
     <div className="flex justify-between px-3 py-[0.6rem] bg-[#39396F] shadow-xl  shadow-gray-900/20 items-center">
-      <Logo />
-      <SearchInput />
-      <div className="flex gap-4">
+      <div className={``}>
+        <Logo />
+      </div>
+      {screenW < 530 ? <SmSearchInput /> : <LgSearchInput />}
+      <div className={`flex gap-4`}>
         <Notifications />
         <Avatar />
       </div>
