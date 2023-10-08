@@ -24,11 +24,11 @@ const Header = () => {
   // }, []);
 
   return (
-    <div className="flex justify-between px-3 py-[0.6rem] bg-[#39396F] shadow-xl shadow-gray-900/20 items-center h-[4rem] w-full">
+    <div className="flex justify-between px-3 py-[0.6rem] bg-[#39396F] shadow-xl shadow-gray-900/20 items-center h-[4rem] w-full gap-2">
       <div className="w-40"></div>
       {/* {screenW < 530 ? <SmSearchInput /> : <LgSearchInput />} */}
         <LgSearchInput />
-      <div className={`flex gap-4  right-6`}>
+      <div className={`flex gap-4  ight-6`}>
         <Notifications />
         <Avatar />
       </div>
