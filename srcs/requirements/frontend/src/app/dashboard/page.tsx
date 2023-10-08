@@ -1,9 +1,11 @@
-import Header from "../components/Header";
+import Header from "../components/layout/header/Header";
+import Sidebar from "../components/layout/sidebar/Sidebar";
 
 const Home = () => {
   return (
-    <div>
+    <div className="">
       <Header />
+      <Sidebar />
     </div>
   );
 };

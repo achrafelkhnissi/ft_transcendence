@@ -1,7 +1,7 @@
 "use client";
 
-import Logo_42 from "./components/Logo_42";
-import Back from "./components/Back";
+import Logo_42 from "./components/logos/Logo_42";
+import Back from "./components/Background";
 import { pixelifySans, roboto } from "./fonts";
 import { useRouter } from "next/navigation";
 
