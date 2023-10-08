@@ -2,7 +2,9 @@ import { GrNotification } from "react-icons/gr";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
 
+
 const Notifications = () => {
+
   return (
     <div className="hover:bg-white/10 rounded-lg h-9 w-9 flex justify-center ">
     <div className=" relative self-center ">

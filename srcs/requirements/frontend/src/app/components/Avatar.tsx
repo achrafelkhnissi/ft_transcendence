@@ -1,7 +1,10 @@
 import { FaUserAlt } from "react-icons/fa";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Avatar = () => {
+  const router = useRouter();
+
   return (
     <div
       className={`h-[2rem] 
@@ -14,14 +17,10 @@ const Avatar = () => {
      outline 
      outline-2 
      outline-offset-[1.5px]
-     outline-gray-400/60`}
+     outline-gray-400/60
+     cursor-pointer`}
+     onClick={() => router.push("/user-profile")}
     >
-      {/* <FaUserAlt
-        style={{
-          color: "white",
-          opacity: 0.6,
-        }}
-      /> */}
       <Image
         src="/images/fathjami.jpeg"
         alt="user"
