@@ -3,7 +3,7 @@ import { defaultSidebarItems, DefaultSidebarItemsProps } from "./defaultSidebarI
 import { TbLogout2 } from "react-icons/tb";
 import Logo from "../../logos/ PongTimeLogo";
 
-const Sidebar = ( {}:  DefaultSidebarItemsProps) => {
+const Sidebar = () => {
     return (
     <div  className="text-white justify-between  list-none flex flex-col bg-[#25244E] fixed  h-full w-[6.5rem] mt-0 bottom-0 py-4">
         
