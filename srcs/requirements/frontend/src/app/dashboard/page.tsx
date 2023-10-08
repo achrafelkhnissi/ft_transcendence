@@ -4,8 +4,6 @@ import Sidebar from "../components/layout/sidebar/Sidebar";
 const Home = () => {
   return (
     <div className="">
-      <Header />
-      <Sidebar />
     </div>
   );
 };
