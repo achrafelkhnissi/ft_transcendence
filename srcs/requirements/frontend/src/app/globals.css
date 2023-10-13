@@ -12,6 +12,7 @@ body,
   /* min-width: 900px; */
   --progess-width: 110px;
   --progress-height: 110px;  
+  --progress-color : rgb(102, 0, 255);
 }
 
 svg{
@@ -24,30 +25,51 @@ svg{
   height: var(--progress-height);
   width: var(--progess-width);
   background: 
-              linear-gradient(to right, rgba(74, 2, 255, 0.9), rgba(74, 2, 255, 0.9)), /* top edge*/
-              linear-gradient(to bottom, rgba(74, 2, 255, 0.9), rgba(74, 2, 255, 0.9)), /* right edge*/
-              linear-gradient(to bottom, rgba(255, 2, 36, 0.9), rgba(255, 2, 36, 0.9)), /*bottom right edge */
-              linear-gradient(to bottom, rgba(251, 255, 2, 0.9), rgba(251, 255, 2, 0.9)), /* bottom left edge*/
-              linear-gradient(to right, rgba(74, 2, 255, 0.9), rgba(74, 2, 255, 0.9)), /* left edge*/
-              linear-gradient(to right, rgba(105, 94, 132, 0.5), rgba(74, 2, 255, 0.5)); /*gradient fill*/
+              linear-gradient(to right, var(--progress-color), var(--progress-color)), /* top edge*/
+              linear-gradient(to bottom, var(--progress-color), var(--progress-color)), /* right edge*/
+              linear-gradient(to bottom, var(--progress-color), var(--progress-color)), /* bottom left edge*/
+              linear-gradient(to bottom, var(--progress-color), var(--progress-color)), /*bottom right edge */
+              linear-gradient(to right, var(--progress-color), var(--progress-color)), /* left edge*/
+              linear-gradient(to right, rgba(105, 94, 132, 0.4), rgba(105, 94, 132, 0.4)); /*gradient fill*/
 
   background-size:/*width height*/ 
                   100% 10px, 
                   10px 100%, 
-                  50% 10px, 
-                  50% 10px, 
+                  36% 10px, 
+                  30% 10px, 
                   10px 100% ,
                   100% 100%;
 
   background-repeat: no-repeat;
 
   background-position:/* how far from left edge , how far from top ( negative how far from bottom)*/
-                      0px 0px, /* top edge*/
-                      100px 0px, /* right edge*/
-                      0px 100px , /* bottom right*/
-                      50px 100px, /* bottom left*/
-                      0px 0px, /* left edge*/
+                      -100px 0px, /* top edge*/
+                      100px -100px, /* right edge*/
+                      0px -100px , /* bottom left*/
+                      70px 100px, /* bottom right*/
+                      -100px 0px, /* left edge*/
                       0px 0px; /*gradient fill*/
+
+  /* transition: all 1.5s ease; */
 
 }
 /* styles.css */
+
+
+/* background-size:width height  */
+/* 100% 10px,  */
+/* 10px 100%,  */
+/* 36% 10px,  */
+/* 30% 10px,  */
+/* 10px 100% , */
+/* 100% 100%; */
+
+/* background-repeat: no-repeat; */
+
+/* background-position:how far from left edge , how far from top ( negative how far from bottom) */
+    /* 10px 0px, top edge */
+    /* 100px 0px, right edge */
+    /* 0px 100px , bottom left */
+    /* 70px 100px, bottom right */
+    /* 0px 0px, left edge */
+    /* 0px 0px; gradient fill */
