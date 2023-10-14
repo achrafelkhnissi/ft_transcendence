@@ -20,6 +20,10 @@ svg{
   width: 20px;
 }
 
+/* .tooltip:hover .has-tooltip{
+  visibility: visible;
+} */
+
 .rectangulaire-progress-bar {
 
   height: var(--progress-height);
