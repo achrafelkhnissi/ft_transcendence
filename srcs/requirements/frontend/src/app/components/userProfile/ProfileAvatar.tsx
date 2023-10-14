@@ -130,9 +130,23 @@ const ProfileAvatar = () => {
                 rounded-xl
 
                 `}/>
-                <div className={`absolute bg-[#6d3de7] text-white flex justify-center h-[1.6rem] w-[1.8rem] rounded-md -bottom-3 left-1/2 transform -translate-x-1/2 font-semibold text-xs 
-                 shadow-inner `}>
-                    <p className="self-center">10</p>
+                <div className={`
+                                absolute 
+                                bg-[#6d3de7] 
+                                text-white/75 
+                                flex 
+                                justify-center 
+                                h-[1.6rem] 
+                                w-[1.8rem] 
+                                rounded-md 
+                                -bottom-[0.9rem] 
+                                left-1/2 
+                                transform 
+                                -translate-x-1/2 
+                                font-semibold 
+                                text-s
+                                shadow-inner `}>
+                    <p className="self-center">4</p>
                 </div>
         </div>
 
