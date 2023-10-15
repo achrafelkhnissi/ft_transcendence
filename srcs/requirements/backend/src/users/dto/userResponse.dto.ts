@@ -19,7 +19,7 @@ export class UserResponseDto implements User {
   @Exclude()
   friends: number[];
 
-  constructor(user: User) {
-    Object.assign(this, user);
+  constructor(partial: Partial<UserResponseDto>) {
+    Object.assign(this, partial);
   }
 }
