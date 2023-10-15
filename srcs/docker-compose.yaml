@@ -21,7 +21,7 @@ services:
     restart: always
     env_file: .env
     ports:
-      - "${NESTJS_PORT:-3000}:${NESTJS_PORT:-3000}"
+      - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
     volumes:
       - ./requirements/backend:/app # for hot reloading
@@ -45,7 +45,7 @@ services:
     container_name: frontend
     restart: always
     ports:
-      - "${NEXTJS_PORT:-3001}:${NEXTJS_PORT:-3001}"
+      - "${NEXT_PORT:-3001}:${NEXT_PORT:-3001}"
     env_file: .env
     volumes:
       - ./requirements/frontend:/app # for hot reloading
