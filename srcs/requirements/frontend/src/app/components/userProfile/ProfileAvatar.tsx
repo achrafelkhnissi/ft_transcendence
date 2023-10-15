@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 const ProfileAvatar = () => {
     const progressRef = useRef<HTMLDivElement>(null);
-    const xp = 100; //user xp points
+    const xp = 70; //user xp points
 
     useEffect(() => {
 
