@@ -12,8 +12,7 @@ async function generateRandomUser() {
     data: {
       username: faker.internet.userName(),
       email: faker.internet.email(),
-      password: faker.internet.password(),
-      avatar: faker.image.avatar(),
+      url: faker.internet.url(),
       // twoFactorEnabled: faker.datatype.boolean(),
       // twoFactorSecret: faker.string.hexadecimal(),
     },
