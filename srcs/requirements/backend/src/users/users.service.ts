@@ -3,10 +3,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
-// import { UserResponseDto } from './dto/userResponse.dto';
+import { UserResponseDto } from './dto/userResponse.dto';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   // TODO: Check if 'readonly' is needed
   constructor(private readonly prisma: PrismaService) {}
 
@@ -27,7 +30,7 @@ export class UsersService {
       where: { id: id },
     });
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(`User with id <${id}> not found`);
     }
     return user;
   }
@@ -41,7 +44,7 @@ export class UsersService {
       where: { email: email },
     });
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`User with email <${email}> not found`);
     }
     return user || null;
   }
@@ -51,7 +54,7 @@ export class UsersService {
       where: { username: username },
     });
     if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
+      throw new NotFoundException(`User with username <${username}> not found`);
     }
     return user || null;
   }
