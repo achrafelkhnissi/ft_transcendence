@@ -1,6 +1,6 @@
 const DashboardHeader = () => {
-    return ( <div className="w-full h-80 px-4">
-        <div className="w-full h-full rounded-[1.6rem] relative">
+    return ( <div className="w-full h-80 px-4 ">
+        <div className="w-full h-full rounded-[1.6rem] relative shadow-2xl">
             <video className='w-full 
                                 h-full 
                                 rounded-[1.6rem] 
