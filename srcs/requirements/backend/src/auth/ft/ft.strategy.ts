@@ -1,10 +1,12 @@
 import { UsersService } from 'src/users/users.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, '42') {
+  private readonly logger = new Logger(FtStrategy.name);
+
   constructor(private readonly usersService: UsersService) {
     super({
       clientID: process.env.FT_CLIENT_ID,
@@ -25,17 +27,18 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       email,
       url,
     });
-    console.log('\n');
-
-    let user = await this.usersService.findByEmail(email);
-    if (!user) {
+    let user;
+    try {
+      user = await this.usersService.findByEmail(email);
+    } catch (error) {
+      this.logger.warn(error.message);
       user = await this.usersService.create({
         email,
         username,
         url,
       });
     }
-
+    console.log('\n');
     return user || null;
   }
 }
