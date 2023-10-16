@@ -57,16 +57,16 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({imageSrc}) => {
                             transform 
                             -translate-x-1/2
                             bg-[#6257FE]
-                            px-[0.8rem]
-                            py-2
-                            rounded-xl
+                            px-[1.6rem]
+                            py-[0.4rem]
+                            rounded-[0.6rem]
                             font-semibold
                             text-sm
                             transition ease-in-out delay-100 duration-500
                             shadow-[inset_0_12px_11px_rgba(255,255,255,0.26)]
                             ${!isHovered && 'hidden'}
                             `}> 
-                            join now 
+                            Join
                             </button>
     </div>)
 }
