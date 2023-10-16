@@ -29,7 +29,7 @@ const PopularRooms = () => {
       ]
 
     return (
-        <div className="w-full h-[25rem] py-2">
+        <div className="w-full py-2">
             <div className='flex gap-1 pl-4'>
             <AiFillFire className="text-[#E89B05]"/>
             <p className="text-white font-semibold"> Popular Rooms Today </p>
