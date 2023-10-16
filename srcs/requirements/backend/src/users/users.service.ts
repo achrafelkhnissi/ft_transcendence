@@ -57,6 +57,7 @@ export class UsersService {
       throw new NotFoundException(`User with username <${username}> not found`);
     }
     return user || null;
+    // return new UserResponseDto(user);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
