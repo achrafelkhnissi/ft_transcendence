@@ -11,7 +11,7 @@ all: credit env run
 
 env:
 	@echo "\n${GREEN}Setting up environment variables...${NC}"
-	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env-example ./srcs/.env; fi
+	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env.example ./srcs/.env; fi
 
 credit:
 	@echo
@@ -60,7 +60,6 @@ clean: down
 fclean: clean
 	@echo "\n${RED}Stopping and removing containers and volumes and networks and images and env files...${NC}"
 	docker-compose -f srcs/docker-compose.yaml down --rmi all
-	@# rm -rf ./srcs/.env
 
 frontend: env # todo: remove this
 	docker-compose -f srcs/docker-compose.yaml up --build frontend
