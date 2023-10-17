@@ -29,7 +29,6 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({imageSrc}) => {
                     transition ease-in-out duration-500
                     hover:scale-110 
                     hover:shadow-2xl
-                    hover:cursor-pointer
                     relative
     '
         onMouseEnter={handleMouseEnter}
