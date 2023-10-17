@@ -22,10 +22,10 @@ interface StatsProps {
     ]
 
     return (
-    <div className=" flex justify-between  px-4 divide-x-[0.18rem] divide-[#6C61A4]/60">
+    <div className=" flex justify-between  pl-2 divide-x-[0.17rem] divide-[#6C61A4]/60">
         {StatsItems.map( (item, index) => {
-            return ( <div key={index} className="text-white flex flex-col gap-1 px-4">
-                <p className="self-center text-[#6C61A4] font-semibold text-sm">{item.label}</p>
+            return ( <div key={index} className="text-white flex flex-col gap-1 px-4 text-sm">
+                <p className="self-center text-[#6C61A4] font-semibold ">{item.label}</p>
                 <p className="self-center font-semibold">{item.value}</p>
             </div>)
         })}

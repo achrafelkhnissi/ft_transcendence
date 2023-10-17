@@ -14,15 +14,21 @@ const UserInfo = () => {
         <div className="h-[350px] w-full rounded-2xl p-6">
             <Image src="/images/profilebg.png" width={1200} height={600} alt="photo" className="rounded-[2.5rem] w-full h-full object-cover" />
         </div>
-        <div className='absolute w-full h-28 bottom-8 rounded-[2.5rem] bg-[#20204A]/90 '>
+        <div className='absolute w-full h-28 max-[880px]:h-64 bottom-8 rounded-[2.5rem] bg-[#20204A]/90 '>
             <div className='w-full relative h-full flex justify-center'>
                 <div className='absolute left-1/2 transform  -translate-x-1/2 -translate-y-1/2'>
                     <ProfileAvatar />
                 </div>
-                <div className=' absolute bottom-2 '>
+                <div className=' absolute bottom-2 max-[880px]:top-16'>
                     <UserName name="fathjami"/>
                 </div>
-                <div className='flex justify-between px-12  w-full'>
+                <div className='flex justify-between px-12  w-full 
+                                max-[880px]:flex-col
+                                max-[880px]:justify-end
+                                max-[880px]:gap-6
+                                max-[880px]:py-4
+                                max-[880px]:px-2
+                                '>
                     <div className='self-center'>
                         <Stats/>
                     </div>
