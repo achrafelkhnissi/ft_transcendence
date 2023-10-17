@@ -5,29 +5,18 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ children, header, icon}) =>{
-    return (<div className={`
-             w-full
-             h-full
-             rounded-[3rem]
-             bg-[#20204A]
-             relative
-             shadow-xl
-    `}>
-                                
-        <div className='
-                        text-white 
-                        absolute 
-                        top-5 
-                        left-6 
-                        font-bold  
-                        flex 
-                        gap-2
-                       '>
-            {icon}
-            {header.toUpperCase()}
+
+    return (
+    <div className="w-full h-full bg-[#20204A] rounded-[3rem] overflow-hidden pb-4">
+        <div className=' w-full h-16 rounded-t-[3rem] border-b-2 bg-[#20204A] border-b-[#6C61A4]/60 relative '>
+            <div className="text-white font-bold flex gap-2 absolute top-5 left-6">
+                {icon}
+                {header.toUpperCase()}
+            </div>
         </div>
-        <div className="absolute w-full border-[0.09rem] top-14 border-[#6C61A4]/60"></div>
-        {children}
+        <div className="p-2 overflow-y-auto scroll-smooth max-h-[200px] ">
+            {children}
+        </div>
     </div>)
 
 }

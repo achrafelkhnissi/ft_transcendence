@@ -13,6 +13,8 @@ body,
   --progess-width: 110px;
   --progress-height: 110px;  
   --progress-color : rgb(102, 0, 255);
+  --primary: rgb(137, 136, 139, 0.2);
+  --secondary: rgba(137, 136, 139, 0.1);
 }
 
 svg{
@@ -77,3 +79,25 @@ svg{
     /* 70px 100px, bottom right */
     /* 0px 0px, left edge */
     /* 0px 0px; gradient fill */
+
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--secondary) var(--primary);
+    }
+    
+    /* Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+      width: 5px;
+    }
+    
+    *::-webkit-scrollbar-track {
+      background: var(--secondary);
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+    
+    *::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 14px;
+      border: 3px solid var(--secondary);
+    }
