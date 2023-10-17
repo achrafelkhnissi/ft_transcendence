@@ -19,11 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-row w-full h-full ">
+        <div className="flex flex-row w-full h-full overflow-hidden">
           <div >
             <Sidebar />
           </div>
-      <div className="w-full h-full">
+      <div className="w-full h-full overflow-y-auto">
         <Header />
         {children}
       </div>
