@@ -13,8 +13,8 @@ body,
   --progess-width: 110px;
   --progress-height: 110px;  
   --progress-color : rgb(102, 0, 255);
-  --primary: rgb(137, 136, 139, 0.2);
-  --secondary: rgba(137, 136, 139, 0.1);
+  --primary: rgba(137, 136, 139, 0.1);
+  --secondary: rgba(137, 136, 139, 0.005);
 }
 
 svg{
@@ -92,8 +92,8 @@ svg{
     
     *::-webkit-scrollbar-track {
       background: var(--secondary);
-      margin-top: 5px;
-      margin-bottom: 5px;
+      margin-top: 45px;
+      margin-bottom: 45px;
     }
     
     *::-webkit-scrollbar-thumb {
