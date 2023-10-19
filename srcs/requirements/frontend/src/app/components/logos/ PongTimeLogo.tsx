@@ -4,10 +4,10 @@ import { pixelifySans } from "../../fonts";
 const Logo = () => {
   return (
     <div
-      className={`flex text-4xl items-center text-[#93C4FD] -gap-6 ${pixelifySans.className} drop-shadow-[0_3px_4px_rgba(147,196,253,0.9)]`}
+      className={`flex text-3xl items-center text-[#93C4FD]  gap-[0.1rem] justify-center ${pixelifySans.className} drop-shadow-[0_3px_4px_rgba(147,196,253,0.9)]`}
     >
       PON
-      <Hourglass color="" width="2rem" height="2rem" />
+      <Hourglass color="" width="1.6rem" height="1.6rem" />
     </div>
   );
 };

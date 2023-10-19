@@ -5,7 +5,7 @@ import Logo from "../../logos/ PongTimeLogo";
 
 const Sidebar = ( ) => {
     return (
-    <div  className="text-white justify-between min-h-[1000px] list-none flex flex-col bg-[#25244E] h-full w-[6.5rem] mt-0 bottom-0 py-4">
+    <div  className="text-white justify-between min-h-[1000px] list-none flex flex-col bg-[#25244E] h-full w-[5rem] mt-0 bottom-0 py-4">
         
         <div className="  self-center ">
             <Logo />
@@ -23,13 +23,14 @@ const Sidebar = ( ) => {
                         gap-1 
                         justify-center 
                         self-center 
-                        h-20 w-20 
-                        rounded-xl 
+                        h-16 w-16 
+                        rounded-lg 
                         hover:bg-[#6767a3]/20
                         hover:text-[#8787d5]
+                        p-2
                         `}>
                         {item.icon}
-                        <span className="text-xs ">{item.label}</span>
+                        <span className="text-[0.66rem] ">{item.label}</span>
                 </Link>
             );
         })}
@@ -41,10 +42,11 @@ const Sidebar = ( ) => {
         flex 
         flex-col 
         justify-center 
-        h-20 w-20 
+        h-16 w-16
+        p-2
         gap-1 
         text-red-700 
-        rounded-xl 
+        rounded-lg 
         hover:bg-[#6767a3]/20 
         hover:text-red-600 
         cursor-pointer`}>
