@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Card from "./Card";
 import { RiChatHistoryFill } from "react-icons/ri"
-import { BsCheckCircleFill } from "react-icons/bs"
 import { AiFillCloseCircle, AiFillCheckCircle } from "react-icons/ai"
 
 interface User{
