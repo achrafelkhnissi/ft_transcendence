@@ -60,20 +60,6 @@ services:
         npm install
         npm run dev
 
-  pgadmin:
-    image: dpage/pgadmin4:7.7
-    container_name: pgadmin
-    restart: always
-    ports:
-      - "${PGADMIN_PORT:-8080}:80"
-    env_file: .env
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    networks:
-      - local_net
-    depends_on:
-      - db
-
 volumes:
   db-data:
   pgadmin-data:
