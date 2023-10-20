@@ -94,8 +94,8 @@ const TopPlayers = () => {
         <p className="text-white font-semibold"> Top Players Today </p>
       </div>
       <div className="flex justify-center w-full ">
-        <div className="h-[28rem] w-[70rem] max-[500px]:w-full relative overflow-y-auto bg-[#20204A] rounded-2xl ">
-          <table className=" text-white  bg-[#20204A] w-full">
+        <div className="h-[28rem] w-[70rem] max-[500px]:w-full relative overflow-y-auto bg-[#20204A] shadow-xl rounded-2xl ">
+          <table className=" text-white  bg-[#20204A] w-full ">
             <thead className=" top-0 sticky bg-[#20204A] ">
               <tr className=" text-[#6C61A4] ">
                 <th className="pr-2 py-4">Rank</th>
