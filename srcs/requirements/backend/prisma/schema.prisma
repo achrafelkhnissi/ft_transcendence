@@ -49,15 +49,15 @@ model User {
 
 model FriendRequest {
   friendshipStatus FriendshipStatus @default(PENDING)
-  userId           Int
-  user             User             @relation("SentFriendRequests", fields: [userId], references: [id], onDelete: Cascade)
-  friendId         Int
-  friend           User             @relation("ReceivedFriendRequests", fields: [friendId], references: [id], onDelete: Cascade)
+  senderId         Int
+  user             User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  recieverId       Int
+  friend           User             @relation("ReceivedFriendRequests", fields: [recieverId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
-  @@id([userId, friendId])
-  @@unique([userId, friendId])
+  @@id([senderId, recieverId])
+  @@unique([senderId, recieverId])
 }
 
 // model Game {
