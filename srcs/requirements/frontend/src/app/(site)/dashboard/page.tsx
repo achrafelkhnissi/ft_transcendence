@@ -4,7 +4,7 @@ import TopPlayers from "@/app/components/dashboard/TopPlayers";
 
 const Home = () => {
   return (
-    <div className=" w-full p-4 flex flex-col gap-8">
+    <div className=" w-full max-w-[75rem] p-4 mx-auto flex flex-col gap-8">
         <DashboardHeader/>
         <PopularRooms/>
         <TopPlayers/>
