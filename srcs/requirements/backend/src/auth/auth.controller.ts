@@ -28,7 +28,8 @@ export class AuthController {
   async ftRedirect(@Req() req: Request, @Res() res: Response) {
     console.log('\n\n');
     console.log('--------- AuthController.ftRedirect ---------');
-    console.log('redirecting to http://localhost:3000/api/users');
+    console.log('redirecting to http://localhost:1337/dashboard');
+
     console.log('\n');
     // const { user } = req;
     // console.log({
@@ -36,7 +37,8 @@ export class AuthController {
     //   user,
     //   session: req.session,
     // });
-    res.redirect('http://localhost:3000/api/users');
+
+    res.redirect('http://localhost:1337/dashboard');
   }
 
   @Get('logout')

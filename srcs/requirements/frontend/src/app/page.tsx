@@ -54,7 +54,8 @@ export default function Home() {
           
           `}
           onClick={() => {
-            router.push("/dashboard");
+            // router.push("/dashboard");
+            router.push("http://localhost:3000/api/auth/ft");
           }}
         >
           <span>Login with intra</span>
