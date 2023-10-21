@@ -96,7 +96,7 @@ const TopPlayers = () => {
       <div className="flex justify-center w-full ">
         <div className="h-[27rem] w-[70rem] max-[500px]:w-full relative overflow-y-auto bg-[#20204A] shadow-xl rounded-t-2xl rounded-b-lg">
           <table className=" text-white  bg-[#20204A] w-full ">
-            <thead className=" top-0 sticky bg-[#20204A] ">
+            <thead className=" top-0 sticky bg-[#20204A] shadow-md">
               <tr className=" text-[#6C61A4] ">
                 <th className="pr-2 py-4">Rank</th>
                 <th className="pr-2 py-4">Username</th>
