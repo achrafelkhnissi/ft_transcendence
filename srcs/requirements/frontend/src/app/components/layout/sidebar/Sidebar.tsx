@@ -1,9 +1,14 @@
+'use client'
+
 import Link from "next/link";
 import { defaultSidebarItems, DefaultSidebarItemsProps } from "./defaultSidebarIrems";
 import { TbLogout2 } from "react-icons/tb";
 import Logo from "../../logos/ PongTimeLogo";
+import { useRouter } from "next/navigation";
 
 const Sidebar = ( ) => {
+    const route = useRouter();
+
     return (
     <div  className="text-white justify-between min-h-[1000px] list-none flex flex-col bg-[#25244E] h-full w-[5rem] mt-0 bottom-0 py-4">
         
@@ -36,7 +41,9 @@ const Sidebar = ( ) => {
         })}
 
         </div>
-        <div className=
+        <button 
+        onClick={() => route.push('http://localhost:3000/api/auth/logout')}
+        className=
         {`bottom-0 
         self-center 
         flex 
@@ -56,7 +63,7 @@ const Sidebar = ( ) => {
                 , height: "2rem"}
             }/>
             <span className="text-xs self-center">Logout</span>
-        </div>
+        </button>
     </div>
     );
 };

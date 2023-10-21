@@ -94,7 +94,7 @@ const TopPlayers = () => {
         <p className="text-white font-semibold"> Top Players Today </p>
       </div>
       <div className="flex justify-center w-full ">
-        <div className="h-[28rem] w-[70rem] max-[500px]:w-full relative overflow-y-auto bg-[#20204A] shadow-xl rounded-2xl ">
+        <div className="h-[27rem] w-[70rem] max-[500px]:w-full relative overflow-y-auto bg-[#20204A] shadow-xl rounded-t-2xl rounded-b-lg">
           <table className=" text-white  bg-[#20204A] w-full ">
             <thead className=" top-0 sticky bg-[#20204A] ">
               <tr className=" text-[#6C61A4] ">
@@ -117,7 +117,7 @@ const TopPlayers = () => {
                     ${!(index % 2) && "bg-[#1C1C43]"}
                     `}
                   >
-                    <td className=" px-2 py-[0.6rem] text-white/60 text-center">
+                    <td className=" px-2 py-[0.6rem] text-white/30 text-center">
                       #{index + 1}
                     </td>
                     <td className="flex h-full justify-center gap-2 px-0 py-[0.6rem]">

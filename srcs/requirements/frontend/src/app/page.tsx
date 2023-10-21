@@ -4,9 +4,29 @@ import Logo_42 from "./components/logos/Logo_42";
 import Back from "./components/Background";
 import { pixelifySans, roboto } from "./fonts";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Home() {
   const router = useRouter();
+
+  // const res = axios
+  //   .get("http://localhost:3000/api/auth/whoami")
+  //   .then((response) => {
+  //     // Check if user exists in the response data
+  //     // const user = response.data.user;
+  //     // if (user) {
+  //     //   // User exists, do something with the user data
+  //     //   console.log("User exists:", user);
+  //     // } else {
+  //     //   // User does not exist, handle accordingly
+  //     //   console.log("User not found in the response.");
+  //     // }
+  //     console.log("hello");
+  //   })
+  //   .catch((error) => {
+  //     // Handle errors
+  //     console.error("Error fetching data:", error);
+  //   });
 
   return (
     <div>
