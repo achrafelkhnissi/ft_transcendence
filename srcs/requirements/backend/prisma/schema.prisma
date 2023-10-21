@@ -18,23 +18,23 @@ model Session {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String?  @unique
-  email     String   @unique
-  avatar    String?  @default("https://i.imgur.com/6VBx3io.png")
-  url       String   @unique
-  status    Status?  @default(ONLINE)
-  // twoFactorEnabled Boolean  @default(false)
-  // twoFactorSecret  String?  @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                     Int             @id @default(autoincrement())
+  username               String?         @unique
+  email                  String          @unique
+  avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
+  url                    String          @unique
+  status                 Status?         @default(ONLINE)
+  twoFactorEnabled       Boolean         @default(false)
+  twoFactorSecret        String?         @default("")
+  experiencePoints       Int             @default(0)
+  level                  Int             @default(0)
   // settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
-  friends                Int[] // TODO: update this everytime a friend request is accepted or deleted or when a user is deleted
 
   // achievements UserAchievement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // model UserSettings {
