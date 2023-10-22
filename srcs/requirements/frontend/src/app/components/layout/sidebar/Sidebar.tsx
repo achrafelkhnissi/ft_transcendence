@@ -10,7 +10,7 @@ const Sidebar = ( ) => {
     const route = useRouter();
 
     return (
-    <div  className="text-white justify-between min-h-[1000px] list-none flex flex-col bg-[#25244E] h-full w-[5rem] mt-0 bottom-0 py-4">
+    <div  className="text-white justify-between list-none flex flex-col bg-[#25244E] h-full w-[5rem] mt-0 bottom-0 py-4">
         
         <div className="  self-center ">
             <Logo />
