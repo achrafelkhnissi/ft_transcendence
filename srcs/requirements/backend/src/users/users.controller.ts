@@ -6,16 +6,17 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   ParseIntPipe,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Request } from 'express';
 import { UsernameDto } from './dto/username.dto';
+import { AuthGuard } from './auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -26,12 +27,7 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
-    // TODO: create a guard to check if user is logged in
-    // if (!this.usersService.isLoggedIn())
-    if (!req.user) {
-      return { message: 'You are not authorized to access this resource' };
-    }
+  findAll() {
     return this.usersService.findAll();
   }
 
