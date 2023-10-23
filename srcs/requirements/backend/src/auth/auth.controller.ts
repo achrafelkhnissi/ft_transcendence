@@ -1,6 +1,7 @@
 import { Controller, Get, Req, Res, UseGuards, Logger } from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
 import { Request, Response } from 'express';
+import { AuthGuard } from 'src/users/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +34,7 @@ export class AuthController {
     res.redirect('http://localhost:1337/dashboard');
   }
 
+  @UseGuards(AuthGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     console.log('\n\n');
