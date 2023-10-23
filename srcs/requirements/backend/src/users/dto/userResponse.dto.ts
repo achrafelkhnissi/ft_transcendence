@@ -9,6 +9,12 @@ export class UserResponseDto implements User {
   avatar: string;
   url: string;
   status: $Enums.Status;
+  twoFactorEnabled: boolean;
+  experiencePoints: number;
+  level: number;
+
+  @Exclude()
+  twoFactorSecret: string;
 
   @Exclude()
   createdAt: Date;
