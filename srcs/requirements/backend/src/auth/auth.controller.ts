@@ -29,15 +29,7 @@ export class AuthController {
     console.log('\n\n');
     console.log('--------- AuthController.ftRedirect ---------');
     console.log('redirecting to http://localhost:1337/dashboard');
-
     console.log('\n');
-    // const { user } = req;
-    // console.log({
-    //   function: 'ftRedirect',
-    //   user,
-    //   session: req.session,
-    // });
-
     res.redirect('http://localhost:1337/dashboard');
   }
 

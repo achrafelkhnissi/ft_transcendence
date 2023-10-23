@@ -37,6 +37,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         username,
         url,
       });
+      user.justCreated = true;
     }
     console.log('\n');
     return user || null;
