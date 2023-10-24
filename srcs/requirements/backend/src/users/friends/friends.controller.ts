@@ -32,21 +32,17 @@ export class FriendsController {
     return this.friendsService.sendFriendRequest(senderId, receiverUsername);
   }
 
-  // @Get('friends/accept')
-  // async acceptFriendRequest(
-  //   @Query() query: { username: string },
-  //   // @Req() req: Request,
-  //   @User() user: UserType,
-  // ) {
-  //   const senderId = user?.id;
-  //   const receiverUsername = query.username;
+  @Get('accept')
+  async acceptFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: senderUsername } = query;
+    const receiverId = user?.id;
 
-  //   this.logger.log(
-  //     `User <${user?.username}> is accepting a friend request from user <${receiverUsername}>`,
-  //   );
+    this.logger.log(
+      `User <${user?.username}> is accepting a friend request from user <${receiverId}>`,
+    );
 
-  //   return this.friendsService.acceptFriendRequest(senderId, receiverUsername);
-  // }
+    return this.friendsService.acceptFriendRequest(receiverId, senderUsername);
+  }
 
   // @Get('friends/decline')
   // async declineFriendRequest(
