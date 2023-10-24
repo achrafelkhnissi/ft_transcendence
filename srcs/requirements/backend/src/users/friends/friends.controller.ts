@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { QueryDto } from '../dto/query.dto';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller() // friends is the default route
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);

@@ -13,11 +13,10 @@ export class FriendsService {
   ) {}
 
   async listFriendsByIdentifier(id: string | number): Promise<User[]> {
-    let user: User;
-
-    if (typeof id === 'string') {
-      user = await this.usersService.findByUsername(id);
-    } else user = await this.usersService.findById(id);
+    const user: User =
+      typeof id === 'string'
+        ? await this.usersService.findByUsername(id)
+        : await this.usersService.findById(id);
 
     if (!user) {
       throw new NotFoundException(`User with identifier <${id}> not found`);
