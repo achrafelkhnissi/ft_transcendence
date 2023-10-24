@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
 import { Request, Response } from 'express';
-import { AuthGuard } from 'src/users/auth.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
 
