@@ -11,17 +11,11 @@ export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   @Get()
-  hello() {
-    return 'Hello from friends controller';
+  list(@Query() query: QueryDto, @User() user: UserType) {
+    const { username, id } = query;
+    const identifier = username || id || user?.username;
+    return this.friendsService.listFriendsByIdentifier(identifier);
   }
-
-  // @Get()
-  // list(@Query() query: QueryDto) {
-  //   const { username, id } = query;
-
-  //   // return this.friendsService.listFriendsByIdentifier(username || id);
-  //   return `Listing friends of user <${username || id}>`;
-  // }
 
   // @Get('friends/add')
   // async sendFriendRequest(

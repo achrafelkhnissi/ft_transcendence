@@ -8,51 +8,52 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
   constructor(
+    private readonly prisma: PrismaService,
     private readonly usersService: UsersService, // private readonly prisma: PrismaService, //TODO: Change it to friendRequestService (maybe?)
   ) {}
 
-  // async listFriendsByIdentifier(id: string | number): Promise<User[]> {
-  //   let user: User;
+  async listFriendsByIdentifier(id: string | number): Promise<User[]> {
+    let user: User;
 
-  //   if (typeof id === 'string') {
-  //     user = await this.usersService.findByUsername(id);
-  //   } else user = await this.usersService.findById(id);
+    if (typeof id === 'string') {
+      user = await this.usersService.findByUsername(id);
+    } else user = await this.usersService.findById(id);
 
-  //   if (!user) {
-  //     throw new NotFoundException(`User with identifier <${id}> not found`);
-  //   }
+    if (!user) {
+      throw new NotFoundException(`User with identifier <${id}> not found`);
+    }
 
-  //   const acceptedFriendRequests = await this.prisma.friendRequest.findMany({
-  //     where: {
-  //       OR: [
-  //         {
-  //           senderId: { equals: user.id },
-  //           friendshipStatus: FriendshipStatus.ACCEPTED,
-  //         },
-  //         {
-  //           receiverId: { equals: user.id },
-  //           friendshipStatus: FriendshipStatus.ACCEPTED,
-  //         },
-  //       ],
-  //     },
-  //   });
+    const acceptedFriendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        OR: [
+          {
+            senderId: { equals: user.id },
+            friendshipStatus: FriendshipStatus.ACCEPTED,
+          },
+          {
+            receiverId: { equals: user.id },
+            friendshipStatus: FriendshipStatus.ACCEPTED,
+          },
+        ],
+      },
+    });
 
-  //   if (!acceptedFriendRequests) {
-  //     return [];
-  //   }
+    if (!acceptedFriendRequests) {
+      return [];
+    }
 
-  //   const friendIds = acceptedFriendRequests.map((friendRequest) => {
-  //     return friendRequest.senderId === user.id
-  //       ? friendRequest.receiverId
-  //       : friendRequest.senderId;
-  //   });
+    const friendIds = acceptedFriendRequests.map((friendRequest) => {
+      return friendRequest.senderId === user.id
+        ? friendRequest.receiverId
+        : friendRequest.senderId;
+    });
 
-  //   const friends = await this.prisma.user.findMany({
-  //     where: { id: { in: friendIds } },
-  //   });
+    const friends = await this.prisma.user.findMany({
+      where: { id: { in: friendIds } },
+    });
 
-  //   return friends;
-  // }
+    return friends;
+  }
 
   // async listRequests(username: string) {
   //   const user = await this.prisma.user.findUnique({
