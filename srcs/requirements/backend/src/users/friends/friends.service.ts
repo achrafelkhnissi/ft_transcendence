@@ -54,6 +54,43 @@ export class FriendsService {
     return friends;
   }
 
+  async sendFriendRequest(senderId: number, receiverUsername: string) {
+    this.logger.log(
+      `Friend request from <${senderId}> to <${receiverUsername}>`,
+    );
+    const sender = await this.prisma.user.findUnique({
+      where: { id: senderId },
+    });
+
+    if (!sender) {
+      throw new NotFoundException(`User with id <${senderId}> not found`);
+    }
+
+    const receiver = await this.prisma.user.findUnique({
+      where: { username: receiverUsername },
+    });
+
+    if (!receiver) {
+      throw new NotFoundException(`User <${receiverUsername}> not found`);
+    }
+
+    const request = await this.prisma.friendRequest.upsert({
+      where: {
+        senderId_receiverId: { senderId, receiverId: receiver.id },
+      },
+      update: {
+        friendshipStatus: FriendshipStatus.PENDING,
+      },
+      create: {
+        senderId: senderId,
+        receiverId: receiver.id,
+        friendshipStatus: FriendshipStatus.PENDING,
+      },
+    });
+
+    return { message: 'Friend request sent', request };
+  }
+
   // async listRequests(username: string) {
   //   const user = await this.prisma.user.findUnique({
   //     where: { username: username },
@@ -93,43 +130,6 @@ export class FriendsService {
   //   });
 
   //   return friends;
-  // }
-
-  // async sendFriendRequest(senderId: number, receiverUsername: string) {
-  //   this.logger.log(
-  //     `Friend request from <${senderId}> to <${receiverUsername}>`,
-  //   );
-  //   const sender = await this.prisma.user.findUnique({
-  //     where: { id: senderId },
-  //   });
-
-  //   if (!sender) {
-  //     throw new NotFoundException(`User with id <${senderId}> not found`);
-  //   }
-
-  //   const receiver = await this.prisma.user.findUnique({
-  //     where: { username: receiverUsername },
-  //   });
-
-  //   if (!receiver) {
-  //     throw new NotFoundException(`User <${receiverUsername}> not found`);
-  //   }
-
-  //   const request = await this.prisma.friendRequest.upsert({
-  //     where: {
-  //       senderId_receiverId: { senderId, receiverId: receiver.id },
-  //     },
-  //     update: {
-  //       friendshipStatus: FriendshipStatus.PENDING,
-  //     },
-  //     create: {
-  //       senderId: senderId,
-  //       receiverId: receiver.id,
-  //       friendshipStatus: FriendshipStatus.PENDING,
-  //     },
-  //   });
-
-  //   return { message: 'Friend request sent', request };
   // }
 
   // async acceptFriendRequest(senderId: number, receiverUsername: string) {

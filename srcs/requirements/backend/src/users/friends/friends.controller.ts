@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { QueryDto } from '../dto/query.dto';
 import { User } from 'src/decorators/user.decorator';
@@ -27,20 +19,18 @@ export class FriendsController {
     return this.friendsService.listFriendsByIdentifier(identifier);
   }
 
-  // @Get('friends/add')
-  // async sendFriendRequest(
-  //   @Query() query: { username: string },
-  //   @User() user: UserType,
-  // ) {
-  //   const senderId = user?.id;
-  //   const receiverUsername = query.username;
+  // TODO: Adding an existing friend should return an error
+  @Get('add')
+  async sendFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
+    const senderId = user?.id;
+    const { username: receiverUsername } = query;
 
-  //   this.logger.log(
-  //     `User <${user?.username}> is adding user <${receiverUsername}> as a friend`,
-  //   );
+    this.logger.log(
+      `User <${user?.username}> is adding user ${receiverUsername} as a friend`,
+    );
 
-  //   return this.friendsService.sendFriendRequest(senderId, receiverUsername);
-  // }
+    return this.friendsService.sendFriendRequest(senderId, receiverUsername);
+  }
 
   // @Get('friends/accept')
   // async acceptFriendRequest(
@@ -72,12 +62,6 @@ export class FriendsController {
   //   );
 
   //   return this.friendsService.declineFriendRequest(senderId, receiverUsername);
-  // }
-
-  // @Post('friends/list')
-  // async listFriends(@Body() body: { username: string }) {
-  //   this.logger.log(`Listing friends of user <${body.username}>`);
-  //   return this.friendsService.listFriendsByIdentifier(body?.username);
   // }
 
   // // TODO: Test this after merging with the frontend
