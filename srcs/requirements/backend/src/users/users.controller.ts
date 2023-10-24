@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
   Logger,
   Query,
   ParseIntPipe,
@@ -18,6 +17,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsernameDto } from './dto/username.dto';
 import { AuthGuard } from '../guards/auth.guard';
+import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/interfaces/user.interface';
 
 @UseGuards(AuthGuard)
 @Controller('users')
@@ -59,13 +60,14 @@ export class UsersController {
   @Get('friends/add')
   async sendFriendRequest(
     @Query() query: { username: string },
-    @Req() req: Request,
+    // @Req() req: Request,
+    @User() user: UserType,
   ) {
-    const senderId = req.user['id'];
+    const senderId = user?.id;
     const receiverUsername = query.username;
 
     this.logger.log(
-      `User <${req.user['username']}> is adding user <${receiverUsername}> as a friend`,
+      `User <${user?.username}> is adding user <${receiverUsername}> as a friend`,
     );
 
     return this.usersService.sendFriendRequest(senderId, receiverUsername);
@@ -74,13 +76,14 @@ export class UsersController {
   @Get('friends/accept')
   async acceptFriendRequest(
     @Query() query: { username: string },
-    @Req() req: Request,
+    // @Req() req: Request,
+    @User() user: UserType,
   ) {
-    const senderId = req.user['id'];
+    const senderId = user?.id;
     const receiverUsername = query.username;
 
     this.logger.log(
-      `User <${req.user['username']}> is accepting a friend request from user <${receiverUsername}>`,
+      `User <${user?.username}> is accepting a friend request from user <${receiverUsername}>`,
     );
 
     return this.usersService.acceptFriendRequest(senderId, receiverUsername);
@@ -89,13 +92,14 @@ export class UsersController {
   @Get('friends/decline')
   async declineFriendRequest(
     @Query() query: { username: string },
-    @Req() req: Request,
+    // @Req() req: Request,
+    @User() user: UserType,
   ) {
-    const senderId = req.user['id'];
+    const senderId = user?.id;
     const receiverUsername = query.username;
 
     this.logger.log(
-      `User <${req.user['username']}> is rejecting a friend request from user <${receiverUsername}>`,
+      `User <${user?.username}> is rejecting a friend request from user <${receiverUsername}>`,
     );
 
     return this.usersService.declineFriendRequest(senderId, receiverUsername);
@@ -110,21 +114,22 @@ export class UsersController {
   // TODO: Test this after merging with the frontend
   // If it works, remove the other listFriends route
   @Get('friends/list')
-  async listFriends2(@Req() req: Request) {
-    this.logger.log(`Listing friends of user <${req.user['username']}>`);
-    return this.usersService.listFriends(req.user['username']);
+  async listFriends2(@User() user: UserType) {
+    this.logger.log(`Listing friends of user <${user?.username}>`);
+    return this.usersService.listFriends(user?.username);
   }
 
   @Get('friends/remove')
   async removeFriend(
     @Query() query: { username: string },
-    @Req() req: Request,
+    // @Req() req: Request,
+    @User() user: UserType,
   ) {
-    const userId = req.user['id'];
+    const userId = user?.id;
     const friendUsername = query.username;
 
     this.logger.log(
-      `User <${req.user['username']}> is removing user <${friendUsername}> as a friend`,
+      `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
     );
 
     return this.usersService.removeFriend(userId, friendUsername);
