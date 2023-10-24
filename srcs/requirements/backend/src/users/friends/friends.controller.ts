@@ -6,7 +6,7 @@ import { UserType } from 'src/interfaces/user.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @UseGuards(AuthGuard)
-@Controller() // friends is the default route
+@Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
 
@@ -58,7 +58,7 @@ export class FriendsController {
     return this.friendsService.declineFriendRequest(receiverId, senderUsername);
   }
 
-  @Get('remove')
+  @Get('unfriend')
   async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
     const { username: friendUsername } = query;
 
@@ -67,5 +67,64 @@ export class FriendsController {
     );
 
     return this.friendsService.removeFriend(user.id, friendUsername);
+  }
+
+  // TODO: Check the bellow endpoints for unseen errors;
+  @Get('pending')
+  async listPendingFriendRequests(@User() user: UserType) {
+    this.logger.log(`Listing pending friend requests for user <${user?.id}>`);
+    return this.friendsService.listPendingFriendRequests(user.id);
+  }
+
+  @Get('sent')
+  async listSentFriendRequests(@User() user: UserType) {
+    this.logger.log(`Listing sent friend requests for user <${user?.id}>`);
+    return this.friendsService.listSentFriendRequests(user.id);
+  }
+
+  @Get('blocked')
+  async listBlockedUsers(@User() user: UserType) {
+    this.logger.log(`Listing blocked users for user <${user?.id}>`);
+    return this.friendsService.listBlockedUsers(user.id);
+  }
+
+  @Get('block')
+  async blockUser(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: blockedUsername } = query;
+
+    this.logger.log(
+      `User <${user?.username}> is blocking user <${blockedUsername}>`,
+    );
+
+    return this.friendsService.blockUser(user.id, blockedUsername);
+  }
+
+  @Get('unblock')
+  async unblockUser(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: blockedUsername } = query;
+
+    this.logger.log(
+      `User <${user?.username}> is unblocking user <${blockedUsername}>`,
+    );
+
+    return this.friendsService.unblockUser(user.id, blockedUsername);
+  }
+
+  @Get('requests')
+  async listFriendRequests(@User() user: UserType) {
+    this.logger.log(`Listing friend requests for user <${user?.id}>`);
+    return this.friendsService.listFriendRequests(user.id);
+  }
+
+  @Get('cancel')
+  async cancelFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: receiverUsername } = query;
+    const senderId = user?.id;
+
+    this.logger.log(
+      `User <${user?.username}> is cancelling a friend request to user <${receiverUsername}>`,
+    );
+
+    return this.friendsService.cancelFriendRequest(senderId, receiverUsername);
   }
 }

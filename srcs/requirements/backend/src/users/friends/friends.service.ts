@@ -223,44 +223,238 @@ export class FriendsService {
     return { message: 'Friend removed', friendRequests };
   }
 
-  // async listRequests(username: string) {
-  //   const user = await this.prisma.user.findUnique({
-  //     where: { username: username },
-  //   });
+  async listPendingFriendRequests(userId: number) {
+    this.logger.log(`Listing pending friend requests for user <${userId}>`);
+    const friendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                senderId: { equals: userId },
+              },
+              {
+                receiverId: { equals: userId },
+              },
+            ],
+          },
+          {
+            friendshipStatus: { equals: FriendshipStatus.PENDING },
+          },
+        ],
+      },
+    });
 
-  //   if (!user) {
-  //     throw new NotFoundException(`User with username <${username}> not found`);
-  //   }
+    return friendRequests;
+  }
 
-  //   const friendRequests = await this.prisma.friendRequest.findMany({
-  //     where: {
-  //       OR: [
-  //         {
-  //           senderId: { equals: user.id },
-  //           friendshipStatus: FriendshipStatus.PENDING,
-  //         },
-  //         {
-  //           receiverId: { equals: user.id },
-  //           friendshipStatus: FriendshipStatus.PENDING,
-  //         },
-  //       ],
-  //     },
-  //   });
+  async listSentFriendRequests(userId: number) {
+    this.logger.log(`Listing sent friend requests for user <${userId}>`);
+    const friendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        AND: [
+          {
+            senderId: { equals: userId },
+          },
+          {
+            friendshipStatus: { equals: FriendshipStatus.PENDING },
+          },
+        ],
+      },
+    });
 
-  //   if (!friendRequests) {
-  //     return [];
-  //   }
+    return friendRequests;
+  }
 
-  //   const friendIds = friendRequests.map((friendRequest) => {
-  //     return friendRequest.senderId === user.id
-  //       ? friendRequest.receiverId
-  //       : friendRequest.senderId;
-  //   });
+  async listBlockedUsers(userId: number) {
+    this.logger.log(`Listing blocked users for user <${userId}>`);
+    const friendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                senderId: { equals: userId },
+              },
+              {
+                receiverId: { equals: userId },
+              },
+            ],
+          },
+          {
+            friendshipStatus: { equals: FriendshipStatus.BLOCKED },
+          },
+        ],
+      },
+    });
 
-  //   const friends = await this.prisma.user.findMany({
-  //     where: { id: { in: friendIds } },
-  //   });
+    return friendRequests;
+  }
 
-  //   return friends;
-  // }
+  async blockUser(userId: number, friendUsername: string) {
+    this.logger.log(`Blocking user <${friendUsername}> for user <${userId}>`);
+    const friend = await this.prisma.user.findUnique({
+      where: { username: friendUsername },
+    });
+
+    if (!friend) {
+      throw new NotFoundException(`User <${friendUsername}> not found`);
+    }
+
+    const friendRequest = await this.prisma.friendRequest.findUnique({
+      where: {
+        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+      },
+    });
+
+    if (!friendRequest) {
+      throw new NotFoundException(
+        `Friend request from <${friendUsername}> to <${userId}> not found`,
+      );
+    }
+
+    if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
+      throw new BadRequestException(
+        `Friend request from <${friendUsername}> to <${userId}> not found`,
+      );
+    }
+
+    const request = await this.prisma.friendRequest.update({
+      where: {
+        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+      },
+      data: {
+        friendshipStatus: FriendshipStatus.BLOCKED,
+      },
+    });
+
+    return { message: 'User blocked', request };
+  }
+
+  async unblockUser(userId: number, friendUsername: string) {
+    this.logger.log(`Unblocking user <${friendUsername}> for user <${userId}>`);
+    const friend = await this.prisma.user.findUnique({
+      where: { username: friendUsername },
+    });
+
+    if (!friend) {
+      throw new NotFoundException(`User <${friendUsername}> not found`);
+    }
+
+    const friendRequest = await this.prisma.friendRequest.findUnique({
+      where: {
+        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+      },
+    });
+
+    if (!friendRequest) {
+      throw new NotFoundException(
+        `Friend request from <${friendUsername}> to <${userId}> not found`,
+      );
+    }
+
+    if (friendRequest.friendshipStatus !== FriendshipStatus.BLOCKED) {
+      throw new BadRequestException(
+        `Friend request from <${friendUsername}> to <${userId}> not found`,
+      );
+    }
+
+    const request = await this.prisma.friendRequest.update({
+      where: {
+        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+      },
+      data: {
+        friendshipStatus: FriendshipStatus.PENDING,
+      },
+    });
+
+    return { message: 'User unblocked', request };
+  }
+
+  async listFriends(userId: number) {
+    this.logger.log(`Listing friends for user <${userId}>`);
+    const friendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                senderId: { equals: userId },
+                friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+              },
+              {
+                receiverId: { equals: userId },
+                friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    return friendRequests;
+  }
+
+  async listFriendRequests(userId: number) {
+    this.logger.log(`Listing friend requests for user <${userId}>`);
+    const friendRequests = await this.prisma.friendRequest.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                senderId: { equals: userId },
+                friendshipStatus: { equals: FriendshipStatus.PENDING },
+              },
+              {
+                receiverId: { equals: userId },
+                friendshipStatus: { equals: FriendshipStatus.PENDING },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    return friendRequests;
+  }
+
+  async cancelFriendRequest(senderId: number, receiverUsername: string) {
+    this.logger.log(
+      `User <${senderId}> is cancelling a friend request to user <${receiverUsername}>`,
+    );
+    const receiver = await this.prisma.user.findUnique({
+      where: { username: receiverUsername },
+    });
+
+    if (!receiver) {
+      throw new NotFoundException(`User <${receiverUsername}> not found`);
+    }
+
+    const friendRequest = await this.prisma.friendRequest.findUnique({
+      where: {
+        senderId_receiverId: { senderId, receiverId: receiver.id },
+      },
+    });
+
+    if (!friendRequest) {
+      throw new NotFoundException(
+        `Friend request from <${senderId}> to <${receiver.id}> not found`,
+      );
+    }
+
+    if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
+      throw new BadRequestException(
+        `Friend request from <${senderId}> to <${receiver.id}> not found`,
+      );
+    }
+
+    const request = await this.prisma.friendRequest.delete({
+      where: {
+        senderId_receiverId: { senderId, receiverId: receiver.id },
+      },
+    });
+
+    return { message: 'Friend request cancelled', request };
+  }
 }
