@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -8,7 +8,8 @@ import { RouterModule } from '@nestjs/core';
 @Module({
   imports: [
     PrismaModule,
-    FriendsModule, // TODO: This cause a circular dependency, but it's needed for the route to work
+    // FriendsModule, // TODO: This cause a circular dependency, but it's needed for the route to work
+    forwardRef(() => FriendsModule),
     RouterModule.register([
       {
         path: 'users',
