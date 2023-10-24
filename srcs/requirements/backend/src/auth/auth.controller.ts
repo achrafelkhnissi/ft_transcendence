@@ -38,7 +38,7 @@ export class AuthController {
     //   session: req.session,
     // });
 
-    res.redirect('http://localhost:1337/dashboard');
+    res.redirect(`http://localhost:1337/auth/${req['user']['id']}`);
   }
 
   @Get('logout')

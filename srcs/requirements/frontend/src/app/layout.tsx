@@ -1,9 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Sidebar from "./components/layout/sidebar/Sidebar";
-import Header from "./components/layout/header/Header";
-import Head from 'next/head'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Head from "next/head";
+import QueryProvider from "./QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,8 +23,8 @@ export default function RootLayout({
         <meta name="viewport" content="viewport-fit=cover" />
       </Head>
       <body className={`${inter.className} `}>
-        {children}
-        </body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

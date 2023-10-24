@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "@next/font": "^13.5.4"
+    "@next/font": "^13.5.4",
+    "@tanstack/react-query": "^5.0.5",
+    "axios": "^1.5.1",
+    "query": "github:tanstack/react-query"
+  },
+  "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.0.5"
   }
 }
