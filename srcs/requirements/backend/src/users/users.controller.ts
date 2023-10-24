@@ -9,12 +9,17 @@ import {
   Req,
   Logger,
   Query,
+  ParseIntPipe,
+  ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Request } from 'express';
+import { UsernameDto } from './dto/username.dto';
+import { AuthGuard } from '../guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
@@ -27,22 +32,14 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
-    // TODO: createa guard to check if user is logged in
-    // if (!this.usersService.isLoggedIn())
-    if (!req.user) {
-      return { message: 'You are not authorized to access this resource' };
-    }
+  findAll() {
     return this.usersService.findAll();
   }
 
-  // @Get(':id')
-  // findById(@Param('id') id: string) {
-  //   return this.usersService.findById(+id);
-  // }
-
   @Get(':username')
-  findByEmail(@Param('username') username: string) {
+  findByEmail(@Param(ValidationPipe) params: UsernameDto) {
+    const { username } = params;
+
     return this.usersService.findByUsername(username);
   }
 
@@ -52,7 +49,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.usersService.remove(+id);
   }
 

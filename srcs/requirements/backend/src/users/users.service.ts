@@ -6,7 +6,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserResponseDto } from './dto/userResponse.dto';
 import { Logger } from '@nestjs/common';
 import { FriendshipStatus, User } from '@prisma/client';
 
@@ -55,7 +54,7 @@ export class UsersService {
 
   async findByUsername(username: string): Promise<User> {
     const user: User | null = await this.prisma.user.findUnique({
-      where: { username: username },
+      where: { username },
     });
     if (!user) {
       throw new NotFoundException(`User with username <${username}> not found`);

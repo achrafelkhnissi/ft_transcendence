@@ -1,6 +1,17 @@
-import { Controller, Get, Req, Res, UseGuards, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  UseGuards,
+  Logger,
+  // ValidationPipe,
+} from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
 import { Request, Response } from 'express';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/interfaces/user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -28,17 +39,12 @@ export class AuthController {
   async ftRedirect(@Req() req: Request, @Res() res: Response) {
     console.log('\n\n');
     console.log('--------- AuthController.ftRedirect ---------');
-    console.log('redirecting to http://localhost:3000/api/users');
+    console.log('redirecting to http://localhost:1337/dashboard');
     console.log('\n');
-    // const { user } = req;
-    // console.log({
-    //   function: 'ftRedirect',
-    //   user,
-    //   session: req.session,
-    // });
-    res.redirect('http://localhost:3000/api/users');
+    res.redirect('http://localhost:1337/dashboard');
   }
 
+  @UseGuards(AuthGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     console.log('\n\n');
@@ -55,15 +61,23 @@ export class AuthController {
   }
 
   @Get('whoami')
-  async whoami(@Req() req: Request, @Res() res: Response) {
+  async whoami(
+    @User(/* new ValidationPipe({ validateCustomDecorators: true }) */)
+    user: UserType,
+    @Res() res: Response,
+  ) {
+    // async whoami(@User('username') username: string, @Res() res: Response) {
     console.log('\n\n');
     console.log('--------- AuthController.whoami ---------');
+
     console.log({
       function: 'whoami',
-      user: req.user,
-      session: req.session,
+      user,
+      // username,
     });
+
     console.log('\n');
-    res.send(req.user ? req.user : "You're not logged in");
+    res.send(user ? user : 'not logged in');
+    // res.send(username ? username : 'not logged in');
   }
 }
