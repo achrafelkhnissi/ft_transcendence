@@ -1,79 +1,102 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
 import { FriendsService } from './friends.service';
+import { QueryDto } from '../dto/query.dto';
+import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/interfaces/user.interface';
 
-@UseGuards(AuthGuard)
-@Controller('friends')
+@Controller() // friends is the default route
 export class FriendsController {
+  private readonly logger = new Logger(FriendsController.name);
+
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Post('add')
-  async addFriend(@Body() body: { username: string }) {
-    return this.friendsService.addFriend(body.username);
+  @Get()
+  hello() {
+    return 'Hello from friends controller';
   }
 
-  @Post('remove')
-  async removeFriend(@Body() body: { username: string }) {
-    return this.friendsService.removeFriend(body.username);
-  }
+  // @Get()
+  // list(@Query() query: QueryDto) {
+  //   const { username, id } = query;
 
-  @Post('list')
-  async listFriends() {
-    return this.friendsService.listFriends();
-  }
+  //   // return this.friendsService.listFriendsByIdentifier(username || id);
+  //   return `Listing friends of user <${username || id}>`;
+  // }
 
-  @Post('requests')
-  async listRequests() {
-    return this.friendsService.listRequests();
-  }
+  // @Get('friends/add')
+  // async sendFriendRequest(
+  //   @Query() query: { username: string },
+  //   @User() user: UserType,
+  // ) {
+  //   const senderId = user?.id;
+  //   const receiverUsername = query.username;
 
-  @Post('accept')
-  async acceptRequest(@Body() body: { username: string }) {
-    return this.friendsService.acceptRequest(body.username);
-  }
+  //   this.logger.log(
+  //     `User <${user?.username}> is adding user <${receiverUsername}> as a friend`,
+  //   );
 
-  @Post('reject')
-  async rejectRequest(@Body() body: { username: string }) {
-    return this.friendsService.rejectRequest(body.username);
-  }
+  //   return this.friendsService.sendFriendRequest(senderId, receiverUsername);
+  // }
 
-  @Post('cancel')
-  async cancelRequest(@Body() body: { username: string }) {
-    return this.friendsService.cancelRequest(body.username);
-  }
+  // @Get('friends/accept')
+  // async acceptFriendRequest(
+  //   @Query() query: { username: string },
+  //   // @Req() req: Request,
+  //   @User() user: UserType,
+  // ) {
+  //   const senderId = user?.id;
+  //   const receiverUsername = query.username;
 
-  @Post('search')
-  async searchUser(@Body() body: { username: string }) {
-    return this.friendsService.searchUser(body.username);
-  }
+  //   this.logger.log(
+  //     `User <${user?.username}> is accepting a friend request from user <${receiverUsername}>`,
+  //   );
 
-  @Post('request')
-  async requestFriend(@Body() body: { username: string }) {
-    return this.friendsService.requestFriend(body.username);
-  }
+  //   return this.friendsService.acceptFriendRequest(senderId, receiverUsername);
+  // }
 
-  @Post('block')
-  async blockUser(@Body() body: { username: string }) {
-    return this.friendsService.blockUser(body.username);
-  }
+  // @Get('friends/decline')
+  // async declineFriendRequest(
+  //   @Query() query: { username: string },
+  //   // @Req() req: Request,
+  //   @User() user: UserType,
+  // ) {
+  //   const senderId = user?.id;
+  //   const receiverUsername = query.username;
 
-  @Post('unblock')
-  async unblockUser(@Body() body: { username: string }) {
-    return this.friendsService.unblockUser(body.username);
-  }
+  //   this.logger.log(
+  //     `User <${user?.username}> is rejecting a friend request from user <${receiverUsername}>`,
+  //   );
 
-  @Post('blocklist')
-  async listBlockedUsers() {
-    return this.friendsService.listBlockedUsers();
-  }
+  //   return this.friendsService.declineFriendRequest(senderId, receiverUsername);
+  // }
 
-  @Post('blocked')
-  async isBlocked(@Body() body: { username: string }) {
-    return this.friendsService.isBlocked(body.username);
-  }
+  // @Post('friends/list')
+  // async listFriends(@Body() body: { username: string }) {
+  //   this.logger.log(`Listing friends of user <${body.username}>`);
+  //   return this.friendsService.listFriendsByIdentifier(body?.username);
+  // }
 
-  @Get('non-friends')
-  async listNonFriends() {
-    return this.friendsService.listNonFriends();
-  }
+  // // TODO: Test this after merging with the frontend
+  // // If it works, remove the other listFriends route
+  // @Get('friends/list')
+  // async listFriends2(@User() user: UserType) {
+  //   this.logger.log(`Listing friends of user <${user?.username}>`);
+  //   return this.friendsService.listFriendsByIdentifier(user?.username);
+  // }
+
+  // @Get('friends/remove')
+  // async removeFriend(
+  //   @Query() query: { username: string },
+  //   // @Req() req: Request,
+  //   @User() user: UserType,
+  // ) {
+  //   const userId = user?.id;
+  //   const friendUsername = query.username;
+
+  //   this.logger.log(
+  //     `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
+  //   );
+
+  //   return this.friendsService.removeFriend(userId, friendUsername);
+  // }
 }
