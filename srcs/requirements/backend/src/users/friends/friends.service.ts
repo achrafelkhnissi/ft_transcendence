@@ -135,6 +135,51 @@ export class FriendsService {
     return { message: 'Friend request accepted', request };
   }
 
+  async declineFriendRequest(receiverId: number, senderUsername: string) {
+    this.logger.log(
+      `Rejecting friend request from <${senderUsername}> to <${receiverId}>`,
+    );
+    const sender = await this.prisma.user.findUnique({
+      where: { username: senderUsername },
+    });
+
+    if (!sender) {
+      throw new NotFoundException(`User <${senderUsername}> not found`);
+    }
+
+    const friendRequest = await this.prisma.friendRequest.findUnique({
+      where: {
+        senderId_receiverId: { senderId: sender.id, receiverId },
+      },
+    });
+
+    if (!friendRequest) {
+      throw new NotFoundException(
+        `Friend request from <${senderUsername}> to <${receiverId}> not found`,
+      );
+    }
+
+    if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
+      throw new BadRequestException(
+        `Friend request from <${senderUsername}> to <${receiverId}> not found`,
+      );
+    }
+
+    // TODO: can't accept a friend request that was already accepted
+
+    const request = await this.prisma.friendRequest.update({
+      where: {
+        senderId_receiverId: { senderId: sender.id, receiverId },
+      },
+      data: {
+        friendshipStatus: FriendshipStatus.DECLINED,
+      },
+    });
+
+    // TODO: delete friend request if declined
+
+    return { message: 'Friend request rejected', request };
+  }
   // async listRequests(username: string) {
   //   const user = await this.prisma.user.findUnique({
   //     where: { username: username },
@@ -174,48 +219,6 @@ export class FriendsService {
   //   });
 
   //   return friends;
-  // }
-
-  // async declineFriendRequest(senderId: number, receiverUsername: string) {
-  //   this.logger.log(
-  //     `Rejecting friend request from <${senderId}> to <${receiverUsername}>`,
-  //   );
-  //   const receiver = await this.prisma.user.findUnique({
-  //     where: { username: receiverUsername },
-  //   });
-
-  //   if (!receiver) {
-  //     throw new NotFoundException(`User <${receiverUsername}> not found`);
-  //   }
-
-  //   const friendRequest = await this.prisma.friendRequest.findUnique({
-  //     where: {
-  //       senderId_receiverId: { senderId: senderId, receiverId: receiver.id },
-  //     },
-  //   });
-
-  //   if (!friendRequest) {
-  //     throw new NotFoundException(
-  //       `Friend request from <${senderId}> to <${receiverUsername}> not found`,
-  //     );
-  //   }
-
-  //   if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
-  //     throw new BadRequestException(
-  //       `Friend request from <${senderId}> to <${receiverUsername}> is not pending`,
-  //     );
-  //   }
-
-  //   const request = await this.prisma.friendRequest.update({
-  //     where: {
-  //       senderId_receiverId: { senderId: senderId, receiverId: receiver.id },
-  //     },
-  //     data: {
-  //       friendshipStatus: FriendshipStatus.DECLINED,
-  //     },
-  //   });
-
-  //   return { message: 'Friend request rejected', request };
   // }
 
   // async removeFriend(userId: number, friendUsername: string) {
