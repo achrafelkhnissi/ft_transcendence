@@ -12,6 +12,8 @@ export class FriendsController {
 
   constructor(private readonly friendsService: FriendsService) {}
 
+  // TODO: Change QueryDto to UsernameDto
+
   @Get()
   list(@Query() query: QueryDto, @User() user: UserType) {
     const { username, id } = query;
@@ -56,27 +58,14 @@ export class FriendsController {
     return this.friendsService.declineFriendRequest(receiverId, senderUsername);
   }
 
-  // // TODO: Test this after merging with the frontend
-  // // If it works, remove the other listFriends route
-  // @Get('friends/list')
-  // async listFriends2(@User() user: UserType) {
-  //   this.logger.log(`Listing friends of user <${user?.username}>`);
-  //   return this.friendsService.listFriendsByIdentifier(user?.username);
-  // }
+  @Get('remove')
+  async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: friendUsername } = query;
 
-  // @Get('friends/remove')
-  // async removeFriend(
-  //   @Query() query: { username: string },
-  //   // @Req() req: Request,
-  //   @User() user: UserType,
-  // ) {
-  //   const userId = user?.id;
-  //   const friendUsername = query.username;
+    this.logger.log(
+      `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
+    );
 
-  //   this.logger.log(
-  //     `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
-  //   );
-
-  //   return this.friendsService.removeFriend(userId, friendUsername);
-  // }
+    return this.friendsService.removeFriend(user.id, friendUsername);
+  }
 }

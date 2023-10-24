@@ -180,6 +180,49 @@ export class FriendsService {
 
     return { message: 'Friend request rejected', request };
   }
+
+  async removeFriend(userId: number, friendUsername: string) {
+    this.logger.log(
+      `Removing friend <${friendUsername}> from user <${userId}>`,
+    );
+
+    const friend = await this.prisma.user.findUnique({
+      where: { username: friendUsername },
+    });
+
+    if (!friend) {
+      throw new NotFoundException(`User <${friendUsername}> not found`);
+    }
+
+    console.log({
+      friend,
+    });
+
+    const friendRequests = await this.prisma.friendRequest.deleteMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                senderId: { equals: userId },
+                receiverId: { equals: friend.id },
+              },
+              {
+                senderId: { equals: friend.id },
+                receiverId: { equals: userId },
+              },
+            ],
+          },
+          {
+            friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+          },
+        ],
+      },
+    });
+
+    return { message: 'Friend removed', friendRequests };
+  }
+
   // async listRequests(username: string) {
   //   const user = await this.prisma.user.findUnique({
   //     where: { username: username },
@@ -219,40 +262,5 @@ export class FriendsService {
   //   });
 
   //   return friends;
-  // }
-
-  // async removeFriend(userId: number, friendUsername: string) {
-  //   this.logger.log(
-  //     `Removing friend <${friendUsername}> from user <${userId}>`,
-  //   );
-
-  //   const friend = await this.prisma.user.findUnique({
-  //     where: { username: friendUsername },
-  //   });
-
-  //   if (!friend) {
-  //     throw new NotFoundException(`User <${friendUsername}> not found`);
-  //   }
-
-  //   console.log({
-  //     friend,
-  //   });
-
-  //   const friendRequests = await this.prisma.friendRequest.deleteMany({
-  //     where: {
-  //       OR: [
-  //         {
-  //           senderId: { equals: userId },
-  //           friendshipStatus: FriendshipStatus.ACCEPTED,
-  //         },
-  //         {
-  //           receiverId: { equals: userId },
-  //           friendshipStatus: FriendshipStatus.ACCEPTED,
-  //         },
-  //       ],
-  //     },
-  //   });
-
-  //   return { message: 'Friend removed', friendRequests };
   // }
 }
