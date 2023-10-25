@@ -50,9 +50,10 @@ model User {
 model FriendRequest {
   friendshipStatus FriendshipStatus @default(PENDING)
   senderId         Int
-  user             User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  // TODO: Remove a user and check if all requests are deleted
+  sender           User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId       Int
-  friend           User             @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiver         User             @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
