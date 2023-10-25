@@ -14,7 +14,8 @@ const HELP = {
     'GET /api/users/:username/friends': "Get a user's friends",
   },
   friends: {
-    'GET /api/users/friends': 'Get all friends',
+    'GET /api/users/friends':
+      'Get all friends (add ?username=friend to display other user friends)',
     'GET /api/users/friends/remove?username=friend': 'Remove a friend',
     'GET /api/users/friends/blocked': 'Get all blocked users',
     'GET /api/users/friends/block?username=friend': 'Block a user',
