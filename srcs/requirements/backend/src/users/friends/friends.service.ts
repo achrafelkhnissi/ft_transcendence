@@ -9,7 +9,7 @@ export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
   constructor(
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService, // private readonly prisma: PrismaService, //TODO: Change it to friendRequestService (maybe?)
+    private readonly usersService: UsersService, //TODO: Change it to friendRequestService (maybe?)
   ) {}
 
   async listFriendsByIdentifier(id: string | number): Promise<User[]> {
@@ -264,10 +264,6 @@ export class FriendsService {
     return friendRequests;
   }
 
-  // TODO:
-  // - Should be able to block a user that is not a friend
-  // - Should be able to block a user that is a friend
-  // - Should be able to block a user with a pending friend request (sent or received)
   async blockUser(userId: number, friendUsername: string) {
     this.logger.log(`Blocking user <${friendUsername}> for user <${userId}>`);
     const friend = await this.prisma.user.findUnique({
