@@ -284,6 +284,10 @@ export class FriendsService {
     return friendRequests;
   }
 
+  // TODO:
+  // - Should be able to block a user that is not a friend
+  // - Should be able to block a user that is a friend
+  // - Should be able to block a user with a pending friend request (sent or received)
   async blockUser(userId: number, friendUsername: string) {
     this.logger.log(`Blocking user <${friendUsername}> for user <${userId}>`);
     const friend = await this.prisma.user.findUnique({
@@ -294,27 +298,30 @@ export class FriendsService {
       throw new NotFoundException(`User <${friendUsername}> not found`);
     }
 
-    const friendRequest = await this.prisma.friendRequest.findUnique({
+    const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
-        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+        OR: [
+          { senderId: { equals: userId }, receiverId: { equals: friend.id } },
+          { senderId: { equals: friend.id }, receiverId: { equals: userId } },
+        ],
       },
     });
 
     if (!friendRequest) {
-      throw new NotFoundException(
-        `Friend request from <${friendUsername}> to <${userId}> not found`,
-      );
-    }
-
-    if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
-      throw new BadRequestException(
-        `Friend request from <${friendUsername}> to <${userId}> not found`,
-      );
+      return await this.prisma.friendRequest.create({
+        data: {
+          senderId: userId,
+          receiverId: friend.id,
+          friendshipStatus: FriendshipStatus.BLOCKED,
+        },
+      });
     }
 
     const request = await this.prisma.friendRequest.update({
       where: {
-        senderId_receiverId: { senderId: friend.id, receiverId: userId },
+        // TODO: Maybe adding id field to friendRequest will make this easier, but then we need to remove the unique constraint on senderId_receiverId
+        // senderId_receiverId: { senderId: friend.id, receiverId: userId },
+        id: friendRequest.id,
       },
       data: {
         friendshipStatus: FriendshipStatus.BLOCKED,

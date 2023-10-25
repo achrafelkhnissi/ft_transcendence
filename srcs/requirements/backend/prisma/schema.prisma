@@ -48,6 +48,7 @@ model User {
 // }
 
 model FriendRequest {
+  id               Int              @id @default(autoincrement())
   friendshipStatus FriendshipStatus @default(PENDING)
   senderId         Int
   // TODO: Remove a user and check if all requests are deleted
@@ -57,7 +58,7 @@ model FriendRequest {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
-  @@id([senderId, receiverId])
+  // @@id([senderId, receiverId])
   @@unique([senderId, receiverId])
 }
 
