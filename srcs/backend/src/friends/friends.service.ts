@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UsersService } from '../users.service';
+import { UsersService } from 'src/users/users.service';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { User, FriendshipStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';

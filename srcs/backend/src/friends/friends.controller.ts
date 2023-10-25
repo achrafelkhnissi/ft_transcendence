@@ -1,6 +1,6 @@
 import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { QueryDto } from '../dto/query.dto';
+import { QueryDto } from 'src/users/dto/query.dto';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
@@ -61,7 +61,7 @@ export class FriendsController {
     return this.friendsService.declineFriendRequest(receiverId, senderUsername);
   }
 
-  @Get('unfriend')
+  @Get('remove')
   async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
     const { username: friendUsername } = query;
 
