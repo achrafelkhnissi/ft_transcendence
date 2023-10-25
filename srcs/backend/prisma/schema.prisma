@@ -32,9 +32,24 @@ model User {
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
 
+  notifications Notification[]
+
   // achievements UserAchievement[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  content     String
+  read        Boolean          @default(false)
+  type        NotificationType
+  recipientId Int
+  recipient   User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([recipientId])
 }
 
 // model UserSettings {
@@ -114,15 +129,6 @@ model FriendRequest {
 //   // author      User     @relation("Messages", fields: [authorId], references: [id])
 //   channelId Int
 //   // channel   Channel  @relation("Messages", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Notification {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Notifications", fields: [userId], references: [id])
-//   content   String
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
