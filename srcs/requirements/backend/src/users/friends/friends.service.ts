@@ -305,7 +305,7 @@ export class FriendsService {
 
     const request = await this.prisma.friendRequest.update({
       where: {
-        // TODO: Maybe adding id field to friendRequest will make this easier, but then we need to remove the unique constraint on senderId_receiverId
+        // Maybe adding id field to friendRequest will make this easier, but then we need to remove the unique constraint on senderId_receiverId
         // senderId_receiverId: { senderId: friend.id, receiverId: userId },
         id: friendRequest.id,
       },
