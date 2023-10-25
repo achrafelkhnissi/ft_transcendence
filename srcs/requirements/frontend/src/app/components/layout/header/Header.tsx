@@ -3,9 +3,6 @@
 import LgSearchInput from "./LgSearchInput";
 import Notifications from "./Notifications";
 import Avatar from "../../Avatar";
-import Logo from "../../logos/ PongTimeLogo";
-import { useState, useEffect } from "react";
-// import SmSearchInput from "./SmSearchinput";
 
 const Header = () => {
   return (

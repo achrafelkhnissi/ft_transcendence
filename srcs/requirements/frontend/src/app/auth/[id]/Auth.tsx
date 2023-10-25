@@ -1,6 +1,7 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 interface Props {
@@ -8,13 +9,15 @@ interface Props {
 }
 
 const Auth: React.FC<Props> = ({ id }) => {
+  const queryClient = new QueryClient();
+  const router = useRouter();
   console.log(id);
   useEffect(() => {
     const strodeId = localStorage.getItem("id");
     if (!strodeId) localStorage.setItem("id", id);
-  }, []);
-
-  const { data, isLoading, isError } = useQuery({
+  }, [id]);
+  
+  queryClient.prefetchQuery({
     queryKey: ["user", id],
     queryFn: async () => {
       const { data } = await axios.get(
@@ -27,9 +30,10 @@ const Auth: React.FC<Props> = ({ id }) => {
     },
   });
 
-  if (isLoading) {
-    return <div className="flex justify-center">Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className="flex justify-center">Loading...</div>;
+  // }
+  router.push('http://localhost:1337/dashboard')
   return (
     <div className=" text-white flex justify-center ">
       <div>{id}</div>
