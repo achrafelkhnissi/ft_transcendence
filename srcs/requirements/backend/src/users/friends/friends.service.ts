@@ -165,18 +165,11 @@ export class FriendsService {
       );
     }
 
-    // TODO: can't accept a friend request that was already accepted
-
-    const request = await this.prisma.friendRequest.update({
+    const request = await this.prisma.friendRequest.delete({
       where: {
         senderId_receiverId: { senderId: sender.id, receiverId },
       },
-      data: {
-        friendshipStatus: FriendshipStatus.DECLINED,
-      },
     });
-
-    // TODO: delete friend request if declined
 
     return { message: 'Friend request rejected', request };
   }
