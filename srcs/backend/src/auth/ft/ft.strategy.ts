@@ -20,6 +20,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const { username } = profile;
     const email = profile.emails[0].value;
     const url = process.env.FT_PROFILE_URL + username;
+
     console.log('\n\n');
     console.log('--------- FtStrategy.validate ---------');
     console.log({
@@ -27,15 +28,27 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       email,
       url,
     });
+
+    console.log({
+      profile,
+    });
+
     let user;
     try {
       user = await this.usersService.findByEmail(email);
     } catch (error) {
       this.logger.warn(error.message);
+
+      const avatar = await this.usersService.getAvatar(
+        'https://api.intra.42.fr/v2/me',
+        accessToken,
+      );
+
       user = await this.usersService.create({
         email,
         username,
         url,
+        avatar,
       });
       user.justCreated = true;
     }
