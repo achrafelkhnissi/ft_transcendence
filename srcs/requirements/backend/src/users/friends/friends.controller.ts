@@ -5,6 +5,9 @@ import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
 
+// TODO: Put the endpoints related to friends in a /friends route
+// TODO: Put the endpoints related to friend requests in a /requests route
+// TODO: Put the endpoints related to blocked users in /users/* route
 @UseGuards(AuthGuard)
 @Controller()
 export class FriendsController {
