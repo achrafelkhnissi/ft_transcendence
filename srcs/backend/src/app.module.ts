@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { FriendsModule } from './friends/friends.module';
     PrismaModule,
     AuthModule,
     FriendsModule,
+    FriendRequestsModule,
     RouterModule.register([
       {
         path: 'users',
@@ -21,6 +23,12 @@ import { FriendsModule } from './friends/friends.module';
           {
             path: 'friends',
             module: FriendsModule,
+            children: [
+              {
+                path: 'requests',
+                module: FriendRequestsModule,
+              },
+            ],
           },
         ],
       },

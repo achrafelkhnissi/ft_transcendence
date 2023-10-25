@@ -24,43 +24,6 @@ export class FriendsController {
     return this.friendsService.listFriendsByIdentifier(identifier);
   }
 
-  // TODO: Adding an existing friend should return an error
-  @Get('add')
-  async sendFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const senderId = user?.id;
-    const { username: receiverUsername } = query;
-
-    this.logger.log(
-      `User <${user?.username}> is adding user ${receiverUsername} as a friend`,
-    );
-
-    return this.friendsService.sendFriendRequest(senderId, receiverUsername);
-  }
-
-  @Get('accept')
-  async acceptFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: senderUsername } = query;
-    const receiverId = user?.id;
-
-    this.logger.log(
-      `User <${user?.username}> is accepting a friend request from user <${receiverId}>`,
-    );
-
-    return this.friendsService.acceptFriendRequest(receiverId, senderUsername);
-  }
-
-  @Get('decline')
-  async declineFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: senderUsername } = query;
-    const receiverId = user?.id;
-
-    this.logger.log(
-      `User <${user?.username}> is declining a friend request from user <${receiverId}>`,
-    );
-
-    return this.friendsService.declineFriendRequest(receiverId, senderUsername);
-  }
-
   @Get('remove')
   async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
     const { username: friendUsername } = query;
@@ -70,30 +33,6 @@ export class FriendsController {
     );
 
     return this.friendsService.removeFriend(user.id, friendUsername);
-  }
-
-  @Get('requests/sent')
-  async listSentFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing sent friend requests for user <${user?.id}>`);
-    return this.friendsService.listSentFriendRequests(user.id);
-  }
-
-  @Get('requests/received')
-  async listReceivedFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing received friend requests for user <${user?.id}>`);
-    return this.friendsService.listReceivedFriendRequests(user.id);
-  }
-
-  @Get('request/cancel')
-  async cancelFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: receiverUsername } = query;
-    const senderId = user?.id;
-
-    this.logger.log(
-      `User <${user?.username}> is cancelling a friend request to user <${receiverUsername}>`,
-    );
-
-    return this.friendsService.cancelFriendRequest(senderId, receiverUsername);
   }
 
   @Get('blocked')
