@@ -16,6 +16,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthModule,
     FriendsModule,
     FriendRequestsModule,
+    NotificationsModule,
     RouterModule.register([
       {
         path: 'users',
@@ -34,7 +35,6 @@ import { NotificationsModule } from './notifications/notifications.module';
         ],
       },
     ]),
-    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
