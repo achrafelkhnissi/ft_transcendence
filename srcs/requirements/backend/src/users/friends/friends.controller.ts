@@ -69,18 +69,19 @@ export class FriendsController {
     return this.friendsService.removeFriend(user.id, friendUsername);
   }
 
-  // TODO: Check the bellow endpoints for unseen errors;
-  @Get('pending')
-  async listPendingFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing pending friend requests for user <${user?.id}>`);
-    return this.friendsService.listPendingFriendRequests(user.id);
-  }
-
-  @Get('sent')
+  @Get('requests/sent')
   async listSentFriendRequests(@User() user: UserType) {
     this.logger.log(`Listing sent friend requests for user <${user?.id}>`);
     return this.friendsService.listSentFriendRequests(user.id);
   }
+
+  @Get('requests/received')
+  async listReceivedFriendRequests(@User() user: UserType) {
+    this.logger.log(`Listing received friend requests for user <${user?.id}>`);
+    return this.friendsService.listReceivedFriendRequests(user.id);
+  }
+
+  // TODO: Check the bellow endpoints for unseen errors;
 
   @Get('blocked')
   async listBlockedUsers(@User() user: UserType) {

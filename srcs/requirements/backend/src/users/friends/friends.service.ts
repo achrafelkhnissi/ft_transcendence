@@ -223,20 +223,13 @@ export class FriendsService {
     return { message: 'Friend removed', friendRequests };
   }
 
-  async listPendingFriendRequests(userId: number) {
-    this.logger.log(`Listing pending friend requests for user <${userId}>`);
+  async listSentFriendRequests(userId: number) {
+    this.logger.log(`Listing sent friend requests for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         AND: [
           {
-            OR: [
-              {
-                senderId: { equals: userId },
-              },
-              {
-                receiverId: { equals: userId },
-              },
-            ],
+            senderId: { equals: userId },
           },
           {
             friendshipStatus: { equals: FriendshipStatus.PENDING },
@@ -248,13 +241,13 @@ export class FriendsService {
     return friendRequests;
   }
 
-  async listSentFriendRequests(userId: number) {
-    this.logger.log(`Listing sent friend requests for user <${userId}>`);
+  async listReceivedFriendRequests(userId: number) {
+    this.logger.log(`Listing received friend requests for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         AND: [
           {
-            senderId: { equals: userId },
+            receiverId: { equals: userId },
           },
           {
             friendshipStatus: { equals: FriendshipStatus.PENDING },
