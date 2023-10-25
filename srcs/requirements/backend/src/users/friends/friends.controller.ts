@@ -81,6 +81,18 @@ export class FriendsController {
     return this.friendsService.listReceivedFriendRequests(user.id);
   }
 
+  @Get('request/cancel')
+  async cancelFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
+    const { username: receiverUsername } = query;
+    const senderId = user?.id;
+
+    this.logger.log(
+      `User <${user?.username}> is cancelling a friend request to user <${receiverUsername}>`,
+    );
+
+    return this.friendsService.cancelFriendRequest(senderId, receiverUsername);
+  }
+
   @Get('blocked')
   async listBlockedUsers(@User() user: UserType) {
     this.logger.log(`Listing blocked users for user <${user?.id}>`);
@@ -98,7 +110,6 @@ export class FriendsController {
     return this.friendsService.blockUser(user.id, blockedUsername);
   }
 
-  // TODO: Check the bellow endpoints for unseen errors;
   @Get('unblock')
   async unblockUser(@Query() query: QueryDto, @User() user: UserType) {
     const { username: blockedUsername } = query;
@@ -108,23 +119,5 @@ export class FriendsController {
     );
 
     return this.friendsService.unblockUser(user.id, blockedUsername);
-  }
-
-  @Get('requests')
-  async listFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing friend requests for user <${user?.id}>`);
-    return this.friendsService.listFriendRequests(user.id);
-  }
-
-  @Get('cancel')
-  async cancelFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: receiverUsername } = query;
-    const senderId = user?.id;
-
-    this.logger.log(
-      `User <${user?.username}> is cancelling a friend request to user <${receiverUsername}>`,
-    );
-
-    return this.friendsService.cancelFriendRequest(senderId, receiverUsername);
   }
 }

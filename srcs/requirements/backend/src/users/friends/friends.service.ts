@@ -388,40 +388,11 @@ export class FriendsService {
         AND: [
           {
             OR: [
-              {
-                senderId: { equals: userId },
-                friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-              },
-              {
-                receiverId: { equals: userId },
-                friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-              },
+              { senderId: { equals: userId } },
+              { receiverId: { equals: userId } },
             ],
           },
-        ],
-      },
-    });
-
-    return friendRequests;
-  }
-
-  async listFriendRequests(userId: number) {
-    this.logger.log(`Listing friend requests for user <${userId}>`);
-    const friendRequests = await this.prisma.friendRequest.findMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              {
-                senderId: { equals: userId },
-                friendshipStatus: { equals: FriendshipStatus.PENDING },
-              },
-              {
-                receiverId: { equals: userId },
-                friendshipStatus: { equals: FriendshipStatus.PENDING },
-              },
-            ],
-          },
+          { friendshipStatus: { equals: FriendshipStatus.ACCEPTED } },
         ],
       },
     });
