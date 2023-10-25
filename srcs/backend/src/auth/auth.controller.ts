@@ -17,15 +17,6 @@ import { UserType } from 'src/interfaces/user.interface';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  @Get()
-  async index() {
-    console.log('\n\n');
-    console.log('--------- AuthController.index ---------');
-    console.log('\n');
-
-    return 'AuthController.index';
-  }
-
   @Get('ft')
   @UseGuards(FtAuthGuard)
   async ft() {
