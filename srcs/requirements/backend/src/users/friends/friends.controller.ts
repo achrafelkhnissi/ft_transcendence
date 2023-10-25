@@ -81,8 +81,6 @@ export class FriendsController {
     return this.friendsService.listReceivedFriendRequests(user.id);
   }
 
-  // TODO: Check the bellow endpoints for unseen errors;
-
   @Get('blocked')
   async listBlockedUsers(@User() user: UserType) {
     this.logger.log(`Listing blocked users for user <${user?.id}>`);
@@ -100,6 +98,7 @@ export class FriendsController {
     return this.friendsService.blockUser(user.id, blockedUsername);
   }
 
+  // TODO: Check the bellow endpoints for unseen errors;
   @Get('unblock')
   async unblockUser(@Query() query: QueryDto, @User() user: UserType) {
     const { username: blockedUsername } = query;

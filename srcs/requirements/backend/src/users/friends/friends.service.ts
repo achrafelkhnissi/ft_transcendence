@@ -259,6 +259,7 @@ export class FriendsService {
     return friendRequests;
   }
 
+  // TODO: Should only be able to list blocked users where userId === senderId (which means that the user blocked the other user)
   async listBlockedUsers(userId: number) {
     this.logger.log(`Listing blocked users for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
@@ -317,6 +318,12 @@ export class FriendsService {
       });
     }
 
+    if (friendRequest.friendshipStatus === FriendshipStatus.BLOCKED) {
+      throw new BadRequestException(
+        `Friend request from <${friendUsername}> to <${userId}> not found or already blocked`,
+      );
+    }
+
     const request = await this.prisma.friendRequest.update({
       where: {
         // TODO: Maybe adding id field to friendRequest will make this easier, but then we need to remove the unique constraint on senderId_receiverId
@@ -324,6 +331,9 @@ export class FriendsService {
         id: friendRequest.id,
       },
       data: {
+        //To mark who blocked who, we need to update the senderId and receiverId
+        senderId: userId,
+        receiverId: friend.id,
         friendshipStatus: FriendshipStatus.BLOCKED,
       },
     });
