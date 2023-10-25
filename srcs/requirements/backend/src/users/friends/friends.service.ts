@@ -252,26 +252,12 @@ export class FriendsService {
     return friendRequests;
   }
 
-  // TODO: Should only be able to list blocked users where userId === senderId (which means that the user blocked the other user)
   async listBlockedUsers(userId: number) {
     this.logger.log(`Listing blocked users for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
-        AND: [
-          {
-            OR: [
-              {
-                senderId: { equals: userId },
-              },
-              {
-                receiverId: { equals: userId },
-              },
-            ],
-          },
-          {
-            friendshipStatus: { equals: FriendshipStatus.BLOCKED },
-          },
-        ],
+        senderId: { equals: userId },
+        friendshipStatus: { equals: FriendshipStatus.BLOCKED },
       },
     });
 
