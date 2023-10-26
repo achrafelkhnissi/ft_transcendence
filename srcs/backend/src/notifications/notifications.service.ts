@@ -15,6 +15,16 @@ export class NotificationsService {
     });
   }
 
+  findByQuery(query: UpdateNotificationDto) {
+    if (query) {
+      return this.prismaService.notification.findMany({
+        where: query,
+      });
+    }
+
+    return this.prismaService.notification.findMany();
+  }
+
   update(id: number, updateNotificationDto: UpdateNotificationDto) {
     return this.prismaService.notification.update({
       where: { id },
@@ -22,19 +32,9 @@ export class NotificationsService {
     });
   }
 
-  findAll() {
-    return this.prismaService.notification.findMany();
-  }
-
   findOne(id: number) {
     return this.prismaService.notification.findUnique({
       where: { id },
-    });
-  }
-
-  findByRecipientId(recipientId: number) {
-    return this.prismaService.notification.findMany({
-      where: { recipientId },
     });
   }
 

@@ -36,7 +36,8 @@ const HELP = {
   },
   Notifications: {
     'POST /api/users/notifications': 'Create a notification',
-    'GET /api/users/notifications': 'Get all notifications',
+    'GET /api/users/notifications?key=value&..':
+      'Get all notifications (add ?key=value&.. to filter)',
     'GET /api/users/notifications/:id': 'Get a notification by id',
     'GET /api/users/notifications/:id/read': 'Mark a notification as read',
     'GET /api/users/notifications/:id/unread': 'Mark a notification as unread',

@@ -10,6 +10,7 @@ import {
   UseGuards,
   ParseIntPipe,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -17,6 +18,7 @@ import { Observable, interval, map } from 'rxjs';
 import { Notification, NotificationType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 // @UseGuards(AuthGuard)
 @Controller()
@@ -41,8 +43,8 @@ export class NotificationsController {
   }
 
   @Get()
-  findAll() {
-    return this.notificationsService.findAll();
+  findByQuery(@Query() query: UpdateNotificationDto) {
+    return this.notificationsService.findByQuery(query);
   }
 
   @Get(':id')
