@@ -9,6 +9,7 @@ import {
   Logger,
   UseGuards,
   ParseIntPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -47,6 +48,32 @@ export class NotificationsController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.notificationsService.findOne(id);
+  }
+
+  @Get(':id/read')
+  async read(@Param('id', ParseIntPipe) id: number) {
+    const notification = await this.notificationsService.findOne(id);
+
+    if (!notification) {
+      throw new NotFoundException(`Notification with id <${id}> not found`);
+    }
+
+    return this.notificationsService.update(id, {
+      read: true,
+    });
+  }
+
+  @Get(':id/unread')
+  async unread(@Param('id', ParseIntPipe) id: number) {
+    const notification = await this.notificationsService.findOne(id);
+
+    if (!notification) {
+      throw new NotFoundException(`Notification with id <${id}> not found`);
+    }
+
+    return this.notificationsService.update(id, {
+      read: false,
+    });
   }
 
   @Delete(':id')

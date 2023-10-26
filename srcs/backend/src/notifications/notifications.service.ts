@@ -1,6 +1,7 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -11,6 +12,13 @@ export class NotificationsService {
   create(createNotificationDto: CreateNotificationDto) {
     return this.prismaService.notification.create({
       data: createNotificationDto,
+    });
+  }
+
+  update(id: number, updateNotificationDto: UpdateNotificationDto) {
+    return this.prismaService.notification.update({
+      where: { id },
+      data: updateNotificationDto,
     });
   }
 
