@@ -1,14 +1,9 @@
-"use client";
 
 import Logo_42 from "./components/logos/Logo_42";
 import Back from "./components/Background";
 import { pixelifySans, roboto } from "./fonts";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-
+import Link from "next/link";
 export default function Home() {
-  const router = useRouter();
-
   // const res = axios
   //   .get("http://localhost:3000/api/auth/whoami")
   //   .then((response) => {
@@ -55,8 +50,10 @@ export default function Home() {
         >
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
-        <button
-          className={` flex m-auto  
+        <Link
+        href={"http://localhost:1337/dashboard"}>
+          <button
+            className={` flex m-auto  
           px-5 py-3 
           bg-transparent  
           border-2 
@@ -73,14 +70,11 @@ export default function Home() {
           active:shadow-blue-300/10 
           
           `}
-          onClick={() => {
-            // router.push("/dashboard");
-            router.push("http://localhost:3000/api/auth/ft");
-          }}
-        >
-          <span>Login with intra</span>
-          <Logo_42 color="#93C4FD" width="26px" height="26px" />
-        </button>
+          >
+            <span>Login with intra</span>
+            <Logo_42 color="#93C4FD" width="26px" height="26px" />
+          </button>
+        </Link>
       </div>
     </div>
   );

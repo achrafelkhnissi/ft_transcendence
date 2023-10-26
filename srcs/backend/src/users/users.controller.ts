@@ -26,12 +26,12 @@ export class UsersController {
   findAll(@Req() req: Request) {
     // TODO: createa guard to check if user is logged in
     // if (!this.usersService.isLoggedIn())
-    if (!req.user) {
-      return { message: 'You are not authorized to access this resource' };
-    }
+    // if (!req.user) {
+    //   return { message: 'You are not authorized to access this resource' };
+    // }
     return this.usersService.findAll();
   }
-
+ 
   // @Get(':id')
   // findById(@Param('id') id: string) {
   //   return this.usersService.findById(+id);
