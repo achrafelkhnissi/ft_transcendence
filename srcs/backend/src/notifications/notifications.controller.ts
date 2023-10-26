@@ -3,20 +3,22 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Sse,
   Logger,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Observable, interval, map } from 'rxjs';
 import { Notification, NotificationType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
-@Controller('notifications')
+// @UseGuards(AuthGuard)
+@Controller()
 export class NotificationsController {
   private readonly logger = new Logger(NotificationsController.name);
 
@@ -30,6 +32,10 @@ export class NotificationsController {
 
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
+    console.log({
+      createNotificationDto,
+    });
+
     return this.notificationsService.create(createNotificationDto);
   }
 
@@ -39,20 +45,12 @@ export class NotificationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateNotificationDto: UpdateNotificationDto,
-  ) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.notificationsService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.notificationsService.remove(+id);
   }
 }

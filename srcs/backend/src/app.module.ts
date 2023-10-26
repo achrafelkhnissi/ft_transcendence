@@ -32,6 +32,10 @@ import { NotificationsModule } from './notifications/notifications.module';
               },
             ],
           },
+          {
+            path: 'notifications',
+            module: NotificationsModule,
+          },
         ],
       },
     ]),

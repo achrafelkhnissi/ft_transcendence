@@ -40,14 +40,15 @@ model User {
 }
 
 model Notification {
-  id          Int              @id @default(autoincrement())
-  content     String
-  read        Boolean          @default(false)
-  type        NotificationType
-  recipientId Int
-  recipient   User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id              Int              @id @default(autoincrement())
+  content         String
+  read            Boolean          @default(false)
+  type            NotificationType
+  recipientId     Int
+  recipient       User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  friendRequestId Int?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([recipientId])
 }
