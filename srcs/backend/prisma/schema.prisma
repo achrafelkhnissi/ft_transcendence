@@ -206,7 +206,7 @@ enum ChannelType {
 }
 
 enum NotificationType {
-  FRIENDREQUEST
+  FRIEND_REQUEST
   MATCH
   MESSAGE
   OTHER
