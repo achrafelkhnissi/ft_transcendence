@@ -2,9 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from '@prisma/client';
-import { UserResponseDto } from './dto/userResponse.dto';
 import { Logger } from '@nestjs/common';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +12,7 @@ export class UsersService {
   // TODO: Check if 'readonly' is needed
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
+  create(createUserDto: CreateUserDto): Promise<User> | null {
     return this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -25,8 +24,8 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  async findById(id: number): Promise<User> {
-    const user = await this.prisma.user.findUnique({
+  async findById(id: number): Promise<User> | null {
+    const user: User | null = await this.prisma.user.findUnique({
       where: { id: id },
     });
     if (!user) {
@@ -35,28 +34,24 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<User> {
-    // TODO: Check if 'Promise<User | null>' is needed
-    // return this.prisma.user.findUnique({
-    //   where: { email: email },
-    // });
+  async findByEmail(email: string): Promise<User> | null {
     const user: User | null = await this.prisma.user.findUnique({
       where: { email: email },
     });
     if (!user) {
       throw new NotFoundException(`User with email <${email}> not found`);
     }
-    return user || null;
+    return user;
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<User> | null {
     const user: User | null = await this.prisma.user.findUnique({
-      where: { username: username },
+      where: { username },
     });
     if (!user) {
       throw new NotFoundException(`User with username <${username}> not found`);
     }
-    return user || null;
+    return user;
     // return new UserResponseDto(user);
   }
 

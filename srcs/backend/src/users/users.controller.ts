@@ -6,15 +6,23 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
+  Logger,
+  Query,
+  ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Request } from 'express';
+import { AuthGuard } from '../guards/auth.guard';
+import { QueryDto } from './dto/query.dto';
+import { UsernameDto } from './dto/username.dto';
 
-@Controller('users')
+@UseGuards(AuthGuard)
+@Controller()
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
@@ -23,6 +31,7 @@ export class UsersController {
   }
 
   @Get()
+<<<<<<< HEAD:srcs/backend/src/users/users.controller.ts
   findAll(@Req() req: Request) {
     // TODO: createa guard to check if user is logged in
     // if (!this.usersService.isLoggedIn())
@@ -36,10 +45,20 @@ export class UsersController {
   // findById(@Param('id') id: string) {
   //   return this.usersService.findById(+id);
   // }
+=======
+  find(@Query() query: QueryDto) {
+    const { username, id } = query;
 
-  @Get(':username')
-  findByEmail(@Param('username') username: string) {
-    return this.usersService.findByUsername(username);
+    if (username) {
+      return this.usersService.findByUsername(username);
+    }
+
+    if (id) {
+      return this.usersService.findById(id);
+    }
+>>>>>>> origin/backend:srcs/requirements/backend/src/users/users.controller.ts
+
+    return this.usersService.findAll();
   }
 
   @Patch(':id')
@@ -48,7 +67,14 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @Get(':username/friends')
+  getFriends(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return `This action returns all friends of ${username}`;
   }
 }

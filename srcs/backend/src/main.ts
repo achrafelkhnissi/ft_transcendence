@@ -6,9 +6,23 @@ import * as session from 'express-session';
 import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: `http://localhost:${process.env.NEXT_PORT || 1337}`,
+    methods: ['GET', 'POST'], // we only need these two methods for our project TODO: To be tested
+    credentials: true,
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

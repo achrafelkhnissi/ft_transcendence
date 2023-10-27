@@ -1,12 +1,13 @@
+import { FaUserAlt } from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Avatar = () => {
+  const router = useRouter();
 
   return (
-    <Link href={"/user-profile"}>
-      <div
-        className={`h-[2rem] 
+    <div
+      className={`h-[2rem] 
     w-[2rem] 
     bg-gray-400/60
      rounded-lg 
@@ -18,16 +19,16 @@ const Avatar = () => {
      outline-offset-[1.5px]
      outline-gray-400/60
      cursor-pointer`}
-      >
-        <Image
-          src="/images/fathjami.jpeg"
-          alt="user"
-          width={40}
-          height={40}
-          className="rounded-lg"
-        />
-      </div>
-    </Link>
+     onClick={() => router.push("/user-profile")}
+    >
+      <Image
+        src="/images/fathjami.jpeg"
+        alt="user"
+        width={40}
+        height={40}
+        className="rounded-lg"
+      />
+    </div>
   );
 };
 

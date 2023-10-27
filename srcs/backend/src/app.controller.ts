@@ -10,11 +10,6 @@ export class AppController {
     return this.appService.getHelp();
   }
 
-  @Get('hello')
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
   @Get('authors')
   getAuthors(): object {
     return this.appService.getAuthors();

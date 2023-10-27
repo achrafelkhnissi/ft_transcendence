@@ -15,7 +15,7 @@ services:
 
   backend:
     build:
-      context: backend/
+      context: ./backend/
       dockerfile: Dockerfile # dockerfiles/${NODE_ENV}.Dockerfile
     container_name: backend
     restart: always
@@ -40,7 +40,7 @@ services:
 
   frontend:
     build:
-      context: frontend/
+      context: ./frontend/
       dockerfile: Dockerfile
     container_name: frontend
     restart: always
@@ -51,8 +51,8 @@ services:
       - ./frontend:/app # for hot reloading
     networks:
       - local_net
-    # depends_on:
-    #   - backend
+    depends_on:
+      - backend
     command:
       - sh
       - -c

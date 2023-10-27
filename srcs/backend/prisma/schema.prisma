@@ -18,23 +18,38 @@ model Session {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String?  @unique
-  email     String   @unique
-  avatar    String?  @default("https://i.imgur.com/6VBx3io.png")
-  url       String   @unique
-  status    Status?  @default(ONLINE)
-  // twoFactorEnabled Boolean  @default(false)
-  // twoFactorSecret  String?  @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                     Int             @id @default(autoincrement())
+  username               String?         @unique
+  email                  String          @unique
+  avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
+  url                    String          @unique
+  status                 Status?         @default(ONLINE)
+  twoFactorEnabled       Boolean         @default(false)
+  twoFactorSecret        String?         @default("")
+  experiencePoints       Int             @default(0)
+  level                  Int             @default(0)
   // settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
-  friends                Int[] // TODO: update this everytime a friend request is accepted or deleted or when a user is deleted
+
+  notifications Notification[]
 
   // achievements UserAchievement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  content     String
+  read        Boolean          @default(false)
+  type        NotificationType
+  recipientId Int
+  recipient   User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([recipientId])
 }
 
 // model UserSettings {
@@ -48,16 +63,18 @@ model User {
 // }
 
 model FriendRequest {
+  id               Int              @id @default(autoincrement())
   friendshipStatus FriendshipStatus @default(PENDING)
-  userId           Int
-  user             User             @relation("SentFriendRequests", fields: [userId], references: [id], onDelete: Cascade)
-  friendId         Int
-  friend           User             @relation("ReceivedFriendRequests", fields: [friendId], references: [id], onDelete: Cascade)
+  senderId         Int
+  // TODO: Remove a user and check if all requests are deleted
+  sender           User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId       Int
+  receiver         User             @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
-  @@id([userId, friendId])
-  @@unique([userId, friendId])
+  // @@id([senderId, receiverId])
+  @@unique([senderId, receiverId])
 }
 
 // model Game {
@@ -112,15 +129,6 @@ model FriendRequest {
 //   // author      User     @relation("Messages", fields: [authorId], references: [id])
 //   channelId Int
 //   // channel   Channel  @relation("Messages", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Notification {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Notifications", fields: [userId], references: [id])
-//   content   String
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
