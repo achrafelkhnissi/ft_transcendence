@@ -51,7 +51,7 @@ export default function Home() {
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
         <Link
-        href={"http://localhost:1337/dashboard"}>
+        href={"http://localhost:3000/api/auth/ft"}>
           <button
             className={` flex m-auto  
           px-5 py-3 
