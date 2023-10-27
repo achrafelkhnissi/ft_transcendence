@@ -1,6 +1,6 @@
-import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
-import PopularRooms from "@/app/components/dashboard/PopularRooms";
-import TopPlayers from "@/app/components/dashboard/TopPlayers";
+import DashboardHeader from "../../../components/dashboard/DashboardHeader";
+import PopularRooms from "../../../components/dashboard/PopularRooms";
+import TopPlayers from "../../../components/dashboard/TopPlayers";
 
 const Home = () => {
   return (

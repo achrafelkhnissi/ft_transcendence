@@ -1,8 +1,8 @@
 "use client";
 
-import Logo_42 from "./components/logos/Logo_42";
-import Back from "./components/Background";
-import { pixelifySans, roboto } from "./fonts";
+import Logo_42 from "../components/logos/Logo_42";
+import Back from "../components/Background";
+import { pixelifySans, roboto } from "../fonts";
 import Link from "next/link";
 import { PureComponent, useState } from "react";
 

@@ -1,7 +1,7 @@
-import UserInfo from "@/app/components/userProfile/UserInfo";
-import GameHistory from "@/app/components/userProfile/GameHistory";
-import Achievements from "@/app/components/userProfile/Achievements";
-import Friends from "@/app/components/userProfile/Friends";
+import UserInfo from "../../../components/userProfile/UserInfo";
+import GameHistory from "../../../components/userProfile/GameHistory";
+import Achievements from "../../../components/userProfile/Achievements";
+import Friends from "../../../components/userProfile/Friends";
 
 const Home = () => {
   return (
