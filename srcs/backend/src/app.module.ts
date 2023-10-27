@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     AuthModule,
     FriendsModule,
     FriendRequestsModule,
+    NotificationsModule,
     RouterModule.register([
       {
         path: 'users',
@@ -29,6 +31,10 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
                 module: FriendRequestsModule,
               },
             ],
+          },
+          {
+            path: 'notifications',
+            module: NotificationsModule,
           },
         ],
       },

@@ -65,4 +65,23 @@ export class UsersService {
       where: { id: id },
     });
   }
+
+  async getAvatar(url: string, accessToken: string): Promise<string> {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await res.json();
+
+    console.log({ data });
+
+    console.log({
+      image: data.image,
+    });
+
+    const avatar = data.image.link;
+    return avatar;
+  }
 }

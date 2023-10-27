@@ -4,14 +4,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { FriendshipStatus } from '@prisma/client';
+import { FriendshipStatus, NotificationType } from '@prisma/client';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+//TODO: Test notifications for friend requests
 @Injectable()
 export class FriendRequestsService {
   private readonly logger = new Logger(FriendRequestsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notification: NotificationsService,
+  ) {}
 
   async sendFriendRequest(senderId: number, receiverUsername: string) {
     this.logger.log(
@@ -46,6 +51,14 @@ export class FriendRequestsService {
         friendshipStatus: FriendshipStatus.PENDING,
       },
     });
+
+    await this.notification.create({
+      content: `You have a friend request from <${sender.username}>`,
+      recipientId: receiver.id,
+      type: NotificationType.FRIEND_REQUEST,
+      friendRequestId: request.id,
+    });
+    this.logger.log(`Friend request sent to <${receiverUsername}>`);
 
     return { message: 'Friend request sent', request };
   }
@@ -90,6 +103,14 @@ export class FriendRequestsService {
         friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
+
+    await this.notification.create({
+      content: `You are now friends with <${sender.username}>`,
+      recipientId: receiverId,
+      type: NotificationType.OTHER, // TODO: Change this to FRIEND_REQUEST_ACCEPTED (MAYBE)
+      friendRequestId: request.id,
+    });
+    this.logger.log(`Friend request accepted from <${senderUsername}>`);
 
     return { message: 'Friend request accepted', request };
   }
