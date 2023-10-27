@@ -31,21 +31,6 @@ export class UsersController {
   }
 
   @Get()
-<<<<<<< HEAD:srcs/backend/src/users/users.controller.ts
-  findAll(@Req() req: Request) {
-    // TODO: createa guard to check if user is logged in
-    // if (!this.usersService.isLoggedIn())
-    // if (!req.user) {
-    //   return { message: 'You are not authorized to access this resource' };
-    // }
-    return this.usersService.findAll();
-  }
- 
-  // @Get(':id')
-  // findById(@Param('id') id: string) {
-  //   return this.usersService.findById(+id);
-  // }
-=======
   find(@Query() query: QueryDto) {
     const { username, id } = query;
 
@@ -56,7 +41,6 @@ export class UsersController {
     if (id) {
       return this.usersService.findById(id);
     }
->>>>>>> origin/backend:srcs/requirements/backend/src/users/users.controller.ts
 
     return this.usersService.findAll();
   }
