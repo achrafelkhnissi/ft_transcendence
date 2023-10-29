@@ -1,5 +1,4 @@
 import axios from "axios";
-import Image from "next/image";
 
 async function getCurrentUser() {
 
