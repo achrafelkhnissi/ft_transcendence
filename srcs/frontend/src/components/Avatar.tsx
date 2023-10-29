@@ -19,7 +19,7 @@ const Avatar = () => {
      outline-gray-400/60
      cursor-pointer`}
     >
-      <Link href={"/user-profile"}>
+      <Link href={"/user-profile/me"}>
       <AvatarImage/>
       </Link>
     </div>

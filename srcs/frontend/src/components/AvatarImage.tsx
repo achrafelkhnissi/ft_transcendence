@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import getCurrentUser from "../services/getCurrentUser";
 import Image from "next/image";
@@ -7,7 +6,12 @@ const AvatarImage = () => {
   const [avatar, setAvatar] = useState<null | string>(null);
 
   useEffect(() => {
-    getCurrentUser().then((res) => {setAvatar(res.avatar)});
+
+    getCurrentUser().then((res) => {
+      setAvatar(res.avatar);
+    });
+
+    // return () => abortController.abort();
   }, []);
 
   if (avatar)
