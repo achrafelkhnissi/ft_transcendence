@@ -9,6 +9,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import getUser from "@/services/getUser";
 
+export enum FriendshipStatus {
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  DECLINED = "DECLINED",
+  BLOCKED = "BLOCKED",
+}
+
 export interface User {
   id: string;
   username: string;
@@ -16,6 +23,8 @@ export interface User {
   experiencePoints: number;
   level: number;
   me: boolean;
+  url: string;
+  isFriend: false | FriendshipStatus;
 }
 
 const defaultInfos: User = {
@@ -25,6 +34,8 @@ const defaultInfos: User = {
   experiencePoints: 0,
   level: 0,
   me: true,
+  url: "",
+  isFriend: false,
 };
 
 const Home = ({ params }: { params: { name: string } }) => {

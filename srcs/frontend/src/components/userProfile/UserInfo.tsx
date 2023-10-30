@@ -6,6 +6,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import UserName from "./UserName";
 import Stats from "./Stats";
 import Contacts from "./Contacts";
+import { FriendshipStatus } from "@/app/(site)/profile/[...name]/page";
 
 export interface UserInfoProps {
   username: string;
@@ -13,9 +14,11 @@ export interface UserInfoProps {
   experiencePoints: number,
   level: number,
   me: boolean,
+  isFriend: false | FriendshipStatus,
+  url: string,
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints, level ,me}) => {
+const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints, level ,me, isFriend, url}) => {
   return (
     <div className="w-full p-4">
       <div className="w-full relative  h-[400px]">
@@ -49,7 +52,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints,
                 <Stats />
               </div>
               <div className="self-center">
-                <Contacts username={username} me={me}/>
+                <Contacts username={username} me={me} status={isFriend} url={url}/>
               </div>
             </div>
           </div>

@@ -47,7 +47,6 @@ export class UsersService {
             receiverId: userId,
           },
         ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
 
@@ -81,7 +80,6 @@ export class UsersService {
             receiverId: userId,
           },
         ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
 
@@ -115,7 +113,6 @@ export class UsersService {
             receiverId: userId,
           },
         ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
 
@@ -123,7 +120,6 @@ export class UsersService {
       ...user,
       isFriend: isFriend ? isFriend.friendshipStatus : false,
     };
-    // return new UserResponseDto(user);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
