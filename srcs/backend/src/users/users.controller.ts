@@ -17,6 +17,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
+import { UserType } from 'src/interfaces/user.interface';
+import { User } from 'src/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller()
@@ -31,15 +33,15 @@ export class UsersController {
   }
 
   @Get()
-  find(@Query() query: QueryDto) {
-    const { username, id } = query;
+  find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
+    const { username: usernameQuery, id: idQuery } = query;
 
-    if (username) {
-      return this.usersService.findByUsername(username);
+    if (usernameQuery) {
+      return this.usersService.findByUsername(usernameQuery, userId);
     }
 
-    if (id) {
-      return this.usersService.findById(id);
+    if (idQuery) {
+      return this.usersService.findById(idQuery);
     }
 
     return this.usersService.findAll();

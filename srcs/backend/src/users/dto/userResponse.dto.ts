@@ -1,4 +1,4 @@
-import { $Enums, User } from '@prisma/client';
+import { $Enums, FriendshipStatus, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 // TODO: Make this work
@@ -12,6 +12,7 @@ export class UserResponseDto implements User {
   twoFactorEnabled: boolean;
   experiencePoints: number;
   level: number;
+  isFriend: false | FriendshipStatus; // To check if the user is friend with the user making the request
 
   @Exclude()
   twoFactorSecret: string;
@@ -21,9 +22,6 @@ export class UserResponseDto implements User {
 
   @Exclude()
   updatedAt: Date;
-
-  @Exclude()
-  friends: number[];
 
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);

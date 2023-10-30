@@ -12,6 +12,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
+import * as os from 'os';
 
 @Controller('auth')
 export class AuthController {
@@ -28,16 +29,26 @@ export class AuthController {
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
   async ftRedirect(@Req() req: Request, @Res() res: Response) {
+    // const host = req.get('host');
+    const host = os.hostname();
+
     console.log('\n\n');
     console.log('--------- AuthController.ftRedirect ---------');
-    console.log('redirecting to http://localhost:1337/dashboard');
+    console.log(`Redirecting to http://frontend:1337/dashboard`);
+    console.log({
+      function: 'ftRedirect',
+      host,
+    });
     console.log('\n');
-    res.redirect('http://localhost:1337/dashboard');
+
+    res.redirect(`http://frontend:1337/dashboard`);
   }
 
   @UseGuards(AuthGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
+    const host = os.hostname();
+
     console.log('\n\n');
     console.log('--------- AuthController.logout ---------');
     req.logout((err) => {
@@ -45,8 +56,8 @@ export class AuthController {
         console.log(err);
         return err;
       }
-      console.log('redirecting to ' + process.env.FRONTEND_URL);
-      res.redirect(process.env.FRONTEND_URL);
+      console.log(`redirecting to http://${host}:1337`);
+      res.redirect(`http://${host}:1337`);
     });
     console.log('\n');
   }

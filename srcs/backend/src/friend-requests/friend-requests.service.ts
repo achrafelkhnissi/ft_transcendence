@@ -1,3 +1,4 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   BadRequestException,
   Injectable,
@@ -16,6 +17,7 @@ export class FriendRequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notification: NotificationsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async sendFriendRequest(senderId: number, receiverUsername: string) {
@@ -52,13 +54,15 @@ export class FriendRequestsService {
       },
     });
 
-    await this.notification.create({
+    const notification = await this.notification.create({
       content: `You have a friend request from <${sender.username}>`,
       recipientId: receiver.id,
       type: NotificationType.FRIEND_REQUEST,
       friendRequestId: request.id,
     });
+
     this.logger.log(`Friend request sent to <${receiverUsername}>`);
+    this.eventEmitter.emit('notification', notification);
 
     return { message: 'Friend request sent', request };
   }
@@ -104,13 +108,15 @@ export class FriendRequestsService {
       },
     });
 
-    await this.notification.create({
+    const notification = await this.notification.create({
       content: `You are now friends with <${sender.username}>`,
       recipientId: receiverId,
       type: NotificationType.OTHER, // TODO: Change this to FRIEND_REQUEST_ACCEPTED (MAYBE)
       friendRequestId: request.id,
     });
+
     this.logger.log(`Friend request accepted from <${senderUsername}>`);
+    this.eventEmitter.emit('notification', notification);
 
     return { message: 'Friend request accepted', request };
   }

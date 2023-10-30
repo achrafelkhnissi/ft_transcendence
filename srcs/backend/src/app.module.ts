@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -39,6 +40,9 @@ import { NotificationsModule } from './notifications/notifications.module';
         ],
       },
     ]),
+    EventEmitterModule.forRoot({
+      global: true,
+    }),
   ],
   controllers: [AppController],
   providers: [
