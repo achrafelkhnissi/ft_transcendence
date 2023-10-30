@@ -3,7 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { FriendshipStatus, User } from '@prisma/client';
+import { UserResponseDto } from './dto/userResponse.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,34 +25,104 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  async findById(id: number): Promise<User> | null {
+  async findById(id: number, userId?: number): Promise<UserResponseDto> | null {
     const user: User | null = await this.prisma.user.findUnique({
       where: { id: id },
     });
     if (!user) {
       throw new NotFoundException(`User with id <${id}> not found`);
     }
-    return user;
+
+    // Check if the user is friend with the user making the request
+    // TODO: Refactor this so that it's not repeated
+    const isFriend = await this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: user.id,
+          },
+          {
+            senderId: user.id,
+            receiverId: userId,
+          },
+        ],
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+
+    return {
+      ...user,
+      isFriend: isFriend ? isFriend.friendshipStatus : false,
+    };
   }
 
-  async findByEmail(email: string): Promise<User> | null {
+  async findByEmail(
+    email: string,
+    userId?: number,
+  ): Promise<UserResponseDto> | null {
     const user: User | null = await this.prisma.user.findUnique({
       where: { email: email },
     });
     if (!user) {
       throw new NotFoundException(`User with email <${email}> not found`);
     }
-    return user;
+
+    // Check if the user is friend with the user making the request
+    const isFriend = await this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: user.id,
+          },
+          {
+            senderId: user.id,
+            receiverId: userId,
+          },
+        ],
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+
+    return {
+      ...user,
+      isFriend: isFriend ? isFriend.friendshipStatus : false,
+    };
   }
 
-  async findByUsername(username: string): Promise<User> | null {
+  async findByUsername(
+    username: string,
+    userId?: number,
+  ): Promise<UserResponseDto> | null {
     const user: User | null = await this.prisma.user.findUnique({
       where: { username },
     });
     if (!user) {
       throw new NotFoundException(`User with username <${username}> not found`);
     }
-    return user;
+
+    // Check if the user is friend with the user making the request
+    const isFriend = await this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: user.id,
+          },
+          {
+            senderId: user.id,
+            receiverId: userId,
+          },
+        ],
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+
+    return {
+      ...user,
+      isFriend: isFriend ? isFriend.friendshipStatus : false,
+    };
     // return new UserResponseDto(user);
   }
 

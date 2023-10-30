@@ -13,6 +13,7 @@ services:
     networks:
       - local_net
 
+  # TODO: Make the backend installs its dependencies and then run the frontend
   backend:
     build:
       context: ./backend/

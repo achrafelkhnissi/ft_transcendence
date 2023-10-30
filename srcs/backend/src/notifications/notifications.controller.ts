@@ -14,13 +14,14 @@ import {
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { Observable, interval, map } from 'rxjs';
-import { Notification, NotificationType } from '@prisma/client';
+import { Observable, fromEvent, map } from 'rxjs';
+import { Notification } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller()
 export class NotificationsController {
   private readonly logger = new Logger(NotificationsController.name);
@@ -28,10 +29,15 @@ export class NotificationsController {
   constructor(
     private readonly notificationsService: NotificationsService,
     private readonly prismaService: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  // @Sse('sse')
-  // sendNotification(): Observable<Notification> {}
+  @Sse()
+  sendNotification(): Observable<Notification> | any {
+    return fromEvent(this.eventEmitter, 'notification').pipe(
+      map((data: Notification) => data),
+    );
+  }
 
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
