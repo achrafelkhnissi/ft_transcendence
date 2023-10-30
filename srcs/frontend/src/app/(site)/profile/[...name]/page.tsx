@@ -9,12 +9,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import getUser from "@/services/getUser";
 
-interface User {
+export interface User {
   id: string;
   username: string;
   avatar: string;
   experiencePoints: number;
   level: number;
+  me: boolean;
 }
 
 const defaultInfos: User = {
@@ -23,6 +24,7 @@ const defaultInfos: User = {
   avatar: "",
   experiencePoints: 0,
   level: 0,
+  me: true,
 };
 
 const Home = ({ params }: { params: { name: string } }) => {
@@ -30,16 +32,16 @@ const Home = ({ params }: { params: { name: string } }) => {
   const [user, setUser] = useState<User>(defaultInfos);
 
   useEffect(() => {
-    if (params.name == "me"){
+    if (params.name == "me") {
       getCurrentUser().then((res) => {
         const userData: User = res;
+        userData.me = true;
         setUser(userData);
       });
-    }
-    else {
+    } else {
       getUser(params.name).then((res) => {
         const userData: User = res;
-        setUser(userData);
+        (userData.me = false), setUser(userData);
       });
     }
 
@@ -56,7 +58,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         <div className="min-[880px]:row-span-2 ">
           <GameHistory />
         </div>
-        <Friends />
+        <Friends username={user.username} />
         <Achievements />
       </div>
     </div>

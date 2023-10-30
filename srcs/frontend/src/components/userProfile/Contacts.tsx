@@ -3,7 +3,12 @@ import {TiUserAdd} from 'react-icons/ti'
 import Logo_42 from '../logos/Logo_42';
 import Link from 'next/link';
 
-const Contacts = () => {
+interface ContactsProps{
+    username: string,
+    me: boolean,
+}
+
+const Contacts: React.FC<ContactsProps> = ({username, me}) => {
 
     interface ContactsProps {
         label: string;

@@ -12,9 +12,10 @@ export interface UserInfoProps {
   avatar: string;
   experiencePoints: number,
   level: number,
+  me: boolean,
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints, level }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints, level ,me}) => {
   return (
     <div className="w-full p-4">
       <div className="w-full relative  h-[400px]">
@@ -48,7 +49,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ username, avatar, experiencePoints,
                 <Stats />
               </div>
               <div className="self-center">
-                <Contacts />
+                <Contacts username={username} me={me}/>
               </div>
             </div>
           </div>
