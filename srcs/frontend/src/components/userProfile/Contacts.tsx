@@ -81,7 +81,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
 
   return (
     <div className="flex justify-center gap-4 px-6">
-      {!me && (state.stats == false && (
+      {!me && state.stats == false && (
         <button
           onClick={() => {
             setState({
@@ -97,10 +97,24 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
         >
           {ContactsItems.sendRequest.icon}
         </button>
-      )
-      )
-      }
-
+      )}
+      {!me && state.stats == FriendshipStatus.PENDING && (
+        <button
+          onClick={() => {
+            setState((prev) => ({
+              stats: prev.stats,
+              isClicked: "cancel",
+            }));
+          }}
+          className={`
+          rounded-xl
+          bg-[${ContactsItems.cancelRequest.color}]
+          p-2
+          `}
+        >
+          {ContactsItems.cancelRequest.icon}
+        </button>
+      )}
       <Link
         target="_blank"
         href={url}
