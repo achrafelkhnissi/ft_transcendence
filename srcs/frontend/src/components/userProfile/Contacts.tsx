@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import sendFriendRequest from "@/services/sendFriendRequest";
 import removeFriend from "@/services/removeFriend";
 import cancelFriendRequest from "@/services/cancelFriendRequest";
+import { stat } from "fs";
 
 interface ContactsProps {
   username: string;
@@ -58,36 +59,40 @@ const ContactsItems: { [key: string]: ContactsItemsProps } = {
 };
 
 interface statePorps {
-  stats: false | FriendshipStatus;
   isClicked: "send" | "cancel" | "friend" | "";
 }
 
 const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
-  const [state, setState] = useState<statePorps>({
-    stats: status,
-    isClicked: "",
-  });
+
+  const [isClicked, setIsClicked] = useState<"send" | "cancel" | "">("");
+  const [friendshipState, setFriendshipState] = useState<FriendshipStatus | false>(status);
+  
+  useEffect(() => {
+    setFriendshipState(status);
+  }, [status])
 
   useEffect(() => {
-    if (state.isClicked == "send") {
+
+    if (isClicked == "send"  ) {
       sendFriendRequest(username).then((res) => {
-        setState({
-          isClicked: "",
-          stats: res.request.friendshipStatus,
-        });
+        setIsClicked("");
+         setFriendshipState(res.request.friendshipStatus);
       });
     }
-  }, [state, username]);
+    else if ( isClicked == "cancel" ){
+      cancelFriendRequest(username).then( (res) => {
+        setIsClicked("");
+         setFriendshipState(false);
+      });
+    }
+  }, [isClicked, username, friendshipState]);
 
   return (
     <div className="flex justify-center gap-4 px-6">
-      {!me && state.stats == false && (
+      {!me && friendshipState == false && (
         <button
           onClick={() => {
-            setState({
-              stats: status,
-              isClicked: "send",
-            });
+            setIsClicked("send")
           }}
           className={`
           rounded-xl
@@ -98,13 +103,10 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
           {ContactsItems.sendRequest.icon}
         </button>
       )}
-      {!me && state.stats == FriendshipStatus.PENDING && (
+      {!me && friendshipState == FriendshipStatus.PENDING && (
         <button
           onClick={() => {
-            setState((prev) => ({
-              stats: prev.stats,
-              isClicked: "cancel",
-            }));
+            setIsClicked("cancel");
           }}
           className={`
           rounded-xl
@@ -115,6 +117,19 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
           {ContactsItems.cancelRequest.icon}
         </button>
       )}
+      {
+        !me && friendshipState == FriendshipStatus.ACCEPTED && (
+          <button
+          disabled
+          className={`
+          rounded-xl
+          bg-[${ContactsItems.acceptRequest.color}]
+          p-2
+          `}>
+            {ContactsItems.acceptRequest.icon}
+          </button>
+        )
+      }
       <Link
         target="_blank"
         href={url}
@@ -131,53 +146,3 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
 };
 
 export default Contacts;
-
-//   return (
-//     <div className="flex justify-center gap-4 px-6">
-//       {ContactsItems.map((item, index) => {
-//         if (
-//           !me &&
-//           (item.label == "send message" ||
-//             (item.label == "add friend" && status === false) ||
-//             (item.label == "cancel request" &&
-//               status === FriendshipStatus.PENDING) ||
-//             (item.label == "friend" && status == FriendshipStatus.ACCEPTED))
-//         )
-//           return (
-//             <button
-//               key={index}
-//               onClick={(e) => {
-//                 if (item.label == "add friend") {
-//                   e.preventDefault();
-//                   sendFriendRequest(username);
-//                 } else if (item.label == "cancel request") {
-//                   e.preventDefault();
-//                   cancelFriendRequest(username);
-//                 } else if (item.label == "friend") {
-//                   e.preventDefault();
-//                   removeFriend(username);
-//                 }
-//               }}
-//               className={`
-//               rounded-xl
-//               bg-[${item.color}]
-//               p-2
-//               `}
-//             >
-//               {item.icon}
-//             </button>
-//           );
-//       })}
-//       <Link
-//         target="_blank"
-//         href={url}
-//         className={`
-//                                 rounded-xl
-//                                 bg-[#6257FE]
-//                                 p-2
-//                                 `}
-//       >
-//         <Logo_42 color="white" width="1.7rem" height="1.5rem" />{" "}
-//       </Link>
-//     </div>
-//   );
