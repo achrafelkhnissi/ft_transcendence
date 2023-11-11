@@ -6,6 +6,7 @@ interface UserNameProps {
 
 const UserName: React.FC<UserNameProps> = ({name}) => {
 
+    if (name)
     return (<div className=" inline-block relative px-4 pt-2">
         <p className="text-white font-semibold">{name}</p>
         <div className="absolute top-0 right-0">

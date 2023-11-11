@@ -23,7 +23,7 @@ const FriendAvatar: React.FC<FriendAvatarProps> = ({ avatar, name }) => {
                         outline-gray-400/70 "
           />
         </div>
-        <p className="self-center text-white/70 text-sm font-light">{name}</p>
+        <p className="self-center text-center  text-white/70 text-sm font-light">{name}</p>
       </Link>
     </div>
   );
