@@ -32,7 +32,7 @@ export class NotificationsController {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  @Sse()
+  @Sse('sse')
   sendNotification(): Observable<Notification> | any {
     return fromEvent(this.eventEmitter, 'notification').pipe(
       map((data: Notification) => data),

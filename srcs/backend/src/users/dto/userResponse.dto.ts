@@ -9,13 +9,9 @@ export class UserResponseDto implements User {
   avatar: string;
   url: string;
   status: $Enums.Status;
-  twoFactorEnabled: boolean;
   experiencePoints: number;
   level: number;
   isFriend: false | FriendshipStatus; // To check if the user is friend with the user making the request
-
-  @Exclude()
-  twoFactorSecret: string;
 
   @Exclude()
   createdAt: Date;
