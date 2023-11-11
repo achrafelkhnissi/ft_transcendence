@@ -1,6 +1,6 @@
 
 import LgSearchInput from "./LgSearchInput";
-import Notifications from "./Notifications";
+import Notifications from "./notifications/Notifications";
 import Avatar from "../../Avatar";
 
 
