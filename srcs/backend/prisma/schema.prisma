@@ -29,7 +29,8 @@ model User {
   settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
-  notifications          Notification[]
+  notificationsSent      Notification[]  @relation("SentNotifications")
+  notificationsReceived  Notification[]  @relation("ReceivedNotifications")
   stats                  UserStats?
 
   // achievements UserAchievement[]
@@ -39,16 +40,19 @@ model User {
 
 model Notification {
   id              Int              @id @default(autoincrement())
-  content         String
   read            Boolean          @default(false)
   type            NotificationType
-  recipientId     Int
-  recipient       User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  senderUsername  String
+  senderAvatar    String
+  senderId        Int
+  sender          User             @relation("SentNotifications", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId      Int
+  receiver        User             @relation("ReceivedNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
   friendRequestId Int?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  @@index([recipientId])
+  @@index([senderId])
 }
 
 model UserSettings {
