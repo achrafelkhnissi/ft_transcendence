@@ -6,7 +6,7 @@ import deleteNotification from "@/services/deleteNotification";
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const handleAccept = () => {
     acceptFirendRequest(notif.senderUsername).then(() => {
-      deleteNotification(notif.id);
+      deleteNotification(notif.id );
     });
   };
 

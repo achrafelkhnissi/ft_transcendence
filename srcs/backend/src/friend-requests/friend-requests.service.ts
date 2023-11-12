@@ -110,17 +110,17 @@ export class FriendRequestsService {
       },
     });
 
-    const notification = await this.notification.create({
-      senderUsername: sender.username,
-      senderAvatar: sender.avatar,
-      receiverId: receiverId,
-      senderId: sender.id,
-      type: NotificationType.FRIEND_REQUEST, // TODO: Change to FRIEND_REQUEST_ACCEPT
-      friendRequestId: request.id,
-    });
+    // const notification = await this.notification.create({
+    //   senderUsername: sender.username,
+    //   senderAvatar: sender.avatar,
+    //   receiverId: receiverId,
+    //   senderId: sender.id,
+    //   type: NotificationType.FRIEND_REQUEST, // TODO: Change to FRIEND_REQUEST_ACCEPT
+    //   friendRequestId: request.id,
+    // });
 
     this.logger.log(`Friend request accepted from <${senderUsername}>`);
-    this.eventEmitter.emit('notification', notification);
+    // this.eventEmitter.emit('notification', notification);
 
     return { message: 'Friend request accepted', request };
   }
