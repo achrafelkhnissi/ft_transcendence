@@ -20,6 +20,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/interfaces/user.interface';
 
 @UseGuards(AuthGuard)
 @Controller()
@@ -49,8 +51,8 @@ export class NotificationsController {
   }
 
   @Get()
-  findByQuery(@Query() query: UpdateNotificationDto) {
-    return this.notificationsService.findByQuery(query);
+  findByQuery(@User() user: UserType, @Query() query: UpdateNotificationDto) {
+    return this.notificationsService.findByQuery(user, query);
   }
 
   @Get(':id')

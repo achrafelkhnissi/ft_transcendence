@@ -2,6 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { UserType } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class NotificationsService {
@@ -15,14 +16,14 @@ export class NotificationsService {
     });
   }
 
-  findByQuery(query: UpdateNotificationDto) {
+  findByQuery(user: UserType, query: UpdateNotificationDto) {
     if (query) {
       return this.prismaService.notification.findMany({
         where: query,
       });
     }
 
-    return this.prismaService.notification.findMany();
+    return this.findOne(user.id);
   }
 
   update(id: number, updateNotificationDto: UpdateNotificationDto) {
