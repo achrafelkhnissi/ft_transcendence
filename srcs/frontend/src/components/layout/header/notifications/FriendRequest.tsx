@@ -1,23 +1,27 @@
 import Image from "next/image";
 import { NotificationsType } from "./Notifications";
 import acceptFirendRequest from "@/services/acceptFriendRequest";
+import deleteNotification from "@/services/deleteNotification";
 
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
-
   const handleAccept = () => {
-    acceptFirendRequest(notif.senderUsername).then(
-      
-    )
-  }
-  
-  const handleCancel = () => {
-  
-  }
+    acceptFirendRequest(notif.senderUsername).then(() => {
+      deleteNotification(notif.id);
+    });
+  };
 
-  console.log("avata: " + notif.senderAvatar)
+  const handleCancel = () => {};
+
+  console.log("avata: " + notif.senderAvatar);
   return (
     <div className="bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2">
-      <Image alt="" src={notif.senderAvatar} width={20} height={20} className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-black self-center"/>
+      <Image
+        alt=""
+        src={notif.senderAvatar}
+        width={20}
+        height={20}
+        className="w-[2.5rem] h-[2.5rem] rounded-full  self-center"
+      />
       <p className="text-center self-center ">flan wants to be you friend</p>
       <div className="flex flex-col justify-center gap-1 py-2 text-xs">
         <button
