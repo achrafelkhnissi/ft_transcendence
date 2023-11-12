@@ -49,19 +49,22 @@ const Notifications = () => {
         />
         <div
           className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] ${
-            !notifications && "hidden"
+            (notifications.length === 0) && "hidden"
           }`}
         >
           <span className="animate-ping absolute h-full w-full rounded-full bg-white/95 "></span>
           <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
         </div>
         <div
-          className={`absolute max-h-80 w-80 z-10 right-0 bg-white/30 rounded-[0.5rem] ${
+          className={`absolute max-h-80 w-80 z-10 right-0 bg-white/10  rounded-[0.5rem] ${
             !isClicked && "hidden"
           } mt-1  p-2 overflow-hidden`}
         >
           <div className="w-full overflow-y-auto scroll-smooth h-full">
             <div className="flex gap-1 flex-col">
+              {
+                (notifications.length === 0) && <p className="text-sm text-center text-white"> find some firends </p>
+              }
               {notifications.map((item, index) => {
                 if (item.type == "FRIEND_REQUEST")
                   return (
