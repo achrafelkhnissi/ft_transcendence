@@ -55,8 +55,10 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      content: `You have a friend request from <${sender.username}>`,
-      recipientId: receiver.id,
+      senderAvatar: sender.avatar,
+      senderUsername: sender.username,
+      receiverId: receiver.id,
+      senderId: senderId,
       type: NotificationType.FRIEND_REQUEST,
       friendRequestId: request.id,
     });
@@ -109,9 +111,11 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      content: `You are now friends with <${sender.username}>`,
-      recipientId: receiverId,
-      type: NotificationType.OTHER, // TODO: Change this to FRIEND_REQUEST_ACCEPTED (MAYBE)
+      senderUsername: sender.username,
+      senderAvatar: sender.avatar,
+      receiverId: receiverId,
+      senderId: sender.id,
+      type: NotificationType.FRIEND_REQUEST, // TODO: Change to FRIEND_REQUEST_ACCEPT
       friendRequestId: request.id,
     });
 

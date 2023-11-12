@@ -11,7 +11,11 @@ import {
 export class CreateNotificationDto {
   @IsNotEmpty()
   @IsString()
-  readonly content: string;
+  readonly senderUsername: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly senderAvatar: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -25,7 +29,11 @@ export class CreateNotificationDto {
 
   @IsNotEmpty()
   @IsNumber()
-  readonly recipientId: number;
+  readonly receiverId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  readonly senderId: number;
 
   @IsNumber()
   @IsOptional()
