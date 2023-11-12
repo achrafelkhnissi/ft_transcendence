@@ -11,7 +11,8 @@ export interface NotificationsType {
   id: number;
   content: string;
   type: string;
-  recipientId: number;
+  senderUsername: string;
+  senderAvatar: string;
   friendRequestId: number;
 }
 
@@ -35,8 +36,7 @@ const Notifications = () => {
       className={`${
         isClicked && "bg-white/10"
       } rounded-lg h-9 w-9 flex justify-center `}
-      onClick={handleClick}
-    >
+      >
       <div className=" relative self-center ">
         <IoIosNotificationsOutline
           color="red"
@@ -46,6 +46,7 @@ const Notifications = () => {
             width: "1.9rem",
             height: "1.9rem",
           }}
+          onClick={handleClick}
         />
         <div
           className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] ${
@@ -56,7 +57,7 @@ const Notifications = () => {
           <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
         </div>
         <div
-          className={`absolute max-h-80 w-80 z-10 right-0 bg-white/10  rounded-[0.5rem] ${
+          className={`absolute max-h-80 w-80 z-10 right-0 bg-white/30  rounded-[0.5rem] ${
             !isClicked && "hidden"
           } mt-1  p-2 overflow-hidden`}
         >
