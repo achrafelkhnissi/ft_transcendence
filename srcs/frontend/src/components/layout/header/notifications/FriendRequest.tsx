@@ -2,6 +2,7 @@ import Image from "next/image";
 import { NotificationsType } from "./Notifications";
 import acceptFirendRequest from "@/services/acceptFriendRequest";
 import deleteNotification from "@/services/deleteNotification";
+import declineFirendRequest from "@/services/declineFriendRequest";
 
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const handleAccept = () => {
@@ -10,7 +11,11 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
     });
   };
 
-  const handleCancel = () => {};
+  const handleDecline = () => {
+    declineFirendRequest(notif.senderUsername).then(() => {
+      deleteNotification(notif.id);
+    })
+  };
 
   console.log("avata: " + notif.senderAvatar);
   return (
@@ -22,7 +27,7 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
         height={20}
         className="w-[2.5rem] h-[2.5rem] rounded-full  self-center"
       />
-      <p className="text-center self-center ">flan wants to be you friend</p>
+      <p className="text-center self-center ">{notif.senderUsername} wants to be you friend</p>
       <div className="flex flex-col justify-center gap-1 py-2 text-xs">
         <button
           className=" rounded-md py-1 px-[0.6rem] bg-[#605cac] "
@@ -32,7 +37,7 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
         </button>
         <button
           className="rounded-md py-1 px-[0.6rem] border border-[#605cac] text-[#605cac]"
-          onClick={handleCancel}
+          onClick={handleDecline}
         >
           decline
         </button>
