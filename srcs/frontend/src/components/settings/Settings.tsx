@@ -40,15 +40,14 @@ const Settings = () => {
 
   const handleSubmit = () => {
     console.log(data.username);
-  }
+  };
 
-    const [isSwitchOn, setSwitchOn] = useState(false);
-  
-    const handleToggleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setSwitchOn(e.target.checked);
-    };
+  const [isSwitchOn, setSwitchOn] = useState(false);
 
-    
+  const handleToggleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSwitchOn(e.target.checked);
+  };
+
   useEffect(() => {
     getCurrentUser().then((res) => {
       const ret: Data = res;
@@ -57,7 +56,7 @@ const Settings = () => {
   }, []);
 
   return (
-    <form className=" flex flex-col justify-center py-8 gap-20">
+    <form className=" flex flex-col justify-center py-8 gap-10">
       <div className="relative inline-block m-auto">
         <Image
           src={data.avatar}
@@ -83,42 +82,50 @@ const Settings = () => {
           />
         </div>
       </div>
-        <input
-          type="text"
-          id="username"
-          placeholder={data.username}
-          onChange={handleUsernameChange}
-          className="w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
+      <input
+        type="text"
+        id="username"
+        placeholder={data.username}
+        onChange={handleUsernameChange}
+        className="w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
        text-white/60 text-md font-normal placeholder:opacity-40
       "
-        />
-       <div className="flex items-center">
-      <label htmlFor="toggleSwitch" className="mr-2">Toggle Switch</label>
-      <div className="relative">
+      />
         <input
-          type="checkbox"
-          id="toggleSwitch"
-          checked={isSwitchOn}
-          onChange={handleToggleChange}
-          className="sr-only"
+          type="text"
+          id="phone-number"
+          placeholder={"XXXXXXXX41"}
+          // onChange={handleUsernameChange}
+          className={`w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
+       text-white/60 text-md font-normal placeholder:opacity-40 ${!isSwitchOn && "hidden"}`}
         />
-        <div
-          className={`w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out ${
-            isSwitchOn ? 'bg-green-500' : ''
+      <div className="flex items-center text-white  m-auto">
+        <label
+          htmlFor="toggleSwitch"
+          className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-purple-400/50 cursor-pointer ${
+            isSwitchOn ? "bg-purple-400/50" : "bg-white/5"
           }`}
         >
+          <input
+            type="checkbox"
+            id="toggleSwitch"
+            checked={isSwitchOn}
+            onChange={handleToggleChange}
+            className="sr-only"
+          />
           <div
-            className={`absolute w-5 h-5 bg-white rounded-full transform transition-transform duration-300 ease-in-out ${
-              isSwitchOn ? 'translate-x-full' : ''
+            className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
+              isSwitchOn ? "translate-x-full bg-white" : "bg-white/80"
             }`}
           ></div>
-        </div>
+        </label>
+        <span className="ml-2 text-white/80">Two Factor Authentication </span>
       </div>
-      <span className="ml-2">{isSwitchOn ? 'On' : 'Off'}</span>
-    </div>
-      <button className=" text-white/80 m-auto px-4 py-1 rounded-lg absolute bottom-20 right-10  bg-purple-400/50 "
-      onClick={handleSubmit}>
-          save
+      <button
+        className=" text-white/80 m-auto px-4 py-1 rounded-lg absolute bottom-20 right-10  bg-purple-400/50 "
+        onClick={handleSubmit}
+      >
+        save
       </button>
     </form>
   );
