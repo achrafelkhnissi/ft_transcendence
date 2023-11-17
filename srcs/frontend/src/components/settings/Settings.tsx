@@ -67,7 +67,7 @@ const Settings = () => {
         />
         <div className="flex items-center absolute bottom-2 right-2">
           <label
-            htmlFor="fileInput"
+            htmlFor="avatar"
             className="cursor-pointer border rounded-full w-[1.3rem] h-[1.3rem] text-white flex justify-center bg-white"
           >
             <p className=" self-center text-lg -mt-[0.1rem] text-purple-500 font-bold ">
