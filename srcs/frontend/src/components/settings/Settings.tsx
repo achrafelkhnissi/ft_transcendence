@@ -4,6 +4,8 @@ import { ChangeEvent, useState, useEffect } from "react";
 import getCurrentUser from "@/services/getCurrentUser";
 import { MdModeEdit } from "react-icons/md";
 import getAllUsers from "@/services/getAllUsers";
+import Link from "next/link";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 export interface Data {
   username: string;
@@ -48,8 +50,7 @@ const Settings = () => {
 
   const handleToggleChange = (e: ChangeEvent<HTMLInputElement>) => {
     //check if there is a number provided;
-    if (data.phoneNumber && data.phoneNumber !== "")
-      setSwitchOn(true);
+    if (data.phoneNumber && data.phoneNumber !== "") setSwitchOn(true);
     // send verification code to enabe 2FA
   };
 
@@ -202,12 +203,23 @@ const Settings = () => {
       </div>
 
       {/* Submit form */}
-      <button
-        className=" text-white/80 m-auto px-4 py-1 rounded-lg absolute bottom-20 right-10  bg-purple-400/50 "
-        onClick={handleSubmit}
-      >
-        save
-      </button>
+      <div className=" mt-14 flex justify-between w-4/5 slef-center mx-auto ">
+        <Link
+          href={"/dashboard"}
+          className="text-white/80 b py-1 px-2 rounded-lg bg-blue-400/70 hover:bg-blue-400/90"
+        >
+          <p className="flex ">
+            <IoIosArrowRoundBack className="self-center"/>
+            home
+          </p>
+        </Link>
+        <button
+          className=" text-white/80  px-4 py-1 rounded-lg  bg-purple-400/50 hover:bg-purple-400/70"
+          onClick={handleSubmit}
+        >
+          save
+        </button>
+      </div>
     </form>
   );
 };
