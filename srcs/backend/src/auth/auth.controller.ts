@@ -40,8 +40,9 @@ export class AuthController {
     });
     console.log('\n');
 
-    if (!isPhoneNumberVerified) {
-      console.log('Phone number not verified');
+    if (isPhoneNumberVerified) {
+      // TODO: Check if 2FA is enabled
+      this.logger.log('2FA is enabled');
       return res.redirect(`http://${domainName}:1337/verify`);
     }
 
