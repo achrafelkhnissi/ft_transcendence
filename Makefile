@@ -74,7 +74,7 @@ ps:
 	docker-compose -f srcs/docker-compose.yml ps
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
-re: fclean all
+re: clean all
 
 frontend:
 	$(call copy_env)
