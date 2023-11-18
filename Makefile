@@ -1,3 +1,4 @@
+NAME 		= PONGTIME
 
 # Colors
 RED			= \033[0;31m
@@ -5,69 +6,80 @@ GREEN 	= \033[0;32m
 BLUE		= \033[0;34m
 CYAN		= \033[0;36m
 YELLOW	= \033[0;33m
+PURPLE	= \033[0;35m
 NC 			= \033[0m
 
-all: credit env run
+INFO 		= $(CYAN)[INFO]$(NC)
+SUCCESS = $(GREEN)[SUCCESS]$(NC)
+WARNING = $(YELLOW)[WARNING]$(NC)
+ERROR 	= $(RED)[ERROR]$(NC)
+PROJECT = $(PURPLE)[$(NAME)]$(NC)
 
-env:
-	@echo "\n${GREEN}Setting up environment variables...${NC}"
-	@if [ ! -f ./srcs/.env ]; then cp ./srcs/.env.example ./srcs/.env; fi
-
-credit:
+define print_credit
 	@echo
-	@echo "\n${GREEN}Welcome to ft_transcendence!${NC}"
+	@printf "$(PURPLE)"
+	@printf "██████╗  ██████╗ ███╗   ██╗ ██████╗████████╗██╗███╗   ███╗███████╗\n"
+	@printf "██╔══██╗██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██║████╗ ████║██╔════╝\n"
+	@printf "██████╔╝██║   ██║██╔██╗ ██║██║  ███╗  ██║   ██║██╔████╔██║█████╗ \n"
+	@printf "██╔═══╝ ██║   ██║██║╚██╗██║██║   ██║  ██║   ██║██║╚██╔╝██║██╔══╝ \n"
+	@printf "██║     ╚██████╔╝██║ ╚████║╚██████╔╝  ██║   ██║██║ ╚═╝ ██║███████╗ \n"
+	@printf "╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝ \n"
+	@printf "%35s: $(CYAN)%s - %s - %s$(NC)\n" "By" "fathjami" "ael-khni" "zsarir"
+	@printf "\n$(NC)"
+	@echo
+endef
 
-run:
-	@echo "\n${GREEN}Running ft_transcendence...${NC}"
-	docker-compose -f srcs/docker-compose.yaml up --build
+define copy_env
+	@if [ ! -f ./srcs/.env ]; then \
+		printf "$(INFO) $(PROJECT): Copying .env file from .env.example\n"; \
+			cp ./srcs/.env.example ./srcs/.env; \
+	else \
+		printf "$(INFO) $(PROJECT): $(WARNING) The .env file already exists.\n"; \
+	fi
+endef
 
-up:
-	@echo "\n${GREEN}Building and starting containers...${NC}"
-	docker-compose -f srcs/docker-compose.yaml up -d 
 
-stop:
-	@echo "\n${GREEN}Stopping containers...${NC}"
-	docker-compose -f srcs/docker-compose.yaml stop
+all: $(NAME)
 
-down:
-	@echo "\n${GREEN}Stopping and removing containers...${NC}"
-	docker-compose -f srcs/docker-compose.yaml down
+$(NAME): 
+	$(call print_credit)
+	$(call copy_env)
+	docker-compose -f srcs/docker-compose.yml up --force-recreate --build -d
+	@printf "$(PROJECT) $(SUCCESS): build completed\n"
 
-build:
-	@echo "\n${GREEN}Building containers...${NC}"
-	docker-compose -f srcs/docker-compose.yaml up --build -d
-
-logs:
-	@echo "\n${GREEN}Displaying logs...${NC}"
-	docker-compose -f srcs/docker-compose.yaml logs -f
-
-exec:
-	@echo "\n${GREEN}Executing command in container...${NC}"
-	docker-compose -f srcs/docker-compose.yaml exec $(c) $(cmd)
-
-execroot:
-	@echo "\n${RED}Executing command in container as root...${NC}"
-	docker-compose -f srcs/docker-compose.yaml exec --user root $(c) $(cmd)
-
-execuser:
-	@echo "\n${GREEN}Executing command in container as user...${NC}"
-	docker-compose -f srcs/docker-compose.yaml exec --user $(USER) $(c) $(cmd)
-
-clean: down
-	@echo "\n${YELLOW}Stopping and removing containers and volumes and networks...${NC}"
-	docker-compose -f srcs/docker-compose.yaml rm -fsv
+clean:
+	@printf "$(PROJECT) $(INFO): $(WARNING) Removing all containers, images, volumes and networks\n"
+	docker-compose -f srcs/docker-compose.yml down -v --rmi all --remove-orphans
+	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 fclean: clean
-	@echo "\n${RED}Stopping and removing containers and volumes and networks and images and env files...${NC}"
-	docker-compose -f srcs/docker-compose.yaml down --rmi all
+	@printf "$(PROJECT) $(INFO): $(WARNING) Purging all containers, images, volumes and networks\n"
+	docker system prune --volumes --all --force
+	docker network prune --force
+	docker volume prune --force
+	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
-frontend: env # todo: remove this
-	docker-compose -f srcs/docker-compose.yaml up --build frontend
+restart	:
+	@printf "$(PROJECT) $(INFO): $(WARNING) Restarting all containers\n"
+	docker-compose -f srcs/docker-compose.yml restart
+	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
-backend: env # todo: remove this
-	docker-compose -f srcs/docker-compose.yaml up --build backend
+log:
+	@printf "$(PROJECT) $(INFO): Showing logs\n"
+	docker-compose -f srcs/docker-compose.yml logs -f
+	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
-prune:
-	docker system prune -a
+ps:
+	@printf "$(PROJECT) $(INFO): Showing containers status\n"
+	docker-compose -f srcs/docker-compose.yml ps
+	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 re: fclean all
+
+frontend:
+	$(call copy_env)
+	docker-compose -f srcs/docker-compose.yml up --build frontend
+
+backend:
+	$(call copy_env)
+	docker-compose -f srcs/docker-compose.yml up --build backend
