@@ -38,6 +38,7 @@ define copy_env
 	fi
 endef
 
+.PHONY: all clean fclean re restart log ps
 
 all: $(NAME)
 
