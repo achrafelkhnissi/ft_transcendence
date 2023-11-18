@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
@@ -17,7 +17,7 @@ export class SmsController {
   }
 
   @Post('confirm')
-  confirm(@User() user: UserType, code: string) {
+  confirm(@User() user: UserType, @Body('code') code: string) {
     if (user.isPhoneNumberVerified) {
       return new BadRequestException('Phone number already verified');
     }

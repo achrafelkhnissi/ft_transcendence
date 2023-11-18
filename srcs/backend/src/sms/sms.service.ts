@@ -13,7 +13,7 @@ export class SmsService {
   }
 
   async initiatePhoneNumberVerification(phoneNumber: string) {
-    return this.twilioClient.verify
+    return this.twilioClient.verify.v2
       .services(process.env.TWILIO_VERIFY_SERVICE_SID)
       .verifications.create({
         to: phoneNumber,
@@ -26,7 +26,7 @@ export class SmsService {
     phoneNumber: string,
     code: string,
   ) {
-    const result = await this.twilioClient.verify
+    const result = await this.twilioClient.verify.v2
       .services(process.env.TWILIO_VERIFY_SERVICE_SID)
       .verificationChecks.create({
         to: phoneNumber,

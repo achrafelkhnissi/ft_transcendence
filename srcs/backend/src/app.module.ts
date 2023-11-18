@@ -49,10 +49,13 @@ import { SmsModule } from './sms/sms.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
+    // TODO: ClassSerializerInterceptor is the reason why SMS verification is not working
+    // TODO: I test it with Get request and it did not work before uncommenting ClassSerializerInterceptor
+    // TODO: Test with with Post request
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ClassSerializerInterceptor,
+    // },
   ],
 })
 export class AppModule {}
