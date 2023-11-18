@@ -5,6 +5,8 @@ export interface UserType {
   id: number;
   username?: string;
   email: string;
+  phoneNumber?: string;
+  isPhoneNumberVerified: boolean;
   avatar?: string;
   url: string;
   status?: $Enums.Status;

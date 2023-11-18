@@ -22,6 +22,7 @@ model User {
   username               String?         @unique
   email                  String          @unique
   phoneNumber            String?         @unique
+  isPhoneNumberVerified  Boolean         @default(false)
   avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
   url                    String          @unique
   status                 Status?         @default(ONLINE)
