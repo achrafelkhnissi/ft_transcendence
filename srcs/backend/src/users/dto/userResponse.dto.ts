@@ -12,6 +12,8 @@ export class UserResponseDto implements User {
   experiencePoints: number;
   level: number;
   isFriend: false | FriendshipStatus; // To check if the user is friend with the user making the request
+  phoneNumber: string;
+  isPhoneNumberVerified: boolean;
 
   @Exclude()
   createdAt: Date;

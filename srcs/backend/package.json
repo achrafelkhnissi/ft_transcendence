@@ -40,7 +40,8 @@
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "twilio": "^3.40.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.1.0",

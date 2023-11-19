@@ -28,13 +28,25 @@ export class AuthController {
 
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
-  async ftRedirect(@Req() req: Request, @Res() res: Response) {
+  async ftRedirect(@User() user: UserType, @Res() res: Response) {
+    const isPhoneNumberVerified = user.isPhoneNumberVerified;
+    const domainName = process.env.FT_REDIRECT_URI.split('/')[2].split(':')[0];
+
     console.log('\n\n');
     console.log('--------- AuthController.ftRedirect ---------');
-    console.log(`Redirecting to http://localhost:1337/dashboard`);
+    console.log(`Redirecting to http://${domainName}:1337/dashboard`);
+    console.log({
+      function: 'ftRedirect',
+    });
+    console.log('\n');
 
+    if (isPhoneNumberVerified) {
+      // TODO: Check if 2FA is enabled
+      this.logger.log('2FA is enabled');
+      return res.redirect(`http://${domainName}:1337/verify`);
+    }
 
-    res.redirect(`http://localhost:1337/dashboard`);
+    res.redirect(`http://${domainName}:1337/dashboard`);
   }
 
   @UseGuards(AuthGuard)

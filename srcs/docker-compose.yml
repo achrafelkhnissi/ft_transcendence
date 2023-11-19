@@ -5,13 +5,19 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     restart: always
-    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      # - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - local_net
+      - database_net
 
   # TODO: Make the backend installs its dependencies and then run the frontend
   backend:
@@ -20,7 +26,19 @@ services:
       dockerfile: Dockerfile # dockerfiles/${NODE_ENV}.Dockerfile
     container_name: backend
     restart: always
-    env_file: .env
+    # env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - NEST_PORT=${NEST_PORT}
+      - NEXT_PORT=${NEXT_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - FT_CLIENT_ID=${FT_CLIENT_ID}
+      - FT_CLIENT_SECRET=${FT_CLIENT_SECRET}
+      - FT_REDIRECT_URI=${FT_REDIRECT_URI}
+      - FT_PROFILE_URL=${FT_PROFILE_URL}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
     ports:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
@@ -28,7 +46,8 @@ services:
       - ./backend:/app # for hot reloading
       # - node_modules:/app/node_modules # for faster builds
     networks:
-      - local_net
+      - database_net
+      - frontend_net
     depends_on:
       - db
     command:
@@ -51,7 +70,7 @@ services:
     volumes:
       - ./frontend:/app # for hot reloading
     networks:
-      - local_net
+      - frontend_net
     depends_on:
       - backend
     command:
@@ -63,8 +82,9 @@ services:
 
 volumes:
   db-data:
-  pgadmin-data:
 
 networks:
-  local_net:
+  database_net:
+    driver: bridge
+  frontend_net:
     driver: bridge

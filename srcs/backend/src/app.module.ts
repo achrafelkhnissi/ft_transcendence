@@ -9,6 +9,7 @@ import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -43,10 +44,14 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot({
       global: true,
     }),
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    // TODO: ClassSerializerInterceptor is the reason why SMS verification is not working
+    // TODO: I test it with Get request and it did not work before uncommenting ClassSerializerInterceptor
+    // TODO: Test with with Post request
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
