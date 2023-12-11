@@ -1,11 +1,25 @@
 'use client'
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
+import MessagesPreview from "./MessagesPreview";
+import { Message } from "./data";
+import { messagesProps } from "./data";
+import { UserStatuses } from "./data";
+
 
 const Preview = () => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
+    const [messages, setMessages] = useState<Message[]>(messagesProps);
+    const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
 
+    const updateUserStatus = (userId: string, status: string) => {
+        setUserStatuses(prevStatuses => ({
+          ...prevStatuses,
+          [userId]: status
+        }));
+      };
+      
     return (<div 
             className="w-2/5  bg-[#25244E] rounded-[3rem] 
             shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2" >
@@ -60,6 +74,8 @@ const Preview = () => {
                         </form>
                     </div>
                 </div>
+
+                <MessagesPreview messages={messages} statuses={userStatuses}/>
         </div>)
 }
 
