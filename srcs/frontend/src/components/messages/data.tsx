@@ -54,4 +54,13 @@ export const messagesProps : Message[] = [
         createdAt: "1.45pm",
         isRead: false,
     },
+   {
+        id: 4,
+        senderName: "achraf",
+        senderProfile: "khasdf",
+        senderId: 2,
+        content: "hello there!",
+        createdAt: "1.45pm",
+        isRead: false,
+    },
 ]
