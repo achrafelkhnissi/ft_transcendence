@@ -33,7 +33,13 @@ model User {
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
   notificationsSent      Notification[]  @relation("SentNotifications")
   notificationsReceived  Notification[]  @relation("ReceivedNotifications")
-  stats                  UserStats?
+
+  messagesSent     Message[] @relation("SentMessages")
+  messagesReceived Message[] @relation("ReceivedMessages")
+
+  stats  UserStats?
+  Chat   Chat?      @relation(fields: [chatId], references: [id])
+  chatId Int?
 
   // achievements UserAchievement[]
   createdAt DateTime @default(now())
@@ -95,71 +101,29 @@ model UserStats {
   updatedAt DateTime @updatedAt
 }
 
-// model Game {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Games", fields: [userId], references: [id])
-//   matchId   Int
-//   // match     Match    @relation("Games", fields: [matchId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   Match     Match    @relation(fields: [matchId], references: [id])
-// }
+model Message {
+  id         Int    @id @default(autoincrement())
+  content    String
+  chatId     Int
+  Chat       Chat   @relation(fields: [chatId], references: [id])
+  senderId   Int
+  sender     User   @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId Int
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
-// model Match {
-//   id        Int      @id @default(autoincrement())
-//   winnerId  Int
-//   // winner    User     @relation("MatchHistory", fields: [winnerId], references: [id])
-//   loserId   Int
-//   // loser     User     @relation("MatchHistory", fields: [loserId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   Game      Game[]
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model MatchHistory {
-//   id        Int      @id @default(autoincrement())
-//   winnerId  Int
-//   // winner    User     @relation("MatchHistory", fields: [winnerId], references: [id])
-//   loserId   Int
-//   // loser     User     @relation("MatchHistory", fields: [loserId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+// A Chat is a conversation between two or more users
+model Chat {
+  id       Int       @id @default(autoincrement())
+  users    User[]
+  messages Message[]
 
-// model Channel {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   isPrivate Boolean  @default(false)
-//   password  String?
-//   ownerId   Int
-//   // owner     User     @relation("Channels", fields: [ownerId], references: [id])
-//   // members   User[]
-//   // messages  Message[]
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Message {
-//   id        Int      @id @default(autoincrement())
-//   content   String
-//   authorId  Int
-//   // author      User     @relation("Messages", fields: [authorId], references: [id])
-//   channelId Int
-//   // channel   Channel  @relation("Messages", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Chat {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Chats", fields: [userId], references: [id])
-//   channelId Int
-//   // channel   Channel  @relation("Chats", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // model Achievement {
 //   id              Int               @id @default(autoincrement())
