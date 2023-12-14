@@ -107,9 +107,9 @@ model Message {
   chatId     Int
   Chat       Chat   @relation(fields: [chatId], references: [id])
   senderId   Int
-  sender     User   @relation("SentMessages", fields: [senderId], references: [id])
+  sender     User   @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade) // TODO: Do we need to delete messages when a user is deleted?
   receiverId Int
-  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
