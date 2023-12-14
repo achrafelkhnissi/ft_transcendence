@@ -39,7 +39,9 @@ model User {
 
   stats UserStats?
 
-  chat Chat[]
+  chat  Chat[] @relation("Users")
+  admin Chat[] @relation("Admins")
+  owner Chat[] @relation("Owner")
 
   // achievements UserAchievement[]
   createdAt DateTime @default(now())
@@ -118,7 +120,12 @@ model Message {
 // A Chat is a conversation between two or more users
 model Chat {
   id       Int       @id @default(autoincrement())
-  users    User[]
+  type     ChatType  @default(PUBLIC)
+  password String?   @unique
+  ownerId  Int
+  owner    User      @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
+  admins   User[]    @relation("Admins")
+  users    User[]    @relation("Users")
   messages Message[]
 
   createdAt DateTime @default(now())
@@ -173,9 +180,10 @@ enum MatchStatus {
   FINISHED
 }
 
-enum ChannelType {
+enum ChatType {
   PUBLIC
   PRIVATE
+  PROTECTED
 }
 
 enum NotificationType {
