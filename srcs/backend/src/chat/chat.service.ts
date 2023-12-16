@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChatService {
@@ -144,4 +145,31 @@ export class ChatService {
       },
     });
   }
+
+  /* --- Gateway --- */
+
+  getUserFromSocket(socket: Socket) {
+    // TODO: Test this
+    return socket.handshake.auth.user;
+  }
+
+  addUserToChat(user: any, room: string) {
+    // TODO: add user to chat {room} in db
+  }
+
+  removeUserFromChat(user: any, room: string) {
+    // TODO: remove user form chat {room} in db
+  }
+
+  getAllMessagesFromChat(room: string) {
+    // TODO: get all messages from chat {room} in db
+  }
+
+  getAllUsersFromChat(room: string) {}
+
+  getAllAdminsFromChat(room: string) {}
+
+  getChatOwner(room: string) {}
+
+  // getAllChatsFromUser(user: any) {}
 }
