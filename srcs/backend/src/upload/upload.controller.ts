@@ -16,6 +16,32 @@ import { UserType } from 'src/interfaces/user.interface';
 import { Request } from 'express';
 import * as path from 'path';
 
+// TODO: Move [FileMapper, fileMapper, editFileName] to a separate file
+interface FileMapper {
+  file: Express.Multer.File;
+  req: Request;
+}
+
+export const fileMapper = ({ file, req }: FileMapper) => {
+  const image_url = `${req.protocol}://${req.headers.host}/${file.path}`;
+  return {
+    originalname: file.originalname,
+    filename: file.filename,
+    image_url,
+  };
+};
+
+export const imageFileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback,
+) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
+};
+
 export const editFileName = (
   req: Request,
   file: Express.Multer.File,
@@ -53,6 +79,7 @@ export class UploadController {
         destination: './uploads',
         filename: editFileName,
       }),
+      fileFilter: imageFileFilter, // TODO: Check if this is needed
     }),
   )
   uploadAvatar(
