@@ -155,4 +155,30 @@ export class UsersService {
     const avatar = data.image.link;
     return avatar;
   }
+
+  async getAvatarById(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        avatar: true,
+      },
+    });
+
+    return user?.avatar ?? null;
+  }
+
+  async getAvatarByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        avatar: true,
+      },
+    });
+
+    return user?.avatar ?? null;
+  }
 }
