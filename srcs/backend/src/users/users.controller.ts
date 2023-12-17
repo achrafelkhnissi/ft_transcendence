@@ -90,4 +90,12 @@ export class UsersController {
 
     return res.sendFile(avatar, { root: './' });
   }
+
+  // TODO: Check if Ft needs username or id
+  @Get(':username/achievements')
+  getAchievements(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.usersService.getUserAchievements(username);
+  }
 }
