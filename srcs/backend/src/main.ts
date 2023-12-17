@@ -7,9 +7,11 @@ import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
     origin: true,
@@ -40,6 +42,9 @@ async function bootstrap() {
       }),
     }),
   );
+
+  // https://stackoverflow.com/questions/51045980/how-to-serve-assets-from-nest-js-and-add-middleware-to-detect-image-request
+  app.useStaticAssets(join(__dirname, '/uploads'));
 
   app.use(passport.initialize());
   app.use(passport.session());
