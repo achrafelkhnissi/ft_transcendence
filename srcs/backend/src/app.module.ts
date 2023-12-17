@@ -12,6 +12,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { MessageModule } from './message/message.module';
     SmsModule,
     ChatModule,
     MessageModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
