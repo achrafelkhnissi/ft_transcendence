@@ -181,4 +181,12 @@ export class UsersService {
 
     return user?.avatar ?? null;
   }
+
+  getRanking() {
+    return this.prisma.user.findMany({
+      orderBy: {
+        level: 'desc',
+      },
+    });
+  }
 }

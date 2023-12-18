@@ -90,4 +90,9 @@ export class UsersController {
 
     return res.sendFile(avatar, { root: './' });
   }
+
+  @Get('ranking')
+  getRanking() {
+    return this.usersService.getRanking();
+  }
 }
