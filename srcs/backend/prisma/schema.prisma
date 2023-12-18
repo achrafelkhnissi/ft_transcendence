@@ -26,8 +26,6 @@ model User {
   avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
   url                    String          @unique
   status                 Status?         @default(ONLINE)
-  experiencePoints       Int             @default(0)
-  level                  Int             @default(0)
   settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
@@ -43,7 +41,6 @@ model User {
   admin Chat[] @relation("Admins")
   owner Chat[] @relation("Owner")
 
-  // achievements UserAchievement[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -67,12 +64,12 @@ model Notification {
 
 model UserSettings {
   id               Int     @id @default(autoincrement())
-  user             User    @relation(fields: [userId], references: [id])
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           Int     @unique
   twoFactorEnabled Boolean @default(false)
-  twoFactorSecret  String?
-  theme            String  @default("system")
-  language         String  @default("en")
+  verified         Boolean @default(false)
+  // theme            String  @default("system")
+  // language         String  @default("en")
 }
 
 model FriendRequest {
@@ -91,13 +88,12 @@ model FriendRequest {
 model UserStats {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   wins      Int      @default(0)
   losses    Int      @default(0)
   level     Int      @default(0)
   exp       Int      @default(0)
-  rank      Rank     @default(UNRANKED)
-  createdAt DateTime @default(now())
+  reatedAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
@@ -189,17 +185,6 @@ enum NotificationType {
   MATCH
   MESSAGE
   OTHER
-}
-
-enum Rank {
-  UNRANKED
-  BRONZE
-  SILVER
-  GOLD
-  PLATINUM
-  DIAMOND
-  MASTER
-  GRANDMASTER
 }
 
 enum Role {
