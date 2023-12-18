@@ -1,19 +1,29 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { UserType } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class NotificationsService {
-  // private readonly logger = new Logger(NotificationsController.name);
+  private readonly logger = new Logger(NotificationsService.name);
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createNotificationDto: CreateNotificationDto) {
-    return this.prismaService.notification.create({
-      data: createNotificationDto,
-    });
+  async create(createNotificationDto: CreateNotificationDto) {
+    try {
+      const notification = await this.prismaService.notification.create({
+        data: createNotificationDto,
+      });
+
+      return notification;
+    } catch (error) {
+      this.logger.warn(
+        "Couldn't create notification because its already exists in the database",
+      );
+    }
+
+    return null;
   }
 
   findByQuery(user: UserType, query: UpdateNotificationDto) {

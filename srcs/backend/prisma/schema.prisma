@@ -62,7 +62,7 @@ model Notification {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  @@index([senderId])
+  @@unique([type, senderId, receiverId])
 }
 
 model UserSettings {
@@ -79,14 +79,12 @@ model FriendRequest {
   id               Int              @id @default(autoincrement())
   friendshipStatus FriendshipStatus @default(PENDING)
   senderId         Int
-  // TODO: Remove a user and check if all requests are deleted
   sender           User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId       Int
   receiver         User             @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
-  // @@id([senderId, receiverId])
   @@unique([senderId, receiverId])
 }
 
