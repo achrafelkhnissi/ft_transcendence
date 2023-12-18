@@ -21,18 +21,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const email = profile.emails[0].value;
     const url = process.env.FT_PROFILE_URL + username;
 
-    console.log('\n\n');
-    console.log('--------- FtStrategy.validate ---------');
-    console.log({
-      username,
-      email,
-      url,
-    });
-
-    console.log({
-      profile,
-    });
-
+    this.logger.debug(`validating user ${username}`);
     let user;
     try {
       user = await this.usersService.findByEmail(email);
@@ -52,7 +41,6 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       });
       user.justCreated = true;
     }
-    console.log('\n');
-    return user || null;
+    return user;
   }
 }
