@@ -19,6 +19,9 @@ export class UsersService {
         stats: {
           create: {},
         },
+        settings: {
+          create: {},
+        },
       },
     });
   }
