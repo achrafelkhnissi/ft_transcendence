@@ -21,9 +21,7 @@ export class AuthController {
   @Get('ft')
   @UseGuards(FtAuthGuard)
   async ft() {
-    console.log('\n\n');
-    console.log('--------- AuthController.ft ---------');
-    console.log('\n');
+    this.logger.debug('ft');
   }
 
   @Get('ft/redirect')
@@ -32,20 +30,12 @@ export class AuthController {
     const isPhoneNumberVerified = user.isPhoneNumberVerified;
     const domainName = process.env.FT_REDIRECT_URI.split('/')[2].split(':')[0];
 
-    console.log('\n\n');
-    console.log('--------- AuthController.ftRedirect ---------');
-    console.log(`Redirecting to http://${domainName}:1337/dashboard`);
-    console.log({
-      function: 'ftRedirect',
-    });
-    console.log('\n');
-
     if (isPhoneNumberVerified) {
-      // TODO: Check if 2FA is enabled
-      this.logger.log('2FA is enabled');
+      this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       return res.redirect(`http://${domainName}:1337/verify`);
     }
 
+    this.logger.debug(`Redirecting user ${user.username} to dashboard`);
     res.redirect(`http://${domainName}:1337/dashboard`);
   }
 
@@ -53,18 +43,14 @@ export class AuthController {
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     const host = os.hostname();
-
-    console.log('\n\n');
-    console.log('--------- AuthController.logout ---------');
     req.logout((err) => {
       if (err) {
-        console.log(err);
+        this.logger.error(`Error logging out`);
         return err;
       }
-      console.log(`redirecting to http://${host}:1337`);
+      this.logger.debug(`Redirecting to http://${host}:1337 after logging out`);
       res.redirect(`http://${host}:1337`);
     });
-    console.log('\n');
   }
 
   @Get('whoami')
@@ -73,18 +59,7 @@ export class AuthController {
     user: UserType,
     @Res() res: Response,
   ) {
-    // async whoami(@User('username') username: string, @Res() res: Response) {
-    console.log('\n\n');
-    console.log('--------- AuthController.whoami ---------');
-
-    console.log({
-      function: 'whoami',
-      user,
-      // username,
-    });
-
-    console.log('\n');
+    this.logger.debug(`User ${user.username} requested whoami`);
     res.send(user ? user : 'not logged in');
-    // res.send(username ? username : 'not logged in');
   }
 }
