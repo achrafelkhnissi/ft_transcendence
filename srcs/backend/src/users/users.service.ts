@@ -10,13 +10,15 @@ import { UserResponseDto } from './dto/userResponse.dto';
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  // TODO: Check if 'readonly' is needed
   constructor(private readonly prisma: PrismaService) {}
 
   create(createUserDto: CreateUserDto): Promise<User> | null {
     return this.prisma.user.create({
       data: {
         ...createUserDto,
+        stats: {
+          create: {},
+        },
       },
     });
   }
@@ -185,7 +187,20 @@ export class UsersService {
   getRanking() {
     return this.prisma.user.findMany({
       orderBy: {
-        level: 'desc',
+        stats: {
+          level: 'desc',
+        },
+      },
+      select: {
+        avatar: true,
+        username: true,
+        stats: {
+          select: {
+            level: true,
+            wins: true,
+            losses: true,
+          },
+        },
       },
     });
   }
