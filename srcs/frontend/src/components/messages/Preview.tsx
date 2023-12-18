@@ -2,9 +2,7 @@
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import MessagesPreview from "./MessagesPreview";
-import { Message } from "./data";
-import { messagesProps } from "./data";
-import { UserStatuses } from "./data";
+import { Message, messagesProps, UserStatuses, Conversation, conversationProps } from "./data";
 
 
 const Preview = () => {
@@ -12,6 +10,7 @@ const Preview = () => {
     const [active, setActive] = useState<"messages" | "channels">("messages");
     const [messages, setMessages] = useState<Message[]>(messagesProps);
     const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
+    const [userConversartions, setuserConversations] = useState<Conversation[]>(conversationProps);
 
     const updateUserStatus = (userId: string, status: string) => {
         setUserStatuses(prevStatuses => ({
@@ -22,8 +21,8 @@ const Preview = () => {
       
     return (
     <div 
-            className="w-2/5  bg-[#25244E] rounded-[3rem] 
-            shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2" >
+            className="w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
+            shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2 overflow-hidden" >
                 <div className="w-full flex flex-col justify-center pt-2 gap-2">
                     {/* switch */}
                     <div className="
@@ -68,15 +67,19 @@ const Preview = () => {
                                 />
                             </div>
                             <input
-                                type="search"
-                                className=" bg-transparent h-full w-full placeholder:text-[#453e76] placeholder:text-sm"
+                                type="text"
+                                className=" bg-transparent h-full w-full placeholder:text-[#453e76] placeholder:text-sm 
+                                            outline-none text-[#524a89] text-sm font-light "
                                 placeholder="Search"
                             />
                         </form>
                     </div>
                 </div>
-
-                <MessagesPreview messages={messages} statuses={userStatuses}/>
+                {active === "messages" && 
+                    <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
+                        <MessagesPreview conversartions={userConversartions} statuses={userStatuses}/>
+                    </div>
+                }
         </div>)
 }
 

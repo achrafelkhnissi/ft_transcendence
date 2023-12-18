@@ -3,7 +3,7 @@ import Conversation from "@/components/messages/Conversation";
 
 const Home = () => {
     return (
-    <div className=" flex gap-6 w-full h-screen px-6 py-4 ">
+    <div className=" flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  ">
        <Preview/>
        <Conversation/> 
     </div>)

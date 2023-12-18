@@ -10,6 +10,13 @@ export interface Message{
     isRead: boolean;
 }
 
+export interface Conversation{
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    participant: string;
+    messages: Message[];
+}
 
 export const messagesProps : Message[] = [
     {
@@ -18,7 +25,7 @@ export const messagesProps : Message[] = [
         senderProfile: "khasdf",
         senderId: 2,
         content: "hello there!",
-        createdAt: "1.45pm",
+        createdAt: "1.45 PM",
         isRead: false,
     },
     {
@@ -27,7 +34,7 @@ export const messagesProps : Message[] = [
         senderProfile: "khasdf",
         senderId: 2,
         content: "hello there!",
-        createdAt: "1.45pm",
+        createdAt: "1.45 PM",
         isRead: false,
     },    {
         id: 2,
@@ -35,7 +42,7 @@ export const messagesProps : Message[] = [
         senderProfile: "khasdf",
         senderId: 2,
         content: "hello there!",
-        createdAt: "1.45pm",
+        createdAt: "1.45 PM",
         isRead: false,
     },    {
         id: 3,
@@ -43,7 +50,7 @@ export const messagesProps : Message[] = [
         senderProfile: "khasdf",
         senderId: 2,
         content: "hello there!",
-        createdAt: "1.45pm",
+        createdAt: "1.45 PM",
         isRead: false,
     },    {
         id: 4,
@@ -51,7 +58,7 @@ export const messagesProps : Message[] = [
         senderProfile: "khasdf",
         senderId: 2,
         content: "hello there!",
-        createdAt: "1.45pm",
+        createdAt: "1.45 PM",
         isRead: false,
     },
    {
@@ -59,8 +66,60 @@ export const messagesProps : Message[] = [
         senderName: "achraf",
         senderProfile: "khasdf",
         senderId: 2,
-        content: "hello there!",
-        createdAt: "1.45pm",
+        content: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Distinctio praesentium cum, et ipsum ea tempore, suscipit qui minima modi eveniet dolore, porro ratione dolores fugit quo fuga! Explicabo, fugit molestiae?",
+        createdAt: "1.45 PM",
         isRead: false,
+    },
+]
+
+export const conversationProps : Conversation[] = [
+    {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },    {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
+    },  {
+        id: 0,
+        createdAt: "1.30 am",
+        updatedAt: "1.30 am",
+        participant: "me",
+        messages: messagesProps,
     },
 ]
