@@ -27,10 +27,10 @@ export class AuthController {
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
-    const isPhoneNumberVerified = user.isPhoneNumberVerified;
     const domainName = process.env.FT_REDIRECT_URI.split('/')[2].split(':')[0];
 
-    if (isPhoneNumberVerified) {
+    // FIXME: Check if the logged in user enabled
+    if (user.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       return res.redirect(`http://${domainName}:1337/verify`);
     }
