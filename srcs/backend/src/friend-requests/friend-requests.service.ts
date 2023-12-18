@@ -36,6 +36,27 @@ export class FriendRequestsService {
       );
     }
 
+    // const friendRequest = await this.prisma.friendRequest.findFirst({
+    //   where: {
+    //     OR: [
+    //       {
+    //         senderId: senderId,
+    //         receiverId: receiver.id,
+    //       },
+    //       {
+    //         senderId: receiver.id,
+    //         receiverId: senderId,
+    //       },
+    //     ],
+    //   },
+    // });
+
+    // if (friendRequest) {
+    //   throw new BadRequestException(
+    //     `Friend request between <${sender.username}> and <${receiver.username}> already exists`,
+    //   );
+    // }
+
     const request = await this.prisma.friendRequest.upsert({
       where: {
         senderId_receiverId: { senderId, receiverId: receiver.id },
