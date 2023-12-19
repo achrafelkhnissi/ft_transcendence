@@ -28,7 +28,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     } catch (error) {
       this.logger.warn(error.message);
 
-      const avatar = await this.usersService.getAvatar(
+      const avatar = await this.usersService.getAvatarFrom42API(
         'https://api.intra.42.fr/v2/me',
         accessToken,
       );
