@@ -34,6 +34,8 @@ model User {
   messagesSent     Message[] @relation("SentMessages")
   messagesReceived Message[] @relation("ReceivedMessages")
 
+  achievements Achievement[] // Array of achievements that the user has
+
   stats UserStats?
 
   chat  Chat[] @relation("Users")
@@ -125,24 +127,17 @@ model Chat {
   updatedAt DateTime @updatedAt
 }
 
-// model Achievement {
-//   id              Int               @id @default(autoincrement())
-//   name            String
-//   description     String
-//   image           String
-//   createdAt       DateTime          @default(now())
-//   updatedAt       DateTime          @updatedAt
-// }
+model Achievement {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  image       String
 
-// model UserAchievement {
-//   id            Int         @id @default(autoincrement())
-//   userId        Int
-//   achievementId Int
-//   achievement   Achievement @relation(fields: [achievementId], references: [id])
-//   createdAt     DateTime    @default(now())
-//   updatedAt     DateTime    @updatedAt
-//   User          User        @relation(fields: [userId], references: [id])
-// }
+  users User[] // Array of users that have this achievement
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // ---- ENUMS ----
 enum Status {

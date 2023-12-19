@@ -95,4 +95,11 @@ export class UsersController {
   getRanking() {
     return this.usersService.getRanking();
   }
+  
+  @Get(':username/achievements')
+  getAchievements(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.usersService.getUserAchievements(username);
+  }
 }

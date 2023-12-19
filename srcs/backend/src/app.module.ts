@@ -13,6 +13,7 @@ import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { UploadModule } from './upload/upload.module';
     ChatModule,
     MessageModule,
     UploadModule,
+    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [

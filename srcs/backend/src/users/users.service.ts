@@ -207,4 +207,15 @@ export class UsersService {
       },
     });
   }
+
+  // TODO: Test this
+  async getUserAchievements(username: string) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          username,
+        },
+      })
+      .achievements();
+  }
 }
