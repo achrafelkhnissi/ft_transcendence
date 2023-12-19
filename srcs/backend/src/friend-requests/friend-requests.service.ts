@@ -20,6 +20,31 @@ export class FriendRequestsService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  // TODO: See where to put this
+  private isFriends(senderId: number, receiverId: number): boolean {
+    this.logger.log(
+      `Checking if users <${senderId}> and <${receiverId}> are friends`,
+    );
+
+    const friendRequest = this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: senderId,
+            receiverId: receiverId,
+          },
+          {
+            senderId: receiverId,
+            receiverId: senderId,
+          },
+        ],
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+
+    return !!friendRequest;
+  }
+
   async sendFriendRequest(senderId: number, receiverUsername: string) {
     const [sender, receiver] = await Promise.all([
       this.prisma.user.findUnique({
@@ -36,26 +61,11 @@ export class FriendRequestsService {
       );
     }
 
-    // const friendRequest = await this.prisma.friendRequest.findFirst({
-    //   where: {
-    //     OR: [
-    //       {
-    //         senderId: senderId,
-    //         receiverId: receiver.id,
-    //       },
-    //       {
-    //         senderId: receiver.id,
-    //         receiverId: senderId,
-    //       },
-    //     ],
-    //   },
-    // });
-
-    // if (friendRequest) {
-    //   throw new BadRequestException(
-    //     `Friend request between <${sender.username}> and <${receiver.username}> already exists`,
-    //   );
-    // }
+    if (this.isFriends(senderId, receiver.id)) {
+      throw new BadRequestException(
+        `Users <${sender.username}> and <${receiver.username}> are already friends`,
+      );
+    }
 
     const request = await this.prisma.friendRequest.upsert({
       where: {
