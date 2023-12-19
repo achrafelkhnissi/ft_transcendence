@@ -210,7 +210,13 @@ export class UsersService {
           username,
         },
       })
-      .achievements();
+      .achievements({
+        select: {
+          name: true,
+          description: true,
+          image: true,
+        },
+      });
   }
 
   getUserChats(username: string) {
