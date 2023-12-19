@@ -1,3 +1,4 @@
+import { FriendsService } from './../friends/friends.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,7 +11,37 @@ import { UserResponseDto } from './dto/userResponse.dto';
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly friendsService: FriendsService,
+  ) {}
+
+  async isFriend(userId: number, friendId: number) {
+    const friendRequest = await this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: friendId,
+          },
+          {
+            senderId: friendId,
+            receiverId: userId,
+          },
+        ],
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+      select: {
+        friendshipStatus: true,
+      },
+    });
+
+    return friendRequest ? friendRequest.friendshipStatus : false;
+  }
+
+  async me(username: string) {
+    return this.findByUsername(username);
+  }
 
   create(createUserDto: CreateUserDto): Promise<User> | null {
     this.logger.log(`creating user ${createUserDto.username}`);
@@ -39,111 +70,74 @@ export class UsersService {
       throw new NotFoundException(`User with id <${id}> not found`);
     }
 
-    // Check if the user is friend with the user making the request
-    // TODO: Refactor this so that it's not repeated
-    const isFriend = await this.prisma.friendRequest.findFirst({
-      where: {
-        OR: [
-          {
-            senderId: userId,
-            receiverId: user.id,
-          },
-          {
-            senderId: user.id,
-            receiverId: userId,
-          },
-        ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
-      },
-    });
-
     return {
       ...user,
-      isFriend: isFriend ? isFriend.friendshipStatus : false,
+      isFriend: await this.isFriend(userId, id),
     };
   }
 
-  async findByEmail(
-    email: string,
-    userId?: number,
-  ): Promise<UserResponseDto> | null {
-    const user: User | null = await this.prisma.user.findUnique({
-      where: { email: email },
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
     });
-    if (!user) {
-      throw new NotFoundException(`User with email <${email}> not found`);
-    }
-
-    // Check if the user is friend with the user making the request
-    const isFriend = await this.prisma.friendRequest.findFirst({
-      where: {
-        OR: [
-          {
-            senderId: userId,
-            receiverId: user.id,
-          },
-          {
-            senderId: user.id,
-            receiverId: userId,
-          },
-        ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
-      },
-    });
-
-    return {
-      ...user,
-      isFriend: isFriend ? isFriend.friendshipStatus : false,
-    };
   }
 
-  async findByUsername(
-    username: string,
-    userId?: number,
-  ): Promise<UserResponseDto> | null {
-    const user: User | null = await this.prisma.user.findUnique({
+  async findByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({
       where: { username },
+      select: {
+        id: true,
+        username: true,
+        avatar: true,
+        url: true,
+        status: true,
+        stats: {
+          select: {
+            level: true,
+            wins: true,
+            losses: true,
+          },
+        },
+        achievements: {
+          select: {
+            name: true,
+            description: true,
+            image: true,
+          },
+        },
+      },
     });
+
     if (!user) {
       throw new NotFoundException(`User with username <${username}> not found`);
     }
 
-    // Check if the user is friend with the user making the request
-    const isFriend = await this.prisma.friendRequest.findFirst({
-      where: {
-        OR: [
-          {
-            senderId: userId,
-            receiverId: user.id,
-          },
-          {
-            senderId: user.id,
-            receiverId: userId,
-          },
-        ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
-      },
-    });
-
     return {
       ...user,
-      isFriend: isFriend ? isFriend.friendshipStatus : false,
+      friends: await this.friendsService.listFriendsByUsername(username),
     };
-    // return new UserResponseDto(user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    updateUserDto;
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return this.prisma.user.delete({
-      where: { id: id },
+  update(username: string, updateUserDto: UpdateUserDto) {
+    this.logger.debug(`updating user ${username}`);
+    return this.prisma.user.update({
+      where: { username },
+      data: updateUserDto,
     });
   }
 
-  async getAvatar(url: string, accessToken: string): Promise<string> {
+  remove(username: string) {
+    this.logger.debug(`deleting user ${username}`);
+    return this.prisma.user.delete({
+      where: { username },
+    });
+  }
+
+  async getUserFriends(username: string) {
+    return this.friendsService.listFriendsByUsername(username);
+  }
+
+  async getAvatarFrom42API(url: string, accessToken: string): Promise<string> {
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -153,19 +147,6 @@ export class UsersService {
     const data = await res.json();
     const avatar = data.image.link;
     return avatar;
-  }
-
-  async getAvatarById(id: number) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        avatar: true,
-      },
-    });
-
-    return user?.avatar ?? null;
   }
 
   async getAvatarByUsername(username: string) {
@@ -202,7 +183,6 @@ export class UsersService {
     });
   }
 
-  // TODO: Test this
   async getUserAchievements(username: string) {
     return this.prisma.user
       .findUnique({
@@ -220,6 +200,12 @@ export class UsersService {
   }
 
   getUserChats(username: string) {
+    const userInfoSelect = {
+      username: true,
+      avatar: true,
+      status: true,
+    };
+
     return this.prisma.user
       .findUnique({
         where: {
@@ -236,50 +222,38 @@ export class UsersService {
                   content: true,
                   createdAt: true,
                   sender: {
-                    select: {
-                      username: true,
-                      avatar: true,
-                      status: true,
-                    },
+                    select: userInfoSelect,
                   },
                 },
               },
               owner: {
                 select: {
                   user: {
-                    select: {
-                      username: true,
-                      avatar: true,
-                      status: true,
-                    },
+                    select: userInfoSelect,
                   },
                 },
               },
               admins: {
                 select: {
                   user: {
-                    select: {
-                      username: true,
-                      avatar: true,
-                      status: true,
-                    },
+                    select: userInfoSelect,
                   },
                 },
               },
               participants: {
                 select: {
                   user: {
-                    select: {
-                      username: true,
-                      avatar: true,
-                      status: true,
-                    },
+                    select: userInfoSelect,
                   },
                 },
               },
             },
           },
         },
+      })
+      .catch((error) => {
+        this.logger.error(error);
+        throw new NotFoundException(`User <${username}> not found`);
       });
   }
 }
