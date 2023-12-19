@@ -8,7 +8,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
 // TODO: Put the endpoints related to friends in a /friends route
 // TODO: Put the endpoints related to friend requests in a /requests route
 // TODO: Put the endpoints related to blocked users in /users/* route
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 @Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
@@ -16,12 +16,11 @@ export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   // TODO: Change QueryDto to UsernameDto
-
   @Get()
   list(@Query() query: QueryDto, @User() user: UserType) {
-    const { username, id } = query;
-    const identifier = username || id || user?.username;
-    return this.friendsService.listFriendsByIdentifier(identifier);
+    const { username } = query;
+
+    return this.friendsService.listFriendsByUsername(username || user.username);
   }
 
   @Get('remove')
