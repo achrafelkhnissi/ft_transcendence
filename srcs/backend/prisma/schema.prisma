@@ -34,13 +34,12 @@ model User {
   messagesSent     Message[] @relation("SentMessages")
   messagesReceived Message[] @relation("ReceivedMessages")
 
-  achievements Achievement[] // Array of achievements that the user has
+  achievements Achievement[]
 
   stats UserStats?
 
-  chat  Chat[] @relation("Users")
-  admin Chat[] @relation("Admins")
-  owner Chat[] @relation("Owner")
+  roles         UserRole[]
+  conversations Participant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -50,8 +49,8 @@ model Notification {
   id              Int              @id @default(autoincrement())
   read            Boolean          @default(false)
   type            NotificationType
-  senderUsername  String
-  senderAvatar    String
+  senderUsername  String // TODO: Remove this field
+  senderAvatar    String // TODO: Remove this field
   senderId        Int
   sender          User             @relation("SentNotifications", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId      Int
@@ -94,37 +93,64 @@ model UserStats {
   losses    Int      @default(0)
   level     Int      @default(0)
   exp       Int      @default(0)
-  reatedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Message {
-  id         Int    @id @default(autoincrement())
-  content    String
-  chatId     Int
-  Chat       Chat   @relation(fields: [chatId], references: [id])
-  senderId   Int
-  sender     User   @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade) // TODO: Do we need to delete messages when a user is deleted?
-  receiverId Int
-  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  id             Int          @id @default(autoincrement())
+  content        String
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       Int
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId     Int
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 // A Chat is a conversation between two or more users
-model Chat {
-  id       Int       @id @default(autoincrement())
-  type     ChatType  @default(PUBLIC)
-  password String?   @unique
-  ownerId  Int
-  owner    User      @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
-  admins   User[]    @relation("Admins")
-  users    User[]    @relation("Users")
-  messages Message[]
+model Conversation {
+  id           Int              @id @default(autoincrement())
+  type         ConversationType @default(PUBLIC)
+  password     String?          @unique
+  ownerId      Int
+  messages     Message[]
+  owner        UserRole[]       @relation("Owner")
+  admins       UserRole[]       @relation("Admins")
+  participants Participant[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  UserRole  UserRole[]
+}
+
+model UserRole {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role
+
+  conversationId Int?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  ownerOfConversations Conversation[] @relation("Owner")
+  adminOfConversations Conversation[] @relation("Admins")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Participant {
+  userId         Int
+  conversationId Int
+
+  user         User         @relation(fields: [userId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  @@id([userId, conversationId])
 }
 
 model Achievement {
@@ -168,7 +194,7 @@ enum MatchStatus {
   FINISHED
 }
 
-enum ChatType {
+enum ConversationType {
   PUBLIC
   PRIVATE
   PROTECTED
@@ -182,8 +208,9 @@ enum NotificationType {
 }
 
 enum Role {
-  USER
+  OWNER
   ADMIN
+  PARTICIPANT
 }
 
 enum inviteType {
