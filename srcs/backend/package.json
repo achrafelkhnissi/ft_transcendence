@@ -21,7 +21,7 @@
     "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:studio": "npx prisma studio &",
-    "prisma": "npm run prisma:push && npm run prisma:studio"
+    "prisma": "npm run prisma:push && npm run prisma:seed && npm run prisma:studio"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
