@@ -9,19 +9,19 @@ import {
   Logger,
   Query,
   ParseIntPipe,
-  UseGuards,
+  // UseGuards,
   Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../guards/auth.guard';
+// import { AuthGuard } from '../guards/auth.guard';
 import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/interfaces/user.interface';
 import { User } from 'src/decorators/user.decorator';
 
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 @Controller()
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
@@ -95,11 +95,18 @@ export class UsersController {
   getRanking() {
     return this.usersService.getRanking();
   }
-  
+
   @Get(':username/achievements')
   getAchievements(@Param() params: UsernameDto) {
     const { username } = params;
 
     return this.usersService.getUserAchievements(username);
+  }
+
+  @Get(':username/chats')
+  getChats(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.usersService.getUserChats(username);
   }
 }

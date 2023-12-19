@@ -13,6 +13,7 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createUserDto: CreateUserDto): Promise<User> | null {
+    this.logger.log(`creating user ${createUserDto.username}`);
     return this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -150,13 +151,6 @@ export class UsersService {
     });
 
     const data = await res.json();
-
-    console.log({ data });
-
-    console.log({
-      image: data.image,
-    });
-
     const avatar = data.image.link;
     return avatar;
   }
@@ -217,5 +211,69 @@ export class UsersService {
         },
       })
       .achievements();
+  }
+
+  getUserChats(username: string) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          username,
+        },
+      })
+      .conversations({
+        include: {
+          conversation: {
+            select: {
+              type: true,
+              messages: {
+                select: {
+                  content: true,
+                  createdAt: true,
+                  sender: {
+                    select: {
+                      username: true,
+                      avatar: true,
+                      status: true,
+                    },
+                  },
+                },
+              },
+              owner: {
+                select: {
+                  user: {
+                    select: {
+                      username: true,
+                      avatar: true,
+                      status: true,
+                    },
+                  },
+                },
+              },
+              admins: {
+                select: {
+                  user: {
+                    select: {
+                      username: true,
+                      avatar: true,
+                      status: true,
+                    },
+                  },
+                },
+              },
+              participants: {
+                select: {
+                  user: {
+                    select: {
+                      username: true,
+                      avatar: true,
+                      status: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
   }
 }
