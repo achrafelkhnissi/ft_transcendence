@@ -13,8 +13,22 @@ async function generateRandomUser() {
       username: faker.internet.userName(),
       email: faker.internet.email(),
       url: faker.internet.url(),
-      // twoFactorEnabled: faker.datatype.boolean(),
-      // twoFactorSecret: faker.string.hexadecimal(),
+      // Create stats nested record
+      stats: {
+        create: {
+          level: faker.datatype.number(),
+          wins: faker.datatype.number(),
+          losses: faker.datatype.number(),
+          exp: faker.datatype.number(),
+        },
+      },
+      // Create settings nested record
+      settings: {
+        create: {
+          twoFactorEnabled: faker.datatype.boolean(),
+          verified: faker.datatype.boolean(),
+        },
+      },
     },
   });
 
@@ -22,7 +36,7 @@ async function generateRandomUser() {
 }
 
 async function main() {
-  // await clean();
+  await clean();
   for (let i = 0; i < 10; i++) {
     await generateRandomUser();
   }
