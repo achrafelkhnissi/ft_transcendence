@@ -61,13 +61,15 @@ export class SmsService {
     return await this.updatePhoneNumberVerificationStatus(userId);
   }
 
+  // TODO: Change the name of this method
   async updatePhoneNumberVerificationStatus(userId: number) {
-    return await this.prismaService.user.update({
+    return this.prismaService.userSettings.update({
       where: {
-        id: userId,
+        userId,
       },
       data: {
-        isPhoneNumberVerified: true,
+        twoFactorEnabled: true,
+        verified: true,
       },
     });
   }

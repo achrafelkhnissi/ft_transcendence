@@ -10,13 +10,18 @@ import { UserResponseDto } from './dto/userResponse.dto';
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  // TODO: Check if 'readonly' is needed
   constructor(private readonly prisma: PrismaService) {}
 
   create(createUserDto: CreateUserDto): Promise<User> | null {
     return this.prisma.user.create({
       data: {
         ...createUserDto,
+        stats: {
+          create: {},
+        },
+        settings: {
+          create: {},
+        },
       },
     });
   }
@@ -150,5 +155,52 @@ export class UsersService {
 
     const avatar = data.image.link;
     return avatar;
+  }
+
+  async getAvatarById(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        avatar: true,
+      },
+    });
+
+    return user?.avatar ?? null;
+  }
+
+  async getAvatarByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        avatar: true,
+      },
+    });
+
+    return user?.avatar ?? null;
+  }
+
+  getRanking() {
+    return this.prisma.user.findMany({
+      orderBy: {
+        stats: {
+          level: 'desc',
+        },
+      },
+      select: {
+        avatar: true,
+        username: true,
+        stats: {
+          select: {
+            level: true,
+            wins: true,
+            losses: true,
+          },
+        },
+      },
+    });
   }
 }

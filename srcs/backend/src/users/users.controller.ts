@@ -10,6 +10,7 @@ import {
   Query,
   ParseIntPipe,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -62,5 +63,36 @@ export class UsersController {
     const { username } = params;
 
     return `This action returns all friends of ${username}`;
+  }
+
+  @Get(':username/avatar')
+  async getAvatar(@Param() params: UsernameDto, @Res() res) {
+    const { username } = params;
+
+    const avatar = await this.usersService.getAvatarByUsername(username);
+
+    if (avatar.startsWith('http')) {
+      return res.redirect(avatar);
+    }
+
+    return res.sendFile(avatar, { root: './' });
+  }
+
+  // FIXME: This route is not working
+  // cause: the route is not being called because of the route above
+  @Get(':id/avatar')
+  async getAvatarById(@Param('id', ParseIntPipe) id: number, @Res() res) {
+    const avatar = await this.usersService.getAvatarById(id);
+
+    if (avatar.startsWith('http')) {
+      return res.redirect(avatar);
+    }
+
+    return res.sendFile(avatar, { root: './' });
+  }
+
+  @Get('ranking')
+  getRanking() {
+    return this.usersService.getRanking();
   }
 }

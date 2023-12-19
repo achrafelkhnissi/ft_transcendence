@@ -22,20 +22,24 @@ model User {
   username               String?         @unique
   email                  String          @unique
   phoneNumber            String?         @unique
-  isPhoneNumberVerified  Boolean         @default(false)
   avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
   url                    String          @unique
   status                 Status?         @default(ONLINE)
-  experiencePoints       Int             @default(0)
-  level                  Int             @default(0)
   settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
   notificationsSent      Notification[]  @relation("SentNotifications")
   notificationsReceived  Notification[]  @relation("ReceivedNotifications")
-  stats                  UserStats?
 
-  // achievements UserAchievement[]
+  messagesSent     Message[] @relation("SentMessages")
+  messagesReceived Message[] @relation("ReceivedMessages")
+
+  stats UserStats?
+
+  chat  Chat[] @relation("Users")
+  admin Chat[] @relation("Admins")
+  owner Chat[] @relation("Owner")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,112 +58,72 @@ model Notification {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  @@index([senderId])
+  @@unique([type, senderId, receiverId])
 }
 
 model UserSettings {
   id               Int     @id @default(autoincrement())
-  user             User    @relation(fields: [userId], references: [id])
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           Int     @unique
   twoFactorEnabled Boolean @default(false)
-  twoFactorSecret  String?
-  theme            String  @default("system")
-  language         String  @default("en")
+  verified         Boolean @default(false)
+  // theme            String  @default("system")
+  // language         String  @default("en")
 }
 
 model FriendRequest {
   id               Int              @id @default(autoincrement())
   friendshipStatus FriendshipStatus @default(PENDING)
   senderId         Int
-  // TODO: Remove a user and check if all requests are deleted
   sender           User             @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId       Int
   receiver         User             @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
-  // @@id([senderId, receiverId])
   @@unique([senderId, receiverId])
 }
 
 model UserStats {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   wins      Int      @default(0)
   losses    Int      @default(0)
   level     Int      @default(0)
   exp       Int      @default(0)
-  rank      Rank     @default(UNRANKED)
+  reatedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id         Int    @id @default(autoincrement())
+  content    String
+  chatId     Int
+  Chat       Chat   @relation(fields: [chatId], references: [id])
+  senderId   Int
+  sender     User   @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade) // TODO: Do we need to delete messages when a user is deleted?
+  receiverId Int
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// model Game {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Games", fields: [userId], references: [id])
-//   matchId   Int
-//   // match     Match    @relation("Games", fields: [matchId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   Match     Match    @relation(fields: [matchId], references: [id])
-// }
+// A Chat is a conversation between two or more users
+model Chat {
+  id       Int       @id @default(autoincrement())
+  type     ChatType  @default(PUBLIC)
+  password String?   @unique
+  ownerId  Int
+  owner    User      @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
+  admins   User[]    @relation("Admins")
+  users    User[]    @relation("Users")
+  messages Message[]
 
-// model Match {
-//   id        Int      @id @default(autoincrement())
-//   winnerId  Int
-//   // winner    User     @relation("MatchHistory", fields: [winnerId], references: [id])
-//   loserId   Int
-//   // loser     User     @relation("MatchHistory", fields: [loserId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   Game      Game[]
-// }
-
-// model MatchHistory {
-//   id        Int      @id @default(autoincrement())
-//   winnerId  Int
-//   // winner    User     @relation("MatchHistory", fields: [winnerId], references: [id])
-//   loserId   Int
-//   // loser     User     @relation("MatchHistory", fields: [loserId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Channel {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   isPrivate Boolean  @default(false)
-//   password  String?
-//   ownerId   Int
-//   // owner     User     @relation("Channels", fields: [ownerId], references: [id])
-//   // members   User[]
-//   // messages  Message[]
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Message {
-//   id        Int      @id @default(autoincrement())
-//   content   String
-//   authorId  Int
-//   // author      User     @relation("Messages", fields: [authorId], references: [id])
-//   channelId Int
-//   // channel   Channel  @relation("Messages", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Chat {
-//   id        Int      @id @default(autoincrement())
-//   userId    Int
-//   // user      User     @relation("Chats", fields: [userId], references: [id])
-//   channelId Int
-//   // channel   Channel  @relation("Chats", fields: [channelId], references: [id])
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // model Achievement {
 //   id              Int               @id @default(autoincrement())
@@ -209,9 +173,10 @@ enum MatchStatus {
   FINISHED
 }
 
-enum ChannelType {
+enum ChatType {
   PUBLIC
   PRIVATE
+  PROTECTED
 }
 
 enum NotificationType {
@@ -219,17 +184,6 @@ enum NotificationType {
   MATCH
   MESSAGE
   OTHER
-}
-
-enum Rank {
-  UNRANKED
-  BRONZE
-  SILVER
-  GOLD
-  PLATINUM
-  DIAMOND
-  MASTER
-  GRANDMASTER
 }
 
 enum Role {

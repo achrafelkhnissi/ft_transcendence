@@ -21,24 +21,41 @@ export class FriendRequestsService {
   ) {}
 
   async sendFriendRequest(senderId: number, receiverUsername: string) {
-    this.logger.log(
-      `Friend request from <${senderId}> to <${receiverUsername}>`,
-    );
-    const sender = await this.prisma.user.findUnique({
-      where: { id: senderId },
-    });
+    const [sender, receiver] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: senderId },
+      }),
+      this.prisma.user.findUnique({
+        where: { username: receiverUsername },
+      }),
+    ]);
 
-    if (!sender) {
-      throw new NotFoundException(`User with id <${senderId}> not found`);
+    if (!sender || !receiver) {
+      throw new NotFoundException(
+        `User <${senderId}> or <${receiverUsername}> not found`,
+      );
     }
 
-    const receiver = await this.prisma.user.findUnique({
-      where: { username: receiverUsername },
-    });
+    // const friendRequest = await this.prisma.friendRequest.findFirst({
+    //   where: {
+    //     OR: [
+    //       {
+    //         senderId: senderId,
+    //         receiverId: receiver.id,
+    //       },
+    //       {
+    //         senderId: receiver.id,
+    //         receiverId: senderId,
+    //       },
+    //     ],
+    //   },
+    // });
 
-    if (!receiver) {
-      throw new NotFoundException(`User <${receiverUsername}> not found`);
-    }
+    // if (friendRequest) {
+    //   throw new BadRequestException(
+    //     `Friend request between <${sender.username}> and <${receiver.username}> already exists`,
+    //   );
+    // }
 
     const request = await this.prisma.friendRequest.upsert({
       where: {
@@ -63,8 +80,16 @@ export class FriendRequestsService {
       friendRequestId: request.id,
     });
 
-    this.logger.log(`Friend request sent to <${receiverUsername}>`);
+    if (!notification) {
+      throw new BadRequestException(
+        `Friend request from <${sender.username}> to <${receiver.username}> already exists`,
+      );
+    }
     this.eventEmitter.emit('notification', notification);
+
+    this.logger.log(
+      `User <${sender.username}> sent a friend request to <${receiver.username}>`,
+    );
 
     return { message: 'Friend request sent', request };
   }

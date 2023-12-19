@@ -10,6 +10,9 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
+import { ChatModule } from './chat/chat.module';
+import { MessageModule } from './message/message.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -38,6 +41,16 @@ import { SmsModule } from './sms/sms.module';
             path: 'notifications',
             module: NotificationsModule,
           },
+          {
+            path: 'chat',
+            module: ChatModule,
+            children: [
+              {
+                path: 'message',
+                module: MessageModule,
+              },
+            ],
+          },
         ],
       },
     ]),
@@ -45,6 +58,9 @@ import { SmsModule } from './sms/sms.module';
       global: true,
     }),
     SmsModule,
+    ChatModule,
+    MessageModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
