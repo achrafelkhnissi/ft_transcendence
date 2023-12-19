@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 async function clean() {
   await prisma.user.deleteMany();
+  await prisma.conversation.deleteMany();
 }
 
 async function generateRandomUser() {
@@ -13,16 +14,13 @@ async function generateRandomUser() {
       username: faker.internet.userName(),
       email: faker.internet.email(),
       url: faker.internet.url(),
-      // Create stats nested record
       stats: {
         create: {
-          level: faker.datatype.number(),
-          wins: faker.datatype.number(),
-          losses: faker.datatype.number(),
-          exp: faker.datatype.number(),
+          level: faker.datatype.number({ min: 1, max: 100 }),
+          wins: faker.datatype.number({ min: 0, max: 100 }),
+          losses: faker.datatype.number({ min: 0, max: 100 }),
         },
       },
-      // Create settings nested record
       settings: {
         create: {
           twoFactorEnabled: faker.datatype.boolean(),
@@ -35,10 +33,55 @@ async function generateRandomUser() {
   return user;
 }
 
+async function createConversation(users) {
+  const randomUser = () => users[Math.floor(Math.random() * users.length)];
+
+  const conversation = await prisma.conversation.create({
+    data: {
+      type: 'PUBLIC', // Or 'PRIVATE', as needed
+      ownerId: randomUser().id,
+      // Other fields as necessary
+      // ...
+    },
+  });
+
+  // Add participants
+  for (const user of users) {
+    await prisma.participant.create({
+      data: {
+        userId: user.id,
+        conversationId: conversation.id,
+      },
+    });
+  }
+
+  // Add a random number of messages to the conversation
+  const messageCount = faker.datatype.number({ min: 5, max: 20 }); // Adjust range as needed
+  for (let i = 0; i < messageCount; i++) {
+    await prisma.message.create({
+      data: {
+        content: faker.lorem.sentence(),
+        conversationId: conversation.id,
+        senderId: randomUser().id,
+        receiverId: randomUser().id,
+      },
+    });
+  }
+
+  return conversation;
+}
+
 async function main() {
   await clean();
+
+  const users = [];
   for (let i = 0; i < 10; i++) {
-    await generateRandomUser();
+    const user = await generateRandomUser();
+    users.push(user);
+  }
+
+  for (let i = 0; i < 5; i++) {
+    await createConversation(users);
   }
 }
 
