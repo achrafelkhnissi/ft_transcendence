@@ -82,8 +82,6 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      senderAvatar: sender.avatar,
-      senderUsername: sender.username,
       receiverId: receiver.id,
       senderId: senderId,
       type: NotificationType.FRIEND_REQUEST,
@@ -146,8 +144,6 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      senderUsername: sender.username,
-      senderAvatar: sender.avatar,
       receiverId: receiverId,
       senderId: sender.id,
       type: NotificationType.FRIEND_REQUEST, // TODO: Change to FRIEND_REQUEST_ACCEPT
