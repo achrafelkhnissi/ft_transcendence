@@ -9,14 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateNotificationDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly senderUsername: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly senderAvatar: string;
-
   @IsOptional()
   @IsNotEmpty()
   @IsBoolean()
