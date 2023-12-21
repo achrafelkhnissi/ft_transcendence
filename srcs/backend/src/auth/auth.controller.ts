@@ -5,6 +5,7 @@ import {
   Res,
   UseGuards,
   Logger,
+  Query,
   // ValidationPipe,
 } from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
@@ -58,8 +59,13 @@ export class AuthController {
     @User(/* new ValidationPipe({ validateCustomDecorators: true }) */)
     user: UserType,
     @Res() res: Response,
+    @Query('data') data: boolean,
   ) {
-    this.logger.debug(`User ${user.username} requested whoami`);
+    if (data) {
+      // TODO: Return all user's data [settings, stats, conversations, etc.]
+    }
+
+    this.logger.debug(`User ${user?.username ?? 'X'} is requesting whoami`);
     res.send(user ? user : 'not logged in');
   }
 }
