@@ -12,19 +12,19 @@ export class ChatService {
 
   create(createChatDto: CreateChatDto) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
-    return this.prismaService.chat.create({
+    return this.prismaService.conversation.create({
       data: createChatDto,
     });
   }
 
   findAll() {
     this.logger.log('Finding all chats');
-    return this.prismaService.chat.findMany();
+    return this.prismaService.conversation.findMany();
   }
 
   findOne(id: number) {
     this.logger.log(`Finding chat with id ${id}`);
-    return this.prismaService.chat.findUnique({
+    return this.prismaService.conversation.findUnique({
       where: {
         id,
       },
@@ -34,7 +34,7 @@ export class ChatService {
   update(id: number, updateChatDto: UpdateChatDto) {
     this.logger.log(`Updating chat with id ${id}`);
 
-    return this.prismaService.chat.update({
+    return this.prismaService.conversation.update({
       where: {
         id,
       },
@@ -45,7 +45,7 @@ export class ChatService {
   // TODO: Check if the logged in user has permission to remove a chat
   remove(id: number) {
     this.logger.log(`Removing chat with id ${id}`);
-    return this.prismaService.chat.delete({
+    return this.prismaService.conversation.delete({
       where: {
         id,
       },
@@ -55,7 +55,7 @@ export class ChatService {
   // TODO: maybe use message service instead?
   findMessages(id: number) {
     this.logger.log(`Finding messages for chat with id ${id}`);
-    return this.prismaService.chat
+    return this.prismaService.conversation
       .findUnique({
         where: {
           id,
@@ -66,18 +66,18 @@ export class ChatService {
 
   findParticipants(id: number) {
     this.logger.log(`Finding participants for chat with id ${id}`);
-    return this.prismaService.chat
+    return this.prismaService.conversation
       .findUnique({
         where: {
           id,
         },
       })
-      .users();
+      .participants();
   }
 
   findAdmins(id: number) {
     this.logger.log(`Finding admins for chat with id ${id}`);
-    return this.prismaService.chat
+    return this.prismaService.conversation
       .findUnique({
         where: {
           id,
@@ -88,7 +88,7 @@ export class ChatService {
 
   findOwner(id: number) {
     this.logger.log(`Finding owner for chat with id ${id}`);
-    return this.prismaService.chat
+    return this.prismaService.conversation
       .findUnique({
         where: {
           id,
@@ -99,7 +99,7 @@ export class ChatService {
 
   addAdmin(id: number, userId: number) {
     this.logger.log(`Adding admin with id ${userId} to chat with id ${id}`);
-    return this.prismaService.chat.update({
+    return this.prismaService.conversation.update({
       where: {
         id,
       },
@@ -116,14 +116,14 @@ export class ChatService {
   // TODO: Check if the logged in user has permission to remove a user from a chat
   removeUser(id: number, userId: number) {
     this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
-    return this.prismaService.chat.update({
+    return this.prismaService.conversation.update({
       where: {
         id,
       },
       data: {
-        users: {
+        participants: {
           disconnect: {
-            id: userId,
+            userId_conversationId: { userId, conversationId: id },
           },
         },
       },
@@ -132,7 +132,7 @@ export class ChatService {
 
   removeAdmin(id: number, userId: number) {
     this.logger.log(`Removing admin with id ${userId} from chat with id ${id}`);
-    return this.prismaService.chat.update({
+    return this.prismaService.conversation.update({
       where: {
         id,
       },
@@ -147,7 +147,6 @@ export class ChatService {
   }
 
   /* --- Gateway --- */
-
   getUserFromSocket(socket: Socket) {
     // TODO: Test this
     return socket.handshake.auth.user;
@@ -170,6 +169,4 @@ export class ChatService {
   getAllAdminsFromChat(room: string) {}
 
   getChatOwner(room: string) {}
-
-  // getAllChatsFromUser(user: any) {}
 }

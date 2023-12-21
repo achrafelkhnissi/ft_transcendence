@@ -1,4 +1,4 @@
-import { ChatType } from '@prisma/client';
+import { ConversationType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateChatDto {
@@ -11,9 +11,9 @@ export class CreateChatDto {
   @IsNotEmpty()
   readonly ownerId: number;
 
-  @IsEnum(ChatType)
+  @IsEnum(ConversationType)
   @IsNotEmpty()
-  readonly type: ChatType;
+  readonly type: ConversationType;
 
   @IsString()
   @IsNotEmpty()

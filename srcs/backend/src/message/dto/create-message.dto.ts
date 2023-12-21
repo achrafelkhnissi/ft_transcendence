@@ -8,7 +8,7 @@ export class CreateMessageDto {
 
   @IsInt()
   @IsNotEmpty()
-  chatId: number;
+  conversationId: number;
 
   @IsInt()
   @IsNotEmpty()

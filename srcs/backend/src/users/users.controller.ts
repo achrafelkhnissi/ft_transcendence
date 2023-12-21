@@ -6,26 +6,22 @@ import {
   Patch,
   Param,
   Delete,
-  Logger,
   Query,
-  ParseIntPipe,
-  UseGuards,
+  // UseGuards,
   Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../guards/auth.guard';
+// import { AuthGuard } from '../guards/auth.guard';
 import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/interfaces/user.interface';
 import { User } from 'src/decorators/user.decorator';
 
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 @Controller()
 export class UsersController {
-  private readonly logger = new Logger(UsersController.name);
-
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
@@ -34,11 +30,15 @@ export class UsersController {
   }
 
   @Get()
-  find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
+  async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
     const { username: usernameQuery, id: idQuery } = query;
 
     if (usernameQuery) {
-      return this.usersService.findByUsername(usernameQuery, userId);
+      const user = await this.usersService.findByUsername(usernameQuery);
+      return {
+        ...user,
+        isFriend: await this.usersService.isFriend(userId, user.id),
+      };
     }
 
     if (idQuery) {
@@ -48,21 +48,28 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch(':username')
+  update(@Param() params: UsernameDto, @Body() updateUserDto: UpdateUserDto) {
+    const { username } = params;
+    return this.usersService.update(username, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.usersService.remove(+id);
+  @Delete(':username')
+  remove(@Param() params: UsernameDto) {
+    const { username } = params;
+    return this.usersService.remove(username);
+  }
+
+  @Get('me')
+  getMe(@User() { username }: UserType) {
+    return this.usersService.findByUsername(username);
   }
 
   @Get(':username/friends')
   getFriends(@Param() params: UsernameDto) {
     const { username } = params;
 
-    return `This action returns all friends of ${username}`;
+    return this.usersService.getUserFriends(username);
   }
 
   @Get(':username/avatar')
@@ -78,28 +85,22 @@ export class UsersController {
     return res.sendFile(avatar, { root: './' });
   }
 
-  // FIXME: This route is not working
-  // cause: the route is not being called because of the route above
-  @Get(':id/avatar')
-  async getAvatarById(@Param('id', ParseIntPipe) id: number, @Res() res) {
-    const avatar = await this.usersService.getAvatarById(id);
-
-    if (avatar.startsWith('http')) {
-      return res.redirect(avatar);
-    }
-
-    return res.sendFile(avatar, { root: './' });
-  }
-
   @Get('ranking')
   getRanking() {
     return this.usersService.getRanking();
   }
-  
+
   @Get(':username/achievements')
   getAchievements(@Param() params: UsernameDto) {
     const { username } = params;
 
     return this.usersService.getUserAchievements(username);
+  }
+
+  @Get(':username/chats')
+  getChats(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.usersService.getUserChats(username);
   }
 }

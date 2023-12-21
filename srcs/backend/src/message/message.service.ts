@@ -11,16 +11,16 @@ export class MessageService {
 
   // TODO: Check if senderId is needed because we can get it from the currently logged in user
   create(createMessageDto: CreateMessageDto) {
-    const { content, chatId, senderId, receiverId } = createMessageDto;
+    const { content, conversationId, senderId, receiverId } = createMessageDto;
 
     this.logger.log(
-      `User ${senderId} sent a message to user ${receiverId} in chat ${chatId} with content ${content}`,
+      `User ${senderId} sent a message to user ${receiverId} in conversation ${conversationId} with content ${content}`,
     );
 
     return this.prismaService.message.create({
       data: {
         content,
-        chatId,
+        conversationId,
         senderId,
         receiverId,
       },
@@ -41,11 +41,11 @@ export class MessageService {
     });
   }
 
-  findByChatId(chatId: number) {
-    this.logger.log(`Finding messages with chatId ${chatId}`);
+  findByChatId(conversationId: number) {
+    this.logger.log(`Finding messages with conversationId ${conversationId}`);
     return this.prismaService.message.findMany({
       where: {
-        chatId,
+        conversationId,
       },
     });
   }
