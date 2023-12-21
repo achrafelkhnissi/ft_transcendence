@@ -30,6 +30,9 @@ export class NotificationsService {
     if (query) {
       return this.prismaService.notification.findMany({
         where: query,
+        select: {
+          // TODO: Only select the fields that are needed
+        },
       });
     }
 
