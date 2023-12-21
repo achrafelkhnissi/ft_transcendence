@@ -16,9 +16,9 @@ async function generateRandomUser() {
       url: faker.internet.url(),
       stats: {
         create: {
-          level: faker.datatype.number({ min: 1, max: 100 }),
-          wins: faker.datatype.number({ min: 0, max: 100 }),
-          losses: faker.datatype.number({ min: 0, max: 100 }),
+          level: faker.number.int({ min: 1, max: 100 }),
+          wins: faker.number.int({ min: 0, max: 100 }),
+          losses: faker.number.int({ min: 0, max: 100 }),
         },
       },
       settings: {
@@ -56,7 +56,7 @@ async function createConversation(users) {
   }
 
   // Add a random number of messages to the conversation
-  const messageCount = faker.datatype.number({ min: 5, max: 20 }); // Adjust range as needed
+  const messageCount = faker.number.int({ min: 5, max: 20 }); // Adjust range as needed
   for (let i = 0; i < messageCount; i++) {
     await prisma.message.create({
       data: {
