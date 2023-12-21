@@ -47,6 +47,16 @@ export class MessageService {
       where: {
         conversationId,
       },
+      select: {
+        content: true,
+        createdAt: true,
+        sender: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
     });
   }
 
