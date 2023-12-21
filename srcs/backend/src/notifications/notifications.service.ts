@@ -8,6 +8,17 @@ import { UserType } from 'src/interfaces/user.interface';
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
+  private readonly infoToSelect = {
+    read: true,
+    type: true,
+    sender: {
+      select: {
+        username: true,
+        avatar: true,
+      },
+    },
+  };
+
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createNotificationDto: CreateNotificationDto) {
@@ -30,9 +41,7 @@ export class NotificationsService {
     if (query) {
       return this.prismaService.notification.findMany({
         where: query,
-        select: {
-          // TODO: Only select the fields that are needed
-        },
+        select: this.infoToSelect,
       });
     }
 
@@ -49,6 +58,7 @@ export class NotificationsService {
   findOne(id: number) {
     return this.prismaService.notification.findUnique({
       where: { id },
+      select: this.infoToSelect,
     });
   }
 

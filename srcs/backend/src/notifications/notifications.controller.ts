@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Sse,
-  Logger,
   UseGuards,
   ParseIntPipe,
   NotFoundException,
@@ -16,7 +15,6 @@ import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { Observable, fromEvent, map } from 'rxjs';
 import { Notification } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -26,11 +24,8 @@ import { UserType } from 'src/interfaces/user.interface';
 @UseGuards(AuthGuard)
 @Controller()
 export class NotificationsController {
-  private readonly logger = new Logger(NotificationsController.name);
-
   constructor(
     private readonly notificationsService: NotificationsService,
-    private readonly prismaService: PrismaService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
