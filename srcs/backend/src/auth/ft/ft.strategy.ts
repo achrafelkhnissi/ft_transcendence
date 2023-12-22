@@ -22,9 +22,9 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const url = process.env.FT_PROFILE_URL + username;
 
     this.logger.debug(`validating user ${username}`);
-    let user;
+
     try {
-      user = await this.usersService.findByEmail(email);
+      return await this.usersService.findByEmail(email);
     } catch (error) {
       this.logger.warn(error.message);
 
@@ -33,14 +33,17 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         accessToken,
       );
 
-      user = await this.usersService.create({
+      const user = await this.usersService.create({
         email,
         username,
         url,
         avatar,
       });
-      user.justCreated = true;
+
+      return {
+        ...user,
+        isNew: true,
+      };
     }
-    return user;
   }
 }
