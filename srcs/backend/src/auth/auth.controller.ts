@@ -43,14 +43,15 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    const host = os.hostname();
     req.logout((err) => {
       if (err) {
         this.logger.error(`Error logging out`);
         return err;
       }
-      this.logger.debug(`Redirecting to http://${host}:1337 after logging out`);
-      res.redirect(`http://${host}:1337`);
+      this.logger.debug(
+        `Redirecting to http://localhost:1337 after logging out`,
+      );
+      res.redirect(`http://localhost:1337`);
     });
   }
 
