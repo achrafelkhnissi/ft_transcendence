@@ -13,7 +13,6 @@ import { Request, Response } from 'express';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
-import * as os from 'os';
 
 @Controller('auth')
 export class AuthController {
