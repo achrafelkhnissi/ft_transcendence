@@ -1,5 +1,5 @@
 import { UsersService } from 'src/users/users.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 
@@ -24,7 +24,11 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     this.logger.debug(`validating user ${username}`);
     let user;
     try {
+      // TODO: check why findByEmail doesn't throw NotFoundException
       user = await this.usersService.findByEmail(email);
+      if (!user) {
+        throw new NotFoundException(`User with email ${email} not found`);
+      }
     } catch (error) {
       this.logger.warn(error.message);
 
