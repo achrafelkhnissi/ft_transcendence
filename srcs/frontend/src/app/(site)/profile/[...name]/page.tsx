@@ -16,26 +16,42 @@ export enum FriendshipStatus {
   BLOCKED = "BLOCKED",
 }
 
+export interface FriendsProps {
+  username: string;
+  avatar: string;
+  status: string;
+}
+
 export interface User {
   id: string;
   username: string;
   avatar: string;
-  experiencePoints: number;
-  level: number;
-  me: boolean;
   url: string;
+  stats: {
+    exp: number;
+    level: number;
+    wins: number;
+    losses: number;
+  }
+  me: boolean;
   isFriend: false | FriendshipStatus;
+  friends : FriendsProps[];
 }
 
 const defaultInfos: User = {
   id: "",
   username: "",
   avatar: "",
-  experiencePoints: 0,
-  level: 0,
-  me: true,
   url: "",
+  stats: {
+    exp: 0,
+    level: 0,
+    wins:0,
+    losses: 0,
+  },
+  me: true,
   isFriend: false,
+  friends: [],
 };
 
 const Home = ({ params }: { params: { name: string } }) => {
@@ -69,7 +85,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         <div className="min-[880px]:row-span-2 ">
           <GameHistory />
         </div>
-        <Friends username={user.username} />
+        <Friends friends = {user.friends} />
         <Achievements />
       </div>
     </div>
