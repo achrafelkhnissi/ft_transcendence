@@ -10,7 +10,7 @@ const FriendAvatar: React.FC<FriendAvatarProps> = ({ avatar, name }) => {
   return (
     <div className=" flex gap-1 flex-col justify-center p-1">
       <Link href={`/profile/${name}`}>
-        <div className="relative self-center p-1">
+        <div className="relative self-center p-1 flex justify-center">
           <Image
             src={avatar}
             alt=""
