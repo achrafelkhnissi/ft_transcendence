@@ -196,6 +196,10 @@ enum MatchStatus {
 }
 
 enum ConversationType {
+  // Direct Message
+  DM
+
+  // Group Chat
   PUBLIC
   PRIVATE
   PROTECTED
