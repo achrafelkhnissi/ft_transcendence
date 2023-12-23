@@ -3,25 +3,16 @@
 import FriendAvatar from "../FriendAvatar";
 import Card from "./Card";
 import { MdEmojiPeople } from "react-icons/md";
-import { useState, useEffect } from "react";
-import { User } from "@/app/(site)/profile/[...name]/page";
-import getFriendsList from "@/services/getFriendsList";
+// import { useState, useEffect } from "react";
+// import { User } from "@/app/(site)/profile/[...name]/page";
+// import getFriendsList from "@/services/getFriendsList";
+import { FriendsProps } from "@/app/(site)/profile/[...name]/page";
 
-interface FriendsPorps {
-  username: string;
+interface FriendsComponentProps {
+  friends : FriendsProps[],
 }
 
-const Friends: React.FC<FriendsPorps> = ({ username }) => {
-  const [friends, setFriends] = useState<User[]>([]);
-
-  useEffect(() => {
-    if (username) {
-      getFriendsList(username).then((res) => {
-        const data: User[] = res;
-        setFriends(data);
-      });
-    }
-  }, [username]);
+const Friends: React.FC<FriendsComponentProps> = ({friends}) => {
 
   return (
     <Card
