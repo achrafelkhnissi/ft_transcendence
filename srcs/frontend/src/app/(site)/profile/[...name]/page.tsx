@@ -66,6 +66,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         setUser(userData);
       });
     } else {
+      console.log(params.name)
       getUser(params.name).then((res) => {
         const userData: User = res;
         (userData.me = false), setUser(userData);
