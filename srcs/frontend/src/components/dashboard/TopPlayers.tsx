@@ -1,17 +1,33 @@
+'use client'
+
 import { FaCrown } from "react-icons/fa";
 import Image from "next/image";
-import { IoTerminalSharp } from "react-icons/io5";
+// import { IoTerminalSharp } from "react-icons/io5";
+// import UserName from "../userProfile/UserName";
+import getRankings from "@/services/getRankings";
+import { useEffect, useState } from "react";
 
 interface User {
   username: string;
   avatar: string;
-  matchs: number;
-  win: number;
-  level: number;
-  loss: number;
+  stats : {
+      wins: number;
+      level: number;
+      losses: number;
+  }
 }
 
 const TopPlayers = () => {
+
+  const [ranking, setRanking] = useState<User[]>([]);
+
+  useEffect(() => {
+    getRankings().then(res => {
+      const data: User[] = res;
+      setRanking(data);
+    })
+  }, [])
+
   return (
     <div className="py-4 w-full">
       <div className="flex gap-1 pl-4 pb-6">
@@ -31,7 +47,7 @@ const TopPlayers = () => {
               </tr>
             </thead>
             <tbody className="w-full ">
-              {arr.map((item, index) => {
+              {ranking.map((item, index) => {
                 return (
                   <tr
                     key={index}
@@ -42,10 +58,10 @@ const TopPlayers = () => {
                     ${!(index % 2) && "bg-[#1C1C43]"}
                     `}
                   >
-                    <td className=" px-2 py-[0.6rem] text-white/30 text-center">
-                      #{index + 1}
-                    </td>
-                    <td className="flex h-full justify-center gap-2 px-0 py-[0.6rem]">
+                    <td className=" flex h-full gap-3 justify-center px-2 py-[0.6rem] text-white/30 text-center">
+                      <p className="self-center">
+                        #{index + 1}
+                      </p>
                       <Image
                         src={item.avatar}
                         alt=""
@@ -55,18 +71,18 @@ const TopPlayers = () => {
                                         self-center
                                         rounded-full"
                       />
-                      <p className="self-center px-2 py-[0.6rem]">
-                        {item.username}
-                      </p>
+                    </td>
+                      <td className="px-2 py-[0.6rem] text-center">
+                          {item.username}
+                      </td>
+                    <td className=" text-center pr-4 py-[0.6rem]">
+                      {item.stats.wins + item.stats.losses}
                     </td>
                     <td className=" text-center pr-4 py-[0.6rem]">
-                      {item.matchs}
+                      {item.stats.wins}
                     </td>
                     <td className=" text-center pr-4 py-[0.6rem]">
-                      {item.win}
-                    </td>
-                    <td className=" text-center pr-4 py-[0.6rem]">
-                      {item.loss}
+                      {item.stats.losses}
                     </td>
                   </tr>
                 );
