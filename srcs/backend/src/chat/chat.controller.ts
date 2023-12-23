@@ -35,7 +35,11 @@ export class ChatController {
   }
 
   @Get()
-  findAll() {
+  findAll(@User() user) {
+    if (user) {
+      return this.chatService.findAllChatForUser(user.id);
+    }
+
     return this.chatService.findAll();
   }
 
