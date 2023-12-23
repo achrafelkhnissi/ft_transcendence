@@ -93,6 +93,7 @@ export class UsersService {
         status: true,
         stats: {
           select: {
+            exp: true,
             level: true,
             wins: true,
             losses: true,
