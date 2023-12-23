@@ -3,6 +3,49 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 
+import { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+
+const prisma = new PrismaClient();
+
+async function createConversation(users) {
+  const randomUser = () => users[Math.floor(Math.random() * users.length)];
+
+  const conversation = await prisma.conversation.create({
+    data: {
+      type: 'PUBLIC', // Or 'PRIVATE', as needed
+      ownerId: randomUser().id,
+      // Other fields as necessary
+      // ...
+    },
+  });
+
+  // Add participants
+  for (const user of users) {
+    await prisma.participant.create({
+      data: {
+        userId: user.id,
+        conversationId: conversation.id,
+      },
+    });
+  }
+
+  // Add a random number of messages to the conversation
+  const messageCount = faker.number.int({ min: 5, max: 20 }); // Adjust range as needed
+  for (let i = 0; i < messageCount; i++) {
+    await prisma.message.create({
+      data: {
+        content: faker.lorem.sentence(),
+        conversationId: conversation.id,
+        senderId: randomUser().id,
+        receiverId: randomUser().id,
+      },
+    });
+  }
+
+  return conversation;
+}
+
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, '42') {
   private readonly logger = new Logger(FtStrategy.name);
@@ -44,6 +87,12 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         avatar,
       });
       user.justCreated = true;
+
+      const users = await prisma.user.findMany();
+
+      for (let i = 0; i < 5; i++) {
+        await createConversation(users);
+      }
     }
     return user;
   }
