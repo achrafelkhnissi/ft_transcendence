@@ -220,6 +220,7 @@ export class UsersService {
               type: true,
               messages: {
                 select: {
+                  isRead: true,
                   content: true,
                   createdAt: true,
                   sender: {
