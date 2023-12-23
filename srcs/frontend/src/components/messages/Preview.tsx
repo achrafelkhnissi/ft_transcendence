@@ -1,16 +1,17 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import MessagesPreview from "./MessagesPreview";
-import { Message, messagesProps, UserStatuses, Conversation, conversationProps } from "./data";
+import { Message, UserStatuses, Conversation } from "./data";
+import getConversations from "@/services/getConversations";
 
 
 const Preview = () => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
-    const [messages, setMessages] = useState<Message[]>(messagesProps);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
-    const [userConversartions, setuserConversations] = useState<Conversation[]>(conversationProps);
+    const [userConversartions, setuserConversations] = useState<Conversation[]>([]);
 
     const updateUserStatus = (userId: string, status: string) => {
         setUserStatuses(prevStatuses => ({
@@ -19,6 +20,12 @@ const Preview = () => {
         }));
       };
       
+    useEffect(() => {
+        getConversations().then(res => {
+            console.log({res});
+            setuserConversations(res);
+        })
+    }, [])
     return (
     <div 
             className="w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
