@@ -1,8 +1,9 @@
 import { UsersService } from 'src/users/users.service';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 
+// TODO: Remove this after testing
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -67,7 +68,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     this.logger.debug(`validating user ${username}`);
 
     try {
-      user = await this.usersService.findByEmail(email);
+      return await this.usersService.findByEmail(email);
     } catch (error) {
       this.logger.warn(error.message);
 
@@ -82,13 +83,18 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         url,
         avatar,
       });
-      user.justCreated = true;
 
       const users = await prisma.user.findMany();
 
+      // TODO: Remove this after testing
       for (let i = 0; i < 5; i++) {
         await createConversation(users);
       }
+
+      return {
+        ...user,
+        isNew: true,
+      };
     }
   }
 }
