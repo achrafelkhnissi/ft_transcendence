@@ -84,3 +84,7 @@ frontend:
 backend:
 	$(call copy_env)
 	docker-compose -f srcs/docker-compose.yml up --build backend
+
+update-db:
+	$(call copy_env)
+	docker-compose -f srcs/docker-compose.yml exec backend npx prisma db push

@@ -1,7 +1,50 @@
 import { UsersService } from 'src/users/users.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
+
+import { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+
+const prisma = new PrismaClient();
+
+async function createConversation(users) {
+  const randomUser = () => users[Math.floor(Math.random() * users.length)];
+
+  const conversation = await prisma.conversation.create({
+    data: {
+      type: 'PUBLIC', // Or 'PRIVATE', as needed
+      ownerId: randomUser().id,
+      // Other fields as necessary
+      // ...
+    },
+  });
+
+  // Add participants
+  for (const user of users) {
+    await prisma.participant.create({
+      data: {
+        userId: user.id,
+        conversationId: conversation.id,
+      },
+    });
+  }
+
+  // Add a random number of messages to the conversation
+  const messageCount = faker.number.int({ min: 5, max: 20 }); // Adjust range as needed
+  for (let i = 0; i < messageCount; i++) {
+    await prisma.message.create({
+      data: {
+        content: faker.lorem.sentence(),
+        conversationId: conversation.id,
+        senderId: randomUser().id,
+        receiverId: randomUser().id,
+      },
+    });
+  }
+
+  return conversation;
+}
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, '42') {
@@ -24,7 +67,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     this.logger.debug(`validating user ${username}`);
 
     try {
-      return await this.usersService.findByEmail(email);
+      user = await this.usersService.findByEmail(email);
     } catch (error) {
       this.logger.warn(error.message);
 
@@ -39,11 +82,13 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         url,
         avatar,
       });
+      user.justCreated = true;
 
-      return {
-        ...user,
-        isNew: true,
-      };
+      const users = await prisma.user.findMany();
+
+      for (let i = 0; i < 5; i++) {
+        await createConversation(users);
+      }
     }
   }
 }

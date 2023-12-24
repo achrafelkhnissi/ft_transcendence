@@ -93,6 +93,7 @@ export class UsersService {
         status: true,
         stats: {
           select: {
+            exp: true,
             level: true,
             wins: true,
             losses: true,
@@ -219,6 +220,7 @@ export class UsersService {
               type: true,
               messages: {
                 select: {
+                  isRead: true,
                   content: true,
                   createdAt: true,
                   sender: {

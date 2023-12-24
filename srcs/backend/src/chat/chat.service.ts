@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -20,6 +20,65 @@ export class ChatService {
   findAll() {
     this.logger.log('Finding all chats');
     return this.prismaService.conversation.findMany();
+  }
+
+  findAllChatForUser(id: number) {
+    this.logger.log(`Finding all chats for user with id ${id}`);
+
+    const userInfoSelect = {
+      username: true,
+      avatar: true,
+      status: true,
+    };
+
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          participants: {
+            some: {
+              userId: id,
+            },
+          },
+        },
+        select: {
+          type: true,
+          messages: {
+            select: {
+              isRead: true,
+              content: true,
+              createdAt: true,
+              sender: {
+                select: userInfoSelect,
+              },
+            },
+          },
+          owner: {
+            select: {
+              user: {
+                select: userInfoSelect,
+              },
+            },
+          },
+          admins: {
+            select: {
+              user: {
+                select: userInfoSelect,
+              },
+            },
+          },
+          participants: {
+            select: {
+              user: {
+                select: userInfoSelect,
+              },
+            },
+          },
+        },
+      })
+      .catch((error) => {
+        this.logger.error(error);
+        throw new NotFoundException(`User <${id}> not found`);
+      });
   }
 
   findOne(id: number) {

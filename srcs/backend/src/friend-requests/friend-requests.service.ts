@@ -151,7 +151,7 @@ export class FriendRequestsService {
     });
 
     this.logger.log(`Friend request accepted from <${senderUsername}>`);
-    this.eventEmitter.emit('notification', notification);
+    // this.eventEmitter.emit('notification', notification);
 
     return { message: 'Friend request accepted', request };
   }

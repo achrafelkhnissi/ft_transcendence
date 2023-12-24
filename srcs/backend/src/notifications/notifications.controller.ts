@@ -83,6 +83,7 @@ export class NotificationsController {
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: string) {
+    this.logger.error(`Delete notif ${id}`);
     return this.notificationsService.remove(+id);
   }
 }
