@@ -44,6 +44,7 @@ export class ChatService {
           type: true,
           messages: {
             select: {
+              conversationId: true,
               isRead: true,
               content: true,
               createdAt: true,
