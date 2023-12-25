@@ -41,6 +41,7 @@ export class ChatService {
           },
         },
         select: {
+          id: true,
           type: true,
           updatedAt: true,
           messages: {
