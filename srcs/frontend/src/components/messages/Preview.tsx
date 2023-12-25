@@ -9,17 +9,16 @@ import getConversations from "@/services/getConversations";
 const Preview = () => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
-    const [messages, setMessages] = useState<Message[]>([]);
     const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
-    // const [userConversartions, setuserConversations] = useState<Conversation[]>([]);
-
     const [conversationOrder, setConversationOrder] = useState<number[]>([]);
-    const [conversations, setConversations] = useState<{ [id: number]: Conversation }>({});
+    const [conversations, setConversations] = useState<ConversationsMap>({});
+    const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
 
     const initializeConversations = (initialConversations: Conversation[]) => {
     const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         
     const initialOrder = sortedConversations.map(convo => convo.id);
+    console.log(sortedConversations);
     const initialConversationsMap = initialConversations.reduce<ConversationsMap>((acc, convo) => {
         acc[convo.id] = convo;
         return acc;
@@ -39,6 +38,7 @@ const Preview = () => {
       
     useEffect(() => {
         getConversations().then(res => {
+            console.log(res);
             initializeConversations(res);
         })
     }, [])
@@ -101,12 +101,13 @@ const Preview = () => {
                 {active === "messages" && 
                     <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
                         <MessagesPreview 
-                        conversartionsMap={conversations}
-                        orderedConversations={conversationOrder}
-                         statuses={userStatuses}
+                            conversationsMap={conversations}
+                            orderedConversations={conversationOrder}
+                            statuses={userStatuses}
                          />
                     </div>
                 }
+                
         </div>)
 }
 

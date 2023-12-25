@@ -1,16 +1,18 @@
 import { RiH6 } from "react-icons/ri";
-import { Message, UserStatuses, Conversation } from "./data";
+import { Message, UserStatuses, Conversation, ConversationsMap } from "./data";
 import Image from "next/image";
 import formatChatTimestamp from "./formatTime";
 
 interface MessagesPreviewProps{
-    conversartions : Conversation[],
+    conversationsMap : ConversationsMap,
+    orderedConversations: number[],
     statuses: UserStatuses,
 }
-const MessagesPreview: React.FC<MessagesPreviewProps> = ({conversartions, statuses}) => {
+
+const MessagesPreview: React.FC<MessagesPreviewProps> = ({conversationsMap,orderedConversations, statuses}) => {
     return (<div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">
-        {conversartions.map((conversartion) => {
-            const lastMessage = conversartion.messages[conversartion.messages.length - 1];
+        {orderedConversations.map((id) => {
+            const lastMessage = conversationsMap[id].messages[conversationsMap[id].messages.length - 1];
             return (
             <div className="flex justify-center  gap-2 h-[5.55rem] px-1 py-3 border-b-[3px] border-b-[#59598ec6] relative hover:cursor-pointer
                             hover:bg-white/[0.04] hover:shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)] ">
