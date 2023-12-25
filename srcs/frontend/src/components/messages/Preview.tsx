@@ -2,47 +2,23 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import MessagesPreview from "./MessagesPreview";
-import { Message, UserStatuses, Conversation, ConversationsMap } from "./data";
+import { UserStatuses,  ConversationsMap } from "./data";
 import getConversations from "@/services/getConversations";
+import { Convergence } from "next/font/google";
 
+interface PreviewProps {
+    conversationsMap : ConversationsMap,
+    orderedConversations: number[],
+    statuses: UserStatuses,
+    selectedConversation: number,
+    updateSelectedConversation: Function,
+}
 
-const Preview = () => {
+const Preview : React.FC<PreviewProps> = (
+    {conversationsMap, orderedConversations, statuses ,selectedConversation,updateSelectedConversation}) => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
-    const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
-    const [conversationOrder, setConversationOrder] = useState<number[]>([]);
-    const [conversations, setConversations] = useState<ConversationsMap>({});
-    const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
-
-    const initializeConversations = (initialConversations: Conversation[]) => {
-    const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-        
-    const initialOrder = sortedConversations.map(convo => convo.id);
-    console.log(sortedConversations);
-    const initialConversationsMap = initialConversations.reduce<ConversationsMap>((acc, convo) => {
-        acc[convo.id] = convo;
-        return acc;
-      }, {});
-      
-      
-        setConversationOrder(initialOrder);
-        setConversations(initialConversationsMap);
-    };
-      
-    const updateUserStatus = (userId: string, status: string) => {
-        setUserStatuses(prevStatuses => ({
-          ...prevStatuses,
-          [userId]: status
-        }));
-      };
-      
-    useEffect(() => {
-        getConversations().then(res => {
-            console.log(res);
-            initializeConversations(res);
-        })
-    }, [])
-    return (
+   return (
     <div 
             className="w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
             shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2 overflow-hidden" >
@@ -101,9 +77,11 @@ const Preview = () => {
                 {active === "messages" && 
                     <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
                         <MessagesPreview 
-                            conversationsMap={conversations}
-                            orderedConversations={conversationOrder}
-                            statuses={userStatuses}
+                            conversationsMap={conversationsMap}
+                            orderedConversations={orderedConversations}
+                            statuses={statuses}
+                            selectedConversation={selectedConversation}
+                            updateSelectedConversation={updateSelectedConversation}
                          />
                     </div>
                 }

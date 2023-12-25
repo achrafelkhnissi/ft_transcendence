@@ -11,6 +11,7 @@ export interface Message{
     content: string;
     createdAt: string;
     isRead: boolean;
+    conversationId: number;
 }
 
 export interface Conversation{
