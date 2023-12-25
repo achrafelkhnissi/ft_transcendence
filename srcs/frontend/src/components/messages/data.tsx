@@ -24,6 +24,10 @@ export interface Conversation{
     messages: Message[];
 }
 
+export type ConversationsMap = {
+    [key: number]: Conversation;
+  };
+  
 // export const messagesProps : Message[] = [
 //     {
 //         id: 0,

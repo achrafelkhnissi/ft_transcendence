@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import MessagesPreview from "./MessagesPreview";
-import { Message, UserStatuses, Conversation } from "./data";
+import { Message, UserStatuses, Conversation, ConversationsMap } from "./data";
 import getConversations from "@/services/getConversations";
 
 
@@ -11,8 +11,25 @@ const Preview = () => {
     const [active, setActive] = useState<"messages" | "channels">("messages");
     const [messages, setMessages] = useState<Message[]>([]);
     const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
-    const [userConversartions, setuserConversations] = useState<Conversation[]>([]);
+    // const [userConversartions, setuserConversations] = useState<Conversation[]>([]);
 
+    const [conversationOrder, setConversationOrder] = useState<number[]>([]);
+    const [conversations, setConversations] = useState<{ [id: number]: Conversation }>({});
+
+    const initializeConversations = (initialConversations: Conversation[]) => {
+    const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        
+    const initialOrder = sortedConversations.map(convo => convo.id);
+    const initialConversationsMap = initialConversations.reduce<ConversationsMap>((acc, convo) => {
+        acc[convo.id] = convo;
+        return acc;
+      }, {});
+      
+      
+        setConversationOrder(initialOrder);
+        setConversations(initialConversationsMap);
+    };
+      
     const updateUserStatus = (userId: string, status: string) => {
         setUserStatuses(prevStatuses => ({
           ...prevStatuses,
@@ -22,8 +39,7 @@ const Preview = () => {
       
     useEffect(() => {
         getConversations().then(res => {
-            console.log({res});
-            setuserConversations(res);
+            initializeConversations(res);
         })
     }, [])
     return (
@@ -84,7 +100,11 @@ const Preview = () => {
                 </div>
                 {active === "messages" && 
                     <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
-                        <MessagesPreview conversartions={userConversartions} statuses={userStatuses}/>
+                        <MessagesPreview 
+                        conversartionsMap={conversations}
+                        orderedConversations={conversationOrder}
+                         statuses={userStatuses}
+                         />
                     </div>
                 }
         </div>)
