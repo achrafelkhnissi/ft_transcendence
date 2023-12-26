@@ -1,3 +1,5 @@
+import BlockUser from "../svgAssets/BlockUser";
+import GameInvitation from "../svgAssets/GameInvitation";
 import { UserStatuses, ConversationsMap, User } from "./data";
 import Image from "next/image";
 
@@ -46,8 +48,18 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                         </p>
                     </div>
                 </div> 
-                    <div className="w-16 border-2 h-10 self-center">
-
+                    <div className="self-center flex gap-4 justify-center">
+                        <div 
+                            className="self-center hover:cursor-pointer
+                            drop-shadow-[0_4px_8px_rgba(255,255,255,0.21)]">
+                            <GameInvitation color={"#59598E"} width={"29px"} height={"29px"} />
+                        </div>
+                        <div className="w-[2px] h-[30px] bg-[#6C61A480]"></div>
+                        <div 
+                            className="self-center hover:cursor-pointer 
+                            ">
+                            <BlockUser color={"#59598E"} width={"29px"} height={"29px"} />
+                        </div>
                     </div>
             </div>
             }
