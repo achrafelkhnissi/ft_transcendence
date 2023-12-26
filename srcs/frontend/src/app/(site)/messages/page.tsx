@@ -68,7 +68,8 @@ const Home = () => {
             statuses={userStatuses}
             selectedConversation={selectedConversationId}
             updateSelectedConversation={setSelectedConversationId}
-            markLastMessageAsRead={markLastMessageAsRead}/>
+            markLastMessageAsRead={markLastMessageAsRead}
+            currentUser={currentUser}/>
        <ViewConversations
             conversationId={selectedConversationId}
             conversationsMap={conversations}

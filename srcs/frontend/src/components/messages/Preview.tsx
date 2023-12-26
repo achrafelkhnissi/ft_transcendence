@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import MessagesPreview from "./MessagesPreview";
-import { UserStatuses,  ConversationsMap } from "./data";
+import { UserStatuses,  ConversationsMap, User } from "./data";
 import getConversations from "@/services/getConversations";
 import { Convergence } from "next/font/google";
 
@@ -13,6 +13,7 @@ interface PreviewProps {
     selectedConversation: number,
     updateSelectedConversation: Function,
     markLastMessageAsRead: Function,
+    currentUser: string,
 }
 
 const Preview : React.FC<PreviewProps> = (
@@ -21,6 +22,7 @@ const Preview : React.FC<PreviewProps> = (
         statuses, 
         selectedConversation,
         updateSelectedConversation, 
+        currentUser,
         markLastMessageAsRead}) => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
@@ -89,6 +91,7 @@ const Preview : React.FC<PreviewProps> = (
                             selectedConversation={selectedConversation}
                             updateSelectedConversation={updateSelectedConversation}
                             markLastMessageAsRead={markLastMessageAsRead}
+                            currentUser={currentUser}
                          />
                     </div>
                 }

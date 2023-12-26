@@ -1,4 +1,4 @@
-import { UserStatuses, ConversationsMap, User, Participant } from "./data";
+import { UserStatuses, ConversationsMap, User } from "./data";
 import Image from "next/image";
 
 interface ViewConversationsProps{
@@ -22,9 +22,9 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             status: ""
         };
         if (conversationId >= 0){
-            sender = conversationsMap[conversationId].participants[0].user.username === currentUser?
-                        conversationsMap[conversationId].participants[1].user: 
-                        conversationsMap[conversationId].participants[0].user; 
+            sender = conversationsMap[conversationId].participants[0].username === currentUser?
+                        conversationsMap[conversationId].participants[1]: 
+                        conversationsMap[conversationId].participants[0]; 
         }
     return (
         <div

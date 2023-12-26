@@ -8,13 +8,11 @@ export interface User {
 
 export interface Message{
     sender : User;
+    receiver: User;
     content: string;
     createdAt: string;
     isRead: boolean;
     conversationId: number;
-}
-export interface Participant{
-    user: User,
 }
 
 export interface Conversation{
@@ -22,7 +20,7 @@ export interface Conversation{
     type: string;
     createdAt: string;
     updatedAt: string;
-    participants: Participant[];
+    participants: User[];
     oweners: User[];
     admins: User[];
     messages: Message[];
