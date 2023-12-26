@@ -85,10 +85,10 @@ export class ChatController {
   }
 
   // Remove a user from a chat
-  @Delete(':id/users/:userId')
-  removeUser(@Param('id') id: string, @Param('userId') userId: string) {
-    return this.chatService.removeUser(+id, +userId);
-  }
+  // @Delete(':id/users/:userId')
+  // removeUser(@Param('id') id: string, @Param('userId') userId: string) {
+  //   return this.chatService.removeUser(+id, +userId);
+  // }
 
   @Delete(':id/admins/:userId')
   removeAdmin(@Param('id') id: string, @Param('userId') userId: string) {

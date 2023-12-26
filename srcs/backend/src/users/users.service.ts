@@ -207,47 +207,52 @@ export class UsersService {
       status: true,
     };
 
-    return this.prisma.user
-      .findUnique({
+    return this.prisma.conversation
+      .findMany({
         where: {
-          username,
-        },
-      })
-      .conversations({
-        include: {
-          conversation: {
-            select: {
-              type: true,
-              messages: {
-                select: {
-                  isRead: true,
-                  content: true,
-                  createdAt: true,
-                  sender: {
-                    select: userInfoSelect,
-                  },
-                },
-              },
-              owner: {
-                select: {
-                  user: {
-                    select: userInfoSelect,
-                  },
-                },
-              },
-              admins: {
-                select: {
-                  user: {
-                    select: userInfoSelect,
-                  },
-                },
-              },
+          OR: [
+            {
               participants: {
-                select: {
-                  user: {
-                    select: userInfoSelect,
-                  },
+                some: {
+                  username,
                 },
+              },
+            },
+            {
+              admins: {
+                some: {
+                  username,
+                },
+              },
+            },
+            {
+              owner: {
+                username,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          type: true,
+          updatedAt: true,
+          owner: {
+            select: userInfoSelect,
+          },
+          participants: {
+            select: userInfoSelect,
+          },
+          admins: {
+            select: userInfoSelect,
+          },
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              isRead: true,
+              createdAt: true,
+              sender: {
+                select: userInfoSelect,
               },
             },
           },
