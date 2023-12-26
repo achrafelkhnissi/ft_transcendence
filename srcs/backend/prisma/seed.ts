@@ -47,10 +47,16 @@ async function createConversation(users) {
 
   // Add participants
   for (const user of users) {
-    await prisma.participant.create({
+    await prisma.conversation.update({
+      where: {
+        id: conversation.id,
+      },
       data: {
-        userId: user.id,
-        conversationId: conversation.id,
+        participants: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
   }
