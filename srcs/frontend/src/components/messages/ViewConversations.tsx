@@ -1,5 +1,7 @@
 import BlockUser from "../svgAssets/BlockUser";
+import Emoji from "../svgAssets/Emoji";
 import GameInvitation from "../svgAssets/GameInvitation";
+import SendMessage from "../svgAssets/SendMessage";
 import MessageContainer from "./MessageContainer";
 import { UserStatuses, ConversationsMap, User } from "./data";
 import Image from "next/image";
@@ -82,11 +84,20 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             </div>
             {/* Input */}
             <div className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
-                            bg-[#59598E4A]">
+                            bg-[#59598E4A] flex text-sm">
+                <div className="self-center pl-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]">
+                    <Emoji color={"#20204A"} width={"29px"} height={"29px"}/>
+                </div>
                 <input type="text" name="message" 
                 className="bg-transparent w-full h-full rounded-3xl outline-none px-6
                             placeholder:text-white/20 palceholder:text-sm "
                 placeholder="Type a message here..."/>
+                <div className="self-center pr-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
+                    >
+                    <SendMessage color={"#20204A"} width={"29px"} height={"29px"} />
+                </div>
             </div>
             </>
             }
