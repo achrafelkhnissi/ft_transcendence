@@ -12,10 +12,16 @@ interface PreviewProps {
     statuses: UserStatuses,
     selectedConversation: number,
     updateSelectedConversation: Function,
+    markLastMessageAsRead: Function,
 }
 
 const Preview : React.FC<PreviewProps> = (
-    {conversationsMap, orderedConversations, statuses ,selectedConversation,updateSelectedConversation}) => {
+        {conversationsMap, 
+        orderedConversations, 
+        statuses, 
+        selectedConversation,
+        updateSelectedConversation, 
+        markLastMessageAsRead}) => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
    return (
@@ -82,6 +88,7 @@ const Preview : React.FC<PreviewProps> = (
                             statuses={statuses}
                             selectedConversation={selectedConversation}
                             updateSelectedConversation={updateSelectedConversation}
+                            markLastMessageAsRead={markLastMessageAsRead}
                          />
                     </div>
                 }
