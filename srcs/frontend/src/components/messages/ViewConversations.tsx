@@ -69,7 +69,7 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             </div>
             {/* Messages */}
             <div className="w-full h-full overflow-hidden py-6 ">
-                <div className="flex flex-col gap-2 h-full overflow-y-scroll px-6">
+                <div className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4">
                     {conversationsMap[conversationId].messages.map((message) => {
                     return (
                         <MessageContainer 
@@ -79,6 +79,14 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                         )
                     })}
                 </div>
+            </div>
+            {/* Input */}
+            <div className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
+                            bg-[#59598E4A]">
+                <input type="text" name="message" 
+                className="bg-transparent w-full h-full rounded-3xl outline-none px-6
+                            placeholder:text-white/20 palceholder:text-sm "
+                placeholder="Type a message here..."/>
             </div>
             </>
             }
