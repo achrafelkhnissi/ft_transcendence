@@ -38,8 +38,9 @@ model User {
 
   stats UserStats?
 
-  roles         UserRole[]
-  conversations Participant[]
+  ownerOfConversations       Conversation[] @relation("Owner")
+  adminOfConversations       Conversation[] @relation("Admins")
+  participantOfConversations Conversation[] @relation("Participant")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,44 +116,19 @@ model Message {
 
 // A Chat is a conversation between two or more users
 model Conversation {
-  id           Int              @id @default(autoincrement())
-  type         ConversationType @default(PUBLIC)
-  password     String?          @unique
-  ownerId      Int
-  messages     Message[]
-  owner        UserRole[]       @relation("Owner")
-  admins       UserRole[]       @relation("Admins")
-  participants Participant[]
+  id       Int              @id @default(autoincrement())
+  type     ConversationType @default(PUBLIC)
+  password String?          @unique
+  messages Message[]
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  UserRole  UserRole[]
-}
+  ownerId Int?
+  owner   User? @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-model UserRole {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   Role
-
-  conversationId Int?
-  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  ownerOfConversations Conversation[] @relation("Owner")
-  adminOfConversations Conversation[] @relation("Admins")
+  admins       User[] @relation("Admins")
+  participants User[] @relation("Participant")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Participant {
-  userId         Int
-  conversationId Int
-
-  user         User         @relation(fields: [userId], references: [id])
-  conversation Conversation @relation(fields: [conversationId], references: [id])
-
-  @@id([userId, conversationId])
 }
 
 model Achievement {

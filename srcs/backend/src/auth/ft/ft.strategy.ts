@@ -14,7 +14,7 @@ async function createConversation(users) {
 
   const conversation = await prisma.conversation.create({
     data: {
-      type: 'PUBLIC', // Or 'PRIVATE', as needed
+      type: users.length > 2 ? 'PUBLIC' : 'DM',
       ownerId: randomUser().id,
       // Other fields as necessary
       // ...
@@ -23,10 +23,16 @@ async function createConversation(users) {
 
   // Add participants
   for (const user of users) {
-    await prisma.participant.create({
+    await prisma.conversation.update({
+      where: {
+        id: conversation.id,
+      },
       data: {
-        userId: user.id,
-        conversationId: conversation.id,
+        participants: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
   }
@@ -89,6 +95,14 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       // TODO: Remove this after testing
       for (let i = 0; i < 5; i++) {
         await createConversation(users);
+      }
+
+      // TODO: Remove this after testing
+      for (let i = 0; i < 5; i++) {
+        await createConversation([
+          user,
+          users[Math.floor(Math.random() * users.length)],
+        ]);
       }
 
       return {

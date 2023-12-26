@@ -34,53 +34,58 @@ export class ChatService {
     return this.prismaService.conversation
       .findMany({
         where: {
-          participants: {
-            some: {
-              userId: id,
+          OR: [
+            {
+              participants: {
+                some: {
+                  id,
+                },
+              },
             },
-          },
+            {
+              admins: {
+                some: {
+                  id,
+                },
+              },
+            },
+            {
+              ownerId: id,
+            },
+          ],
         },
         select: {
           id: true,
           type: true,
           updatedAt: true,
+          owner: {
+            select: userInfoSelect,
+          },
+          participants: {
+            select: userInfoSelect,
+          },
+          admins: {
+            select: userInfoSelect,
+          },
           messages: {
             select: {
-              conversationId: true,
-              isRead: true,
+              id: true,
               content: true,
+              isRead: true,
               createdAt: true,
               sender: {
                 select: userInfoSelect,
               },
-            },
-          },
-          owner: {
-            select: {
-              user: {
-                select: userInfoSelect,
-              },
-            },
-          },
-          admins: {
-            select: {
-              user: {
-                select: userInfoSelect,
-              },
-            },
-          },
-          participants: {
-            select: {
-              user: {
+              receiver: {
                 select: userInfoSelect,
               },
             },
           },
         },
       })
-      .catch((error) => {
-        this.logger.error(error);
-        throw new NotFoundException(`User <${id}> not found`);
+      .catch((err) => {
+        this.logger.error(err.message);
+        throw new NotFoundException(err.message);
       });
   }
 
@@ -176,21 +181,21 @@ export class ChatService {
   }
 
   // TODO: Check if the logged in user has permission to remove a user from a chat
-  removeUser(id: number, userId: number) {
-    this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        participants: {
-          disconnect: {
-            userId_conversationId: { userId, conversationId: id },
-          },
-        },
-      },
-    });
-  }
+  // removeUser(id: number, userId: number) {
+  //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
+  //   return this.prismaService.conversation.update({
+  //     where: {
+  //       id,
+  //     },
+  //     data: {
+  //       participants: {
+  //         disconnect: {
+  //           userId_conversationId: { userId, conversationId: id },
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
 
   removeAdmin(id: number, userId: number) {
     this.logger.log(`Removing admin with id ${userId} from chat with id ${id}`);
