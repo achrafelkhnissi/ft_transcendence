@@ -5,12 +5,14 @@ import { useState, useEffect } from "react";
 import ViewConversations from "@/components/messages/ViewConversations";
 import { Message, UserStatuses, Conversation, ConversationsMap} from "../../../components/messages/data"
 import getConversations from "@/services/getConversations";
+import getCurrentUser from "@/services/getCurrentUser";
 
 const Home = () => {
     const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
     const [conversationOrder, setConversationOrder] = useState<number[]>([]);
     const [conversations, setConversations] = useState<ConversationsMap>({});
     const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
+    const [currentUser, setCurrentUser] = useState<string>("");
 
     const initializeConversations = (initialConversations: Conversation[]) => {
     const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
@@ -54,6 +56,9 @@ const Home = () => {
         getConversations().then(res => {
             initializeConversations(res);
         })
+        getCurrentUser().then(res => {
+            setCurrentUser(res.username);
+        })
     }, [])
     return (
     <div className=" flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  ">
@@ -69,6 +74,7 @@ const Home = () => {
             conversationsMap={conversations}
             statuses={userStatuses}
             orderedConversations={conversationOrder}
+            currentUser={currentUser}
             /> 
     </div>)
 }

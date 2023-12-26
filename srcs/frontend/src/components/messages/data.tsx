@@ -13,13 +13,16 @@ export interface Message{
     isRead: boolean;
     conversationId: number;
 }
+export interface Participant{
+    user: User,
+}
 
 export interface Conversation{
     id: number;
     type: string;
     createdAt: string;
     updatedAt: string;
-    participant: User[];
+    participants: Participant[];
     oweners: User[];
     admins: User[];
     messages: Message[];

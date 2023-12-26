@@ -20,6 +20,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
     updateSelectedConversation ,
     markLastMessageAsRead,
     statuses}) => {
+        
     const [isSelected, setIsSelected] = useState<number> (-1);
 
     const handleClick = (id: number) =>{
