@@ -16,7 +16,6 @@ const Home = () => {
     const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         
     const initialOrder = sortedConversations.map(convo => convo.id);
-    console.log(sortedConversations);
     const initialConversationsMap = initialConversations.reduce<ConversationsMap>((acc, convo) => {
         acc[convo.id] = convo;
         return acc;
@@ -27,6 +26,23 @@ const Home = () => {
         setConversations(initialConversationsMap);
     };
       
+    const markLastMessageAsRead = (conversationId: number) => {
+        setConversations(prevConversations => {
+          const updatedConversations = { ...prevConversations };
+          const conversation = updatedConversations[conversationId];
+      
+          if (conversation && conversation.messages.length > 0) {
+            const lastMessageIndex = conversation.messages.length - 1;
+            conversation.messages[lastMessageIndex] = {
+              ...conversation.messages[lastMessageIndex],
+              isRead: true
+            };
+          }
+      
+          return updatedConversations;
+        });
+      };
+      
     const updateUserStatus = (userId: string, status: string) => {
         setUserStatuses(prevStatuses => ({
           ...prevStatuses,
@@ -36,7 +52,6 @@ const Home = () => {
       
     useEffect(() => {
         getConversations().then(res => {
-            console.log(res);
             initializeConversations(res);
         })
     }, [])
@@ -47,12 +62,14 @@ const Home = () => {
             orderedConversations={conversationOrder}
             statuses={userStatuses}
             selectedConversation={selectedConversationId}
-            updateSelectedConversation={setSelectedConversationId}/>
+            updateSelectedConversation={setSelectedConversationId}
+            markLastMessageAsRead={markLastMessageAsRead}/>
        <ViewConversations
             conversationId={selectedConversationId}
             conversationsMap={conversations}
             statuses={userStatuses}
-            orderedConversations={conversationOrder}/> 
+            orderedConversations={conversationOrder}
+            /> 
     </div>)
 }
 
