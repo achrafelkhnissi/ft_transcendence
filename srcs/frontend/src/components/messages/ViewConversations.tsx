@@ -101,10 +101,12 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             <div className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
                             bg-[#59598E4A] flex text-sm">
                 <div className="self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
                 onClick={toggleEmojiPicker}>
                     <Emoji color={"#20204A"} width={"29px"} height={"29px"}/>
-                    {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiSelect} />}
+                    <div className="absolute bottom-0 left-12">
+                        {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiSelect} />}
+                    </div>
                 </div>
                 <input 
                     type="text" 
