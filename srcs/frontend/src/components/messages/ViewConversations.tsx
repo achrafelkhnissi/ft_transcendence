@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BlockUser from "../svgAssets/BlockUser";
 import Emoji from "../svgAssets/Emoji";
 import GameInvitation from "../svgAssets/GameInvitation";
@@ -5,6 +6,7 @@ import SendMessage from "../svgAssets/SendMessage";
 import MessageContainer from "./MessageContainer";
 import { UserStatuses, ConversationsMap, User } from "./data";
 import Image from "next/image";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface ViewConversationsProps{
     conversationId: number,
@@ -21,6 +23,19 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         statuses,
         currentUser,
     }) =>{
+        const [message, setMessage] = useState<string>("");    
+
+        const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false); 
+
+        const handleEmojiSelect = (emojiObject: EmojiClickData, event: MouseEvent) => {
+            setMessage(prevMessage => prevMessage + emojiObject.emoji);
+            setShowEmojiPicker(false);
+        };
+    
+        const toggleEmojiPicker = () => {
+            setShowEmojiPicker(!showEmojiPicker);
+        };
+    
         let sender: User = {
             username: "",
             avatar: "",
@@ -86,13 +101,19 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             <div className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
                             bg-[#59598E4A] flex text-sm">
                 <div className="self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]">
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
+                onClick={toggleEmojiPicker}>
                     <Emoji color={"#20204A"} width={"29px"} height={"29px"}/>
+                    {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiSelect} />}
                 </div>
-                <input type="text" name="message" 
-                className="bg-transparent w-full h-full rounded-3xl outline-none px-6
+                <input 
+                    type="text" 
+                    name="message"
+                    value={message} 
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="bg-transparent w-full h-full rounded-3xl outline-none px-6
                             placeholder:text-white/20 palceholder:text-sm "
-                placeholder="Type a message here..."/>
+                    placeholder="Type a message here..."/>
                 <div className="self-center pr-[1.3rem] hover:cursor-pointer
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
                     >
