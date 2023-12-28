@@ -40,6 +40,7 @@ async function createConversation(users) {
     data: {
       type: 'PUBLIC', // Or 'PRIVATE', as needed
       ownerId: randomUser().id,
+      name: faker.lorem.word(),
       // Other fields as necessary
       // ...
     },

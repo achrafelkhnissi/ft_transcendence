@@ -6,6 +6,8 @@ export class CreateChatDto {
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
+  readonly name: string;
+
   // TODO: add user 2 as participant of chat or add multiple participants? idk
   @IsNumber()
   @IsNotEmpty()
