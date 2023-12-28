@@ -116,9 +116,11 @@ model Message {
 
 // A Chat is a conversation between two or more users
 model Conversation {
-  id       Int              @id @default(autoincrement())
-  type     ConversationType @default(PUBLIC)
-  password String?          @unique
+  id   Int              @id @default(autoincrement())
+  type ConversationType @default(PUBLIC)
+
+  name     String    @unique
+  password String?   @unique
   messages Message[]
 
   ownerId Int?
