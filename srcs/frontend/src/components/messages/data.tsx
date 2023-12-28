@@ -18,6 +18,8 @@ export interface Message{
 export interface Conversation{
     id: number;
     type: string;
+    password: string;
+    name: string;
     createdAt: string;
     updatedAt: string;
     participants: User[];
