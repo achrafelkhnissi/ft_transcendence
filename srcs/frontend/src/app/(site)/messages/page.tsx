@@ -34,6 +34,7 @@ const Home = () => {
   useEffect(() => {
     if (socket) {
       // Listen for the 'connect' event
+      console.log(socket)
       socket.on('connect', () => {
         console.log('Connected to the server.');
 
