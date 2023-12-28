@@ -12,7 +12,10 @@ const prisma = new PrismaClient();
 async function createConversation(users) {
   const randomUser = () => users[Math.floor(Math.random() * users.length)];
 
-  const conversationName = users.length > 2 ? faker.lorem.word() : users[0].username + ' & ' + users[1].username;
+  const conversationName =
+    users.length > 2
+      ? faker.lorem.word()
+      : users[0].username + ' & ' + users[1].username;
 
   const conversation = await prisma.conversation.create({
     data: {
