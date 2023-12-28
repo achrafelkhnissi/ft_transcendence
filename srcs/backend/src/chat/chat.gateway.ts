@@ -17,8 +17,9 @@ import { Server, Socket } from 'socket.io';
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:1337', // Adjust according to your frontend URL
-    methods: ["GET", "POST"]
-  }})
+    methods: ['GET', 'POST'],
+  },
+})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -33,8 +34,8 @@ export class ChatGateway
     this.logger.debug(`Client ${client.id} joined room ${room}`);
     this.server.emit('log', `Client ${client.id} joined room ${room}`);
     // TODO: add user to chatroom {room}
-    // const user = this.chatService.getUserFromSocket(client);
-    // this.chatService.addUserToChat(user, room);
+    const user = this.chatService.getUserFromSocket(client);
+    this.chatService.addUserToChat(user, room);
   }
 
   @SubscribeMessage('leave')
@@ -43,8 +44,8 @@ export class ChatGateway
     this.logger.debug(`Client ${client.id} left room ${room}`);
     this.server.emit('log', `Client ${client.id} left room ${room}`);
     // TODO: remove user from chatroom {room}
-    // const user = this.chatService.getUserFromSocket(client);
-    // this.chatService.removeUserFromChat(user, room);
+    const user = this.chatService.getUserFromSocket(client);
+    this.chatService.removeUserFromChat(user, room);
   }
 
   @SubscribeMessage('message')
@@ -52,6 +53,8 @@ export class ChatGateway
     this.logger.debug(`Client ${client.id} sent message to room ${data.room}`);
     this.server.to(data.room).emit('message', data);
     // TODO: save message to database
+
+    // this.chatService.saveMessage(data);
   }
 
   // @SubscribeMessage('createChat')
@@ -88,6 +91,7 @@ export class ChatGateway
       id: client.id,
     });
     // TODO: save message to database
+    // this.chatService.saveMessage(body);
   }
 
   //TEST: Sending a private message to a specific user
