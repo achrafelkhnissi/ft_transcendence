@@ -49,7 +49,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
                         <h6 className="font-normal text-sm">
                             {friend.username}
                         </h6>
-                        <p className="text-white/70 text-xs font-light">
+                        <p className="text-white/70 text-xs font-light break-words">
                             {lastMessage.content.slice(0, 80)}
                         </p>
                     </div>

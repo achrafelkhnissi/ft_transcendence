@@ -10,8 +10,9 @@ const MessageContainer: React.FC <MessageContainerProps> = ({isCurrentUser, cont
     return (
     <div className={` max-w-[300px] rounded-t-[1.9rem] p-4 text-sm text-white/90 relative min-w-[75px]
         ${isCurrentUser?  "bg-[#59598E] self-end rounded-bl-[1.9rem]":
-                        "bg-[#3A386A] self-start rounded-br-[1.9rem]" }`}>
-        <p className="mb-4">
+                        "bg-[#3A386A] self-start rounded-br-[1.9rem]" }
+                        `}>
+        <p className="mb-4 break-words">
             {content}
         </p>
         <p className={`absolute bottom-3 text-xs text-white/50

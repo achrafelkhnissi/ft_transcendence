@@ -123,14 +123,15 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                         {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiSelect} />}
                     </div>
                 </div>
-                <input 
-                    type="text" 
-                    name="message"
-                    value={newMessage} 
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    className="bg-transparent w-full h-full rounded-3xl outline-none px-6
-                            placeholder:text-white/20 palceholder:text-sm "
-                    placeholder="Type a message here..."/>
+                <div className="w-full h-full flex py-2">
+                    <textarea
+                        name="message"
+                        value={newMessage} 
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        className="bg-transparent w-full h-full outline-none px-6
+                                placeholder:text-white/20 palceholder:text-sm resize-none pt-[0.7rem] overflow-y-auto"
+                        placeholder="Type a message here..."/>
+                </div>
                 <div className="self-center pr-[1.3rem] hover:cursor-pointer
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
                     onClick={() => {
