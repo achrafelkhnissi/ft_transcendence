@@ -4,7 +4,7 @@ import Emoji from "../svgAssets/Emoji";
 import GameInvitation from "../svgAssets/GameInvitation";
 import SendMessage from "../svgAssets/SendMessage";
 import MessageContainer from "./MessageContainer";
-import { UserStatuses, ConversationsMap, User } from "./data";
+import { UserStatuses, ConversationsMap, User, Message } from "./data";
 import Image from "next/image";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
@@ -14,6 +14,7 @@ interface ViewConversationsProps{
     orderedConversations: number[],
     statuses: UserStatuses,
     currentUser: string,
+    addMessageToConversation: Function,
 }
 
 const ViewConversations : React.FC<ViewConversationsProps>= (
@@ -22,13 +23,14 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         orderedConversations, 
         statuses,
         currentUser,
+        addMessageToConversation,
     }) =>{
-        const [message, setMessage] = useState<string>("");    
+        const [newMessage, setNewMessage] = useState<string>("");    
 
         const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false); 
 
         const handleEmojiSelect = (emojiObject: EmojiClickData, event: MouseEvent) => {
-            setMessage(prevMessage => prevMessage + emojiObject.emoji);
+            setNewMessage(prevMessage => prevMessage + emojiObject.emoji);
             setShowEmojiPicker(false);
         };
     
@@ -36,16 +38,19 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             setShowEmojiPicker(!showEmojiPicker);
         };
     
-        let sender: User = {
+        let sender: User, receiver: User =  {
             username: "",
             avatar: "",
             status: ""
         };
-        if (conversationId >= 0){
-            sender = conversationsMap[conversationId].participants[0].username === currentUser?
-                        conversationsMap[conversationId].participants[1]: 
-                        conversationsMap[conversationId].participants[0]; 
+
+        if (conversationId >= 0) {
+            const [firstParticipant, secondParticipant] = conversationsMap[conversationId].participants;
+
+            sender = firstParticipant.username === currentUser ? firstParticipant : secondParticipant;
+            receiver = firstParticipant.username === currentUser ? secondParticipant : firstParticipant;
         }
+        
     return (
         <div
         className="w-4/6 bg-[#25244E] rounded-[3rem] max-[900px]:w-full
@@ -59,14 +64,14 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 flex justify-between p-6
                 bg-[#25244E]">
                 <div className="p-2 flex gap-2 self-center">
-                    <Image src={sender.avatar} alt="sender" width={100} height={100}
+                    <Image src={receiver.avatar} alt="receiver" width={100} height={100}
                     className="w-10 h-10 rounded-full self-center"/>
                     <div className="flex flex-col self-center">
                         <h6 className="font-semibold text-sm ">
-                            {sender.username}
+                            {receiver.username}
                         </h6>
                         <p className="font-light text-xs text-white/30 ">
-                            {sender.status.toLocaleLowerCase()}
+                            {receiver.status.toLocaleLowerCase()}
                         </p>
                     </div>
                 </div> 
@@ -111,14 +116,24 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 <input 
                     type="text" 
                     name="message"
-                    value={message} 
-                    onChange={(e) => setMessage(e.target.value)}
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)}
                     className="bg-transparent w-full h-full rounded-3xl outline-none px-6
                             placeholder:text-white/20 palceholder:text-sm "
                     placeholder="Type a message here..."/>
                 <div className="self-center pr-[1.3rem] hover:cursor-pointer
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
-                    >
+                    onClick={() => {
+                        addMessageToConversation({
+                            content: newMessage,
+                            sender: sender,
+                            receiver: receiver,
+                            isRead: false,
+                            conversationId: conversationId,
+                            createdAt: new Date().toISOString(),
+                        })
+                        setNewMessage("");
+                    }}>
                     <SendMessage color={"#20204A"} width={"29px"} height={"29px"} />
                 </div>
             </div>

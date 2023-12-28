@@ -45,6 +45,26 @@ const Home = () => {
         });
       };
       
+    const addMessageToConversation = (newMessage: Message) => {
+      const conversationId = newMessage.conversationId;
+      if (conversations[conversationId]){
+        setConversations((prev) => ({
+          ...prev,
+          [conversationId]:{
+            ...prev[conversationId],
+            messages : [...prev[conversationId].messages, newMessage],
+            updatedAt: new Date().toISOString(),
+          }
+        }))
+        setConversationOrder(prevOrder => {
+          return [conversationId, ...prevOrder.filter(id => id !== conversationId)];
+        });
+      } else {
+        // Handle case where the conversation is new or not loaded
+      }
+      console.log(newMessage);
+    }
+
     const updateUserStatus = (userId: string, status: string) => {
         setUserStatuses(prevStatuses => ({
           ...prevStatuses,
@@ -76,6 +96,7 @@ const Home = () => {
             statuses={userStatuses}
             orderedConversations={conversationOrder}
             currentUser={currentUser}
+            addMessageToConversation={addMessageToConversation}
             /> 
     </div>)
 }
