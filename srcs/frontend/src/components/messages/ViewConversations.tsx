@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import BlockUser from "../svgAssets/BlockUser";
 import Emoji from "../svgAssets/Emoji";
 import GameInvitation from "../svgAssets/GameInvitation";
@@ -38,6 +38,14 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             setShowEmojiPicker(!showEmojiPicker);
         };
     
+        const chatContainerRef = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          }
+        }, [conversationsMap[conversationId]?.messages]);
+      
         let sender: User, receiver: User =  {
             username: "",
             avatar: "",
@@ -90,8 +98,10 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 </div>
             </div>
             {/* Messages */}
-            <div className="w-full h-full overflow-hidden py-6 ">
-                <div className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4">
+            <div className="w-full h-full overflow-hidden py-6 " >
+                <div className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
+                    ref={chatContainerRef}
+                    >
                     {conversationsMap[conversationId].messages.map((message) => {
                     return (
                         <MessageContainer 
