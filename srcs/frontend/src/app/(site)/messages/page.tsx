@@ -6,13 +6,15 @@ import ViewConversations from "@/components/messages/ViewConversations";
 import { Message, UserStatuses, Conversation, ConversationsMap} from "../../../components/messages/data"
 import getConversations from "@/services/getConversations";
 import getCurrentUser from "@/services/getCurrentUser";
+import { useSocket } from "@/contexts/socketContext";
 
 const Home = () => {
-    const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
-    const [conversationOrder, setConversationOrder] = useState<number[]>([]);
-    const [conversations, setConversations] = useState<ConversationsMap>({});
-    const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
-    const [currentUser, setCurrentUser] = useState<string>("");
+  const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
+  const [conversationOrder, setConversationOrder] = useState<number[]>([]);
+  const [conversations, setConversations] = useState<ConversationsMap>({});
+  const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
+  const [currentUser, setCurrentUser] = useState<string>("");
+  const { socket } = useSocket();
 
     const initializeConversations = (initialConversations: Conversation[]) => {
     const sortedConversations = initialConversations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
@@ -27,7 +29,32 @@ const Home = () => {
         setConversationOrder(initialOrder);
         setConversations(initialConversationsMap);
     };
-      
+
+// socket
+  useEffect(() => {
+    if (socket) {
+      // Listen for the 'connect' event
+      socket.on('connect', () => {
+        console.log('Connected to the server.');
+
+        // You can also log the socket ID
+        console.log('Socket ID:', socket.id);
+      });
+
+      socket.on('message', (message: Message) => {
+        console.log('New message:', message);
+        // Handle the message
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('connect');
+        socket.off('message');
+      }
+    };
+  }, [socket]);
+
     const markLastMessageAsRead = (conversationId: number) => {
         setConversations(prevConversations => {
           const updatedConversations = { ...prevConversations };

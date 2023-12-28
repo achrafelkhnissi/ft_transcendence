@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Sidebar from "../../components/layout/sidebar/Sidebar";
 import Header from "../../components/layout/header/Header";
+import { SocketProvider } from "@/contexts/socketContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <SocketProvider>
         <div className="flex flex-row w-full h-full overflow-hidden">
           <div>
             <Sidebar />
@@ -30,6 +32,7 @@ export default function RootLayout({
               </div>
           </div>
         </div>
+        </SocketProvider>
       </body>
     </html>
   );

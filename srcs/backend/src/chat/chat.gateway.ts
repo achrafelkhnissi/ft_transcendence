@@ -15,8 +15,10 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-  cors: true,
-})
+  cors: {
+    origin: 'http://localhost:1337', // Adjust according to your frontend URL
+    methods: ["GET", "POST"]
+  }})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
