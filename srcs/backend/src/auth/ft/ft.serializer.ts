@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
-import { MachineToMachineInstance } from 'twilio/lib/rest/api/v2010/account/availablePhoneNumber/machineToMachine';
 
 @Injectable()
 export class FtSerializer extends PassportSerializer {
