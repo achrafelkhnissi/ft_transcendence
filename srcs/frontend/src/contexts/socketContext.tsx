@@ -19,7 +19,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000'); // Replace with your server URL
+    const newSocket = io('http://localhost:3000', {
+      // query: {
+      //   loggedUser: 'test',
+      // },
+      withCredentials: true,
+    });
     setSocket(newSocket);
 
     return () => {
