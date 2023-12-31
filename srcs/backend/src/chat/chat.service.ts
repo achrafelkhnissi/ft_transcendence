@@ -3,6 +3,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class ChatService {
@@ -10,12 +11,15 @@ export class ChatService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createChatDto: CreateChatDto) {
+  // TODO: Update any to CreateChatDto
+  create(createChatDto: any) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
     return this.prismaService.conversation.create({
       data: createChatDto,
     });
   }
+
+  joinChat(user: any, room: string) {}
 
   findAll() {
     this.logger.log('Finding all chats');
@@ -256,4 +260,25 @@ export class ChatService {
   getAllAdminsFromChat(room: string) {}
 
   getChatOwner(room: string) {}
+
+  getUserFromSession(session: any) {
+    const userId = session.passport.user;
+
+    return this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+  }
+
+  toggleUserStatus(userId: number, status: Status) {
+    return this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        status,
+      },
+    });
+  }
 }
