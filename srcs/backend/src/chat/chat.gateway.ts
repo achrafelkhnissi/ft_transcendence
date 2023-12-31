@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -10,14 +10,22 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
 import { Server, Socket } from 'socket.io';
+import { WsAuthenticatedGuard } from './ws.guard';
+import { Status } from '@prisma/client';
 
+declare module 'http' {
+  export interface IncomingMessage {
+    session?: any; // Replace `any` with the actual type of `session` if known
+  }
+}
+
+@UseGuards(WsAuthenticatedGuard)
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:1337', // Adjust according to your frontend URL
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 })
 export class ChatGateway
@@ -28,6 +36,11 @@ export class ChatGateway
 
   constructor(private readonly chatService: ChatService) {}
 
+  @SubscribeMessage('whoami')
+  handleWhoAmI(client: Socket, payload: any) {
+    return client.request.user;
+  }
+
   @SubscribeMessage('join')
   joinRoom(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
     client.join(room);
@@ -36,6 +49,15 @@ export class ChatGateway
     // TODO: add user to chatroom {room}
     const user = this.chatService.getUserFromSocket(client);
     this.chatService.addUserToChat(user, room);
+  }
+
+  joinRoomWithUser(user: any, room: string) {
+    this.joinRoom(room, user.socket);
+    this.server.emit('log', `Client ${user.username} joined room ${room}`);
+    this.server.to(room).emit('message', {
+      message: `${user.username} joined the chat`,
+      id: 'server',
+    });
   }
 
   @SubscribeMessage('leave')
@@ -134,28 +156,29 @@ export class ChatGateway
     });
   }
 
-  handleDisconnect(client: Socket) {
-    // const user = client.data.user;
-    // const user = this.chatService.getUserFromSocket(client);
-    // this.chatService.removeUserFromChat(user, client);
-    this.logger.debug(`Client disconnected: ${client.id}`);
-    this.server.emit('log', `Client disconnected: ${client.id}`);
-    // TODO: Set user as offline
+  async handleDisconnect(client: Socket) {
+    const user = client.request.user;
+    await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
+
+    this.logger.debug(`[${user.username}] disconnected`);
+    this.server.emit('log', `-> ${user.username} disconnected`);
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
+  @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working
+  async handleConnection(client: Socket, ...args: any[]) {
+    const user = client.request.user;
+
+    // TODO: Check if user is already connected and see what to do with the new connection
+
     const { sockets } = this.server.sockets;
-    this.logger.debug(`[${sockets.size}] Client conneced: ${client.id}`);
-    this.server.emit('log', `Client connected: ${client.id}`);
-    // TODO: Set user as online
+    this.logger.debug(
+      `[${sockets.size}] [WS] [${user.username}] connected with id ${client.id}`,
+    );
+    this.server.emit(
+      'log',
+      `-> ${user.username} connected with id ${client.id}`,
+    );
 
-    // TODO: Get all connected clients
-    // const connectedClients = Array.from(sockets).map(([_, socket]) => ({
-    //   userId: socket.id,
-    // }));
-
-    // console.log({
-    //   connectedClients,
-    // });
+    await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
   }
 }

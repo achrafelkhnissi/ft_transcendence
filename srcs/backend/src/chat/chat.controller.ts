@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
+  NotFoundException,
+  Logger,
   // UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
@@ -13,6 +16,14 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/decorators/user.decorator';
 // import { AuthGuard } from 'src/guards/auth.guard';
+import { ConversationType } from '@prisma/client';
+import { ChatGateway } from './chat.gateway';
+
+interface CreateConversationDto {
+  type: ConversationType;
+  firstUser?: string;
+  secondUser: string;
+}
 
 /**
  * TODO:
@@ -26,12 +37,34 @@ import { User } from 'src/decorators/user.decorator';
 // @UseGuards(AuthGuard)
 @Controller()
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly chatGateway: ChatGateway,
+  ) {}
 
   @Post()
-  create(@User() user, @Body() createChatDto: CreateChatDto) {
-    // TODO: add user as owner of chat
-    return this.chatService.create(createChatDto);
+  async create(
+    @User() user,
+    @Body() createChatDto: CreateConversationDto,
+    @Res() res,
+  ) {
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const chat = await this.chatService.create({
+      ...createChatDto,
+      firstUser: user.username,
+    });
+    if (!chat) {
+      return null;
+    }
+
+    // TODO: Add user to chat using 'join' event
+    // this.chatService.joinChat(user, chat.name);
+    this.chatGateway.joinRoomWithUser(chat.name, user.username);
+
+    res.redirect(`http://localhost:1337/messages/${chat.name}`);
   }
 
   @Get()
