@@ -86,9 +86,20 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
       });
     }
   }, [isClicked, username, friendshipState]);
-
+  
   return (
     <div className="flex justify-center gap-4 px-6">
+
+      {!me && 
+      <button
+      className={`
+      rounded-xl
+      bg-[${ContactsItems.sendMessage.color}]
+      p-2`}>
+        {ContactsItems.sendMessage.icon}
+      </button>
+      }
+
       {!me && friendshipState == false && (
         <button
           onClick={() => {
@@ -101,7 +112,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
           `}
         >
           {ContactsItems.sendRequest.icon}
-        </button>
+          </button>
       )}
       {!me && friendshipState == FriendshipStatus.PENDING && (
         <button
@@ -113,7 +124,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
           bg-[${ContactsItems.cancelRequest.color}]
           p-2
           `}
-        >
+          >
           {ContactsItems.cancelRequest.icon}
         </button>
       )}
@@ -127,18 +138,18 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
           p-2
           `}>
             {ContactsItems.acceptRequest.icon}
-          </button>
+            </button>
         )
       }
       <Link
-        target="_blank"
+      target="_blank"
         href={url}
         className={`
-                        rounded-xl
+        rounded-xl
                         bg-[#6257FE]
                         p-2
                         `}
-      >
+                        >
         {ContactsItems.intra.icon}
       </Link>
     </div>

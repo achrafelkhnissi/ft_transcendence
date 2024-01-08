@@ -1,17 +1,19 @@
 "use client";
 import Image from "next/image";
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect, FormEvent } from "react";
 import getCurrentUser from "@/services/getCurrentUser";
 import { MdModeEdit } from "react-icons/md";
 import getAllUsers from "@/services/getAllUsers";
 import Link from "next/link";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import uploadAvatar from "@/services/uploadAvatar";
 
 export interface Data {
   username: string;
   avatar: string;
   twoFA: boolean;
   phoneNumber: string | null;
+  newAvatar: File | null;
 }
 
 interface Users {
@@ -23,7 +25,14 @@ const defaultData: Data = {
   avatar: "",
   twoFA: false,
   phoneNumber: null,
+  newAvatar: null,
 };
+
+const fileErrorMessage = {
+  0: "valid",
+  1: "file too large",
+  2: "forbidden file extension",
+}
 
 const Settings = () => {
   const [data, setData] = useState<Data>(defaultData);
@@ -32,11 +41,14 @@ const Settings = () => {
   const [isSwitchOn, setSwitchOn] = useState(false);
   const [Users, setUsers] = useState<Users[]>();
   const [unique, setUnique] = useState<boolean>(true);
+  const [fileError, setFileError] = useState<0|1|2>(0);
+
 
   useEffect(() => {
     getCurrentUser().then((res) => {
       const ret: Data = res;
       setData(ret);
+      setSwitchOn(ret.twoFA);
     });
 
     // getAllUsers().then((res) => {
@@ -54,14 +66,31 @@ const Settings = () => {
     // send verification code to enabe 2FA
   };
 
+  const isValidFile = (file: File) => {
+    const maxSize = 1024 * 1024 * 2; // 2MB
+    const extension = /\.(jpeg|jpg|png)$/;
+
+    if (file.size > maxSize){
+      setFileError(1);
+      return -1;
+    }
+    if (!extension.test(file.name)){
+      setFileError(2);
+      return -1;
+    }
+    return 0;
+  }
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    if (file) {
+    if (file && isValidFile(file) === 0) {
+      setFileError(0);
       setData((prev) => {
         return {
           ...prev,
           avatar: URL.createObjectURL(file),
+          newAvatar: file,
         };
       });
     }
@@ -85,23 +114,28 @@ const Settings = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(data.username);
+  const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await uploadAvatar(data.newAvatar);
   };
-
+  
   const handleEditPhoneNumber = () => {
+    
     if (!data.phoneNumber) setEditPhoneNumber(true);
     else {
       // send a verificatin code to the prev number
       // when verified allow the user to modify the number
     }
   };
+  
 
   return (
-    <form className=" flex flex-col justify-center py-8 gap-10">
+    <form className=" flex flex-col justify-center py-8 gap-10"
+    onSubmit={handleSubmit}>
       {/* edit image */}
-      <div className="relative inline-block m-auto">
-        <Image
+      <div className="m-auto"> 
+      <div className="relative inline-block m-auto ">
+        <img
           src={data.avatar}
           alt="image"
           width={100}
@@ -122,6 +156,14 @@ const Settings = () => {
             onChange={handleFileChange}
           />
         </div>
+      </div>
+        {
+          fileError > 0 && (
+            <p className="text-red-500 text-xs ">
+              {fileErrorMessage[fileError]}
+            </p>
+          )
+        }
       </div>
 
       {/* edit username */}
@@ -191,6 +233,7 @@ const Settings = () => {
             onChange={handleToggleChange}
             className="sr-only"
             readOnly={isSwitchOn}
+            onClick={()=>setSwitchOn(!isSwitchOn)}
             //make it editibale if the phoneNumber exitsts
           />
           <div
@@ -214,8 +257,8 @@ const Settings = () => {
           </p>
         </Link>
         <button
+          type="submit"
           className=" text-white/80  px-4 py-1 rounded-lg  bg-purple-400/50 hover:bg-purple-400/70"
-          onClick={handleSubmit}
         >
           save
         </button>

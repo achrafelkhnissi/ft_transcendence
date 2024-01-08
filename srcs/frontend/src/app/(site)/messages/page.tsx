@@ -90,7 +90,6 @@ const Home = () => {
       } else {
         // Handle case where the conversation is new or not loaded
       }
-      console.log(newMessage);
     }
 
     const updateUserStatus = (userId: string, status: string) => {
