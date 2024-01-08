@@ -139,7 +139,7 @@ const ProfileAvatar: React.FC<Props> = ({
       >
         <div className="self-center relative">
           {avatar != "" && (
-            <Image
+            <img
               src={avatar}
               width={40}
               height={40}

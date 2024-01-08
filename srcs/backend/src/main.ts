@@ -15,7 +15,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: true,
-    methods: ['GET', 'POST', 'DELETE'], // we only need these two methods for our project TODO: To be tested
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'], // we only need these two methods for our project TODO: To be tested
     credentials: true,
   });
 

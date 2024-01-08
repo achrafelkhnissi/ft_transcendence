@@ -27,7 +27,7 @@ const UserInfo: React.FC<User> = ({ username, avatar, stats ,me, isFriend, url})
         <div className="absolute w-full h-28 max-[880px]:h-64 bottom-8 rounded-[2.5rem] bg-[#20204A]/90 ">
           <div className="w-full relative h-full flex justify-center">
             <div className="absolute left-1/2 transform  -translate-x-1/2 -translate-y-1/2">
-              <ProfileAvatar avatar={avatar} experiencePoints={stats.exp} level={stats.level} />
+              <ProfileAvatar avatar={`http://localhost:3000/api/users/${username}/avatar`} experiencePoints={stats.exp} level={stats.level} />
             </div>
             <div className=" absolute bottom-2 max-[880px]:top-16">
               <UserName name={username} />

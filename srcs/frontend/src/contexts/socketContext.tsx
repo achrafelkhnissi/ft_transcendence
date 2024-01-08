@@ -30,14 +30,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     })
     
     getConversations().then((res) => {
-      console.log(res);
+      // console.log(res);
       setConversations(res)});
     
     // join the rooms
-    console.log(conversations);
+    // console.log(conversations);
     conversations.map((conversation) => {
       socket?.emit("joinRoom", conversation.name);
-      console.log("joining roum "+ conversation.name)
+      console.log("joining room "+ conversation.name)
     })
     
     setSocket(newSocket);

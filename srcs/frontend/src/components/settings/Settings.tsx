@@ -7,6 +7,8 @@ import getAllUsers from "@/services/getAllUsers";
 import Link from "next/link";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import uploadAvatar from "@/services/uploadAvatar";
+import verifyNumber from "@/services/verifyNumber";
+import modifyUser from "@/services/modifyUser";
 
 export interface Data {
   username: string;
@@ -34,27 +36,49 @@ const fileErrorMessage = {
   2: "forbidden file extension",
 }
 
+const userNameErrorMessage = {
+  0: "valid",
+  1: "Username already exists! Please choose another one.",
+  2: "Entry must be 8+ lowercase letters and may include one mid-string hyphen.",
+}
+
 const Settings = () => {
   const [data, setData] = useState<Data>(defaultData);
+  const [newData, setNewData] = useState<Data>(defaultData);
   const [editUserName, setEditUserName] = useState<boolean>(false);
   const [editPhoneNumber, setEditPhoneNumber] = useState<boolean>(false);
   const [isSwitchOn, setSwitchOn] = useState(false);
   const [Users, setUsers] = useState<Users[]>();
-  const [unique, setUnique] = useState<boolean>(true);
   const [fileError, setFileError] = useState<0|1|2>(0);
+  const [usernameError, setUsernameError] = useState<0|1|2>(0);
+  const [validNumber, setValidNumber] = useState(true);
 
 
   useEffect(() => {
     getCurrentUser().then((res) => {
       const ret: Data = res;
       setData(ret);
+      setNewData(ret);
+      setData((prev) => {
+        return {
+          ...prev,
+          avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
+        }
+      })
+      setNewData((prev) => {
+        return {
+          ...prev,
+          phoneNumber: null,
+          avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
+        }
+      })
       setSwitchOn(ret.twoFA);
     });
 
     // getAllUsers().then((res) => {
     setUsers([
       { username: "fathjami" },
-      { username: "ael-khni" },
+      // { username: "ael-khni" },
       { username: "zsarir" },
     ]);
     // });
@@ -72,21 +96,21 @@ const Settings = () => {
 
     if (file.size > maxSize){
       setFileError(1);
-      return -1;
+      return false;
     }
     if (!extension.test(file.name)){
       setFileError(2);
-      return -1;
+      return false;
     }
-    return 0;
+    return true;
   }
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    if (file && isValidFile(file) === 0) {
+    if (file && isValidFile(file)) {
       setFileError(0);
-      setData((prev) => {
+      setNewData((prev) => {
         return {
           ...prev,
           avatar: URL.createObjectURL(file),
@@ -96,27 +120,90 @@ const Settings = () => {
     }
   };
 
+  const isValidUsername = (name:string) => {
+    const regex = /^(?=[a-z-]{8,}$)[a-z]+(?:-[a-z]+)?$/;
+
+    if (Users?.some((obj) => obj.username === name)){
+      setUsernameError(1);
+      return false;
+    }
+    if (!regex.test(name)){
+      setUsernameError(2);
+      return false;
+    }
+    setUsernameError(0);
+    return true;
+  }
+  
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    if (name === "" || Users?.every((obj) => !obj.username.includes(name))) {
-      setUnique(true);
-      setData((prev) => ({
+
+    if(name === ""){
+      setUsernameError(0);
+    }
+    else if (isValidUsername(name)) {
+      setNewData((prev) => ({
         ...prev,
         username: name,
       }));
-    } else setUnique(false);
+    } else {
+      setNewData((prev) => ({
+        ...prev,
+        username: "",
+      }))
+    };
   };
 
+  const isValidNumber = (num: string) => {
+    const regex = /^\+212\d{9}$/;
+
+    if(regex.test(num) && num != data.phoneNumber){
+      setValidNumber(true);
+      return true;
+    }
+    else{
+      setValidNumber(false);
+      return false;
+    }
+  }
+
   const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setData((prev) => ({
-      ...prev,
-      phoneNumber: e.target.value,
-    }));
+    const number = e.target.value;
+
+    if(number === ""){
+      setValidNumber(true);
+    }
+    else if (isValidNumber(number)){
+        setNewData((prev) => ({
+          ...prev,
+          phoneNumber: number,
+        }));
+    } else {
+      setNewData((prev) => ({
+        ...prev,
+        phoneNumber: null,
+      }))
+    }
   };
 
   const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await uploadAvatar(data.newAvatar);
+
+    if(newData.newAvatar)
+      await uploadAvatar(newData.newAvatar);
+
+      
+      if(newData.phoneNumber !== null && newData.phoneNumber != "")
+        modifyUser(data.username, {phoneNumber: newData.phoneNumber});
+      
+      if(isSwitchOn){
+
+        await verifyNumber();
+      }
+
+      if(newData.username != "" ){
+         modifyUser(data.username, {username: newData.username});
+      }
   };
   
   const handleEditPhoneNumber = () => {
@@ -136,8 +223,8 @@ const Settings = () => {
       <div className="m-auto"> 
       <div className="relative inline-block m-auto ">
         <img
-          src={data.avatar}
-          alt="image"
+          src={newData.avatar}
+          alt="  "
           width={100}
           height={100}
           className="w-28 h-28 rounded-full border-4 border-purple-400/50 object-fill"
@@ -176,7 +263,7 @@ const Settings = () => {
             placeholder={data.username !== "" ? data.username : "username"}
             onChange={handleUsernameChange}
             className="w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 outline-none px-4
-       text-white/60 text-md font-normal placeholder:opacity-40
+       text-white/60 text-md font-normal placeholder:opacity-40 
       "
           />
           <label
@@ -189,20 +276,21 @@ const Settings = () => {
             />
           </label>
         </div>
-        {!unique && (
+        {usernameError > 0 && (
           <p className="text-red-500 text-xs mx-auto">
-            Username already exists. Please choose another one.
+            {userNameErrorMessage[usernameError]}
           </p>
         )}
       </div>
 
       {/* edit phone number */}
+      <div>
       <div className={`flex justify-center gap-2 `}>
         <input
           type="text"
           id="phone-number"
           readOnly={!editPhoneNumber}
-          placeholder={data.phoneNumber ? data.phoneNumber : "+212 XXX XXX"}
+          placeholder={data.phoneNumber ? data.phoneNumber : "+212 XXX XXX XXX"}
           onChange={handlePhoneNumberChange}
           className={`w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
        text-white/60 text-md font-normal placeholder:opacity-40 `}
@@ -217,6 +305,12 @@ const Settings = () => {
           />
         </label>
       </div>
+      {!validNumber && (
+        <p className="text-red-500 text-xs mx-auto w-3/5 mt-2">
+          invalid phone number!
+        </p>
+      )}
+      </div>
 
       {/* 2FA  */}
       <div className="flex items-center text-white  m-auto">
@@ -230,10 +324,10 @@ const Settings = () => {
             type="checkbox"
             id="toggleSwitch"
             checked={isSwitchOn}
-            onChange={handleToggleChange}
+            // onChange={handleToggleChange}
             className="sr-only"
-            readOnly={isSwitchOn}
-            onClick={()=>setSwitchOn(!isSwitchOn)}
+            // readOnly={}
+            onClick={()=>{setSwitchOn(!isSwitchOn)}}
             //make it editibale if the phoneNumber exitsts
           />
           <div
