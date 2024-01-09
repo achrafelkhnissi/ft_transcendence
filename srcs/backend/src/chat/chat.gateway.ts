@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
