@@ -281,4 +281,32 @@ export class ChatService {
       },
     });
   }
+
+  async getRoomsByUserId(userId: number): Promise<string[]> {
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            {
+              participants: {
+                some: {
+                  id: userId,
+                },
+              },
+            },
+            {
+              admins: {
+                some: {
+                  id: userId,
+                },
+              },
+            },
+            {
+              ownerId: userId,
+            },
+          ],
+        },
+      })
+      .then((rooms) => rooms.map((room) => room.name));
+  }
 }
