@@ -88,6 +88,7 @@ export class UsersService {
       select: {
         id: true,
         username: true,
+        phoneNumber: true,
         avatar: true,
         url: true,
         status: true,
@@ -104,6 +105,12 @@ export class UsersService {
             name: true,
             description: true,
             image: true,
+          },
+        },
+        settings: {
+          select: {
+            twoFactorEnabled: true,
+            verified: true,
           },
         },
       },
