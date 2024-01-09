@@ -13,6 +13,7 @@ import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { WsAuthenticatedGuard } from './ws.guard';
 import { Status } from '@prisma/client';
+import { Hash } from 'crypto';
 
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
@@ -25,6 +26,8 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(ChatGateway.name);
+
+  connectedUsers = new Map<string, string[]>();
 
   @WebSocketServer()
   server: Server;
@@ -79,6 +82,7 @@ export class ChatGateway
     // await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
 
     this.logger.debug(`Client ${client.id} disconnected`);
+    this.server.to(client.id).emit('status', { status: Status.OFFLINE });
 
     // const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
     // rooms.forEach((room) => {
@@ -99,6 +103,13 @@ export class ChatGateway
     //   throw new UnauthorizedException('Unauthorized');
     // }
 
+    if (user) {
+      // To keep track of the connected users
+      const socketIds = this.connectedUsers.get(user.id) ?? [];
+      socketIds.push(client.id);
+      this.connectedUsers.set(user.id, socketIds);
+    }
+
     const { sockets } = this.server.sockets;
 
     const { username } = user ?? { username: `unknown${sockets.size}` };
@@ -107,16 +118,37 @@ export class ChatGateway
       `[${sockets.size}] [WS] [${username}] connected with id ${client.id}`,
     );
 
-    await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
+    // await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
     // client.emit('status', { status: Status.ONLINE });
+    this.server.to(client.id).emit('status', { status: Status.ONLINE });
 
-    const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
-    rooms.forEach((room) => {
-      client.join(room);
-      this.server.to(room).emit('message', {
-        message: `${username} joined the chat`,
-        id: 'server',
-      });
+    // const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
+    // rooms.forEach((room) => {
+    //   client.join(room);
+    //   this.server.to(room).emit('message', {
+    //     message: `${username} joined the chat`,
+    //     id: 'server',
+    //   });
+    // });
+  }
+
+  @SubscribeMessage('join')
+  async onJoin(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
+    const user = client.request.user;
+
+    // if (!user) {
+    //   client.disconnect();
+    //   throw new UnauthorizedException('Unauthorized');
+    // }
+
+    const { username } = user ?? { username: `unknown${client.id}` };
+
+    this.logger.debug(`[WS] [${username}] joined room ${room}`);
+
+    client.join(room);
+    this.server.to(room).emit('onMessage', {
+      message: `${username} joined the chat`,
+      id: 'server',
     });
   }
 }
