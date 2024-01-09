@@ -62,7 +62,7 @@ export class ChatController {
 
     // TODO: Add user to chat using 'join' event
     // this.chatService.joinChat(user, chat.name);
-    this.chatGateway.joinRoomWithUser(chat.name, user.username);
+    // this.chatGateway.joinRoomWithUser(chat.nam, user.username);
 
     res.redirect(`http://localhost:1337/messages/${chat.name}`);
   }
