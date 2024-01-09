@@ -6,6 +6,8 @@ export class WsAuthenticatedGuard implements CanActivate {
     const client = context.switchToWs().getClient();
     const request = client.request;
 
+    // TODO: Not working when testing with Postman
+
     console.log({
       request: request,
       session: request.session,
