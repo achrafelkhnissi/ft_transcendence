@@ -19,7 +19,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000', {
+
+    console.log(`Connecting to ${process.env.BACKEND_URL}/chat`); 
+
+    // const newSocket = io(`${process.env.BACKEND_URL}/chat`, {
+    const newSocket = io(`http://localhost:3000`, {
       // query: {
       //   loggedUser: 'test',
       // },
