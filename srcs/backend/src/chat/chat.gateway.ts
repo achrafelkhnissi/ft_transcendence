@@ -13,12 +13,12 @@ import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { WsAuthenticatedGuard } from './ws.guard';
 import { Status } from '@prisma/client';
-import { Hash } from 'crypto';
 
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
+  // namespace: 'chat',
   cors: {
-    origin: ['http://localhost:*'],
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   },
 })

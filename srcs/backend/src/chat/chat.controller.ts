@@ -64,7 +64,7 @@ export class ChatController {
     // this.chatService.joinChat(user, chat.name);
     // this.chatGateway.joinRoomWithUser(chat.nam, user.username);
 
-    res.redirect(`http://localhost:1337/messages/${chat.name}`);
+    res.redirect(`${process.env.FRONTEND_URL}/messages/${chat.name}`);
   }
 
   @Get()
