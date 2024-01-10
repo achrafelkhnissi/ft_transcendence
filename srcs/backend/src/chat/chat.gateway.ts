@@ -94,15 +94,29 @@ export class ChatGateway
     // });
   }
 
+  /**
+   * When a client connects to the server
+   * @param client The socket that connected
+   * @todo
+   * - Add the user to the connected users Map and keep track of the socket ids
+   * - Add the user to the rooms he is in
+   * - Send a message to the rooms he is in that he joined
+   * - Send a message to the client that he is connected
+   */
   // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working
   async handleConnection(client: Socket) {
     const user = client.request.user;
+
+    // console.log({
+    //   request: client.request,
+    // });
 
     // if (!user) {
     //   client.disconnect();
     //   throw new UnauthorizedException('Unauthorized');
     // }
 
+    // todo: Refactor this
     if (user) {
       // To keep track of the connected users
       const socketIds = this.connectedUsers.get(user.id) ?? [];
@@ -121,6 +135,7 @@ export class ChatGateway
     // await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
     // client.emit('status', { status: Status.ONLINE });
     this.server.to(client.id).emit('status', { status: Status.ONLINE });
+    client.emit('onConnect', { msg: `[${client.id}] You are connected` });
 
     // const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
     // rooms.forEach((room) => {
