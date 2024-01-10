@@ -47,7 +47,6 @@ const HELP = {
     'GET /auth/ft': 'Authenticate with 42',
     'GET /auth/ft/redirect': 'Redirect from 42',
     'GET /auth/logout': 'Logout',
-    'GET /auth/whoami': 'Get the current user',
   },
 };
 
