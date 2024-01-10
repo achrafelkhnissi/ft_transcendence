@@ -13,9 +13,12 @@ import modifyUser from "@/services/modifyUser";
 export interface Data {
   username: string;
   avatar: string;
-  twoFA: boolean;
   phoneNumber: string | null;
   newAvatar: File | null;
+  settings: {
+    twoFactorEnabled: boolean,
+    verified: boolean,
+  }
 }
 
 interface Users {
@@ -25,9 +28,12 @@ interface Users {
 const defaultData: Data = {
   username: "",
   avatar: "",
-  twoFA: false,
   phoneNumber: null,
   newAvatar: null,
+  settings: {
+    twoFactorEnabled: false,
+    verified: false,
+  }
 };
 
 const fileErrorMessage = {
@@ -52,6 +58,7 @@ const Settings = () => {
   const [fileError, setFileError] = useState<0|1|2>(0);
   const [usernameError, setUsernameError] = useState<0|1|2>(0);
   const [validNumber, setValidNumber] = useState(true);
+  const [phoneNumberProvided, setPhoneNumberProvided] = useState<boolean>(true);
 
 
   useEffect(() => {
@@ -68,27 +75,22 @@ const Settings = () => {
       setNewData((prev) => {
         return {
           ...prev,
-          phoneNumber: null,
+          phoneNumber: "",
           avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
         }
       })
-      setSwitchOn(ret.twoFA);
+      console.log(ret);
+      setSwitchOn(ret.settings.twoFactorEnabled);
     });
-
+    
     // getAllUsers().then((res) => {
-    setUsers([
-      { username: "fathjami" },
-      // { username: "ael-khni" },
-      { username: "zsarir" },
-    ]);
-    // });
-  }, []);
-
-  const handleToggleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    //check if there is a number provided;
-    if (data.phoneNumber && data.phoneNumber !== "") setSwitchOn(true);
-    // send verification code to enabe 2FA
-  };
+      setUsers([
+        { username: "fathjami" },
+        // { username: "ael-khni" },
+        { username: "zsarir" },
+      ]);
+      // });
+    }, []);
 
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
@@ -189,15 +191,16 @@ const Settings = () => {
   const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log(isSwitchOn);
     if(newData.newAvatar)
       await uploadAvatar(newData.newAvatar);
 
       
-      if(newData.phoneNumber !== null && newData.phoneNumber != "")
+      if(newData.phoneNumber && newData.phoneNumber != "" )
         modifyUser(data.username, {phoneNumber: newData.phoneNumber});
       
-      if(isSwitchOn){
-
+      if(isSwitchOn && newData.phoneNumber != "" || data.phoneNumber !== null){
+        modifyUser(data.username, {})
         await verifyNumber();
       }
 
@@ -313,6 +316,7 @@ const Settings = () => {
       </div>
 
       {/* 2FA  */}
+      <div className="m-auto">
       <div className="flex items-center text-white  m-auto">
         <label
           htmlFor="toggleSwitch"
@@ -324,10 +328,8 @@ const Settings = () => {
             type="checkbox"
             id="toggleSwitch"
             checked={isSwitchOn}
-            // onChange={handleToggleChange}
             className="sr-only"
-            // readOnly={}
-            onClick={()=>{setSwitchOn(!isSwitchOn)}}
+            onClick={()=>{setSwitchOn((prev) => !prev)}}
             //make it editibale if the phoneNumber exitsts
           />
           <div
@@ -337,6 +339,12 @@ const Settings = () => {
           ></div>
         </label>
         <span className="ml-2 text-white/80">Two Factor Authentication </span>
+      </div>
+      {/* {!phoneNumberProvided && (
+        <p className="text-red-500 text-xs mx-auto w-3/5 mt-2">
+          please enter your phone number!
+        </p>
+      )} */}
       </div>
 
       {/* Submit form */}
