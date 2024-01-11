@@ -1,13 +1,30 @@
-import { IsString, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsDate,
+  IsEnum,
+} from 'class-validator';
+import { User, Status } from '@prisma/client';
 
-// TODO: Update this DTO to match the requirements && constraints of the User & Add validation.
-export class CreateUserDto {
+// Partial<User> makes all properties optional
+export class CreateUserDto implements Readonly<Partial<User>> {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
+
   @IsString()
   @IsNotEmpty()
   username: string;
 
   @IsEmail()
   email: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -17,4 +34,16 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   avatar: string;
+
+  @IsEnum(Status)
+  @IsOptional()
+  status?: Status;
+
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 }
