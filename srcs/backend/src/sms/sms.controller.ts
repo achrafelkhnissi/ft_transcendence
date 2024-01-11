@@ -1,4 +1,10 @@
-import { BadRequestException, Body, Controller, Post, Get } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  Get,
+} from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
