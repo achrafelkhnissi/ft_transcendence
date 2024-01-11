@@ -79,7 +79,6 @@ const Settings = () => {
           avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
         }
       })
-      console.log(ret);
       setSwitchOn(ret.settings.twoFactorEnabled);
     });
     
@@ -192,16 +191,22 @@ const Settings = () => {
     e.preventDefault();
 
     console.log(isSwitchOn);
-    if(newData.newAvatar)
-      await uploadAvatar(newData.newAvatar);
+
+        if(newData.newAvatar)
+          await uploadAvatar(newData.newAvatar);
 
       
-      if(newData.phoneNumber && newData.phoneNumber != "" )
+      if(newData.phoneNumber && newData.phoneNumber != "" ){
+        console.log(newData.phoneNumber);
         modifyUser(data.username, {phoneNumber: newData.phoneNumber});
+      }
       
-      if(isSwitchOn && newData.phoneNumber != "" || data.phoneNumber !== null){
-        modifyUser(data.username, {})
+      if(isSwitchOn && (newData.phoneNumber != "" || data.phoneNumber !== null)){
         await verifyNumber();
+      }
+
+      if (isSwitchOn != data.settings.twoFactorEnabled){
+        modifyUser(data.username, {settings: {twoFactorEnabled: isSwitchOn}});
       }
 
       if(newData.username != "" ){
