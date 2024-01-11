@@ -3,18 +3,12 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
-  IsNumber,
-  IsDate,
   IsEnum,
 } from 'class-validator';
 import { User, Status } from '@prisma/client';
 
 // Partial<User> makes all properties optional
 export class CreateUserDto implements Readonly<Partial<User>> {
-  @IsOptional()
-  @IsNumber()
-  id?: number;
-
   @IsString()
   @IsNotEmpty()
   username: string;
@@ -38,12 +32,4 @@ export class CreateUserDto implements Readonly<Partial<User>> {
   @IsEnum(Status)
   @IsOptional()
   status?: Status;
-
-  @IsOptional()
-  @IsDate()
-  createdAt?: Date;
-
-  @IsOptional()
-  @IsDate()
-  updatedAt?: Date;
 }
