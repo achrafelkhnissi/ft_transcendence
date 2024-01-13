@@ -1,5 +1,5 @@
 import { FriendsService } from './../friends/friends.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -58,7 +58,9 @@ export class UsersService {
     });
   }
 
-  findAll() {
+  findAll(@Query() query: QueryDto) {
+    const { username, phoneNumber } = query;
+
     return this.prisma.user.findMany();
   }
 
@@ -269,5 +271,26 @@ export class UsersService {
         this.logger.error(error);
         throw new NotFoundException(`User <${username}> not found`);
       });
+  }
+
+  getPhoneNumbers() {
+    return this.prisma.user.findMany({
+      where: {
+        phoneNumber: {
+          not: null,
+        },
+      },
+      select: {
+        phoneNumber: true,
+      },
+    });
+  }
+
+  getUsernames() {
+    return this.prisma.user.findMany({
+      select: {
+        username: true,
+      },
+    });
   }
 }
