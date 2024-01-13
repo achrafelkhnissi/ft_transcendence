@@ -103,4 +103,14 @@ export class UsersController {
 
     return this.usersService.getUserChats(username);
   }
+
+  @Get('phoneNumbers')
+  getPhoneNumbers() {
+    return this.usersService.getPhoneNumbers();
+  }
+
+  @Get('usernames')
+  getUsernames() {
+    return this.usersService.getUsernames();
+  }
 }
