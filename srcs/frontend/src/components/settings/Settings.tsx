@@ -93,8 +93,6 @@ const Settings = () => {
     getAllNumberss().then(res => setNumbers(res))
   }, []);
 
-  console.log(newData.settings.twoFactorEnabled);
-
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
     const extension = /\.(jpeg|jpg|png)$/;
@@ -211,7 +209,7 @@ const Settings = () => {
         modifyUser(data.username, {username: newData.username});
       }
 
-      console.log('success')
+      console.log('success');
     } catch (error){
       console.log(error);
     }
@@ -246,25 +244,25 @@ const Settings = () => {
     }
   };
 
-  const handleToggle =  () => {
+  const handleToggle = async () => {
     
-    // setNewData((prev) => ({
-    //   ...prev,
-    //   settings: {
-    //     verified: prev.settings.verified,
-    //     twoFactorEnabled: !(prev.settings.twoFactorEnabled),
-    //   }
-    // }))
+    const update = !newData.settings.twoFactorEnabled;
 
-    console.log("newData " + newData.settings.twoFactorEnabled);
+    setNewData((prev) => ({
+      ...prev,
+      settings: {
+        verified: prev.settings.verified,
+        twoFactorEnabled: !(prev.settings.twoFactorEnabled),
+      }
+    }))
 
-    if(newData.settings.twoFactorEnabled !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
-      console.log('hilou')
-    //   verifyNumber().then(() => {
-    //     console.log("sent...");
-    // }).catch(() => {
-    //   console.log('error');
-    // })
+    if(update !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
+      try{
+        await verifyNumber();
+        console.log("sent...");
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
   
@@ -374,24 +372,14 @@ const Settings = () => {
           className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-purple-400/50 cursor-pointer ${
             newData.settings.twoFactorEnabled ?  "bg-purple-400/50" : "bg-white/5" 
           }`}
-        >
+          >
           <input
             type="checkbox"
             id="toggleSwitch"
             className="sr-only"
+            onClick={handleToggle}
+            // onChange={handleToggle}
             checked={newData.settings.twoFactorEnabled}
-            onChange={handleToggle}
-            onClick={() => {
-
-              setNewData((prev) => ({
-                ...prev,
-                settings: {
-                  verified: prev.settings.verified,
-                  twoFactorEnabled: !(prev.settings.twoFactorEnabled),
-                }
-              }))
-            }
-            }
             //make it editibale if the phoneNumber exitsts
           />
           <div
