@@ -20,12 +20,12 @@ const uploadAvatar = async (newAvatar: File | null) => {
             'Content-Type': 'multipart/form-data'
           }
     })
-    .then((response) => {
-        console.log('File uploaded successfully', response.data);
-    })
-    .catch((error) => {
-        console.error('File upload failed', error);
-    });
+    // .then((response) => {
+    //     console.log('File uploaded successfully', response.data);
+    // })
+    // .catch((error) => {
+    //     console.error('File upload failed', error);
+    // });
 }
 
 export default uploadAvatar;

@@ -9,12 +9,15 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import uploadAvatar from "@/services/uploadAvatar";
 import verifyNumber from "@/services/verifyNumber";
 import modifyUser from "@/services/modifyUser";
+import getAllNumberss from "@/services/getAllNumbers";
+import confirmCode from "@/services/confirmCode";
 
 export interface Data {
   username: string;
   avatar: string;
   phoneNumber: string | null;
   newAvatar: File | null;
+  code: number | null,
   settings: {
     twoFactorEnabled: boolean,
     verified: boolean,
@@ -30,6 +33,7 @@ const defaultData: Data = {
   avatar: "",
   phoneNumber: null,
   newAvatar: null,
+  code: null,
   settings: {
     twoFactorEnabled: false,
     verified: false,
@@ -51,6 +55,7 @@ const userNameErrorMessage = {
 const Settings = () => {
   const [data, setData] = useState<Data>(defaultData);
   const [newData, setNewData] = useState<Data>(defaultData);
+  const [numbers, setNumbers] = useState<string[]> ([]);
   const [editUserName, setEditUserName] = useState<boolean>(false);
   const [editPhoneNumber, setEditPhoneNumber] = useState<boolean>(false);
   const [isSwitchOn, setSwitchOn] = useState(false);
@@ -82,14 +87,12 @@ const Settings = () => {
       setSwitchOn(ret.settings.twoFactorEnabled);
     });
     
-    // getAllUsers().then((res) => {
-      setUsers([
-        { username: "fathjami" },
-        // { username: "ael-khni" },
-        { username: "zsarir" },
-      ]);
-      // });
-    }, []);
+    getAllUsers().then((res) => {
+      setUsers(res);
+    });
+    
+    getAllNumberss().then(res => setNumbers(res))
+  }, []);
 
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
@@ -158,7 +161,7 @@ const Settings = () => {
   const isValidNumber = (num: string) => {
     const regex = /^\+212\d{9}$/;
 
-    if(regex.test(num) && num != data.phoneNumber){
+    if(regex.test(num) && num != data.phoneNumber && numbers.every(number => number !== num)){
       setValidNumber(true);
       return true;
     }
@@ -190,29 +193,48 @@ const Settings = () => {
   const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(isSwitchOn);
+    try {
 
-        if(newData.newAvatar)
-          await uploadAvatar(newData.newAvatar);
+      if(newData.newAvatar)
+        await uploadAvatar(newData.newAvatar);
 
-      
       if(newData.phoneNumber && newData.phoneNumber != "" ){
-        console.log(newData.phoneNumber);
         modifyUser(data.username, {phoneNumber: newData.phoneNumber});
       }
       
-      if(isSwitchOn && (newData.phoneNumber != "" || data.phoneNumber !== null)){
-        await verifyNumber();
+      if (newData.settings.twoFactorEnabled != data.settings.twoFactorEnabled && newData.settings.verified){
+        modifyUser(data.username, {settings: {update: {...newData.settings}} });
       }
 
-      if (isSwitchOn != data.settings.twoFactorEnabled){
-        modifyUser(data.username, {settings: {twoFactorEnabled: isSwitchOn}});
+      if(newData.username != ""  && newData.username != data.username){
+        modifyUser(data.username, {username: newData.username});
       }
 
-      if(newData.username != "" ){
-         modifyUser(data.username, {username: newData.username});
-      }
+      console.log('success')
+    } catch (error){
+      console.log(error);
+    }
   };
+
+  const handleVerificationCode = (e: ChangeEvent<HTMLInputElement>) => {
+    const code = e.target.value.toString();
+
+    console.log(code);
+    if (code.length === 6){
+      confirmCode(code).then(() => {
+        setNewData((prev) => ({
+          ...prev,
+          settings: {
+            twoFactorEnabled: isSwitchOn,
+            verified: true,
+          }
+        }))
+      }).catch((error) => {
+        console.log('error ' + error);
+      });
+    }    
+
+  }
   
   const handleEditPhoneNumber = () => {
     
@@ -222,6 +244,27 @@ const Settings = () => {
       // when verified allow the user to modify the number
     }
   };
+
+  const handleToggle = async () => {
+
+    setNewData((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        twoFactorEnabled: isSwitchOn,
+      }
+    }))
+
+    console.log(newData.settings.twoFactorEnabled)
+    if(newData.settings.twoFactorEnabled !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
+      console.log('hilou')
+    //   verifyNumber().then(() => {
+    //     console.log("sent...");
+    // }).catch(() => {
+    //   console.log('error');
+    // })
+    }
+  }
   
 
   return (
@@ -320,6 +363,7 @@ const Settings = () => {
       )}
       </div>
 
+
       {/* 2FA  */}
       <div className="m-auto">
       <div className="flex items-center text-white  m-auto">
@@ -332,9 +376,11 @@ const Settings = () => {
           <input
             type="checkbox"
             id="toggleSwitch"
-            checked={isSwitchOn}
             className="sr-only"
-            onClick={()=>{setSwitchOn((prev) => !prev)}}
+            onClick={()=> {
+              setSwitchOn((prev) => !prev)
+              handleToggle();
+            }}
             //make it editibale if the phoneNumber exitsts
           />
           <div
@@ -352,8 +398,23 @@ const Settings = () => {
       )} */}
       </div>
 
+      {/* verification code */}
+      <div className= "w-3/12 self-center text-sm -ml-6 -mt-2">
+        <input
+        type = "number"
+        id = "verification code"
+        maxLength={6}
+        onChange={handleVerificationCode}
+        placeholder= "_ _ _ _ _ _"
+        className={`w-full h-10 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
+        text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none
+        ${!isSwitchOn && "hidden"} 
+        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        />
+      </div>
+
       {/* Submit form */}
-      <div className=" mt-14 flex justify-between w-4/5 slef-center mx-auto ">
+      <div className=" mb-0 flex justify-between w-4/5 slef-center mx-auto ">
         <Link
           href={"/dashboard"}
           className="text-white/80 b py-1 px-2 rounded-lg bg-blue-400/70 hover:bg-blue-400/90"

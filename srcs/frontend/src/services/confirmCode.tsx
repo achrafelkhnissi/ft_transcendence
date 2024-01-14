@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const verifyNumber = async ()=>{
-    console.log('hello')
-    axios('http://localhost:3000/api/sms/verify', {withCredentials:true})
+const confirmCode = async (code: string) =>{
+    axios.post('http://localhost:3000/api/sms/confirm', code,  {withCredentials:true})
     // .then((response) => {
     //     console.log('verified successfully', response.data);
     // })
@@ -11,4 +10,4 @@ const verifyNumber = async ()=>{
     // });
 }
 
-export default verifyNumber;
+export default confirmCode;
