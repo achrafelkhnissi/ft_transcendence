@@ -58,9 +58,7 @@ export class UsersService {
     });
   }
 
-  findAll(@Query() query: QueryDto) {
-    const { username, phoneNumber } = query;
-
+  findAll() {
     return this.prisma.user.findMany();
   }
 
