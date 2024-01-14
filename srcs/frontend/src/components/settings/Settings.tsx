@@ -58,7 +58,7 @@ const Settings = () => {
   const [numbers, setNumbers] = useState<string[]> ([]);
   const [editUserName, setEditUserName] = useState<boolean>(false);
   const [editPhoneNumber, setEditPhoneNumber] = useState<boolean>(false);
-  const [isSwitchOn, setSwitchOn] = useState(false);
+  // const [isSwitchOn, setSwitchOn] = useState(false);
   const [Users, setUsers] = useState<Users[]>();
   const [fileError, setFileError] = useState<0|1|2>(0);
   const [usernameError, setUsernameError] = useState<0|1|2>(0);
@@ -84,7 +84,6 @@ const Settings = () => {
           avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
         }
       })
-      setSwitchOn(ret.settings.twoFactorEnabled);
     });
     
     getAllUsers().then((res) => {
@@ -93,6 +92,7 @@ const Settings = () => {
     
     getAllNumberss().then(res => setNumbers(res))
   }, []);
+  console.log(newData.settings.twoFactorEnabled);
 
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
@@ -225,7 +225,7 @@ const Settings = () => {
         setNewData((prev) => ({
           ...prev,
           settings: {
-            twoFactorEnabled: isSwitchOn,
+            ...prev.settings,
             verified: true,
           }
         }))
@@ -245,17 +245,19 @@ const Settings = () => {
     }
   };
 
-  const handleToggle = async () => {
-
+  const handleToggle =  () => {
+    
     setNewData((prev) => ({
       ...prev,
       settings: {
-        ...prev.settings,
-        twoFactorEnabled: isSwitchOn,
+        verified: prev.settings.verified,
+        twoFactorEnabled: !(prev.settings.twoFactorEnabled),
       }
     }))
+    // console.log(newData);
 
-    console.log(newData.settings.twoFactorEnabled)
+    console.log("newData " + newData.settings.twoFactorEnabled);
+
     if(newData.settings.twoFactorEnabled !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
       console.log('hilou')
     //   verifyNumber().then(() => {
@@ -370,22 +372,19 @@ const Settings = () => {
         <label
           htmlFor="toggleSwitch"
           className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-purple-400/50 cursor-pointer ${
-            isSwitchOn ? "bg-purple-400/50" : "bg-white/5"
+            newData.settings.twoFactorEnabled ?  "bg-purple-400/50" : "bg-white/5" 
           }`}
         >
           <input
             type="checkbox"
             id="toggleSwitch"
             className="sr-only"
-            onClick={()=> {
-              setSwitchOn((prev) => !prev)
-              handleToggle();
-            }}
+            onClick={()=> handleToggle()}
             //make it editibale if the phoneNumber exitsts
           />
           <div
             className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
-              isSwitchOn ? "translate-x-full bg-white" : "bg-white/80"
+              newData.settings.twoFactorEnabled ? "translate-x-full bg-white" : "bg-white/80"
             }`}
           ></div>
         </label>
@@ -408,7 +407,7 @@ const Settings = () => {
         placeholder= "_ _ _ _ _ _"
         className={`w-full h-10 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
         text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none
-        ${!isSwitchOn && "hidden"} 
+        ${!newData.settings.twoFactorEnabled && "hidden"} 
         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
