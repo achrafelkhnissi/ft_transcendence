@@ -92,6 +92,7 @@ const Settings = () => {
     
     getAllNumberss().then(res => setNumbers(res))
   }, []);
+
   console.log(newData.settings.twoFactorEnabled);
 
   const isValidFile = (file: File) => {
@@ -247,14 +248,13 @@ const Settings = () => {
 
   const handleToggle =  () => {
     
-    setNewData((prev) => ({
-      ...prev,
-      settings: {
-        verified: prev.settings.verified,
-        twoFactorEnabled: !(prev.settings.twoFactorEnabled),
-      }
-    }))
-    // console.log(newData);
+    // setNewData((prev) => ({
+    //   ...prev,
+    //   settings: {
+    //     verified: prev.settings.verified,
+    //     twoFactorEnabled: !(prev.settings.twoFactorEnabled),
+    //   }
+    // }))
 
     console.log("newData " + newData.settings.twoFactorEnabled);
 
@@ -379,7 +379,19 @@ const Settings = () => {
             type="checkbox"
             id="toggleSwitch"
             className="sr-only"
-            onClick={()=> handleToggle()}
+            checked={newData.settings.twoFactorEnabled}
+            onChange={handleToggle}
+            onClick={() => {
+
+              setNewData((prev) => ({
+                ...prev,
+                settings: {
+                  verified: prev.settings.verified,
+                  twoFactorEnabled: !(prev.settings.twoFactorEnabled),
+                }
+              }))
+            }
+            }
             //make it editibale if the phoneNumber exitsts
           />
           <div
