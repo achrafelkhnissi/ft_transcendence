@@ -215,22 +215,23 @@ const Settings = () => {
     }
   };
 
-  const handleVerificationCode = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleVerificationCode = async (e: ChangeEvent<HTMLInputElement>) => {
     const code = e.target.value.toString();
 
     console.log(code);
     if (code.length === 6){
-      confirmCode(code).then(() => {
-        setNewData((prev) => ({
-          ...prev,
-          settings: {
-            ...prev.settings,
-            verified: true,
-          }
-        }))
-      }).catch((error) => {
+      try {
+        await confirmCode(code);
+          setNewData((prev) => ({
+            ...prev,
+            settings: {
+              ...prev.settings,
+              verified: true,
+            }
+          }))
+      } catch(error){
         console.log('error ' + error);
-      });
+      }
     }    
 
   }
@@ -258,7 +259,7 @@ const Settings = () => {
 
     if(update !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
       try{
-        await verifyNumber();
+        // await verifyNumber();
         console.log("sent...");
       } catch (error) {
         console.log(error);
@@ -407,7 +408,7 @@ const Settings = () => {
         placeholder= "_ _ _ _ _ _"
         className={`w-full h-10 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
         text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none
-        ${!newData.settings.twoFactorEnabled && "hidden"} 
+        ${newData.settings.twoFactorEnabled === data.settings.twoFactorEnabled && "hidden"} 
         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>

@@ -7,7 +7,7 @@ const verifyNumber = async ()=>{
         console.log('verified successfully', response.data);
     })
     .catch((error) => {
-        console.error('verification failed', error);
+        console.log('verification failed');
     });
 }
 
