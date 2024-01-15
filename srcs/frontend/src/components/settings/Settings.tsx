@@ -12,7 +12,7 @@ import modifyUser from "@/services/modifyUser";
 import getAllNumberss from "@/services/getAllNumbers";
 import confirmCode from "@/services/confirmCode";
 import { toast } from 'react-hot-toast';
-
+import { FaCheck } from "react-icons/fa";
 
 export interface Data {
   username: string;
@@ -58,15 +58,12 @@ const Settings = () => {
   const [data, setData] = useState<Data>(defaultData);
   const [newData, setNewData] = useState<Data>(defaultData);
   const [numbers, setNumbers] = useState<string[]> ([]);
-  const [editUserName, setEditUserName] = useState<boolean>(false);
-  const [editPhoneNumber, setEditPhoneNumber] = useState<boolean>(false);
-  // const [isSwitchOn, setSwitchOn] = useState(false);
   const [Users, setUsers] = useState<Users[]>();
   const [fileError, setFileError] = useState<0|1|2>(0);
   const [usernameError, setUsernameError] = useState<0|1|2>(0);
   const [validNumber, setValidNumber] = useState(true);
-  const [phoneNumberProvided, setPhoneNumberProvided] = useState<boolean>(true);
   const [inputCode, setInputCode] = useState<boolean> (false);
+  const [hover, setHover] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -144,20 +141,20 @@ const Settings = () => {
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
 
-    if(name === ""){
-      setUsernameError(0);
-    }
-    else if (isValidUsername(name)) {
-      setNewData((prev) => ({
-        ...prev,
-        username: name,
-      }));
-    } else {
-      setNewData((prev) => ({
-        ...prev,
-        username: "",
-      }))
-    };
+      if(name === ""){
+        setUsernameError(0);
+      }
+      else if (isValidUsername(name)) {
+        setNewData((prev) => ({
+          ...prev,
+          username: name,
+        }));
+      } else {
+        setNewData((prev) => ({
+          ...prev,
+          username: "",
+        }))
+      };
   };
 
   const isValidNumber = (num: string) => {
@@ -176,26 +173,33 @@ const Settings = () => {
   const handlePhoneNumberChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const number = e.target.value;
     
-    if(number === ""){
-      setValidNumber(true);
-    }
-    else if (isValidNumber(number)){
-        setNewData((prev) => ({
-          ...prev,
-          phoneNumber: number,
-        }));
+      if(number === ""){
+        setValidNumber(true);
+      }
+      else if (isValidNumber(number)){
+          setNewData((prev) => ({
+            ...prev,
+            phoneNumber: number,
+          }));      
+      } else {
+          setNewData((prev) => ({
+            ...prev,
+            phoneNumber: "",
+          }))
+        }
+    };
+      
+      const verifyNewNumber = async () => {
 
-        verifyNumber(number).then((res) => {
-          res && setInputCode(true);
-        });
+        const number  = newData.phoneNumber || "";
 
-    } else {
-      setNewData((prev) => ({
-        ...prev,
-        phoneNumber: "",
-      }))
+        if (number != "" &&  isValidNumber(number)){
+
+          verifyNumber(number).then((res) => {
+            res && setInputCode(true);
+          });
     }
-  };
+  }
 
   const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -248,7 +252,6 @@ const Settings = () => {
         )
         setInputCode(false);
     }    
-
   }
 
   const handleToggle = async () => {
@@ -306,22 +309,13 @@ const Settings = () => {
           <input
             type="text"
             id="username"
-            readOnly={!editUserName}
+            maxLength={25}
             placeholder={data.username !== "" ? data.username : "username"}
             onChange={handleUsernameChange}
             className="w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 outline-none px-4
        text-white/60 text-md font-normal placeholder:opacity-40 
       "
           />
-          <label
-            htmlFor="username"
-            className="cursor-pointer border self-center rounded-full w-[1.3rem] h-[1.3rem] text-white  bg-white flex justify-center"
-          >
-            <MdModeEdit
-              className="text-purple-500 font-bold self-center w-4 h-4"
-              onClick={() => setEditUserName(true)}
-            />
-          </label>
         </div>
         {usernameError > 0 && (
           <p className="text-red-500 text-xs mx-auto">
@@ -331,26 +325,37 @@ const Settings = () => {
       </div>
 
       {/* edit phone number */}
-      <div>
-      <div className={`flex justify-center gap-2 `}>
-        <input
-          type="text"
-          id="phone-number"
-          readOnly={!editPhoneNumber}
-          placeholder={data.phoneNumber ? data.phoneNumber : "+212 XXX XXX XXX"}
-          onChange={handlePhoneNumberChange}
-          className={`w-3/5 h-12 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
-       text-white/60 text-md font-normal placeholder:opacity-40 `}
-        />
-        <label
-          htmlFor="phone-number"
-          className="cursor-pointer border self-center rounded-full w-[1.3rem] h-[1.3rem] text-white  bg-white flex justify-center"
-        >
-          <MdModeEdit
-            className="text-purple-500 font-bold self-center w-4 h-4"
-            onClick={() => setEditPhoneNumber(true)}
-          />
-        </label>
+      <div >
+      <div className={`flex justify-center gap-2`}>
+        <div className="w-3/5 relative h-12">
+          <input
+            type="text"
+            id="phone-number"
+            maxLength={13}
+            placeholder={data.phoneNumber ? data.phoneNumber : "+212 XXX XXX XXX"}
+            onChange={handlePhoneNumberChange}
+            className={`w-full h-full rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
+            text-white/60 text-md font-normal placeholder:opacity-40 `}
+            />
+          <label
+            htmlFor="phone-number"
+            className="cursor-pointer  self-center rounded-full w-[1.3rem] h-[1.3rem] bg-white/10 flex justify-center
+                        absolute right-2 bottom-[0.95rem]"
+          >
+            <div className="flex relative"
+            onMouseEnter={()=> setHover(true)}
+            onMouseLeave={() =>setHover(false)}>
+            <FaCheck
+              className="text-purple-500 font-bold self-center w-[0.8rem] h-[0.8rem]"
+              onClick={() => verifyNewNumber()}
+              />
+            <p className={`${!hover && "hidden"}  absolute bg-white/20 -bottom-10 -left-1 p-2 
+                          rounded-md text-xs text-white/60`}>
+              verify
+            </p>
+            </div>
+          </label>
+        </div>
       </div>
       {!validNumber && (
         <p className="text-red-500 text-xs mx-auto w-3/5 mt-2">
@@ -361,7 +366,6 @@ const Settings = () => {
 
 
       {/* 2FA  */}
-      <div className="m-auto">
       <div className="flex items-center text-white  m-auto">
         <label
           htmlFor="toggleSwitch"
@@ -374,9 +378,7 @@ const Settings = () => {
             id="toggleSwitch"
             className="sr-only"
             onClick={handleToggle}
-            // onChange={handleToggle}
             checked={newData.settings.twoFactorEnabled}
-            //make it editibale if the phoneNumber exitsts
           />
           <div
             className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
@@ -385,12 +387,6 @@ const Settings = () => {
           ></div>
         </label>
         <span className="ml-2 text-white/80">Two Factor Authentication </span>
-      </div>
-      {/* {!phoneNumberProvided && (
-        <p className="text-red-500 text-xs mx-auto w-3/5 mt-2">
-          please enter your phone number!
-        </p>
-      )} */}
       </div>
 
       {/* verification code */}
