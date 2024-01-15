@@ -1,12 +1,16 @@
 import axios from "axios";
 import { toast } from 'react-hot-toast';
 
-const confirmCode = async (code: string) =>{
+const confirmCode = async (code: string, phoneNumber: string | null) => {
+
+  console.log({
+    code,
+    phoneNumber
+  })
 
     console.log(code);
     try {
-        const response = await axios.post('http://localhost:3000/api/sms/confirm', {code}, {withCredentials:true});
-        console.log(response.data.message);
+        const response = await axios.post('http://localhost:3000/api/sms/confirm', {code, phoneNumber},  {withCredentials:true});
         if (response.data.status === 'error'){
             toast.error("Invalid!");
             return 0;
