@@ -188,6 +188,7 @@ const Settings = () => {
         verifyNumber(number).then((res) => {
           res && setInputCode(true);
         });
+        // setInputCode(true);
 
     } else {
       setNewData((prev) => ({
@@ -211,7 +212,7 @@ const Settings = () => {
         username = newData.username;
       }
 
-      if(newData.phoneNumber && newData.phoneNumber != "" ){
+      if(newData.phoneNumber && newData.phoneNumber != "" && newData.settings.verified){
         modifyUser(username, {phoneNumber: newData.phoneNumber});
         modifyUser(username, {settings: {update: {verified : false}}});
       }
