@@ -20,14 +20,24 @@ export class SmsController {
   }
 
   @Post('confirm')
-  confirm(@User() user: UserType, @Body('code') code: string) {
+  confirm(
+    @User() user: UserType,
+    @Body() body: { code: string; phoneNumber: string },
+  ) {
     if (user.isPhoneNumberVerified) {
       return new BadRequestException('Phone number already verified');
     }
 
+    const { code, phoneNumber } = body;
+
+    console.log({
+      phoneNumber,
+      code,
+    });
+
     return this.smsService.confirmPhoneNumberVerification(
       user.id,
-      user.phoneNumber,
+      phoneNumber,
       code,
     );
   }

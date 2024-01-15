@@ -233,7 +233,7 @@ const Settings = () => {
 
     if (code.length === 6){
 
-        confirmCode(code)
+        confirmCode(code, newData.phoneNumber)
         .then( (res) => {
           if (res) {
             setNewData((prev) => ({
