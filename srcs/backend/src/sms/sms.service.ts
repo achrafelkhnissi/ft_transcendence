@@ -74,7 +74,7 @@ export class SmsService {
     } catch (error) {
       return {
         status: 'error',
-        message: `Unable to verify phone number: ${error.message}`,
+        message: `Unable to verify phone number.`,
       };
     }
 

@@ -11,6 +11,8 @@ import verifyNumber from "@/services/verifyNumber";
 import modifyUser from "@/services/modifyUser";
 import getAllNumberss from "@/services/getAllNumbers";
 import confirmCode from "@/services/confirmCode";
+import { toast } from 'react-hot-toast';
+
 
 export interface Data {
   username: string;
@@ -64,6 +66,7 @@ const Settings = () => {
   const [usernameError, setUsernameError] = useState<0|1|2>(0);
   const [validNumber, setValidNumber] = useState(true);
   const [phoneNumberProvided, setPhoneNumberProvided] = useState<boolean>(true);
+  const [inputCode, setInputCode] = useState<boolean> (false);
 
 
   useEffect(() => {
@@ -170,9 +173,9 @@ const Settings = () => {
     }
   }
 
-  const handlePhoneNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneNumberChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const number = e.target.value;
-
+    
     if(number === ""){
       setValidNumber(true);
     }
@@ -181,47 +184,58 @@ const Settings = () => {
           ...prev,
           phoneNumber: number,
         }));
+
+        verifyNumber().then((res) => {
+          res && setInputCode(true);
+        });
+
     } else {
       setNewData((prev) => ({
         ...prev,
-        phoneNumber: null,
+        phoneNumber: "",
       }))
     }
   };
 
   const handleSubmit =  async (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    let username = data.username;
 
     try {
 
       if(newData.newAvatar)
-        await uploadAvatar(newData.newAvatar);
+      await uploadAvatar(newData.newAvatar);
+
+      if(newData.username != ""  && newData.username != data.username){
+        modifyUser(data.username, {username: newData.username})
+        username = newData.username;
+      }
 
       if(newData.phoneNumber && newData.phoneNumber != "" ){
-        modifyUser(data.username, {phoneNumber: newData.phoneNumber});
+        modifyUser(username, {phoneNumber: newData.phoneNumber});
+        modifyUser(username, {settings: {update: {verified : false}}});
       }
       
       if (newData.settings.twoFactorEnabled != data.settings.twoFactorEnabled && newData.settings.verified){
-        modifyUser(data.username, {settings: {update: {...newData.settings}} });
+        modifyUser(username, {settings: {update: {twoFactorEbabled : newData.settings.twoFactorEnabled}} });
       }
 
-      if(newData.username != ""  && newData.username != data.username){
-        modifyUser(data.username, {username: newData.username});
-      }
-
-      console.log('success');
+      toast.success("Updated successfully!");
     } catch (error){
-      console.log(error);
+      toast.error('An error has occured!');
     }
+
+    window.location.reload();
   };
 
   const handleVerificationCode = async (e: ChangeEvent<HTMLInputElement>) => {
     const code = e.target.value.toString();
 
-    console.log(code);
     if (code.length === 6){
-      try {
-        await confirmCode(code);
+
+        confirmCode(code)
+        .then( () => {
+
           setNewData((prev) => ({
             ...prev,
             settings: {
@@ -229,26 +243,16 @@ const Settings = () => {
               verified: true,
             }
           }))
-      } catch(error){
-        console.log('error ' + error);
-      }
+
+          toast.success('Phone number verified successfully!');
+        }
+        )
     }    
 
   }
-  
-  const handleEditPhoneNumber = () => {
-    
-    if (!data.phoneNumber) setEditPhoneNumber(true);
-    else {
-      // send a verificatin code to the prev number
-      // when verified allow the user to modify the number
-    }
-  };
 
   const handleToggle = async () => {
     
-    const update = !newData.settings.twoFactorEnabled;
-
     setNewData((prev) => ({
       ...prev,
       settings: {
@@ -256,15 +260,6 @@ const Settings = () => {
         twoFactorEnabled: !(prev.settings.twoFactorEnabled),
       }
     }))
-
-    if(update !== data.settings.twoFactorEnabled && (newData.phoneNumber != "" || data.phoneNumber !== null)){
-      try{
-        // await verifyNumber();
-        console.log("sent...");
-      } catch (error) {
-        console.log(error);
-      }
-    }
   }
   
 
@@ -353,7 +348,7 @@ const Settings = () => {
         >
           <MdModeEdit
             className="text-purple-500 font-bold self-center w-4 h-4"
-            onClick={handleEditPhoneNumber}
+            onClick={() => setEditPhoneNumber(true)}
           />
         </label>
       </div>
@@ -399,7 +394,8 @@ const Settings = () => {
       </div>
 
       {/* verification code */}
-      <div className= "w-3/12 self-center text-sm -ml-6 -mt-2">
+      <div className= {`w-3/12 self-center text-sm -ml-6 -mt-2 flex flex-col gap-2 ${!inputCode && 'hidden'}`}>
+        <p className="text-white/80"> Verification Code </p>
         <input
         type = "number"
         id = "verification code"
@@ -407,8 +403,7 @@ const Settings = () => {
         onChange={handleVerificationCode}
         placeholder= "_ _ _ _ _ _"
         className={`w-full h-10 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
-        text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none
-        ${newData.settings.twoFactorEnabled === data.settings.twoFactorEnabled && "hidden"} 
+        text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none} 
         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
