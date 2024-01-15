@@ -25,17 +25,24 @@ export class SmsService {
   async initiatePhoneNumberVerification(
     phoneNumber: string,
   ): Promise<{ status: string; message: string }> {
-    const result = await this.twilioClient.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verifications.create({
-        to: phoneNumber,
-        channel: 'sms',
-      });
+    try {
+      const result = await this.twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verifications.create({
+          to: phoneNumber,
+          channel: 'sms',
+        });
 
-    if (result.status !== 'pending') {
+      if (result.status !== 'pending') {
+        return {
+          status: 'error',
+          message: 'Unable to send verification code',
+        };
+      }
+    } catch (error) {
       return {
         status: 'error',
-        message: 'Unable to send verification code',
+        message: `Unable to send verification code: ${error.message}`,
       };
     }
 
@@ -50,17 +57,24 @@ export class SmsService {
     phoneNumber: string,
     code: string,
   ) {
-    const result = await this.twilioClient.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verificationChecks.create({
-        to: phoneNumber,
-        code,
-      });
+    try {
+      const result = await this.twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verificationChecks.create({
+          to: phoneNumber,
+          code,
+        });
 
-    if (!result.valid || result.status !== 'approved') {
+      if (!result.valid || result.status !== 'approved') {
+        return {
+          status: 'error',
+          message: 'Invalid verification code',
+        };
+      }
+    } catch (error) {
       return {
         status: 'error',
-        message: 'Invalid verification code',
+        message: `Unable to verify phone number: ${error.message}`,
       };
     }
 
