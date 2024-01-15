@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Get } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
@@ -7,14 +7,15 @@ import { UserType } from 'src/interfaces/user.interface';
 export class SmsController {
   constructor(private readonly smsService: SmsService) {}
 
-  @Get('verify')
-  verify(@User() user: UserType) {
+  @Post('verify')
+  verify(@User() user: UserType, @Body('phoneNumber') phoneNumber: string) {
     console.log({
       userPhoneNumber: user?.phoneNumber,
+      phoneNumber,
     });
 
     return this.smsService.initiatePhoneNumberVerification(
-      user?.phoneNumber,
+      phoneNumber ?? user?.phoneNumber,
     );
   }
 
