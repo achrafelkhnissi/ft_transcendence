@@ -33,7 +33,10 @@ export class SmsService {
       });
 
     if (result.status !== 'pending') {
-      throw new BadRequestException('Unable to send verification code');
+      return {
+        status: 'error',
+        message: 'Unable to send verification code',
+      };
     }
 
     return {
@@ -55,7 +58,10 @@ export class SmsService {
       });
 
     if (!result.valid || result.status !== 'approved') {
-      throw new BadRequestException('Invalid verification code');
+      return {
+        status: 'error',
+        message: 'Invalid verification code',
+      };
     }
 
     return await this.updatePhoneNumberVerificationStatus(userId);
