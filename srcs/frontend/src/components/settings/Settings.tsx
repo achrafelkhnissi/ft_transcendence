@@ -185,7 +185,7 @@ const Settings = () => {
           phoneNumber: number,
         }));
 
-        verifyNumber().then((res) => {
+        verifyNumber(number).then((res) => {
           res && setInputCode(true);
         });
 
@@ -234,19 +234,19 @@ const Settings = () => {
     if (code.length === 6){
 
         confirmCode(code)
-        .then( () => {
-
-          setNewData((prev) => ({
-            ...prev,
-            settings: {
-              ...prev.settings,
-              verified: true,
-            }
-          }))
-
-          toast.success('Phone number verified successfully!');
+        .then( (res) => {
+          if (res) {
+            setNewData((prev) => ({
+              ...prev,
+              settings: {
+                ...prev.settings,
+                verified: true,
+              }
+            }))
+          }
         }
         )
+        setInputCode(false);
     }    
 
   }
