@@ -1,12 +1,12 @@
 import axios from "axios";
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 const confirmCode = async (code: string, phoneNumber: string | null) => {
 
     try {
         const response = await axios.post('http://localhost:3000/api/sms/confirm', {code, phoneNumber},  {withCredentials:true});
         if (response.data.status === 'error'){
-            toast.error("Invalid!");
+            toast.error("Wrong verification code. Please check and try again.");
             return 0;
         }
         else {
@@ -15,7 +15,7 @@ const confirmCode = async (code: string, phoneNumber: string | null) => {
         }
     }
     catch(error) {
-        toast.error("An error has occured!");
+        toast.error("Error verifying code. Please try again.");
     }
 }
 

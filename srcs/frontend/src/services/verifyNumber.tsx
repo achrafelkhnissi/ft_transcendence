@@ -1,5 +1,5 @@
 import axios from "axios";
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 const verifyNumber = async (num? : string)=>{
 
@@ -7,7 +7,7 @@ const verifyNumber = async (num? : string)=>{
         const response = await axios.post('http://localhost:3000/api/sms/verify',{phoneNumber : num} ,{withCredentials:true})
 
         if (response.data.status === 'error'){
-            toast.error("An error has occured!");
+            toast.error("Verification failed. Please try again.");
             return 0;
         }
         else {
@@ -16,7 +16,7 @@ const verifyNumber = async (num? : string)=>{
         }
     }
     catch(error) {
-        toast.error("An error has occured!");
+        toast.error("Error verifying number. Please try again.");
     }
 }
 

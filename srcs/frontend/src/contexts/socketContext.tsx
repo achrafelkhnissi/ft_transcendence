@@ -22,6 +22,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
+    
     const newSocket = io('http://localhost:3000'); // Replace with your server URL
     
     

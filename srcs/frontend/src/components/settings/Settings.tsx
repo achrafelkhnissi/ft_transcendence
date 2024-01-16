@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { ChangeEvent, useState, useEffect, FormEvent } from "react";
 import getCurrentUser from "@/services/getCurrentUser";
 import { MdModeEdit } from "react-icons/md";
@@ -11,8 +10,11 @@ import verifyNumber from "@/services/verifyNumber";
 import modifyUser from "@/services/modifyUser";
 import getAllNumberss from "@/services/getAllNumbers";
 import confirmCode from "@/services/confirmCode";
-import { toast } from 'react-hot-toast';
+import { toast , ToastContainer} from 'react-toastify';
 import { FaCheck } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
+import { isAbsolute } from "path";
+
 
 export interface Data {
   username: string;
@@ -196,7 +198,14 @@ const Settings = () => {
         if (number != "" &&  isValidNumber(number)){
 
           verifyNumber(number).then((res) => {
-            res && setInputCode(true);
+            if (res)
+              setInputCode(true);
+            else {
+              setNewData((prev) => ({
+                ...prev,
+                phoneNumber: "",
+              }))
+            }
           });
     }
   }
@@ -229,7 +238,9 @@ const Settings = () => {
       toast.error('An error has occured!');
     }
 
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   };
 
   const handleVerificationCode = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -256,6 +267,9 @@ const Settings = () => {
 
   const handleToggle = async () => {
     
+    if (newData.phoneNumber === "" && !data.phoneNumber)
+      toast.info("U need to provide a phone number first!");
+    else {
     setNewData((prev) => ({
       ...prev,
       settings: {
@@ -264,11 +278,14 @@ const Settings = () => {
       }
     }))
   }
+  }
   
 
   return (
-    <form className=" flex flex-col justify-center py-8 gap-10"
+    <form className=" flex flex-col justify-center gap-10 "
     onSubmit={handleSubmit}>
+        <ToastContainer  autoClose={3000}
+        className={"absolute"}/>
       {/* edit image */}
       <div className="m-auto"> 
       <div className="relative inline-block m-auto ">
@@ -378,7 +395,6 @@ const Settings = () => {
             id="toggleSwitch"
             className="sr-only"
             onClick={handleToggle}
-            checked={newData.settings.twoFactorEnabled}
           />
           <div
             className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
@@ -390,7 +406,7 @@ const Settings = () => {
       </div>
 
       {/* verification code */}
-      <div className= {`w-3/12 self-center text-sm -ml-6 -mt-2 flex flex-col gap-2 ${!inputCode && 'hidden'}`}>
+      <div className= {`w-3/12 self-center text-sm -ml-6 -mt-4 flex flex-col gap-2 ${!inputCode && 'hidden'}`}>
         <p className="text-white/80"> Verification Code </p>
         <input
         type = "number"
@@ -399,7 +415,7 @@ const Settings = () => {
         onChange={handleVerificationCode}
         placeholder= "_ _ _ _ _ _"
         className={`w-full h-10 rounded-xl border-2 border-purple-400/50 bg-white/5 self-center outline-none px-4
-        text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none} 
+        text-white/60 text-md font-normal placeholder:opacity-40 text-center appearance-none}
         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>

@@ -35,6 +35,7 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({imageSrc}) => {
         onMouseLeave={handleMouseLeave}>
 
         <Image src={`/images/${imageSrc}`} alt="channel image" width={1200} height={600}
+        priority
         className={`object-cover 
                     w-full 
                     h-4/5 
