@@ -13,7 +13,6 @@ import confirmCode from "@/services/confirmCode";
 import { toast , ToastContainer} from 'react-toastify';
 import { FaCheck } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
-import { isAbsolute } from "path";
 
 
 export interface Data {
