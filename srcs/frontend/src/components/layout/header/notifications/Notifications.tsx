@@ -37,7 +37,7 @@ const Notifications = () => {
     <div
       className={`${
         isClicked && "bg-white/10"
-      } rounded-lg h-9 w-9 flex justify-center `}
+      } rounded-lg h-9 w-9 flex justify-center cursor-pointer `}
       >
       <div className=" relative self-center ">
         <IoIosNotificationsOutline

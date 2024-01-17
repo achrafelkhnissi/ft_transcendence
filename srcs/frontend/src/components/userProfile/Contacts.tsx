@@ -71,7 +71,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
     setFriendshipState(status);
   }, [status])
   
-  console.log(status);
+  console.log("status " + status);
   console.log("me " + me);
   console.log("isClicked " + isClicked)
   useEffect(() => {

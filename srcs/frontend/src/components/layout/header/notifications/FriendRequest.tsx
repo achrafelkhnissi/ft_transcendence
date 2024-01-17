@@ -33,7 +33,7 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
         className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
                     ${actionDone && " opacity-0 "}`}
       >
-        <Image
+        <img
           alt=""
           src={`http://localhost:3000/api/users/${notif.sender.username}/avatar`}
           width={20}
