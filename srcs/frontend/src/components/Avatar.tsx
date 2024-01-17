@@ -20,7 +20,7 @@ const Avatar = () => {
      cursor-pointer`}
     >
       <Link href={"/profile/me"}>
-      <AvatarImage/>
+        <AvatarImage/>
       </Link>
     </div>
   );

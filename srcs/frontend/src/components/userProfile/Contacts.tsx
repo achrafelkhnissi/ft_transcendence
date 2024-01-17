@@ -69,9 +69,11 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
   
   useEffect(() => {
     setFriendshipState(status);
-    console.log(status);
   }, [status])
-
+  
+  console.log(status);
+  console.log("me " + me);
+  console.log("isClicked " + isClicked)
   useEffect(() => {
 
     if (isClicked == "send"  ) {
@@ -91,20 +93,12 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
   return (
     <div className="flex justify-center gap-4 px-6">
 
-      {!me && 
-      <button
-      className={`
-      rounded-xl
-      bg-[${ContactsItems.sendMessage.color}]
-      p-2`}>
-        {ContactsItems.sendMessage.icon}
-      </button>
-      }
 
       {!me && friendshipState == false && (
         <button
           onClick={() => {
             setIsClicked("send")
+            console.log('sending');
           }}
           className={`
           rounded-xl
@@ -142,6 +136,18 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
             </button>
         )
       }
+
+      {!me && 
+      <button
+      className={`
+      rounded-xl
+      bg-[${ContactsItems.sendMessage.color}]
+      p-2`}>
+        {ContactsItems.sendMessage.icon}
+      </button>
+      
+      }
+      
       <Link
       target="_blank"
         href={url}
@@ -154,7 +160,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
         {ContactsItems.intra.icon}
       </Link>
     </div>
-  );
+    );
 };
 
 export default Contacts;
