@@ -36,7 +36,10 @@ const Home = () => {
       // Listen for the 'connect' event
       console.log(socket)
       socket.on('connect', () => {
-        console.log('Connected to the server.');
+        console.log({
+          message: 'Connected to socket server',
+          socketId: socket.id,
+        });
 
         // You can also log the socket ID
         console.log('Socket ID:', socket.id);

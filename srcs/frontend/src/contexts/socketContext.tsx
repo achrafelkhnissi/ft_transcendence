@@ -27,7 +27,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     
     
     newSocket.on('connect', async () => {
-      console.log('Connected to the server.');
+      console.log({
+        message: 'Connected to socket server',
+        socketId: newSocket.id,
+      });
     })
     
     getConversations().then((res) => {
