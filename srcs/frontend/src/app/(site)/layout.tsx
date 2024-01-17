@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    // <html lang="en">
+      // <body className={inter.className}>
         <SocketProvider>
         <div className="flex flex-row w-full h-full overflow-hidden">
           <div>
@@ -33,7 +33,7 @@ export default function RootLayout({
           </div>
         </div>
         </SocketProvider>
-      </body>
-    </html>
+      // </body>
+    // </html>
   );
 }
