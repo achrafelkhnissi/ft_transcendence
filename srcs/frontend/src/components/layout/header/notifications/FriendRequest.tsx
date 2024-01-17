@@ -8,7 +8,6 @@ import { useState } from "react";
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const [actionDone, setActionDone] = useState(false);
 
-  console.log(notif);
   const handleAccept = () => {
     acceptFriendRequest(notif.sender.username).then(() => {
       deleteNotification(notif.id);
