@@ -9,6 +9,7 @@ export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   private readonly infoToSelect = {
+    id: true,
     read: true,
     type: true,
     sender: {
