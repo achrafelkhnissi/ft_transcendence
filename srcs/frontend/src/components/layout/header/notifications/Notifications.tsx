@@ -11,8 +11,10 @@ export interface NotificationsType {
   id: number;
   content: string;
   type: string;
-  senderUsername: string;
-  senderAvatar: string;
+  sender: {
+    username: string;
+    avatar: string;
+  }
   friendRequestId: number;
 }
 
@@ -71,6 +73,7 @@ const Notifications = () => {
                   return (
                     <FriendRequest
                     {...item}
+                    key={index}
                     />
                   );
               })}

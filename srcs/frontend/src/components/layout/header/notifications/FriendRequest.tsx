@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { NotificationsType } from "./Notifications";
-import acceptFirendRequest from "@/services/acceptFriendRequest";
+import acceptFriendRequest from "@/services/acceptFriendRequest";
 import deleteNotification from "@/services/deleteNotification";
 import declineFirendRequest from "@/services/declineFriendRequest";
 import { useState } from "react";
@@ -8,21 +8,21 @@ import { useState } from "react";
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const [actionDone, setActionDone] = useState(false);
 
+  console.log(notif);
   const handleAccept = () => {
-    acceptFirendRequest(notif.senderUsername).then(() => {
+    acceptFriendRequest(notif.sender.username).then(() => {
       deleteNotification(notif.id);
     });
     setActionDone(true);
   };
 
   const handleDecline = () => {
-    declineFirendRequest(notif.senderUsername).then(() => {
+    declineFirendRequest(notif.sender.username).then(() => {
       deleteNotification(notif.id);
     });
     setActionDone(true);
   };
 
-  console.log("avata: " + notif.senderAvatar);
   return (
     <div className="relative">
         <div className={`text-[0.8rem] text-center opacity-0 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-400 z-10
@@ -35,13 +35,13 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
       >
         <Image
           alt=""
-          src={notif.senderAvatar}
+          src={`http://localhost:3000/api/users/${notif.sender.username}/avatar`}
           width={20}
           height={20}
           className="w-[2.5rem] h-[2.5rem] rounded-full  self-center"
         />
         <p className="text-center self-center ">
-          {notif.senderUsername} wants to be friend with you
+          {notif.sender.username} wants to be friend with you
         </p>
         <div className="flex flex-col justify-center gap-1 py-2 text-xs">
           <button
