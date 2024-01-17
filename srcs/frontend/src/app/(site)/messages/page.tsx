@@ -42,7 +42,7 @@ const Home = () => {
         console.log('Socket ID:', socket.id);
       });
 
-      socket.on('message', (message: Message) => {
+      socket.on('onMessage', (message: Message) => {
         console.log('New message:', message);
         // Handle the message
       });

@@ -19,7 +19,6 @@ interface SocketProviderProps {
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
     
@@ -29,18 +28,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     newSocket.on('connect', async () => {
       console.log('Connected to the server.');
     })
-    
-    getConversations().then((res) => {
-      // console.log(res);
-      setConversations(res)});
-    
-    // join the rooms
-    // console.log(conversations);
-    conversations.map((conversation) => {
-      socket?.emit("joinRoom", conversation.name);
-      console.log("joining room "+ conversation.name)
-    })
-    
+       
     setSocket(newSocket);
 
     return () => {
