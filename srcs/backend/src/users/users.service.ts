@@ -29,7 +29,6 @@ export class UsersService {
             receiverId: userId,
           },
         ],
-        friendshipStatus: FriendshipStatus.ACCEPTED,
       },
       select: {
         friendshipStatus: true,

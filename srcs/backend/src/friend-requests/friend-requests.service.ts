@@ -30,6 +30,10 @@ export class FriendRequestsService {
       `Checking if users <${senderId}> and <${receiverId}> are friends`,
     );
 
+    if (senderId === receiverId) {
+      return false;
+    }
+
     const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
         OR: [
@@ -83,6 +87,10 @@ export class FriendRequestsService {
         receiverId: receiver.id,
         friendshipStatus: FriendshipStatus.PENDING,
       },
+    });
+
+    console.log({
+      request,
     });
 
     const notification = await this.notification.create({
