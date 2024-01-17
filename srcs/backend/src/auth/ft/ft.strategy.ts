@@ -96,20 +96,20 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         avatar,
       });
 
-      const users = await prisma.user.findMany();
+      // const users = await prisma.user.findMany();
 
       // TODO: Remove this after testing
-      for (let i = 0; i < 5; i++) {
-        await createConversation(users);
-      }
+      // for (let i = 0; i < 5; i++) {
+      //   await createConversation(users);
+      // }
 
       // TODO: Remove this after testing
-      for (let i = 0; i < 5; i++) {
-        await createConversation([
-          user,
-          users[Math.floor(Math.random() * users.length)],
-        ]);
-      }
+      // for (let i = 0; i < 5; i++) {
+      //   await createConversation([
+      //     user,
+      //     users[Math.floor(Math.random() * users.length)],
+      //   ]);
+      // }
 
       return {
         ...user,

@@ -57,6 +57,7 @@ export class ChatService {
         select: {
           id: true,
           type: true,
+          name: true,
           updatedAt: true,
           owner: {
             select: userInfoSelect,
@@ -220,7 +221,26 @@ export class ChatService {
   }
 
   addUserToChat(user: any, room: string) {
-    // TODO: add user to chat {room} in db
+    // this.prismaService.conversation.upsert({
+    //   where: {
+    //     name: room,
+    //   },
+    //   update: {
+    //     participants: {
+    //       connect: {
+    //         id: user.id,
+    //       },
+    //     },
+    //   },
+    //   create: {
+    //     name: room,
+    //     participants: {
+    //       connect: {
+    //         id: user.id,
+    //       },
+    //     },
+    //   },
+    // });
   }
 
   removeUserFromChat(user: any, room: string) {
