@@ -39,14 +39,14 @@ export class NotificationsService {
   }
 
   findByQuery(user: UserType, query: UpdateNotificationDto) {
-    if (query) {
+    if (Object.keys(query).length) {
       return this.prismaService.notification.findMany({
         where: query,
         select: this.infoToSelect,
       });
     }
 
-    return this.findOne(user.id);
+    return this.findAllByReceiverId(user.id);
   }
 
   update(id: number, updateNotificationDto: UpdateNotificationDto) {
@@ -66,6 +66,13 @@ export class NotificationsService {
   remove(id: number) {
     return this.prismaService.notification.delete({
       where: { id },
+    });
+  }
+
+  async findAllByReceiverId(receiverId: number) {
+    return this.prismaService.notification.findMany({
+      where: { receiverId },
+      select: this.infoToSelect,
     });
   }
 }
