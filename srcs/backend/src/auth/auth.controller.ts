@@ -27,16 +27,16 @@ export class AuthController {
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
-    const domainName = process.env.FT_REDIRECT_URI.split('/')[2].split(':')[0];
-
     // FIXME: Check if the logged in user enabled
     if (user.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
-      return res.redirect(`http://${domainName}:1337/verify`);
+      return res.redirect(`${process.env.FRONTEND_URL}/verify`);
     }
 
-    this.logger.debug(`Redirecting user ${user.username} to dashboard`);
-    res.redirect(`http://${domainName}:1337/dashboard`);
+    this.logger.debug(
+      `Redirecting user ${user.username} to ${process.env.FRONTEND_URL}/dashboard`,
+    );
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 
   @UseGuards(AuthGuard)
@@ -48,24 +48,10 @@ export class AuthController {
         return err;
       }
       this.logger.debug(
-        `Redirecting to http://localhost:1337 after logging out`,
+        `Redirecting to ${process.env.FRONTEND_URL} after logging out`,
       );
-      res.redirect(`http://localhost:1337`);
+
+      res.redirect(process.env.FRONTEND_URL);
     });
-  }
-
-  @Get('whoami')
-  async whoami(
-    @User(/* new ValidationPipe({ validateCustomDecorators: true }) */)
-    user: UserType,
-    @Res() res: Response,
-    @Query('data') data: boolean,
-  ) {
-    if (data) {
-      // TODO: Return all user's data [settings, stats, conversations, etc.]
-    }
-
-    this.logger.debug(`User ${user?.username ?? 'X'} is requesting whoami`);
-    res.send(user ? user : 'not logged in');
   }
 }
