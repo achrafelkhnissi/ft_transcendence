@@ -8,6 +8,7 @@ import {
 import { FriendshipStatus, NotificationType } from '@prisma/client';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { bool } from 'twilio/lib/base/serialize';
 
 //TODO: Test notifications for friend requests
 @Injectable()
@@ -21,12 +22,15 @@ export class FriendRequestsService {
   ) {}
 
   // TODO: See where to put this
-  private isFriends(senderId: number, receiverId: number): boolean {
+  private async isFriends(
+    senderId: number,
+    receiverId: number,
+  ): Promise<boolean> {
     this.logger.log(
       `Checking if users <${senderId}> and <${receiverId}> are friends`,
     );
 
-    const friendRequest = this.prisma.friendRequest.findFirst({
+    const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
         OR: [
           {
@@ -61,7 +65,7 @@ export class FriendRequestsService {
       );
     }
 
-    if (this.isFriends(senderId, receiver.id)) {
+    if (await this.isFriends(senderId, receiver.id)) {
       throw new BadRequestException(
         `Users <${sender.username}> and <${receiver.username}> are already friends`,
       );
