@@ -27,6 +27,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     
     newSocket.on('connect', async () => {
       console.log('Connected to the server.');
+      console.log(newSocket);
     })
        
     setSocket(newSocket);
