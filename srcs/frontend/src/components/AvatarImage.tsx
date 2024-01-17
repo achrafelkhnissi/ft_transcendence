@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import getCurrentUser from "../services/getCurrentUser";
 import Image from "next/image";
+import getAvatar from "@/services/getAvatar";
 
 const AvatarImage = () => {
-  const [avatar, setAvatar] = useState<null | string>(null);
-
+  // const [avatar, setAvatar] = useState<null | string>(null);
+  const [src, setSrc] = useState<string> ("");
   useEffect(() => {
 
     getCurrentUser().then((res) => {
-      setAvatar(res.avatar);
-    });
-
-    // return () => abortController.abort();
+          setSrc(`http://localhost:3000/api/users/${res.username}/avatar`);
+    }
+    );
   }, []);
 
-  if (avatar)
+  if (src != "")
     return (
-      <Image
-        src={avatar}
+      <img
+        src={src}
         alt="user"
         width={40}
         height={40}

@@ -62,8 +62,8 @@ const TopPlayers = () => {
                       <p className="self-center">
                         #{index + 1}
                       </p>
-                      <Image
-                        src={item.avatar}
+                      <img
+                        src={`http://localhost:3000/api/users/${item.username}/avatar`}
                         alt=""
                         width={40}
                         height={40}

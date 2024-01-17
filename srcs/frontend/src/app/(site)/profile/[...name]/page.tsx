@@ -25,7 +25,7 @@ export interface FriendsProps {
 export interface User {
   id: string;
   username: string;
-  avatar: string;
+  // avatar: string;
   url: string;
   stats: {
     exp: number;
@@ -41,7 +41,7 @@ export interface User {
 const defaultInfos: User = {
   id: "",
   username: "",
-  avatar: "",
+  // avatar: "",
   url: "",
   stats: {
     exp: 0,
