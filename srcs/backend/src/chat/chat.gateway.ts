@@ -13,6 +13,14 @@ import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { WsAuthenticatedGuard } from './ws.guard';
 import { Status } from '@prisma/client';
+import { MessageService } from 'src/message/message.service';
+
+interface MessagePayload {
+  from: string;
+  to: string;
+  body: string;
+  conversationId: number;
+}
 
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
@@ -32,19 +40,16 @@ export class ChatGateway
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly chatService: ChatService) {}
-
-  @SubscribeMessage('newMessage')
-  onNewMessage(@MessageBody() body: any) {
-    console.log(body);
-    this.server.emit('onMessage', {
-      msg: 'New Message',
-      content: body,
-    });
-  }
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly messageService: MessageService,
+  ) {}
 
   @SubscribeMessage('message')
-  onMessage(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
+  async conMessage(
+    @MessageBody() body: any,
+    @ConnectedSocket() client: Socket,
+  ) {
     this.logger.debug(`[message] [${client.id}]: ${body.message ?? body}`);
 
     const { username } = client.request.user ?? {
@@ -59,12 +64,18 @@ export class ChatGateway
       return;
     }
 
-    this.server.to(body.room).emit('message', {
-      from: username, // or user or userId
-      body,
+    // TODO: Save message to database
+    const message = await this.messageService.create({
+      content: body.message,
+      conversationId: body.room,
+      senderId: client.request.user.id,
+      receiverId: body.to,
     });
 
-    // TODO: Save message to database
+    this.server.to(body.room).emit('message', {
+      from: username, // or user or userId
+      message,
+    });
   }
 
   afterInit(server: Server) {
@@ -163,6 +174,29 @@ export class ChatGateway
     client.join(room);
     this.server.to(room).emit('onMessage', {
       message: `${username} joined the chat`,
+      id: 'server',
+    });
+  }
+
+  @SubscribeMessage('leave')
+  async onLeave(
+    @MessageBody() room: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user = client.request.user;
+
+    // if (!user) {
+    //   client.disconnect();
+    //   throw new UnauthorizedException('Unauthorized');
+    // }
+
+    const { username } = user ?? { username: `unknown${client.id}` };
+
+    this.logger.debug(`[WS] [${username}] left room ${room}`);
+
+    client.leave(room);
+    this.server.to(room).emit('onMessage', {
+      message: `${username} left the chat`,
       id: 'server',
     });
   }
