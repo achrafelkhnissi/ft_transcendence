@@ -22,8 +22,6 @@ interface MessagePayload {
   conversationId: number;
 }
 
-interface;
-
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
   // namespace: 'chat',
