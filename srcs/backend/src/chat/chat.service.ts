@@ -3,7 +3,8 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
-import { Status } from '@prisma/client';
+import { ConversationType, Status } from '@prisma/client';
+import { el } from '@faker-js/faker';
 
 @Injectable()
 export class ChatService {
@@ -11,15 +12,47 @@ export class ChatService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
+  createUniqueRoomName(id1: number, id2: number) {
+    const sortedIds = [id1, id2].sort();
+    return `Room${sortedIds[0]}-${sortedIds[1]}`;
+  }
+
   // TODO: Update any to CreateChatDto
   create(createChatDto: any) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
+
+    const { type } = createChatDto;
+
+    if (type == ConversationType.DM) {
+      const { participants } = createChatDto;
+      const roomName = this.createUniqueRoomName(
+        participants[0],
+        participants[1],
+      );
+
+      // Check if the chat already exists
+      const chat = this.prismaService.conversation.findUnique({
+        where: {
+          name: roomName,
+        },
+      });
+
+      if (chat) {
+        return chat;
+      }
+
+      return this.prismaService.conversation.create({
+        data: {
+          name: roomName,
+          ...createChatDto,
+        },
+      });
+    }
+
     return this.prismaService.conversation.create({
       data: createChatDto,
     });
   }
-
-  joinChat(user: any, room: string) {}
 
   findAll() {
     this.logger.log('Finding all chats');
