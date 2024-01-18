@@ -13,6 +13,16 @@ import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { WsAuthenticatedGuard } from './ws.guard';
 import { Status } from '@prisma/client';
+import { MessageService } from 'src/message/message.service';
+
+interface MessagePayload {
+  from: string;
+  to: string;
+  body: string;
+  conversationId: number;
+}
+
+interface;
 
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
@@ -27,24 +37,21 @@ export class ChatGateway
 {
   private readonly logger = new Logger(ChatGateway.name);
 
-  connectedUsers = new Map<string, string[]>();
+  private connectedUsers = new Map<string, string[]>();
 
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly chatService: ChatService) {}
-
-  @SubscribeMessage('newMessage')
-  onNewMessage(@MessageBody() body: any) {
-    console.log(body);
-    this.server.emit('onMessage', {
-      msg: 'New Message',
-      content: body,
-    });
-  }
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly messageService: MessageService,
+  ) {}
 
   @SubscribeMessage('message')
-  onMessage(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
+  async conMessage(
+    @MessageBody() body: any,
+    @ConnectedSocket() client: Socket,
+  ) {
     this.logger.debug(`[message] [${client.id}]: ${body.message ?? body}`);
 
     const { username } = client.request.user ?? {
@@ -59,12 +66,18 @@ export class ChatGateway
       return;
     }
 
-    this.server.to(body.room).emit('message', {
-      from: username, // or user or userId
-      body,
+    // TODO: Save message to database
+    const message = await this.messageService.create({
+      content: body.message,
+      conversationId: body.room,
+      senderId: client.request.user.id,
+      receiverId: body.to,
     });
 
-    // TODO: Save message to database
+    this.server.to(body.room).emit('message', {
+      from: username, // or user or userId
+      message,
+    });
   }
 
   afterInit(server: Server) {
@@ -78,20 +91,20 @@ export class ChatGateway
   }
 
   async handleDisconnect(client: Socket) {
-    // const user = client.request.user;
-    // await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
+    const user = client.request.user;
+    const { username } = user;
 
     this.logger.debug(`Client ${client.id} disconnected`);
     this.server.to(client.id).emit('status', { status: Status.OFFLINE });
 
-    // const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
-    // rooms.forEach((room) => {
-    //   client.leave(room);
-    //   this.server.to(room).emit('message', {
-    //     message: `${username} left the chat`,
-    //     id: 'server',
-    //   });
-    // });
+    const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
+    rooms.forEach((room) => {
+      client.leave(room);
+      this.server.to(room).emit('message', {
+        message: `${username} left the chat`,
+        id: 'server',
+      });
+    });
   }
 
   /**
@@ -137,14 +150,14 @@ export class ChatGateway
     this.server.to(client.id).emit('status', { status: Status.ONLINE });
     client.emit('onConnect', { msg: `[${client.id}] You are connected` });
 
-    // const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
-    // rooms.forEach((room) => {
-    //   client.join(room);
-    //   this.server.to(room).emit('message', {
-    //     message: `${username} joined the chat`,
-    //     id: 'server',
-    //   });
-    // });
+    const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
+    rooms.forEach((room) => {
+      client.join(room);
+      this.server.to(room).emit('message', {
+        message: `${username} joined the chat`,
+        id: 'server',
+      });
+    });
   }
 
   @SubscribeMessage('join')
@@ -165,5 +178,75 @@ export class ChatGateway
       message: `${username} joined the chat`,
       id: 'server',
     });
+  }
+
+  @SubscribeMessage('leave')
+  async onLeave(
+    @MessageBody() room: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user = client.request.user;
+
+    // if (!user) {
+    //   client.disconnect();
+    //   throw new UnauthorizedException('Unauthorized');
+    // }
+
+    const { username } = user ?? { username: `unknown${client.id}` };
+
+    this.logger.debug(`[WS] [${username}] left room ${room}`);
+
+    client.leave(room);
+    this.server.to(room).emit('onMessage', {
+      message: `${username} left the chat`,
+      id: 'server',
+    });
+  }
+
+  @SubscribeMessage('createRoom')
+  async onCreateRoom(
+    @MessageBody() payload: any, // TODO: Create a DTO for this
+    @ConnectedSocket() client: Socket,
+  ) {
+    const user = client.request.user;
+
+    const { to: toUsername, roomName } = payload;
+
+    const { username } = user ?? { username: `unknown${client.id}` };
+
+    // Check if the toUsername exists in connectedUsers
+    const socketIds = this.connectedUsers.get(toUsername) ?? [];
+    socketIds.forEach((socketId) => {
+      this.server.to(roomName).emit('onMessage', {
+        message: `${username} created the chat`,
+        id: 'server',
+      });
+      client.join(socketId);
+    });
+
+    this.logger.debug(`[WS] [${username}] created roomName ${roomName}`);
+
+    client.join(roomName);
+    this.server.to(roomName).emit('onMessage', {
+      message: `${username} created the chat`,
+      id: 'server',
+    });
+
+    const chat = await this.chatService.create({
+      name: roomName,
+      type: payload.type,
+      participants: {
+        connect: [
+          {
+            username,
+          },
+          {
+            username: toUsername,
+          },
+        ],
+      },
+    });
+
+    console.log({ chat });
   }
 }
