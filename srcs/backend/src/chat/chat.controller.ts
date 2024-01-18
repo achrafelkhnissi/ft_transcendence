@@ -19,11 +19,7 @@ import { User } from 'src/decorators/user.decorator';
 import { ConversationType } from '@prisma/client';
 import { ChatGateway } from './chat.gateway';
 
-interface CreateConversationDto {
-  type: ConversationType;
-  firstUser?: string;
-  secondUser: string;
-}
+interface CreateConversationDto {}
 
 /**
  * TODO:
@@ -45,17 +41,21 @@ export class ChatController {
   @Post()
   async create(
     @User() user,
-    @Body() createChatDto: CreateConversationDto,
+    @Body() createChatDto: any, // TODO: Change any to CreateChatDto
     @Res() res,
   ) {
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const chat = await this.chatService.create({
-      ...createChatDto,
-      firstUser: user.username,
-    });
+    const { type, to: receiverId } = createChatDto;
+
+    const createChat = {
+      type,
+      participants: [user.id, receiverId],
+    };
+
+    const chat = await this.chatService.create(createChat);
     if (!chat) {
       return null;
     }
