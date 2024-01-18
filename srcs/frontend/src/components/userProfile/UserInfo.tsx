@@ -6,12 +6,17 @@ import ProfileAvatar from "./ProfileAvatar";
 import UserName from "./UserName";
 import Stats from "./Stats";
 import Contacts from "./Contacts";
-import { FriendshipStatus } from "@/app/(site)/profile/[...name]/page";
-import { User } from "@/app/(site)/profile/[...name]/page";
+import { User } from "./types";
 
 
 
-const UserInfo: React.FC<User> = ({ username, stats ,me, isFriend, url}) => {
+const UserInfo: React.FC<User> = ({ 
+  username, 
+  stats,
+  me, 
+  isFriend, 
+  url, 
+  id}) => {
 
   return (
     <div className="w-full p-4">
@@ -49,7 +54,7 @@ const UserInfo: React.FC<User> = ({ username, stats ,me, isFriend, url}) => {
                 <Stats />
               </div>
               <div className="self-center">
-                <Contacts username={username} me={me} status={isFriend} url={url}/>
+                <Contacts username={username} me={me} status={isFriend} url={url} id={id}/>
               </div>
             </div>
           </div>

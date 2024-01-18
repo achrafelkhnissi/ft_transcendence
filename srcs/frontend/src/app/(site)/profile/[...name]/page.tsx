@@ -8,51 +8,8 @@ import getCurrentUser from "@/services/getCurrentUser";
 import { useState } from "react";
 import { useEffect } from "react";
 import getUser from "@/services/getUser";
+import { User, defaultInfos } from "@/components/userProfile/types";
 
-export enum FriendshipStatus {
-  PENDING = "PENDING",
-  ACCEPTED = "ACCEPTED",
-  DECLINED = "DECLINED",
-  BLOCKED = "BLOCKED",
-}
-
-export interface FriendsProps {
-  username: string;
-  avatar: string;
-  status: string;
-}
-
-export interface User {
-  id: string;
-  username: string;
-  // avatar: string;
-  url: string;
-  stats: {
-    exp: number;
-    level: number;
-    wins: number;
-    losses: number;
-  }
-  me: boolean;
-  isFriend: false | FriendshipStatus;
-  friends : FriendsProps[];
-}
-
-const defaultInfos: User = {
-  id: "",
-  username: "",
-  // avatar: "",
-  url: "",
-  stats: {
-    exp: 0,
-    level: 0,
-    wins:0,
-    losses: 0,
-  },
-  me: true,
-  isFriend: false,
-  friends: [],
-};
 
 const Home = ({ params }: { params: { name: string } }) => {
   const abortController = new AbortController();
@@ -66,7 +23,6 @@ const Home = ({ params }: { params: { name: string } }) => {
         setUser(userData);
       });
     } else {
-      console.log(params.name)
       getUser(params.name).then((res) => {
         const userData: User = res;
         (userData.me = false), setUser(userData);

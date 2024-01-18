@@ -1,79 +1,49 @@
-import { TbMessageCircle2Filled } from "react-icons/tb";
-import { TiUserAdd } from "react-icons/ti";
-import Logo_42 from "../logos/Logo_42";
+
 import Link from "next/link";
-import { BiUserCheck, BiUserX, BiUserPlus } from "react-icons/bi";
-import { FriendshipStatus } from "@/app/(site)/profile/[...name]/page";
 import { useEffect, useState } from "react";
 import sendFriendRequest from "@/services/sendFriendRequest";
 import removeFriend from "@/services/removeFriend";
 import cancelFriendRequest from "@/services/cancelFriendRequest";
 import { stat } from "fs";
+import { useSocket } from "@/contexts/socketContext";
+import { ContactsItems, FriendshipStatus } from "./types";
+import createNewConv from "@/services/createNewConv";
 
 interface ContactsProps {
   username: string;
   me: boolean;
   status: false | FriendshipStatus;
   url: string;
-}
-interface ContactsItemsProps {
-  label: string;
-  href: string;
-  color: string;
-  icon: React.ReactNode;
+  id: number | null;
 }
 
-const ContactsItems: { [key: string]: ContactsItemsProps } = {
-  sendMessage: {
-    label: "send a message",
-    href: "/conversation",
-    color: "#31A350",
-    icon: (
-      <TbMessageCircle2Filled className="text-white w-6 h-6 bg-[#31A350]" />
-    ),
-  },
-  sendRequest: {
-    label: "send a friend request",
-    href: "/friend-request",
-    color: "#3385FF",
-    icon: <BiUserPlus className="text-white w-6 h-6 bg-[#3385FF]" />,
-  },
-  cancelRequest: {
-    label: "cancel friend request",
-    href: "/friend-request",
-    color: "#3385FF",
-    icon: <BiUserX className="text-white w-6 h-6 bg-[#3385FF]" />,
-  },
-  acceptRequest: {
-    label: "accept friend request",
-    href: "/friend-request",
-    color: "#3385FF",
-    icon: <BiUserCheck className="text-white w-6 h-6 bg-[#3385FF]" />,
-  },
-  intra: {
-    label: "intra profile ",
-    href: "/profile-intra",
-    color: "#6257FE",
-    icon: <Logo_42 color="white" width="1.7rem" height="1.5rem" />,
-  },
-};
 
-interface statePorps {
-  isClicked: "send" | "cancel" | "friend" | "";
-}
-
-const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
+const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) => {
 
   const [isClicked, setIsClicked] = useState<"send" | "cancel" | "">("");
   const [friendshipState, setFriendshipState] = useState<FriendshipStatus | false>(status);
-  
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (socket) {
+      // Listen for the 'connect' event
+      console.log(socket)
+      socket.on('connect', () => {
+        console.log({
+          message: 'Connected to socket server from userContact',
+          socketId: socket.id,
+        });
+
+        // You can also log the socket ID
+        console.log('Socket ID:', socket.id);
+      });
+    }
+  },[])
+
   useEffect(() => {
     setFriendshipState(status);
   }, [status])
   
-  console.log("status " + status);
-  console.log("me " + me);
-  console.log("isClicked " + isClicked)
   useEffect(() => {
 
     if (isClicked == "send"  ) {
@@ -89,6 +59,19 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
       });
     }
   }, [isClicked, username, friendshipState]);
+
+  const createRoom = () => {
+    console.log("create room");
+    const convo = {
+      type: "DM", 
+      to: id,
+    }
+
+    createNewConv(convo).then(res => {
+      console.log("created ");
+      console.log(res);
+    })
+  }
   
   return (
     <div className="flex justify-center gap-4 px-6">
@@ -139,6 +122,8 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url }) => {
 
       {!me && 
       <button
+      onClick={() => {console.log('clicked') ;createRoom()}}
+
       className={`
       rounded-xl
       bg-[${ContactsItems.sendMessage.color}]
