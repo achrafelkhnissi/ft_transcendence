@@ -18,7 +18,7 @@ export class ChatService {
   }
 
   // TODO: Update any to CreateChatDto
-  create(createChatDto: any) {
+  async create(createChatDto: any) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
 
     const { type } = createChatDto;
@@ -31,7 +31,7 @@ export class ChatService {
       );
 
       // Check if the chat already exists
-      const chat = this.prismaService.conversation.findUnique({
+      const chat = await this.prismaService.conversation.findUnique({
         where: {
           name: roomName,
         },
@@ -41,10 +41,28 @@ export class ChatService {
         return chat;
       }
 
+      const user1Id = participants[0];
+      const user2Id = participants[1];
+
       return this.prismaService.conversation.create({
         data: {
           name: roomName,
-          ...createChatDto,
+          type,
+          participants: {
+            connect: [
+              {
+                id: user1Id,
+              },
+              {
+                id: user2Id,
+              },
+            ],
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          type: true,
         },
       });
     }

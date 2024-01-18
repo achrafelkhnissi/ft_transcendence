@@ -56,15 +56,8 @@ export class ChatController {
     };
 
     const chat = await this.chatService.create(createChat);
-    if (!chat) {
-      return null;
-    }
 
-    // TODO: Add user to chat using 'join' event
-    // this.chatService.joinChat(user, chat.name);
-    // this.chatGateway.joinRoomWithUser(chat.nam, user.username);
-
-    res.redirect(`${process.env.FRONTEND_URL}/messages/${chat.name}`);
+    return chat;
   }
 
   @Get()
