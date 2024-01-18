@@ -42,7 +42,6 @@ export class ChatController {
   async create(
     @User() user,
     @Body() createChatDto: any, // TODO: Change any to CreateChatDto
-    @Res() res,
   ) {
     if (!user) {
       throw new NotFoundException('User not found');
