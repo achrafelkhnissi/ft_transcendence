@@ -6,8 +6,9 @@ interface Props  {
 }
 
 const createNewConv = async (convo: Props) => {
-    const {data} = await axios.post('http://localhost:3000/api/users/chat', convo, {withCredentials: true});
     console.log('in function');
+    const {data} = await axios.post('http://localhost:3000/api/users/chat', convo, {withCredentials: true});
+    console.log('after function')
     return data;
 }
 

@@ -67,7 +67,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
       to: id,
     }
 
-    createNewConv(convo).then(res => {
+    createNewConv(convo).then( (res) => {
       console.log("created ");
       console.log(res);
     })
