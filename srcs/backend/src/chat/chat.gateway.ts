@@ -22,6 +22,8 @@ interface MessagePayload {
   conversationId: number;
 }
 
+interface;
+
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
   // namespace: 'chat',
@@ -208,30 +210,30 @@ export class ChatGateway
   ) {
     const user = client.request.user;
 
-    const { toUsername, room } = payload;
+    const { to: toUsername, roomName } = payload;
 
     const { username } = user ?? { username: `unknown${client.id}` };
 
     // Check if the toUsername exists in connectedUsers
     const socketIds = this.connectedUsers.get(toUsername) ?? [];
     socketIds.forEach((socketId) => {
-      this.server.to(room).emit('onMessage', {
+      this.server.to(roomName).emit('onMessage', {
         message: `${username} created the chat`,
         id: 'server',
       });
       client.join(socketId);
     });
 
-    this.logger.debug(`[WS] [${username}] created room ${room}`);
+    this.logger.debug(`[WS] [${username}] created roomName ${roomName}`);
 
-    client.join(room);
-    this.server.to(room).emit('onMessage', {
+    client.join(roomName);
+    this.server.to(roomName).emit('onMessage', {
       message: `${username} created the chat`,
       id: 'server',
     });
 
     const chat = await this.chatService.create({
-      name: room,
+      name: roomName,
       type: payload.type,
       participants: {
         connect: [
