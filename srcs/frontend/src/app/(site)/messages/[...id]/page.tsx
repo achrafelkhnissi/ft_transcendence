@@ -3,12 +3,12 @@
 import Preview from "@/components/messages/Preview";
 import { useState, useEffect } from "react";
 import ViewConversations from "@/components/messages/ViewConversations";
-import { Message, UserStatuses, Conversation, ConversationsMap} from "../../../components/messages/data"
+import { Message, UserStatuses, Conversation, ConversationsMap} from "../../../../components/messages/data"
 import getConversations from "@/services/getConversations";
 import getCurrentUser from "@/services/getCurrentUser";
 import { useSocket } from "@/contexts/socketContext";
 
-const Home = () => {
+const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
   const [conversationOrder, setConversationOrder] = useState<number[]>([]);
   const [conversations, setConversations] = useState<ConversationsMap>({});
@@ -28,7 +28,11 @@ const Home = () => {
       
         setConversationOrder(initialOrder);
         setConversations(initialConversationsMap);
+        if (params.id > 0){
+          setSelectedConversationId(params.id);
+        }
     };
+
 
 // socket
   useEffect(() => {
@@ -36,13 +40,13 @@ const Home = () => {
       // Listen for the 'connect' event
       console.log(socket)
       socket.on('connect', () => {
-        console.log({
-          message: 'Connected to socket server',
-          socketId: socket.id,
-        });
+        // console.log({
+        //   message: 'Connected to socket server',
+        //   socketId: socket.id,
+        // });
 
-        // You can also log the socket ID
-        console.log('Socket ID:', socket.id);
+        // // You can also log the socket ID
+        // console.log('Socket ID:', socket.id);
       });
 
       socket.on('onMessage', (message: Message) => {

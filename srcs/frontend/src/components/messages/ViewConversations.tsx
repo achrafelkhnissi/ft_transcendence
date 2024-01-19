@@ -58,6 +58,18 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             sender = firstParticipant.username === currentUser ? firstParticipant : secondParticipant;
             receiver = firstParticipant.username === currentUser ? secondParticipant : firstParticipant;
         }
+
+        const handleSend = () => {
+            addMessageToConversation({
+                content: newMessage,
+                sender: sender,
+                receiver: receiver,
+                isRead: false,
+                conversationId: conversationId,
+                createdAt: new Date().toISOString(),
+            })
+            setNewMessage("");
+        }
         
     return (
         <div
@@ -72,7 +84,7 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 flex justify-between p-6
                 bg-[#25244E]">
                 <div className="p-2 flex gap-2 self-center">
-                    <Image src={receiver.avatar} alt="receiver" width={100} height={100}
+                    <img src={`http://localhost:3000/api/users/${receiver.username}/avatar`} alt="receiver" width={100} height={100}
                     className="w-10 h-10 rounded-full self-center"/>
                     <div className="flex flex-col self-center">
                         <h6 className="font-semibold text-sm ">
@@ -135,15 +147,7 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 <div className="self-center pr-[1.3rem] hover:cursor-pointer
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
                     onClick={() => {
-                        addMessageToConversation({
-                            content: newMessage,
-                            sender: sender,
-                            receiver: receiver,
-                            isRead: false,
-                            conversationId: conversationId,
-                            createdAt: new Date().toISOString(),
-                        })
-                        setNewMessage("");
+                       handleSend();
                     }}>
                     <SendMessage color={"#20204A"} width={"29px"} height={"29px"} />
                 </div>

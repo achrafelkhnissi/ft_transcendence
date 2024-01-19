@@ -8,6 +8,7 @@ import { stat } from "fs";
 import { useSocket } from "@/contexts/socketContext";
 import { ContactsItems, FriendshipStatus } from "./types";
 import createNewConv from "@/services/createNewConv";
+import { useRouter } from "next/navigation";
 
 interface ContactsProps {
   username: string;
@@ -60,6 +61,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
     }
   }, [isClicked, username, friendshipState]);
 
+  const router = useRouter();
   const createRoom = () => {
     const convo = {
       type: "DM", 
@@ -69,7 +71,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
     createNewConv(convo).then( (res) => {
       console.log("created ");
       console.log(res);
-      
+
       socket?.emit('createRoom', {
         roomName: res.name,
         type: res.type,
@@ -78,7 +80,8 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
         console.log({
           "Response from server": response,
         });
-});
+        router.push(`/messages/${res.id}`)
+      });
 
 
       console.log('socket joined room')
