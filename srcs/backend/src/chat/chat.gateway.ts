@@ -229,22 +229,5 @@ export class ChatGateway
       message: `${username} created the chat`,
       id: 'server',
     });
-
-    const chat = await this.chatService.create({
-      name: roomName,
-      type: payload.type,
-      participants: {
-        connect: [
-          {
-            username,
-          },
-          {
-            username: toUsername,
-          },
-        ],
-      },
-    });
-
-    console.log({ chat });
   }
 }
