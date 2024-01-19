@@ -32,6 +32,26 @@ export class MessageService {
         senderId,
         receiverId,
       },
+      select: {
+        isRead: true,
+        content: true,
+        createdAt: true,
+        conversationId: true,
+        sender: {
+          select: {
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        receiver: {
+          select: {
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+      },
     });
   }
 
