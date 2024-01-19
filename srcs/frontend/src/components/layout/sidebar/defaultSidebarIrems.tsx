@@ -23,7 +23,7 @@ export const defaultSidebarItems: DefaultSidebarItemsProps[] = [
   },
   {
     label: "Messages",
-    href: "/messages",
+    href: "/messages/0",
     icon: <TiMessages className="w-6 h-6" />,
   },
   {

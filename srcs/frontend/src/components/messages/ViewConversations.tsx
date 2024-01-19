@@ -114,12 +114,13 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 <div className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
                     ref={chatContainerRef}
                     >
-                    {conversationsMap[conversationId].messages.map((message) => {
+                    {conversationsMap[conversationId].messages.map((message, index) => {
                     return (
                         <MessageContainer 
                         isCurrentUser={currentUser === message.sender.username} 
                         content={message.content} 
-                        date={message.createdAt}/>
+                        date={message.createdAt}
+                        key={index}/>
                         )
                     })}
                 </div>

@@ -38,12 +38,11 @@ const Home = ({ params }: { params: { id: number } }) => {
   useEffect(() => {
     if (socket) {
       // Listen for the 'connect' event
-      console.log(socket)
       socket.on('connect', () => {
-        // console.log({
-        //   message: 'Connected to socket server',
-        //   socketId: socket.id,
-        // });
+        console.log({
+          message: 'from messages Connected to socket server',
+          socketId: socket.id,
+        });
 
         // // You can also log the socket ID
         // console.log('Socket ID:', socket.id);
@@ -92,7 +91,7 @@ const Home = ({ params }: { params: { id: number } }) => {
           }
         }))
         setConversationOrder(prevOrder => {
-          return [conversationId, ...prevOrder.filter(id => id !== conversationId)];
+          return [conversationId, ...prevOrder.filter(id => id != conversationId)];
         });
       } else {
         // Handle case where the conversation is new or not loaded

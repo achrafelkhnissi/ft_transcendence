@@ -29,11 +29,9 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
 
     }
 
-    console.log({conversationsMap});
     return (<div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">
         {orderedConversations.map((id) => {
             if (conversationsMap[id].type === "DM"){
-                console.log('id ' + typeof(id));
                 const lastMessage = conversationsMap[id].messages[conversationsMap[id].messages.length - 1];
                 const friend: User = conversationsMap[id].participants[0].username === currentUser? 
                                     conversationsMap[id].participants[1] : conversationsMap[id].participants[0];
