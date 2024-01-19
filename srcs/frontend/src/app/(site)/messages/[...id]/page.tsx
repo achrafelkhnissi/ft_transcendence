@@ -51,6 +51,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       socket.on('onMessage', (message: Message) => {
         console.log('New message:', message);
         // Handle the message
+        addMessageToConversation(message);
       });
     }
 

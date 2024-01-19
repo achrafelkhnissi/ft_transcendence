@@ -70,11 +70,10 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 conversationId: conversationId,
                 createdAt: new Date().toISOString(),
             })
-            console.log('hahia ' , socket),
             socket?.emit('message', {
                 to: receiver.username,
                 content: newMessage,
-                conversationId: conversationId,
+                conversationId: Number(conversationId),
                 room: conversationsMap[conversationId].name,
             }, () => {
                 console.log('message sent ');
