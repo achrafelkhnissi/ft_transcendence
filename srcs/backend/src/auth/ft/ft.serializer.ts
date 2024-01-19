@@ -11,13 +11,11 @@ export class FtSerializer extends PassportSerializer {
   }
 
   serializeUser(user: any, done: CallableFunction) {
-    this.logger.debug(`serializing user ${user.username}`);
     done(null, user.id);
   }
 
   async deserializeUser(userId: number, done: CallableFunction) {
     const user = await this.usersService.findById(userId);
-    this.logger.debug(`deserializing user ${user.username}`);
     done(null, user);
   }
 }
