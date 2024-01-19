@@ -9,8 +9,6 @@ export class FriendsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listFriendsByUsername(username: string) {
-    this.logger.debug(`Listing friends for user <${username}>`);
-
     const user = await this.prisma.user.findUnique({
       where: { username: username },
       include: {
