@@ -66,10 +66,7 @@ export class ChatGateway
       receiverUsername,
     });
 
-    this.server.to(room).emit('message', {
-      from: user.username,
-      message,
-    });
+    this.server.to(room).emit('onMessage', message);
 
     this.logger.debug(`[message] [${user.username}] ${content}`);
 
