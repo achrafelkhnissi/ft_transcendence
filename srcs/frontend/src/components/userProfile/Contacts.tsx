@@ -61,7 +61,6 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
   }, [isClicked, username, friendshipState]);
 
   const createRoom = () => {
-    console.log("create room");
     const convo = {
       type: "DM", 
       to: id,
@@ -70,6 +69,14 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
     createNewConv(convo).then( (res) => {
       console.log("created ");
       console.log(res);
+      
+      socket?.emit('createRoom', {
+        roomName: res.name,
+        type: res.type,
+        to: username,
+      })
+
+      console.log('socket joined room')
     })
   }
   
