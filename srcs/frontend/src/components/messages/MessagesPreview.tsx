@@ -26,7 +26,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
     const handleClick = (id: number) =>{
         updateSelectedConversation(id)
         markLastMessageAsRead(id);
-
+        
     }
 
     return (<div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">

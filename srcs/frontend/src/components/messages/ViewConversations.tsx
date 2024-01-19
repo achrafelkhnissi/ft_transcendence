@@ -5,8 +5,8 @@ import GameInvitation from "../svgAssets/GameInvitation";
 import SendMessage from "../svgAssets/SendMessage";
 import MessageContainer from "./MessageContainer";
 import { UserStatuses, ConversationsMap, User, Message } from "./data";
-import Image from "next/image";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { Socket } from 'socket.io-client'; 
 
 interface ViewConversationsProps{
     conversationId: number,
@@ -15,6 +15,7 @@ interface ViewConversationsProps{
     statuses: UserStatuses,
     currentUser: string,
     addMessageToConversation: Function,
+    socket: Socket | null,
 }
 
 const ViewConversations : React.FC<ViewConversationsProps>= (
@@ -24,6 +25,7 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         statuses,
         currentUser,
         addMessageToConversation,
+        socket,
     }) =>{
         const [newMessage, setNewMessage] = useState<string>("");    
 
@@ -67,6 +69,13 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 isRead: false,
                 conversationId: conversationId,
                 createdAt: new Date().toISOString(),
+            })
+            socket?.emit('message', {
+                to: receiver.username,
+                body: newMessage,
+                conversationId: conversationId,
+            }, () => {
+                console.log('message sent ');
             })
             setNewMessage("");
         }
