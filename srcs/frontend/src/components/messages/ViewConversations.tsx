@@ -6,7 +6,7 @@ import SendMessage from "../svgAssets/SendMessage";
 import MessageContainer from "./MessageContainer";
 import { UserStatuses, ConversationsMap, User, Message } from "./data";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
-import { Socket } from 'socket.io-client'; 
+import { useSocket } from "@/contexts/socketContext";
 
 interface ViewConversationsProps{
     conversationId: number,
@@ -15,7 +15,6 @@ interface ViewConversationsProps{
     statuses: UserStatuses,
     currentUser: string,
     addMessageToConversation: Function,
-    socket: Socket | null,
 }
 
 const ViewConversations : React.FC<ViewConversationsProps>= (
@@ -25,8 +24,9 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         statuses,
         currentUser,
         addMessageToConversation,
-        socket,
     }) =>{
+
+        const {socket} = useSocket();
         const [newMessage, setNewMessage] = useState<string>("");    
 
         const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false); 
@@ -70,10 +70,12 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                 conversationId: conversationId,
                 createdAt: new Date().toISOString(),
             })
+            console.log('hahia ' , socket),
             socket?.emit('message', {
                 to: receiver.username,
-                body: newMessage,
+                content: newMessage,
                 conversationId: conversationId,
+                room: conversationsMap[conversationId].name,
             }, () => {
                 console.log('message sent ');
             })

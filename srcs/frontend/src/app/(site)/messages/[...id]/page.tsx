@@ -130,7 +130,6 @@ const Home = ({ params }: { params: { id: number } }) => {
             orderedConversations={conversationOrder}
             currentUser={currentUser}
             addMessageToConversation={addMessageToConversation}
-            socket={socket}
             /> 
     </div>)
 }
