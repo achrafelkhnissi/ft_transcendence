@@ -229,5 +229,7 @@ export class ChatGateway
       message: `${username} created the chat`,
       id: 'server',
     });
+
+    return 'OK';
   }
 }

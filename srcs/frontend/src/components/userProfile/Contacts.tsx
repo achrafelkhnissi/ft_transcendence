@@ -74,7 +74,12 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
         roomName: res.name,
         type: res.type,
         to: username,
-      })
+      }, (response: any) => {
+        console.log({
+          "Response from server": response,
+        });
+});
+
 
       console.log('socket joined room')
     })
