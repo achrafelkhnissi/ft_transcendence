@@ -10,12 +10,20 @@ export class MessageService {
   constructor(private readonly prismaService: PrismaService) {}
 
   // TODO: Check if senderId is needed because we can get it from the currently logged in user
-  create(createMessageDto: CreateMessageDto) {
-    const { content, conversationId, senderId, receiverId } = createMessageDto;
+  async create(createMessageDto: CreateMessageDto) {
+    const { content, conversationId, senderId, receiverUsername } =
+      createMessageDto;
 
-    this.logger.log(
-      `User ${senderId} sent a message to user ${receiverId} in conversation ${conversationId} with content ${content}`,
-    );
+    const receiverId: number = await this.prismaService.user
+      .findUnique({
+        where: {
+          username: receiverUsername,
+        },
+        select: {
+          id: true,
+        },
+      })
+      .then((user) => user.id);
 
     return this.prismaService.message.create({
       data: {
