@@ -28,9 +28,12 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
         markLastMessageAsRead(id);
 
     }
+
+    console.log({conversationsMap});
     return (<div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">
         {orderedConversations.map((id) => {
             if (conversationsMap[id].type === "DM"){
+                console.log('id ' + typeof(id));
                 const lastMessage = conversationsMap[id].messages[conversationsMap[id].messages.length - 1];
                 const friend: User = conversationsMap[id].participants[0].username === currentUser? 
                                     conversationsMap[id].participants[1] : conversationsMap[id].participants[0];
@@ -38,7 +41,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
                 return (
                 <div className={`flex justify-center  gap-2 h-[5.55rem] px-1 py-3 border-b-[3px] border-b-[#59598ec6] relative hover:cursor-pointer
                                 hover:bg-white/[0.04] hover:shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)]
-                                ${selectedConversation === id && "bg-white/[0.04] shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)]"}`}
+                                ${selectedConversation == id && "bg-white/[0.04] shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)]"}`}
                                 onClick={() => handleClick(id)}
                                 key={id}
                                 >
