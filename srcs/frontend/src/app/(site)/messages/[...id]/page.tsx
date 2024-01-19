@@ -49,16 +49,23 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
 
       socket.on('onMessage', (message: Message) => {
-        console.log('New message:', message);
-        // Handle the message
-        addMessageToConversation(message);
+        // console.log('New message:', message);
+        setConversations((prev) => ({
+          ...prev,
+          [message.conversationId]:{
+            ...prev[message.conversationId],
+            messages : [...prev[message.conversationId].messages, message],
+            updatedAt: new Date().toISOString(),
+          }
+        }))
+        console.log('houna');
       });
     }
 
     return () => {
       if (socket) {
         socket.off('connect');
-        socket.off('message');
+        socket.off('onMessage');
       }
     };
   }, [socket]);
@@ -81,7 +88,8 @@ const Home = ({ params }: { params: { id: number } }) => {
       };
       
     const addMessageToConversation = (newMessage: Message) => {
-      const conversationId = newMessage.conversationId;
+  
+      const conversationId = Number(newMessage.conversationId);
       if (conversations[conversationId]){
         setConversations((prev) => ({
           ...prev,

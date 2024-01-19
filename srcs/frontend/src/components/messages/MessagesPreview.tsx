@@ -59,8 +59,8 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
                             {lastMessage ? formatChatTimestamp(lastMessage.createdAt): ""}
                         </p>
                 {
-                    (lastMessage && !lastMessage.isRead && lastMessage.sender.username === friend.username) && 
-                    <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2 z-10 top-1/2"></div>
+                    // (lastMessage && !lastMessage.isRead && lastMessage.sender.username === friend.username) && 
+                    // <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2 z-10 top-1/2"></div>
                }
             </div>)
             }

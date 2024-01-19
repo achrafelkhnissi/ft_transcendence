@@ -62,14 +62,14 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         }
 
         const handleSend = () => {
-            addMessageToConversation({
-                content: newMessage,
-                sender: sender,
-                receiver: receiver,
-                isRead: false,
-                conversationId: conversationId,
-                createdAt: new Date().toISOString(),
-            })
+            // addMessageToConversation({
+            //     content: newMessage,
+            //     sender: sender,
+            //     receiver: receiver,
+            //     isRead: false,
+            //     conversationId: conversationId,
+            //     createdAt: new Date().toISOString(),
+            // })
             socket?.emit('message', {
                 to: receiver.username,
                 content: newMessage,
