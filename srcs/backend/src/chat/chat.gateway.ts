@@ -1,4 +1,4 @@
-import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -11,7 +11,6 @@ import {
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
-import { WsAuthenticatedGuard } from './ws.guard';
 import { Status } from '@prisma/client';
 import { MessageService } from 'src/message/message.service';
 
@@ -34,8 +33,6 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(ChatGateway.name);
-
-  private connectedUsers = new Map<string, string[]>();
 
   @WebSocketServer()
   server: Server;
@@ -67,22 +64,13 @@ export class ChatGateway
 
     this.server.to(room).emit('onMessage', message);
 
-    this.logger.debug(`[message] [${user.username}] ${content}`);
-
     return 'OK';
   }
 
   afterInit(server: Server) {
     this.logger.debug('MyGateway initialized');
-    this.server.on('connection', (socket) => {
-      socket.emit('server', {
-        message: `Welcome to the server! Your id is ${socket.id}`,
-        id: 'server',
-      });
-    });
   }
 
-  // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working
   async handleConnection(client: Socket) {
     const { user } = client.request;
 
@@ -120,6 +108,7 @@ export class ChatGateway
     client.leave(user.username);
     client.disconnect();
     this.logger.debug(`Client ${user.username} disconnected`);
+    return 'CONNECTED';
   }
 
   @SubscribeMessage('join')
@@ -135,6 +124,7 @@ export class ChatGateway
     // client.join(room);
 
     this.logger.debug(`Client ${user.username} joined room ${room}`);
+    return 'JOINED';
   }
 
   @SubscribeMessage('leave')
@@ -154,6 +144,7 @@ export class ChatGateway
     this.server.to(room).emit('onLeave', user.username);
 
     this.logger.debug(`Client ${user.username} left room ${room}`);
+    return 'LEFT';
   }
 
   @SubscribeMessage('createRoom')
@@ -167,6 +158,6 @@ export class ChatGateway
     client.join(roomName);
     // this.server.to(client.request.user.username).socketsJoin(roomName);
 
-    return 'OK';
+    return 'CREATED';
   }
 }
