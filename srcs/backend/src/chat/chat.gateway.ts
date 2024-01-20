@@ -23,7 +23,7 @@ interface MessagePayload {
 
 // @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
-  // namespace: 'chat',
+  namespace: 'chat',
   cors: {
     origin: process.env.FRONTEND_URL,
     credentials: true,
