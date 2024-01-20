@@ -67,7 +67,7 @@ export class ChatGateway
     return 'OK';
   }
 
-  afterInit(server: Server) {
+  afterInit() {
     this.logger.debug('MyGateway initialized');
   }
 
