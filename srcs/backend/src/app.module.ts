@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { UploadModule } from './upload/upload.module';
@@ -30,27 +29,13 @@ import { AchievementsModule } from './achievements/achievements.module';
           {
             path: 'friends',
             module: FriendsModule,
-            children: [
-              {
-                path: 'requests',
-                module: FriendRequestsModule,
-              },
-            ],
+            children: [ { path: 'requests', module: FriendRequestsModule } ],
           },
-          {
-            path: 'notifications',
-            module: NotificationsModule,
-          },
-          {
-            path: 'chat',
-            module: ChatModule,
-          },
+          { path: 'notifications', module: NotificationsModule },
+          { path: 'chat', module: ChatModule },
         ],
       },
     ]),
-    EventEmitterModule.forRoot({
-      global: true,
-    }),
     SmsModule,
     ChatModule,
     UploadModule,
