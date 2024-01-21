@@ -116,6 +116,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       
     useEffect(() => {
         getConversations().then(res => {
+          console.log('res', res);
             initializeConversations(res);
         })
         getCurrentUser().then(res => {

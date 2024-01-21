@@ -1,8 +1,5 @@
-import { RiH6 } from "react-icons/ri";
-import { Message, UserStatuses, Conversation, ConversationsMap, User } from "./data";
-import Image from "next/image";
-import formatChatTimestamp from "./tools/formatTime";
-import { useState } from "react";
+import {  UserStatuses, ConversationsMap, User } from "../data";
+import formatChatTimestamp from "../tools/formatTime";
 
 interface MessagesPreviewProps{
     conversationsMap : ConversationsMap,
@@ -44,12 +41,12 @@ const MessagesPreview: React.FC<MessagesPreviewProps> =
                                 key={id}
                                 >
                     <div className="self-center ">
-                        <img src={`http://localhost:3000/api/users/${friend.username}/avatar`} alt="" width={100} height={100} 
+                        <img src={`http://localhost:3000/api/users/${friend?.username}/avatar`} alt="" width={100} height={100} 
                         className="w-12 h-12 rounded-full "/>
                     </div>
                     <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">
                         <h6 className="font-normal text-sm">
-                            {friend.username}
+                            {friend?.username}
                         </h6>
                         <p className="text-white/70 text-xs font-light break-words">
                             {lastMessage?.content.slice(0, 80)}

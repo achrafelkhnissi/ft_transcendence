@@ -1,4 +1,4 @@
-import formatChatTimestamp from "./tools/formatTime";
+import formatChatTimestamp from "../tools/formatTime";
 
  interface MessageContainerProps {
     isCurrentUser: boolean;

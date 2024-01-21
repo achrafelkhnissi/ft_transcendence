@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import MessagesPreview from "./MessagesPreview";
+import MessagesPreview from "./dm/MessagesPreview";
 import { UserStatuses,  ConversationsMap, User } from "./data";
 import getConversations from "@/services/getConversations";
-import { Convergence } from "next/font/google";
+import ChannelsPreview from "./channels/ChannelsPreview";
 
 interface PreviewProps {
     conversationsMap : ConversationsMap,
@@ -85,6 +85,19 @@ const Preview : React.FC<PreviewProps> = (
                 {active === "messages" && 
                     <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
                         <MessagesPreview 
+                            conversationsMap={conversationsMap}
+                            orderedConversations={orderedConversations}
+                            statuses={statuses}
+                            selectedConversation={selectedConversation}
+                            updateSelectedConversation={updateSelectedConversation}
+                            markLastMessageAsRead={markLastMessageAsRead}
+                            currentUser={currentUser}
+                         />
+                    </div>
+                }
+                   {active === "channels" && 
+                    <div className="h-[81%] overflow-y-auto scroll-smooth pb-2 mt-1 p-2">
+                        <ChannelsPreview 
                             conversationsMap={conversationsMap}
                             orderedConversations={orderedConversations}
                             statuses={statuses}

@@ -26,6 +26,7 @@ export interface Conversation{
     oweners: User[];
     admins: User[];
     messages: Message[];
+    image: string;
 }
 
 export type ConversationsMap = {
