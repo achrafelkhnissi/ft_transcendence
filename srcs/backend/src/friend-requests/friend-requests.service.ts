@@ -1,4 +1,3 @@
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   BadRequestException,
   Injectable,
@@ -18,7 +17,6 @@ export class FriendRequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notification: NotificationsService,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   // TODO: See where to put this
@@ -105,7 +103,6 @@ export class FriendRequestsService {
         `Friend request from <${sender.username}> to <${receiver.username}> already exists`,
       );
     }
-    this.eventEmitter.emit('notification', notification);
 
     this.logger.log(
       `User <${sender.username}> sent a friend request to <${receiver.username}>`,
@@ -163,7 +160,6 @@ export class FriendRequestsService {
     });
 
     this.logger.log(`Friend request accepted from <${senderUsername}>`);
-    // this.eventEmitter.emit('notification', notification);
 
     return { message: 'Friend request accepted', request };
   }
