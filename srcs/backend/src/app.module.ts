@@ -11,7 +11,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { UploadModule } from './upload/upload.module';
-import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -29,7 +28,7 @@ import { AchievementsModule } from './achievements/achievements.module';
           {
             path: 'friends',
             module: FriendsModule,
-            children: [ { path: 'requests', module: FriendRequestsModule } ],
+            children: [{ path: 'requests', module: FriendRequestsModule }],
           },
           { path: 'notifications', module: NotificationsModule },
           { path: 'chat', module: ChatModule },
@@ -39,7 +38,6 @@ import { AchievementsModule } from './achievements/achievements.module';
     SmsModule,
     ChatModule,
     UploadModule,
-    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [
