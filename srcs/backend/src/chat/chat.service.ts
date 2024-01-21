@@ -1,10 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateChatDto } from './dto/create-chat.dto';
+// import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
 import { ConversationType, Status } from '@prisma/client';
-import { el } from '@faker-js/faker';
 
 @Injectable()
 export class ChatService {

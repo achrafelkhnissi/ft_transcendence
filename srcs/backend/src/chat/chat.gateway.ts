@@ -12,7 +12,7 @@ import {
 import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { Status } from '@prisma/client';
-import { MessageService } from 'src/message/message.service';
+import { MessageService } from './message/message.service';
 
 interface MessagePayload {
   room: string;

@@ -11,7 +11,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
-import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './achievements/achievements.module';
 
@@ -45,12 +44,6 @@ import { AchievementsModule } from './achievements/achievements.module';
           {
             path: 'chat',
             module: ChatModule,
-            children: [
-              {
-                path: 'message',
-                module: MessageModule,
-              },
-            ],
           },
         ],
       },
@@ -60,7 +53,6 @@ import { AchievementsModule } from './achievements/achievements.module';
     }),
     SmsModule,
     ChatModule,
-    MessageModule,
     UploadModule,
     AchievementsModule,
   ],

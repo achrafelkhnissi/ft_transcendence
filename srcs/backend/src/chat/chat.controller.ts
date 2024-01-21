@@ -6,20 +6,17 @@ import {
   Patch,
   Param,
   Delete,
-  Res,
   NotFoundException,
-  Logger,
   // UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
+// import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/decorators/user.decorator';
 // import { AuthGuard } from 'src/guards/auth.guard';
-import { ConversationType } from '@prisma/client';
-import { ChatGateway } from './chat.gateway';
+// import { ConversationType } from '@prisma/client';
 
-interface CreateConversationDto {}
+// interface CreateConversationDto {}
 
 /**
  * TODO:
@@ -33,10 +30,7 @@ interface CreateConversationDto {}
 // @UseGuards(AuthGuard)
 @Controller()
 export class ChatController {
-  constructor(
-    private readonly chatService: ChatService,
-    private readonly chatGateway: ChatGateway,
-  ) {}
+  constructor(private readonly chatService: ChatService) {}
 
   @Post()
   async create(

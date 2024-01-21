@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+// import { CreateMessageDto } from './dto/create-message.dto';
+// import { UpdateMessageDto } from './dto/update-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+
+type CreateMessageDto = any;
+type UpdateMessageDto = any;
 
 @Injectable()
 export class MessageService {

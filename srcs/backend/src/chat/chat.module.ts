@@ -3,7 +3,7 @@ import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ChatGateway } from './chat.gateway';
-import { MessageModule } from 'src/message/message.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [PrismaModule, MessageModule],
