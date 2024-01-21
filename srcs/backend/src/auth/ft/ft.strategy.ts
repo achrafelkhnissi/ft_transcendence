@@ -4,43 +4,95 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 
 // TODO: Remove this after testing
-import { PrismaClient } from '@prisma/client';
+import { ConversationType, PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+const conversationType = [
+  ConversationType.DM,
+  ConversationType.PRIVATE,
+  ConversationType.PUBLIC,
+  ConversationType.PROTECTED,
+];
+
 async function createConversation(users) {
   const randomUser = () => users[Math.floor(Math.random() * users.length)];
+  const type =
+    users.length == 2
+      ? ConversationType.DM
+      : conversationType[randomNumber(0, conversationType.length)];
 
   const conversationName =
     users.length > 2
       ? faker.lorem.word()
       : users[0].username + ' & ' + users[1].username;
 
+  const image = faker.image.avatar();
+
   const conversation = await prisma.conversation.create({
     data: {
-      type: users.length > 2 ? 'PUBLIC' : 'DM',
-      ownerId: randomUser().id,
-      name: conversationName,
-      // Other fields as necessary
-      // ...
+      type: type,
+      ownerId: type == ConversationType.DM ? null : randomUser().id,
+      name: users.length > 2 ? conversationName : faker.lorem.word(),
+      password: type == ConversationType.PROTECTED ? 'password' : null,
+      image,
     },
   });
 
-  // Add participants
-  for (const user of users) {
+  // If the conversation is a DM, add the users as participants to the conversation
+  if (type == ConversationType.DM) {
     await prisma.conversation.update({
-      where: {
-        id: conversation.id,
-      },
+      where: { id: conversation.id },
       data: {
         participants: {
-          connect: {
-            id: user.id,
-          },
+          connect: [
+            {
+              id: users[0].id,
+            },
+            {
+              id: users[1].id,
+            },
+          ],
         },
       },
     });
+  } else {
+    const participantCount = randomNumber(2, users.length);
+    for (let i = 0; i < participantCount; i++) {
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          participants: {
+            connect: [
+              {
+                id: randomUser().id,
+              },
+            ],
+          },
+        },
+      });
+    }
+
+    const adminCount = randomNumber(1, 3);
+    for (let i = 0; i < adminCount; i++) {
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          admins: {
+            connect: [
+              {
+                id: randomUser().id,
+              },
+            ],
+          },
+        },
+      });
+    }
   }
 
   // Add a random number of messages to the conversation
@@ -96,20 +148,30 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         avatar,
       });
 
-      // const users = await prisma.user.findMany();
+      const numberOfUsers = randomNumber(1, 20);
+      for (let i = 0; i < numberOfUsers; i++) {
+        await this.usersService.create({
+          email: faker.internet.email(),
+          username: faker.internet.userName(),
+          url: faker.internet.url(),
+          avatar: faker.image.avatar(),
+        });
+      }
+
+      const users = await prisma.user.findMany();
 
       // TODO: Remove this after testing
-      // for (let i = 0; i < 5; i++) {
-      //   await createConversation(users);
-      // }
+      for (let i = 0; i < 5; i++) {
+        await createConversation(users);
+      }
 
       // TODO: Remove this after testing
-      // for (let i = 0; i < 5; i++) {
-      //   await createConversation([
-      //     user,
-      //     users[Math.floor(Math.random() * users.length)],
-      //   ]);
-      // }
+      for (let i = 0; i < 5; i++) {
+        await createConversation([
+          user,
+          users[Math.floor(Math.random() * users.length)],
+        ]);
+      }
 
       return {
         ...user,
