@@ -119,8 +119,9 @@ model Conversation {
   id   Int              @id @default(autoincrement())
   type ConversationType @default(PUBLIC)
 
+  image    String?
   name     String    @unique
-  password String?   @unique
+  password String?
   messages Message[]
 
   ownerId Int?
