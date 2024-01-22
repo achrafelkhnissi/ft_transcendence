@@ -1,5 +1,7 @@
 import { ConversationsMap, User, UserStatuses } from "../data";
 import formatChatTimestamp from "../tools/formatTime";
+import CreateChannel from "./CreateChannel";
+
 
 interface ChannelsPreviewProps{
     conversationsMap : ConversationsMap,
@@ -30,7 +32,8 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> =
         return type === "PRIVATE" || type === "PUBLIC" || type === "PROTECTED";
     }
 
-    return (<div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">
+    return (
+    <div className="flex flex-col w-full  text-white overflow-y-auto justify-center scroll-smooth px-2">
         {orderedConversations.map((id) => {
             if (isChannel(conversationsMap[id].type)){
                 const channel = conversationsMap[id];

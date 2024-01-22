@@ -5,6 +5,8 @@ import MessagesPreview from "./dm/MessagesPreview";
 import { UserStatuses,  ConversationsMap, User } from "./data";
 import getConversations from "@/services/getConversations";
 import ChannelsPreview from "./channels/ChannelsPreview";
+import { IoMdAdd } from "react-icons/io";
+
 
 interface PreviewProps {
     conversationsMap : ConversationsMap,
@@ -28,7 +30,7 @@ const Preview : React.FC<PreviewProps> = (
     const [active, setActive] = useState<"messages" | "channels">("messages");
    return (
     <div 
-            className="w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
+            className="relative w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
             shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2 overflow-hidden" >
                 <div className="w-full flex flex-col justify-center pt-2 gap-2">
                     {/* switch */}
@@ -108,7 +110,11 @@ const Preview : React.FC<PreviewProps> = (
                          />
                     </div>
                 }
-                
+            <div className="absolute bottom-6 right-5  rounded-full bg-blue-400
+            drop-shadow-[0_4px_7px_rgba(255,255,255,0.25)]">
+            <IoMdAdd  className=" w-10 h-10 text-white/50
+             cursor-pointer rounded-full"/>
+        </div>
         </div>)
 }
 
