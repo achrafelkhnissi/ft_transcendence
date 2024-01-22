@@ -1,27 +1,40 @@
-import { ConversationType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { $Enums, User } from '@prisma/client';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class CreateChatDto {
-  readonly id: number;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-
-  readonly name: string;
-
-  // TODO: add user 2 as participant of chat or add multiple participants? idk
   @IsNumber()
-  @IsNotEmpty()
-  readonly ownerId: number;
+  @IsOptional()
+  id?: number;
 
-  @IsEnum(ConversationType)
+  @IsEnum($Enums.ConversationType)
   @IsNotEmpty()
-  readonly type: ConversationType;
+  type: $Enums.ConversationType;
+
+  @IsString()
+  @IsOptional()
+  image?: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly password: string;
+  name: string;
 
-  constructor(data: Partial<CreateChatDto>) {
-    Object.assign(this, data);
-  }
+  @IsOptional()
+  @IsNotEmpty()
+  password?: string; // TODO: How to make the password required if the chat is protected?
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  ownerId?: number;
+
+  admins: User[]; // TODO: Check if you need/can use UserDto here
+
+  participants: User[];
 }
