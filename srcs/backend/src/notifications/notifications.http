@@ -1,9 +1,0 @@
-POST /notifications HTTP/1.1
-Host: example.com
-Content-Type: application/json
-
-{
-  "user_id": 123,
-  "message": "You have a new message!",
-  "read": false
-}
