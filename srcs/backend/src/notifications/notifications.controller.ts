@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  Sse,
   UseGuards,
   ParseIntPipe,
   NotFoundException,
