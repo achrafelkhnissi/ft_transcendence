@@ -110,11 +110,12 @@ const Preview : React.FC<PreviewProps> = (
                          />
                     </div>
                 }
-            <div className="absolute bottom-6 right-5  rounded-full bg-blue-400
-            drop-shadow-[0_4px_7px_rgba(255,255,255,0.25)]">
-            <IoMdAdd  className=" w-10 h-10 text-white/50
-             cursor-pointer rounded-full"/>
-        </div>
+            { active === "channels" && 
+                <div className="absolute bottom-6 right-5 z-10 rounded-full bg-blue-400
+                drop-shadow-[0_4px_7px_rgba(255,255,255,0.25)]">
+                <IoMdAdd  className=" w-10 h-10 text-white/50
+                cursor-pointer rounded-full"/>
+            </div>}
         </div>)
 }
 
