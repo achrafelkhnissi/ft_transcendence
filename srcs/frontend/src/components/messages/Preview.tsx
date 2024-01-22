@@ -16,6 +16,8 @@ interface PreviewProps {
     updateSelectedConversation: Function,
     markLastMessageAsRead: Function,
     currentUser: string,
+    createBtn: boolean,
+    setCreateBtn: Function,
 }
 
 const Preview : React.FC<PreviewProps> = (
@@ -25,7 +27,10 @@ const Preview : React.FC<PreviewProps> = (
         selectedConversation,
         updateSelectedConversation, 
         currentUser,
-        markLastMessageAsRead}) => {
+        markLastMessageAsRead,
+        createBtn,
+        setCreateBtn,
+    }) => {
 
     const [active, setActive] = useState<"messages" | "channels">("messages");
    return (
@@ -111,9 +116,11 @@ const Preview : React.FC<PreviewProps> = (
                     </div>
                 }
             { active === "channels" && 
-                <div className="absolute bottom-6 right-5 z-10 rounded-full bg-blue-400
-                drop-shadow-[0_4px_7px_rgba(255,255,255,0.25)]">
-                <IoMdAdd  className=" w-10 h-10 text-white/50
+                <div className="absolute bottom-6 right-5  rounded-full w-10 h-10 bg-blue-400
+                drop-shadow-[0_4px_7px_rgba(255,255,255,0.25)]
+                flex justify-center "
+                onClick={() => setCreateBtn(true)}>
+                <IoMdAdd  className=" w-8 h-8 text-white/50 self-center
                 cursor-pointer rounded-full"/>
             </div>}
         </div>)

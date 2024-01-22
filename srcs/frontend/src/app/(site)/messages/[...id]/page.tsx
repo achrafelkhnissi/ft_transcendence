@@ -7,6 +7,7 @@ import { Message, UserStatuses, Conversation, ConversationsMap} from "../../../.
 import getConversations from "@/services/getConversations";
 import getCurrentUser from "@/services/getCurrentUser";
 import { useSocket } from "@/contexts/socketContext";
+import CreateChannel from "@/components/messages/channels/CreateChannel";
 
 const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
@@ -14,6 +15,7 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [conversations, setConversations] = useState<ConversationsMap>({});
   const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
   const [currentUser, setCurrentUser] = useState<string>("");
+  const [createChannel, setCreateChannel] = useState<boolean> (false);
   const { socket } = useSocket();
 
     const initializeConversations = (initialConversations: Conversation[]) => {
@@ -124,7 +126,8 @@ const Home = ({ params }: { params: { id: number } }) => {
         })
     }, [])
     return (
-    <div className=" flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  ">
+    <div className={` flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  relative
+    `}>
        <Preview
             conversationsMap={conversations}
             orderedConversations={conversationOrder}
@@ -132,6 +135,8 @@ const Home = ({ params }: { params: { id: number } }) => {
             selectedConversation={selectedConversationId}
             updateSelectedConversation={setSelectedConversationId}
             markLastMessageAsRead={markLastMessageAsRead}
+            createBtn={createChannel}
+            setCreateBtn={setCreateChannel}
             currentUser={currentUser}/>
        <ViewConversations
             conversationId={selectedConversationId}
@@ -141,6 +146,19 @@ const Home = ({ params }: { params: { id: number } }) => {
             currentUser={currentUser}
             addMessageToConversation={addMessageToConversation}
             /> 
+       {
+        createChannel && 
+       <div className={`absolute w-full h-full flex justify-center
+        top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+        ${createChannel && "blur-container"} `}
+        onClick={() => setCreateChannel(false)}
+        >
+            <div className="w-2/5 h-4/5 border-2 self-center bg-white/70 "
+            onClick={(e) => e.stopPropagation()}>
+              <CreateChannel/>
+            </div>
+        </div>
+       } 
     </div>)
 }
 
