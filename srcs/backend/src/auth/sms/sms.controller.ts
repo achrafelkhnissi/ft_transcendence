@@ -1,10 +1,12 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { PhoneNumberDto } from './dto/phone-number.dto';
-import { ConfirmationDto } from './dto/confirmation-code';
+import { ConfirmationCodeDto } from './dto/confirmation-code.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('sms')
 export class SmsController {
   constructor(private readonly smsService: SmsService) {}
@@ -13,32 +15,18 @@ export class SmsController {
   verify(@User() user: UserType, @Body() body: PhoneNumberDto) {
     const { phoneNumber } = body;
 
-    console.log({
-      userPhoneNumber: user?.phoneNumber,
-      phoneNumber,
-    });
-
     return this.smsService.initiatePhoneNumberVerification(
       phoneNumber ?? user?.phoneNumber,
     );
   }
 
   @Post('confirm')
-  confirm(@User() user: UserType, @Body() body: ConfirmationDto) {
-    if (user.isPhoneNumberVerified) {
-      return new BadRequestException('Phone number already verified');
-    }
-
+  confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
     const { code, phoneNumber } = body;
-
-    console.log({
-      phoneNumber,
-      code,
-    });
 
     return this.smsService.confirmPhoneNumberVerification(
       user.id,
-      phoneNumber,
+      phoneNumber ?? user?.phoneNumber,
       code,
     );
   }
