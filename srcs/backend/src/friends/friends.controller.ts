@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { QueryDto } from 'src/users/dto/query.dto';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
@@ -24,16 +23,15 @@ export class FriendsController {
 
   constructor(private readonly friendsService: FriendsService) {}
 
-  // TODO: Change QueryDto to UsernameDto
   @Get()
-  list(@Query() query: QueryDto, @User() user: UserType) {
+  list(@Query() query: UsernameDto, @User() user: UserType) {
     const { username } = query;
 
     return this.friendsService.listFriendsByUsername(username || user.username);
   }
 
   @Get('remove')
-  async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
+  async removeFriend(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: friendUsername } = query;
 
     this.logger.log(
@@ -50,7 +48,7 @@ export class FriendsController {
   }
 
   @Get('block')
-  async blockUser(@Query() query: QueryDto, @User() user: UserType) {
+  async blockUser(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: blockedUsername } = query;
 
     this.logger.log(
@@ -61,7 +59,7 @@ export class FriendsController {
   }
 
   @Get('unblock')
-  async unblockUser(@Query() query: QueryDto, @User() user: UserType) {
+  async unblockUser(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: blockedUsername } = query;
 
     this.logger.log(
