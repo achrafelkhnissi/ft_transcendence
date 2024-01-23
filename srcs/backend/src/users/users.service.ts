@@ -1,11 +1,11 @@
 import { FriendsService } from './../friends/friends.service';
-import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { FriendshipStatus, User } from '@prisma/client';
-import { UserResponseDto } from './dto/userResponse.dto';
+import { User } from '@prisma/client';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -140,10 +140,6 @@ export class UsersService {
     });
   }
 
-  async getUserFriends(username: string) {
-    return this.friendsService.listFriendsByUsername(username);
-  }
-
   async getAvatarFrom42API(url: string, accessToken: string): Promise<string> {
     const res = await fetch(url, {
       headers: {
@@ -188,22 +184,6 @@ export class UsersService {
         },
       },
     });
-  }
-
-  async getUserAchievements(username: string) {
-    return this.prisma.user
-      .findUnique({
-        where: {
-          username,
-        },
-      })
-      .achievements({
-        select: {
-          name: true,
-          description: true,
-          image: true,
-        },
-      });
   }
 
   getUserChats(username: string) {

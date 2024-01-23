@@ -12,6 +12,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Server, ServerOptions } from 'socket.io';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 
+declare module 'http' {
+  export interface IncomingMessage {
+    user?: any; // TODO: Replace `any` with the actual type of `user` if known
+  }
+}
+
 class SessionAdapter extends IoAdapter {
   private session: express.RequestHandler;
 
@@ -39,18 +45,13 @@ class SessionAdapter extends IoAdapter {
     return server;
   }
 }
-declare module 'http' {
-  export interface IncomingMessage {
-    user?: any; // Replace `any` with the actual type of `user` if known
-  }
-}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
     origin: true,
-    methods: ['GET', 'POST', 'DELETE', 'PATCH'], // we only need these two methods for our project TODO: To be tested
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     credentials: true,
   });
 

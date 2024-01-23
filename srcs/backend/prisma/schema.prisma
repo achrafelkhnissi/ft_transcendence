@@ -104,11 +104,11 @@ model Message {
   isRead         Boolean      @default(false)
   content        String
   conversationId Int
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   senderId       Int
-  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId     Int
-  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

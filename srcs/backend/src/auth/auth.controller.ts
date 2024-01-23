@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
 import { Request, Response } from 'express';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
 
 @Controller('auth')
 export class AuthController {

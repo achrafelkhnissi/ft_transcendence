@@ -1,30 +1,37 @@
-import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { QueryDto } from 'src/users/dto/query.dto';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { UsernameDto } from 'src/users/dto/username.dto';
 
 // TODO: Put the endpoints related to friends in a /friends route
 // TODO: Put the endpoints related to friend requests in a /requests route
 // TODO: Put the endpoints related to blocked users in /users/* route
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
 
   constructor(private readonly friendsService: FriendsService) {}
 
-  // TODO: Change QueryDto to UsernameDto
   @Get()
-  list(@Query() query: QueryDto, @User() user: UserType) {
+  list(@Query() query: UsernameDto, @User() user: UserType) {
     const { username } = query;
 
     return this.friendsService.listFriendsByUsername(username || user.username);
   }
 
   @Get('remove')
-  async removeFriend(@Query() query: QueryDto, @User() user: UserType) {
+  async removeFriend(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: friendUsername } = query;
 
     this.logger.log(
@@ -41,7 +48,7 @@ export class FriendsController {
   }
 
   @Get('block')
-  async blockUser(@Query() query: QueryDto, @User() user: UserType) {
+  async blockUser(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: blockedUsername } = query;
 
     this.logger.log(
@@ -52,7 +59,7 @@ export class FriendsController {
   }
 
   @Get('unblock')
-  async unblockUser(@Query() query: QueryDto, @User() user: UserType) {
+  async unblockUser(@Query() query: UsernameDto, @User() user: UserType) {
     const { username: blockedUsername } = query;
 
     this.logger.log(
@@ -60,5 +67,17 @@ export class FriendsController {
     );
 
     return this.friendsService.unblockUser(user.id, blockedUsername);
+  }
+
+  @Get(':username/friends')
+  getFriendsByUsername(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.friendsService.listFriendsByUsername(username);
+  }
+
+  @Get(':id/friends')
+  getFriendsById(@Param('id', ParseIntPipe) id: number) {
+    return this.friendsService.listFriendsById(id);
   }
 }

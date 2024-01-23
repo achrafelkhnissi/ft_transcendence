@@ -6,12 +6,14 @@ import { FtSerializer } from './ft/ft.serializer';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
     PrismaModule,
     UsersModule,
     PassportModule.register({ session: true }),
+    SmsModule,
   ],
   controllers: [AuthController],
   providers: [FtStrategy, FtAuthGuard, FtSerializer],

@@ -6,11 +6,12 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
-import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { FriendRequestsModule } from './friends/requests/requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { SmsModule } from './sms/sms.module';
+import { SmsModule } from './auth/sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { UploadModule } from './upload/upload.module';
+import { AchievementsModule } from './users/achievements/achievements.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UploadModule } from './upload/upload.module';
           },
           { path: 'notifications', module: NotificationsModule },
           { path: 'chat', module: ChatModule },
+          { path: 'achievements', module: AchievementsModule },
         ],
       },
     ]),
@@ -42,9 +44,6 @@ import { UploadModule } from './upload/upload.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // TODO: ClassSerializerInterceptor is the reason why SMS verification is not working
-    // TODO: I test it with Get request and it did not work before uncommenting ClassSerializerInterceptor
-    // TODO: Test with with Post request
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

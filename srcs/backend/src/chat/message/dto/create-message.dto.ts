@@ -1,4 +1,3 @@
-// create-message.dto.ts
 import { IsNotEmpty, IsInt, IsString } from 'class-validator';
 
 export class CreateMessageDto {

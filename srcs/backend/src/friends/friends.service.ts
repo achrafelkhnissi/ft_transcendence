@@ -196,4 +196,54 @@ export class FriendsService {
 
     return { message: 'User unblocked', request };
   }
+
+  listFriendsById(id: number) {
+    return this.prisma.friendRequest
+      .findMany({
+        where: {
+          AND: [
+            {
+              OR: [
+                {
+                  senderId: { equals: id },
+                },
+                {
+                  receiverId: { equals: id },
+                },
+              ],
+            },
+            {
+              friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+            },
+          ],
+        },
+        select: {
+          senderId: true,
+          sender: {
+            select: {
+              username: true,
+              avatar: true,
+              status: true,
+            },
+          },
+          receiverId: true,
+          receiver: {
+            select: {
+              username: true,
+              avatar: true,
+              status: true,
+            },
+          },
+        },
+      })
+      .then((friendRequests) => {
+        const friends = friendRequests.map((friendRequest) => {
+          if (friendRequest.senderId === id) {
+            return friendRequest.receiver;
+          }
+          return friendRequest.sender;
+        });
+        return friends;
+      });
+  }
 }

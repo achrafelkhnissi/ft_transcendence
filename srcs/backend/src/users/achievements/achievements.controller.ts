@@ -7,14 +7,15 @@ import {
   Param,
   Delete,
   Query,
-  // UseGuards,
+  UseGuards,
 } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
-// import { AuthGuard } from 'src/guards/auth.guard';
+import { UsernameDto } from '../dto/username.dto';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('achievements')
 export class AchievementsController {
   constructor(private readonly achievementsService: AchievementsService) {}
@@ -57,11 +58,12 @@ export class AchievementsController {
     return this.achievementsService.remove(+id);
   }
 
-  // TODO: Get all achievements for a user (put this in users controller?)
-  // @Get(':id/users')
-  // getUserAchievements(@Param('id') id: string) {
-  //   return this.achievementsService.getUserAchievements(+id);
-  // }
+  @Get(':username/achievements')
+  getUserAchievements(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.achievementsService.getUserAchievementsByUsername(username);
+  }
 
   // TODO: Maybe change id to name?
   @Get(':id/users')

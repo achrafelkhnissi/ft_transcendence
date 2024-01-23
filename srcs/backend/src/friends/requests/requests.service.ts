@@ -7,7 +7,6 @@ import {
 import { FriendshipStatus, NotificationType } from '@prisma/client';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { bool } from 'twilio/lib/base/serialize';
 
 //TODO: Test notifications for friend requests
 @Injectable()

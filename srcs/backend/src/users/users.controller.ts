@@ -13,11 +13,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
-import { UserType } from 'src/interfaces/user.interface';
-import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller()
@@ -65,13 +65,6 @@ export class UsersController {
     return this.usersService.findByUsername(username);
   }
 
-  @Get(':username/friends')
-  getFriends(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserFriends(username);
-  }
-
   @Get(':username/avatar')
   async getAvatar(@Param() params: UsernameDto, @Res() res) {
     const { username } = params;
@@ -88,20 +81,6 @@ export class UsersController {
   @Get('ranking')
   getRanking() {
     return this.usersService.getRanking();
-  }
-
-  @Get(':username/achievements')
-  getAchievements(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserAchievements(username);
-  }
-
-  @Get(':username/chats')
-  getChats(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserChats(username);
   }
 
   @Get('phoneNumbers')
