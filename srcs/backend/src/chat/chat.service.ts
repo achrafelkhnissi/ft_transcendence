@@ -359,4 +359,72 @@ export class ChatService {
       })
       .then((rooms) => rooms.map((room) => room.name));
   }
+
+  async getUserChats(username: string) {
+    const userInfoSelect = {
+      username: true,
+      avatar: true,
+      status: true,
+    };
+
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            {
+              participants: {
+                some: {
+                  username,
+                },
+              },
+            },
+            {
+              admins: {
+                some: {
+                  username,
+                },
+              },
+            },
+            {
+              owner: {
+                username,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          type: true,
+          name: true,
+          updatedAt: true,
+          owner: {
+            select: userInfoSelect,
+          },
+          participants: {
+            select: userInfoSelect,
+          },
+          admins: {
+            select: userInfoSelect,
+          },
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              isRead: true,
+              createdAt: true,
+              sender: {
+                select: userInfoSelect,
+              },
+              receiver: {
+                select: userInfoSelect,
+              },
+            },
+          },
+        },
+      })
+      .catch((err) => {
+        this.logger.error(err.message);
+        throw new NotFoundException(err.message);
+      });
+  }
 }

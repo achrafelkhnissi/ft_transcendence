@@ -7,13 +7,14 @@ import {
   Param,
   Delete,
   NotFoundException,
-  // UseGuards,
+  UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 // import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/decorators/user.decorator';
-// import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { UsernameDto } from 'src/users/dto/username.dto';
 // import { ConversationType } from '@prisma/client';
 
 // interface CreateConversationDto {}
@@ -27,7 +28,7 @@ import { User } from 'src/decorators/user.decorator';
  * - Channel owner should be able to kick, ban, mute, etc. users
  */
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
@@ -112,5 +113,12 @@ export class ChatController {
   @Delete(':id/admins/:userId')
   removeAdmin(@Param('id') id: string, @Param('userId') userId: string) {
     return this.chatService.removeAdmin(+id, +userId);
+  }
+
+  @Get(':username/chats')
+  getUserChats(@Param() param: UsernameDto) {
+    const { username } = param;
+
+    return this.chatService.getUserChats(username);
   }
 }
