@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
 
 // TODO: Put the endpoints related to friends in a /friends route

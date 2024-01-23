@@ -13,7 +13,7 @@ import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
 import { UsernameDto } from '../dto/username.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @UseGuards(AuthGuard)
 @Controller('achievements')

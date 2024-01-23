@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Logger } from '@nestjs/common';
 import { FriendRequestsService } from './requests.service';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
 import { QueryDto } from 'src/users/dto/query.dto';
 
 @Controller()

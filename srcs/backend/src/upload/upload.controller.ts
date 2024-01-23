@@ -11,8 +11,8 @@ import {
 import { UploadService } from './upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
 import { Request } from 'express';
 import * as path from 'path';
 

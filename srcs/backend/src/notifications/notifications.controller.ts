@@ -12,10 +12,10 @@ import {
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
 
 @UseGuards(AuthGuard)
 @Controller()

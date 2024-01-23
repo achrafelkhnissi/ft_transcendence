@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { SmsService } from './sms.service';
-import { User } from 'src/decorators/user.decorator';
-import { UserType } from 'src/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
 import { PhoneNumberDto } from './dto/phone-number.dto';
 import { ConfirmationDto } from './dto/confirmation-code';
 

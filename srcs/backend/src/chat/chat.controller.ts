@@ -12,8 +12,8 @@ import {
 import { ChatService } from './chat.service';
 // import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
-import { User } from 'src/decorators/user.decorator';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { User } from 'src/common/decorators/user.decorator';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
 // import { ConversationType } from '@prisma/client';
 

@@ -13,11 +13,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
-import { UserType } from 'src/interfaces/user.interface';
-import { User } from 'src/decorators/user.decorator';
+import { UserType } from 'src/common/interfaces/user.interface';
+import { User } from 'src/common/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller()
