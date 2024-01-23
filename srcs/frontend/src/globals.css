@@ -23,7 +23,7 @@ svg{
 }
 
 .blur-container {
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(7px);
 }
 
 /* .tooltip:hover .has-tooltip{

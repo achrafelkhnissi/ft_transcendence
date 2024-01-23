@@ -153,7 +153,8 @@ const Home = ({ params }: { params: { id: number } }) => {
         ${createChannel && "blur-container"} `}
         onClick={() => setCreateChannel(false)}
         >
-            <div className="w-2/5 h-4/5 border-2 self-center bg-white/70 "
+            <div className="w-2/5 h-4/5 self-center bg-[#101038]  z-40 
+                            rounded-[2rem] border-4 border-blue-500/70"
             onClick={(e) => e.stopPropagation()}>
               <CreateChannel/>
             </div>
