@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { FriendshipStatus, NotificationType } from '@prisma/client';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 //TODO: Test notifications for friend requests
