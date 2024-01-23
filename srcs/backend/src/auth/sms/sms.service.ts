@@ -66,14 +66,12 @@ export class SmsService {
         });
 
       if (!result.valid || result.status !== 'approved') {
-        console.log('Error 1');
         return {
           status: 'error',
           message: 'Invalid verification code',
         };
       }
     } catch (error) {
-      console.log('Error 2');
       return {
         status: 'error',
         message: `Unable to verify phone number.`,
