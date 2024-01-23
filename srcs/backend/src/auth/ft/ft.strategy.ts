@@ -21,6 +21,10 @@ const conversationType = [
 ];
 
 async function createConversation(users) {
+  if (users.length < 2) {
+    return;
+  }
+
   const randomUser = () => users[Math.floor(Math.random() * users.length)];
   const type =
     users.length == 2
@@ -29,7 +33,11 @@ async function createConversation(users) {
 
   const conversationName =
     users.length > 2
-      ? faker.lorem.word()
+      ? faker.lorem
+          .word()
+          .toLowerCase()
+          .replace(/[^a-z]/g, '')
+          .substring(0, 8)
       : users[0].username + ' & ' + users[1].username;
 
   const image = faker.image.avatar();
@@ -150,9 +158,16 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
 
       const numberOfUsers = randomNumber(1, 20);
       for (let i = 0; i < numberOfUsers; i++) {
+        // limit the username to minimum 8 lowercase characters without any special characters
+        const username = faker.internet
+          .userName()
+          .toLowerCase()
+          .replace(/[^a-z]/g, '')
+          .substring(0, 8);
+
         await this.usersService.create({
           email: faker.internet.email(),
-          username: faker.internet.userName(),
+          username,
           url: faker.internet.url(),
           avatar: faker.image.avatar(),
         });
