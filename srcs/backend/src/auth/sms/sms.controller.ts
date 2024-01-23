@@ -2,13 +2,17 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
+import { PhoneNumberDto } from './dto/phone-number.dto';
+import { ConfirmationDto } from './dto/confirmation-code';
 
 @Controller('sms')
 export class SmsController {
   constructor(private readonly smsService: SmsService) {}
 
   @Post('verify')
-  verify(@User() user: UserType, @Body('phoneNumber') phoneNumber: string) {
+  verify(@User() user: UserType, @Body() body: PhoneNumberDto) {
+    const { phoneNumber } = body;
+
     console.log({
       userPhoneNumber: user?.phoneNumber,
       phoneNumber,
@@ -20,10 +24,7 @@ export class SmsController {
   }
 
   @Post('confirm')
-  confirm(
-    @User() user: UserType,
-    @Body() body: { code: string; phoneNumber: string },
-  ) {
+  confirm(@User() user: UserType, @Body() body: ConfirmationDto) {
     if (user.isPhoneNumberVerified) {
       return new BadRequestException('Phone number already verified');
     }
