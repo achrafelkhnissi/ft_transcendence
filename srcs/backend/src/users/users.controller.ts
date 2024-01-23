@@ -65,13 +65,6 @@ export class UsersController {
     return this.usersService.findByUsername(username);
   }
 
-  @Get(':username/friends')
-  getFriends(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserFriends(username);
-  }
-
   @Get(':username/avatar')
   async getAvatar(@Param() params: UsernameDto, @Res() res) {
     const { username } = params;

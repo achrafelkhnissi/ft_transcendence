@@ -140,10 +140,6 @@ export class UsersService {
     });
   }
 
-  async getUserFriends(username: string) {
-    return this.friendsService.listFriendsByUsername(username);
-  }
-
   async getAvatarFrom42API(url: string, accessToken: string): Promise<string> {
     const res = await fetch(url, {
       headers: {
