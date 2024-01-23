@@ -95,4 +95,20 @@ export class AchievementsService {
       },
     });
   }
+
+  getUserAchievementsByUsername(username: string) {
+    return this.prismaService.user
+      .findUnique({
+        where: {
+          username,
+        },
+      })
+      .achievements({
+        select: {
+          name: true,
+          description: true,
+          image: true,
+        },
+      });
+  }
 }
