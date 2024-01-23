@@ -1,11 +1,10 @@
-import { FriendsService } from './../friends/friends.service';
+import { FriendsService } from './friends/friends.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -61,10 +60,40 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  async findById(id: number, userId?: number): Promise<UserResponseDto> | null {
-    const user: User | null = await this.prisma.user.findUnique({
+  async findById(id: number, userId?: number) {
+    const user = await this.prisma.user.findUnique({
       where: { id: id },
+      select: {
+        id: true,
+        username: true,
+        phoneNumber: true,
+        avatar: true,
+        url: true,
+        status: true,
+        // stats: {
+        //   select: {
+        //     exp: true,
+        //     level: true,
+        //     wins: true,
+        //     losses: true,
+        //   },
+        // },
+        // achievements: {
+        //   select: {
+        //     name: true,
+        //     description: true,
+        //     image: true,
+        //   },
+        // },
+        settings: {
+          select: {
+            twoFactorEnabled: true,
+            verified: true,
+          },
+        },
+      },
     });
+
     if (!user) {
       throw new NotFoundException(`User with id <${id}> not found`);
     }
@@ -78,6 +107,35 @@ export class UsersService {
   async findByEmail(email: string) {
     return this.prisma.user.findUniqueOrThrow({
       where: { email },
+      select: {
+        id: true,
+        username: true,
+        phoneNumber: true,
+        avatar: true,
+        url: true,
+        status: true,
+        // stats: {
+        //   select: {
+        //     exp: true,
+        //     level: true,
+        //     wins: true,
+        //     losses: true,
+        //   },
+        // },
+        // achievements: {
+        //   select: {
+        //     name: true,
+        //     description: true,
+        //     image: true,
+        //   },
+        // },
+        settings: {
+          select: {
+            twoFactorEnabled: true,
+            verified: true,
+          },
+        },
+      },
     });
   }
 

@@ -1,4 +1,4 @@
-import { $Enums } from '@prisma/client';
+import { $Enums, UserSettings } from '@prisma/client';
 import { FriendRequest } from '@prisma/client';
 
 export interface UserType {
@@ -6,7 +6,6 @@ export interface UserType {
   username?: string;
   email: string;
   phoneNumber?: string;
-  isPhoneNumberVerified: boolean;
   avatar?: string;
   url: string;
   status?: $Enums.Status;
@@ -18,4 +17,6 @@ export interface UserType {
   friendRequestsReceived: FriendRequest[];
   createdAt: Date;
   updatedAt: Date;
+
+  settings?: UserSettings;
 }

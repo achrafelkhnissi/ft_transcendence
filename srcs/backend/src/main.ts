@@ -6,45 +6,10 @@ import * as session from 'express-session';
 import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
-import { INestApplicationContext, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Server, ServerOptions } from 'socket.io';
-import { IoAdapter } from '@nestjs/platform-socket.io';
-
-declare module 'http' {
-  export interface IncomingMessage {
-    user?: any; // TODO: Replace `any` with the actual type of `user` if known
-  }
-}
-
-class SessionAdapter extends IoAdapter {
-  private session: express.RequestHandler;
-
-  constructor(session: express.RequestHandler, app: INestApplicationContext) {
-    super(app);
-    this.session = session;
-  }
-
-  create(port: number, options?: ServerOptions): Server {
-    const server: Server = super.create(port, options);
-
-    const wrap = (middleware) => (socket, next) =>
-      middleware(socket.request, {}, next);
-
-    server.use((socket, next) => {
-      socket.data.username = 'test'; //passing random property to see if use method is working
-      socket.data.user = socket.request.user;
-      socket.data.session = this.session;
-      next();
-    });
-
-    server.use(wrap(this.session));
-    server.use(wrap(passport.initialize()));
-    server.use(wrap(passport.session()));
-    return server;
-  }
-}
+import { SessionAdapter } from './common/adapters/socket-session.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
