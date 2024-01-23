@@ -1,14 +1,23 @@
-import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { QueryDto } from 'src/users/dto/query.dto';
 import { User } from 'src/decorators/user.decorator';
 import { UserType } from 'src/interfaces/user.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { UsernameDto } from 'src/users/dto/username.dto';
 
 // TODO: Put the endpoints related to friends in a /friends route
 // TODO: Put the endpoints related to friend requests in a /requests route
 // TODO: Put the endpoints related to blocked users in /users/* route
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
@@ -60,5 +69,17 @@ export class FriendsController {
     );
 
     return this.friendsService.unblockUser(user.id, blockedUsername);
+  }
+
+  @Get(':username/friends')
+  getFriendsByUsername(@Param() params: UsernameDto) {
+    const { username } = params;
+
+    return this.friendsService.listFriendsByUsername(username);
+  }
+
+  @Get(':id/friends')
+  getFriendsById(@Param('id', ParseIntPipe) id: number) {
+    return this.friendsService.listFriendsById(id);
   }
 }
