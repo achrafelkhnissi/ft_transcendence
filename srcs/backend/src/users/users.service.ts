@@ -1,10 +1,10 @@
 import { FriendsService } from './../friends/friends.service';
-import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Logger } from '@nestjs/common';
-import { FriendshipStatus, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { UserResponseDto } from './dto/userResponse.dto';
 
 @Injectable()
