@@ -6,7 +6,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
-import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { FriendRequestsModule } from './friends/requests/requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
