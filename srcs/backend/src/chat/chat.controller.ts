@@ -74,6 +74,7 @@ export class ChatController {
     return this.chatService.update(+id, updateChatDto);
   }
 
+  // todo: only the owner of the chat should be able to delete it
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatService.remove(+id);
@@ -118,6 +119,10 @@ export class ChatController {
   @Get(':username/chats')
   getUserChats(@Param() param: UsernameDto) {
     const { username } = param;
+
+    console.log(
+      `Finding chats for user with username ${username} in ChatController`,
+    );
 
     return this.chatService.getUserChats(username);
   }
