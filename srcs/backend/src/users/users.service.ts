@@ -99,10 +99,6 @@ export class UsersService {
       throw new NotFoundException(`User with id <${id}> not found`);
     }
 
-    console.log({
-      user,
-    });
-
     return {
       ...user,
       isFriend: await this.isFriend(userId, id),
