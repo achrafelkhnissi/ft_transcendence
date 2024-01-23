@@ -83,13 +83,6 @@ export class UsersController {
     return this.usersService.getRanking();
   }
 
-  @Get(':username/chats')
-  getChats(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserChats(username);
-  }
-
   @Get('phoneNumbers')
   getPhoneNumbers() {
     return this.usersService.getPhoneNumbers();
