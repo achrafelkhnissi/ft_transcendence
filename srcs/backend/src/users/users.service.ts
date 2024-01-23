@@ -186,22 +186,6 @@ export class UsersService {
     });
   }
 
-  async getUserAchievements(username: string) {
-    return this.prisma.user
-      .findUnique({
-        where: {
-          username,
-        },
-      })
-      .achievements({
-        select: {
-          name: true,
-          description: true,
-          image: true,
-        },
-      });
-  }
-
   getUserChats(username: string) {
     const userInfoSelect = {
       username: true,

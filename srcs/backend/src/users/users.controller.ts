@@ -83,13 +83,6 @@ export class UsersController {
     return this.usersService.getRanking();
   }
 
-  @Get(':username/achievements')
-  getAchievements(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.usersService.getUserAchievements(username);
-  }
-
   @Get(':username/chats')
   getChats(@Param() params: UsernameDto) {
     const { username } = params;
