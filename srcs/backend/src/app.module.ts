@@ -11,6 +11,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { SmsModule } from './sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { UploadModule } from './upload/upload.module';
+import { AchievementsModule } from './users/achievements/achievements.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UploadModule } from './upload/upload.module';
           },
           { path: 'notifications', module: NotificationsModule },
           { path: 'chat', module: ChatModule },
+          { path: 'achievements', module: AchievementsModule },
         ],
       },
     ]),
