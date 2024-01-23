@@ -61,13 +61,47 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  async findById(id: number, userId?: number): Promise<UserResponseDto> | null {
-    const user: User | null = await this.prisma.user.findUnique({
+  async findById(id: number, userId?: number) {
+    const user = await this.prisma.user.findUnique({
       where: { id: id },
+      select: {
+        id: true,
+        username: true,
+        phoneNumber: true,
+        avatar: true,
+        url: true,
+        status: true,
+        // stats: {
+        //   select: {
+        //     exp: true,
+        //     level: true,
+        //     wins: true,
+        //     losses: true,
+        //   },
+        // },
+        // achievements: {
+        //   select: {
+        //     name: true,
+        //     description: true,
+        //     image: true,
+        //   },
+        // },
+        settings: {
+          select: {
+            twoFactorEnabled: true,
+            verified: true,
+          },
+        },
+      },
     });
+
     if (!user) {
       throw new NotFoundException(`User with id <${id}> not found`);
     }
+
+    console.log({
+      user,
+    });
 
     return {
       ...user,
@@ -78,6 +112,35 @@ export class UsersService {
   async findByEmail(email: string) {
     return this.prisma.user.findUniqueOrThrow({
       where: { email },
+      select: {
+        id: true,
+        username: true,
+        phoneNumber: true,
+        avatar: true,
+        url: true,
+        status: true,
+        // stats: {
+        //   select: {
+        //     exp: true,
+        //     level: true,
+        //     wins: true,
+        //     losses: true,
+        //   },
+        // },
+        // achievements: {
+        //   select: {
+        //     name: true,
+        //     description: true,
+        //     image: true,
+        //   },
+        // },
+        settings: {
+          select: {
+            twoFactorEnabled: true,
+            verified: true,
+          },
+        },
+      },
     });
   }
 
