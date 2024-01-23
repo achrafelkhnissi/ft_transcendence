@@ -16,7 +16,7 @@ const Verify = () => {
 
         if (regex.test(code)){
     
-            confirmCode(code, code).then(res => 
+            confirmCode(code, null).then(res => 
                 {   
                     if (res)
                         router.push("/dashboard");
