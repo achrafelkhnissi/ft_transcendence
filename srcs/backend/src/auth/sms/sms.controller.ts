@@ -6,6 +6,7 @@ import { PhoneNumberDto } from './dto/phone-number.dto';
 import { ConfirmationCodeDto } from './dto/confirmation-code.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
+// TODO: Uncomment after buying 20$ Twilio credits :(
 @UseGuards(AuthGuard)
 @Controller('sms')
 export class SmsController {
@@ -15,19 +16,28 @@ export class SmsController {
   verify(@User() user: UserType, @Body() body: PhoneNumberDto) {
     const { phoneNumber } = body;
 
-    return this.smsService.initiatePhoneNumberVerification(
-      phoneNumber ?? user?.phoneNumber,
-    );
+    // return this.smsService.initiatePhoneNumberVerification(
+    //   phoneNumber ?? user?.phoneNumber,
+    // );
+
+    return {
+      phoneNumber: phoneNumber ?? user?.phoneNumber,
+    };
   }
 
   @Post('confirm')
   confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
     const { code, phoneNumber } = body;
 
-    return this.smsService.confirmPhoneNumberVerification(
-      user.id,
-      phoneNumber ?? user?.phoneNumber,
+    // return this.smsService.confirmPhoneNumberVerification(
+    //   user.id,
+    //   phoneNumber ?? user?.phoneNumber,
+    //   code,
+    // );
+
+    return {
       code,
-    );
+      phoneNumber: phoneNumber ?? user?.phoneNumber,
+    };
   }
 }
