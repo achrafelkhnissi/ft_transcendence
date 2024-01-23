@@ -9,7 +9,7 @@ import { FriendsModule } from './users/friends/friends.module';
 import { FriendRequestsModule } from './users/friends/requests/requests.module';
 import { NotificationsModule } from './users/notifications/notifications.module';
 import { SmsModule } from './auth/sms/sms.module';
-import { ChatModule } from './chat/chat.module';
+import { ChatModule } from './users/chat/chat.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
 

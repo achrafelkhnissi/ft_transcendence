@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { FriendsModule } from './friends/friends.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     FriendsModule,
     AchievementsModule,
     NotificationsModule,
+    ChatModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
