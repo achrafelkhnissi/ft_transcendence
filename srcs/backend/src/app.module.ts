@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friends/requests/requests.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { SmsModule } from './sms/sms.module';
+import { SmsModule } from './auth/sms/sms.module';
 import { ChatModule } from './chat/chat.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
