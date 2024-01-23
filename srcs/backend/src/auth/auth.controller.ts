@@ -1,22 +1,16 @@
-import {
-  Controller,
-  Get,
-  Req,
-  Res,
-  UseGuards,
-  Logger,
-  Query,
-  // ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, Logger } from '@nestjs/common';
 import { FtAuthGuard } from './ft/ft.guard';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { SmsService } from './sms/sms.service';
 
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
+
+  constructor(private readonly smsService: SmsService) {}
 
   @Get('ft')
   @UseGuards(FtAuthGuard)
@@ -27,9 +21,11 @@ export class AuthController {
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
-    // FIXME: Check if the logged in user enabled
-    if (user.twoFactorEnabled) {
+    const { settings } = user;
+
+    if (settings.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
+      await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
       return res.redirect(`${process.env.FRONTEND_URL}/verify`);
     }
 

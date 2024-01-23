@@ -2,6 +2,9 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 
 const confirmCode = async (code: string, phoneNumber: string | null) => {
+    if (code == phoneNumber) {
+        phoneNumber = null;
+    }
 
     try {
         const response = await axios.post('http://localhost:3000/api/sms/confirm', {code, phoneNumber},  {withCredentials:true});
