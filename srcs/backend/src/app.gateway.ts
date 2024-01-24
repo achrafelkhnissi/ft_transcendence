@@ -1,3 +1,4 @@
+import { UserType } from 'src/common/interfaces/user.interface';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
@@ -54,7 +55,6 @@ export class AppGateway
     this.logger.debug('AppGateway initialized');
   }
 
-  @UseGuards(WsAuthenticatedGuard)
   async handleConnection(client: Socket): Promise<WsResponse<string>> {
     const { user } = client.request;
 
@@ -169,72 +169,83 @@ export class AppGateway
     @MessageBody() payload: any, // TODO: Create a DTO for this
     @ConnectedSocket() client: Socket,
   ): Promise<WsResponse<string>> {
-    const { to: toUsername, roomName } = payload;
+    const { to: receiver, roomName } = payload;
+    const { user } = client.request;
 
-    this.server.to(toUsername).socketsJoin(roomName);
-    client.join(roomName);
-    // this.server.to(client.request.user.username).socketsJoin(roomName);
+    console.log({
+      user,
+      receiver,
+    });
+
+    this.server.to(receiver).socketsJoin(roomName);
+    this.server.to(user.username).socketsJoin(roomName);
+
+    client.emit('joinedRoom', roomName, (ack: string) => {
+      console.log({
+        joinedRoomAck: ack,
+      });
+    });
 
     return { event: 'createRoom', data: `Created room ${roomName}` };
   }
 
-  @SubscribeMessage('typing')
-  async onTyping(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
-    // const { to: toUsername, roomName } = payload;
-    // const { user } = client.request;
+  // @SubscribeMessage('typing')
+  // async onTyping(
+  //   @MessageBody() payload: any, // TODO: Create a DTO for this
+  //   @ConnectedSocket() client: Socket,
+  // ): Promise<WsResponse<string>> {
+  //   // const { to: toUsername, roomName } = payload;
+  //   // const { user } = client.request;
 
-    // this.server.to(roomName).emit('onTyping', toUsername);
+  //   // this.server.to(roomName).emit('onTyping', toUsername);
 
-    return { event: 'typing', data: 'Started typing a message' };
-  }
+  //   return { event: 'typing', data: 'Started typing a message' };
+  // }
 
-  @SubscribeMessage('stopTyping')
-  async onStopTyping(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
-    // const { to: toUsername, roomName } = payload;
-    // const { user } = client.request;
+  // @SubscribeMessage('stopTyping')
+  // async onStopTyping(
+  //   @MessageBody() payload: any, // TODO: Create a DTO for this
+  //   @ConnectedSocket() client: Socket,
+  // ): Promise<WsResponse<string>> {
+  //   // const { to: toUsername, roomName } = payload;
+  //   // const { user } = client.request;
 
-    // this.server.to(roomName).emit('onStopTyping', toUsername);
+  //   // this.server.to(roomName).emit('onStopTyping', toUsername);
 
-    return { event: 'stopTyping', data: 'Stopped typing a message' };
-  }
+  //   return { event: 'stopTyping', data: 'Stopped typing a message' };
+  // }
 
-  @SubscribeMessage('read')
-  async onRead(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
-    // const { to: toUsername, roomName } = payload;
-    // const { user } = client.request;
+  // @SubscribeMessage('read')
+  // async onRead(
+  //   @MessageBody() payload: any, // TODO: Create a DTO for this
+  //   @ConnectedSocket() client: Socket,
+  // ): Promise<WsResponse<string>> {
+  //   // const { to: toUsername, roomName } = payload;
+  //   // const { user } = client.request;
 
-    // this.server.to(roomName).emit('onRead', toUsername);
+  //   // this.server.to(roomName).emit('onRead', toUsername);
 
-    return { event: 'read', data: 'Read a message' };
-  }
+  //   return { event: 'read', data: 'Read a message' };
+  // }
 
-  @SubscribeMessage('status')
-  async onStatus(
-    @MessageBody() payload: UserStatusDto,
-    @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
-    // const { to: toUsername, roomName } = payload;
-    // const { user } = client.request;
+  // @SubscribeMessage('status')
+  // async onStatus(
+  //   @MessageBody() payload: UserStatusDto,
+  //   @ConnectedSocket() client: Socket,
+  // ): Promise<WsResponse<string>> {
+  //   // const { to: toUsername, roomName } = payload;
+  //   // const { user } = client.request;
 
-    // this.server.to(roomName).emit('onStatus', toUsername);
+  //   // this.server.to(roomName).emit('onStatus', toUsername);
 
-    return { event: 'status', data: `Status changed to ${payload.status}` };
-  }
+  //   return { event: 'status', data: `Status changed to ${payload.status}` };
+  // }
 
-  @SubscribeMessage('notification')
-  async onNotification(
-    @MessageBody() payload: any, // TODO: Use notification DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
-    return { event: 'notification', data: 'Notification received' };
-  }
+  // @SubscribeMessage('notification')
+  // async onNotification(
+  //   @MessageBody() payload: any, // TODO: Use notification DTO for this
+  //   @ConnectedSocket() client: Socket,
+  // ): Promise<WsResponse<string>> {
+  //   return { event: 'notification', data: 'Notification received' };
+  // }
 }
