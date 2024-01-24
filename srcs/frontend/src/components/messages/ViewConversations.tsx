@@ -65,14 +65,18 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
         }
 
         const handleSend = () => {
-            socket?.emit('message', {
-                to: receiver.username,
-                content: newMessage,
-                conversationId: Number(conversationId),
-                room: conversationsMap[conversationId].name,
-            }, () => {
-                console.log('message sent ');
-            })
+            const onlySpacesRegex = /^\s*$/;
+
+            if (!(onlySpacesRegex.test(newMessage))){
+                socket?.emit('message', {
+                    to: receiver.username,
+                    content: newMessage,
+                    conversationId: Number(conversationId),
+                    room: conversationsMap[conversationId].name,
+                }, () => {
+                    console.log('message sent ');
+                })
+            }
             setNewMessage("");
         }
         
@@ -119,6 +123,7 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
                             message={message} 
                             isCurrentUser={currentUser === message.sender.username}
                             displayAvatr= {array[index + 1]?.sender != message.sender}
+                            key={index}
                             />
                         )
                     })
@@ -156,7 +161,6 @@ const ViewConversations : React.FC<ViewConversationsProps>= (
             </div>
             </>
             }
-            {/* <p>{conversationId}</p> */}
     </div>
     )
 }
