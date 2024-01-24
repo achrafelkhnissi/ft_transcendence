@@ -180,6 +180,7 @@ export class AppGateway
     this.server.to(receiver).socketsJoin(roomName);
     this.server.to(user.username).socketsJoin(roomName);
 
+    // Because the server's response doesn't reach the client.
     client.emit('joinedRoom', roomName, (ack: string) => {
       console.log({
         joinedRoomAck: ack,
