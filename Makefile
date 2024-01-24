@@ -64,9 +64,9 @@ $(NAME):
 
 clean:
 	@printf "$(PROJECT) $(INFO): $(WARNING) Removing all containers, images, volumes and networks\n"
-	@rm -rf ./srcs/.env
-	$(call remove_dependencies)
 	docker-compose -f srcs/docker-compose.yml down -v --rmi all --remove-orphans
+	$(call remove_dependencies)
+	@rm -rf ./srcs/.env
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 fclean: clean

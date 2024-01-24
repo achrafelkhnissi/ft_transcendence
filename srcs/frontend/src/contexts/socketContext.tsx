@@ -22,7 +22,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   useEffect(() => {
     
-    const newSocket = io('http://localhost:3000/chat', {
+    const newSocket = io('http://localhost:3000', {
       withCredentials: true,
     }); // Replace with your server URL
     

@@ -9,10 +9,10 @@ import {
   WebSocketServer,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { Status } from '@prisma/client';
-import { MessageService } from './message/message.service';
+import { ChatService } from 'src/users/chat/chat.service';
+import { MessageService } from 'src/users/chat/message/message.service';
 
 interface MessagePayload {
   room: string;
@@ -21,18 +21,17 @@ interface MessagePayload {
   conversationId: number;
 }
 
-// @UseGuards(WsAuthenticatedGuard) // FIXME: This guard is not working (Causes the client to disconnect)
 @WebSocketGateway({
-  namespace: 'chat',
+  namespace: '',
   cors: {
     origin: process.env.FRONTEND_URL,
     credentials: true,
   },
 })
-export class ChatGateway
+export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(ChatGateway.name);
+  private readonly logger = new Logger(AppGateway.name);
 
   @WebSocketServer()
   server: Server;
@@ -42,33 +41,8 @@ export class ChatGateway
     private readonly messageService: MessageService,
   ) {}
 
-  @SubscribeMessage('message')
-  async conMessage(
-    @MessageBody() body: MessagePayload, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ) {
-    const { user } = client.request;
-    const { room, conversationId, content, to: receiverUsername } = body;
-
-    if (!user) {
-      client.disconnect();
-      throw new UnauthorizedException('Unauthorized');
-    }
-
-    const message = await this.messageService.create({
-      content,
-      conversationId,
-      senderId: user.id,
-      receiverUsername,
-    });
-
-    this.server.to(room).emit('onMessage', message);
-
-    return 'OK';
-  }
-
   afterInit() {
-    this.logger.debug('MyGateway initialized');
+    this.logger.debug('AppGateway initialized');
   }
 
   async handleConnection(client: Socket) {
@@ -109,6 +83,31 @@ export class ChatGateway
     client.disconnect();
     this.logger.debug(`Client ${user.username} disconnected`);
     return 'CONNECTED';
+  }
+
+  @SubscribeMessage('message')
+  async conMessage(
+    @MessageBody() body: MessagePayload, // TODO: Create a DTO for this
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { user } = client.request;
+    const { room, conversationId, content, to: receiverUsername } = body;
+
+    if (!user) {
+      client.disconnect();
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    const message = await this.messageService.create({
+      content,
+      conversationId,
+      senderId: user.id,
+      receiverUsername,
+    });
+
+    this.server.to(room).emit('onMessage', message);
+
+    return 'OK';
   }
 
   @SubscribeMessage('join')
