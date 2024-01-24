@@ -38,6 +38,18 @@ define copy_env
 	fi
 endef
 
+define install_dependencies
+	@printf "$(INFO) $(PROJECT): Installing dependencies\n"
+	@npm install --prefix ./srcs/frontend 
+	@npm install --prefix ./srcs/backend
+endef
+
+define remove_dependencies
+	@printf "$(INFO) $(PROJECT): Removing dependencies\n"
+	@rm -rf ./srcs/frontend/node_modules
+	@rm -rf ./srcs/backend/node_modules
+endef
+
 .PHONY: all clean fclean re restart log ps
 
 all: $(NAME)
@@ -45,11 +57,15 @@ all: $(NAME)
 $(NAME): 
 	$(call print_credit)
 	$(call copy_env)
+
 	docker-compose -f srcs/docker-compose.yml up --force-recreate --build -d
+
 	@printf "$(PROJECT) $(SUCCESS): build completed\n"
 
 clean:
 	@printf "$(PROJECT) $(INFO): $(WARNING) Removing all containers, images, volumes and networks\n"
+	@rm -rf ./srcs/.env
+	$(call remove_dependencies)
 	docker-compose -f srcs/docker-compose.yml down -v --rmi all --remove-orphans
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
