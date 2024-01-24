@@ -19,6 +19,7 @@ export class FriendsService {
           include: {
             receiver: {
               select: {
+                id: true,
                 username: true,
                 avatar: true,
                 status: true,
@@ -33,6 +34,7 @@ export class FriendsService {
           include: {
             sender: {
               select: {
+                id: true,
                 username: true,
                 avatar: true,
                 status: true,
@@ -108,6 +110,7 @@ export class FriendsService {
       select: {
         receiver: {
           select: {
+            id: true,
             username: true,
             avatar: true,
             status: true,
@@ -218,9 +221,11 @@ export class FriendsService {
           ],
         },
         select: {
+          id: true,
           senderId: true,
           sender: {
             select: {
+              id: true,
               username: true,
               avatar: true,
               status: true,
@@ -229,6 +234,7 @@ export class FriendsService {
           receiverId: true,
           receiver: {
             select: {
+              id: true,
               username: true,
               avatar: true,
               status: true,

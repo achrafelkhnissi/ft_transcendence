@@ -33,12 +33,14 @@ export class MessageService {
         receiverId,
       },
       select: {
+        id: true,
         isRead: true,
         content: true,
         createdAt: true,
         conversationId: true,
         sender: {
           select: {
+            id: true,
             username: true,
             avatar: true,
             status: true,
@@ -46,6 +48,7 @@ export class MessageService {
         },
         receiver: {
           select: {
+            id: true,
             username: true,
             avatar: true,
             status: true,
@@ -80,6 +83,7 @@ export class MessageService {
         createdAt: true,
         sender: {
           select: {
+            id: true,
             username: true,
             avatar: true,
           },

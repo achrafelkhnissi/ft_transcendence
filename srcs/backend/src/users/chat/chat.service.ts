@@ -80,6 +80,7 @@ export class ChatService {
     this.logger.log(`Finding all chats for user with id ${id}`);
 
     const userInfoSelect = {
+      id: true,
       username: true,
       avatar: true,
       status: true,
@@ -127,6 +128,7 @@ export class ChatService {
               id: true,
               content: true,
               isRead: true,
+              conversationId: true,
               createdAt: true,
               sender: {
                 select: userInfoSelect,
@@ -362,6 +364,7 @@ export class ChatService {
 
   async getUserChats(username: string) {
     const userInfoSelect = {
+      id: true,
       username: true,
       avatar: true,
       status: true,

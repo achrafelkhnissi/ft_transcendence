@@ -14,6 +14,7 @@ export class NotificationsService {
     type: true,
     sender: {
       select: {
+        id: true,
         username: true,
         avatar: true,
       },

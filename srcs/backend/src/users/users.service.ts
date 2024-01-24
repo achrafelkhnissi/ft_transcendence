@@ -246,6 +246,7 @@ export class UsersService {
 
   getUserChats(username: string) {
     const userInfoSelect = {
+      id: true,
       username: true,
       avatar: true,
       status: true,
