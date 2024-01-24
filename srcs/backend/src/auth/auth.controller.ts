@@ -23,7 +23,7 @@ export class AuthController {
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
     const { settings } = user;
 
-    if (settings.twoFactorEnabled) {
+    if (settings?.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
       return res.redirect(`${process.env.FRONTEND_URL}/verify`);

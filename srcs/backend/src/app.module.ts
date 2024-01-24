@@ -12,6 +12,8 @@ import { SmsModule } from './auth/sms/sms.module';
 import { ChatModule } from './users/chat/chat.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
+import { AppGateway } from './app.gateway';
+import { MessageModule } from './users/chat/message/message.module';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { AchievementsModule } from './users/achievements/achievements.module';
     FriendsModule,
     FriendRequestsModule,
     NotificationsModule,
+    MessageModule,
     RouterModule.register([
       {
         path: 'users',
@@ -48,6 +51,7 @@ import { AchievementsModule } from './users/achievements/achievements.module';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
+    AppGateway,
   ],
 })
 export class AppModule {}
