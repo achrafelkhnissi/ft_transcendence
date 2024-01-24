@@ -187,6 +187,8 @@ export class AppGateway
       });
     });
 
+    // create a conversation in the database
+
     return { event: 'createRoom', data: `Created room ${roomName}` };
   }
 
