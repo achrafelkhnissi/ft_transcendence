@@ -47,6 +47,14 @@ export class AuthController {
         `Redirecting to ${process.env.FRONTEND_URL} after logging out`,
       );
 
+      res.clearCookie('connect.sid', {
+        path: '/',
+        domain: 'localhost',
+        httpOnly: true,
+        secure: false,
+        sameSite: 'none',
+      });
+
       res.redirect(process.env.FRONTEND_URL);
     });
   }
