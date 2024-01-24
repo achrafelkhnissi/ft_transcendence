@@ -15,12 +15,18 @@ import { Status } from '@prisma/client';
 import { ChatService } from 'src/users/chat/chat.service';
 import { MessageService } from 'src/users/chat/message/message.service';
 import { WsAuthenticatedGuard } from './common/guards/ws.guard';
+import { IsEnum } from 'class-validator';
 
 interface MessagePayload {
   room: string;
   to: string;
   content: string;
   conversationId: number;
+}
+
+class UserStatusDto {
+  @IsEnum(Status)
+  status: Status;
 }
 
 @UseGuards(WsAuthenticatedGuard)
@@ -54,6 +60,7 @@ export class AppGateway
 
     if (!user) {
       client.disconnect();
+      this.logger.error('Unauthorized');
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -130,7 +137,6 @@ export class AppGateway
     }
 
     this.server.to(user.username).socketsJoin(room);
-    // client.join(room);
 
     this.logger.debug(`Client ${user.username} joined room ${room}`);
 
@@ -213,7 +219,7 @@ export class AppGateway
 
   @SubscribeMessage('status')
   async onStatus(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
+    @MessageBody() payload: UserStatusDto,
     @ConnectedSocket() client: Socket,
   ): Promise<WsResponse<string>> {
     // const { to: toUsername, roomName } = payload;
