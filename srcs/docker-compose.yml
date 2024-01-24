@@ -79,9 +79,8 @@ services:
       - sh
       - -c
       - |
-        chmod +x /scripts/wait-backend.sh
-        npm install 
-        ./scripts/wait-backend.sh backend:${NEST_PORT:-3000} -- npm run dev
+        npm install
+        npm run dev
 
 volumes:
   db-data:
