@@ -57,7 +57,7 @@ const CreateChannel = () => {
                   <label
                   htmlFor="privateSwitch"
                   className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                    privateChannel ?  "bg-blue-400/50" : "bg-white/5" 
+                    privateChannel ?  "bg-blue-500/80" : "bg-white/5" 
                   }`}
                   >
                   <input
@@ -84,7 +84,7 @@ const CreateChannel = () => {
                   <label
                   htmlFor="lockSwitch"
                   className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                    lockedChannel ?  "bg-blue-400/50" : "bg-white/5" 
+                    lockedChannel ?  "bg-blue-500/80" : "bg-white/5" 
                   }`}
                   >
                   <input
@@ -111,7 +111,38 @@ const CreateChannel = () => {
                 <h2 className="text-white">
                     Members
                 </h2>
-              
+                <div className="relative w-2/5 h-10 ">
+                  <input
+                  type="text"
+                  id="phone-number"
+                  maxLength={13}
+                  placeholder={"Add memeber"}
+                  // onChange={}
+                  className={`w-full h-full rounded-[0.7rem] border-2 border-blue-500/80 bg-white/5 outline-none px-4
+                  text-white/60 text-sm font-normal placeholder:opacity-40 `}
+                  />
+                <label
+                  htmlFor="phone-number"
+                  className="cursor-pointer rounded-full w-[1.3rem] h-[1.3rem] bg-white flex justify-center
+                              absolute right-2 bottom-[0.7rem] "
+                >
+                  <RiAddFill
+                    className="text-blue-500 font-bold self-center w-8 h-8 -mb-[0.07rem]"
+                    onClick={() => {}}
+                    />
+                  </label>
+                </div>
+                <div className="mt-2 ">
+                   <div className="w-24 h-24 border-2 border-blue-500 rounded-2xl flex justify-center flex-col gap-2 p-2 relative">
+                      <img
+                      src=""
+                      alt=""
+                      className="rounded-full h-12 w-12 border-2 self-center "
+                      />
+                      <p className="self-center text-white/70 text-sm"> username </p>
+                   <span className="absolute top-[0.09rem] right-1 text-red-700 font-bold">X</span>
+                   </div>
+                </div>
             </div>
           </div>
 )
