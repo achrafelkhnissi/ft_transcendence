@@ -5,7 +5,7 @@ import { User } from "../data"
 const ConversationHeader = (receiver: User) => {
     return (
         <div 
-        className="absolute w-full h-16 top-0 z-10 rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
+        className="absolute w-full h-16 top-0 rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
         shadow-[0_6px_7px_0_rgba(0,0,0,0.25)]
         flex justify-between p-6
         bg-[#25244E]">

@@ -16,7 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 export interface Data {
-  username: string;
+  username: string; 
   avatar: string;
   phoneNumber: string | null;
   newAvatar: File | null;
