@@ -92,8 +92,7 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
         callback(`I joined room ${roomName} successfully!`); // Send ack to server
       });
 
-      // console.log('socket joined room')
-
+      console.log('socket joined room')
     })
   }
   
