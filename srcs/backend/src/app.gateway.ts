@@ -9,7 +9,6 @@ import {
   OnGatewayDisconnect,
   WebSocketServer,
   ConnectedSocket,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Status } from '@prisma/client';
@@ -55,7 +54,7 @@ export class AppGateway
     this.logger.debug('AppGateway initialized');
   }
 
-  async handleConnection(client: Socket): Promise<WsResponse<string>> {
+  async handleConnection(client: Socket): Promise<string> {
     const { user } = client.request;
 
     if (!user) {
@@ -78,10 +77,10 @@ export class AppGateway
 
     this.logger.debug(`Client ${user.username} connected`);
 
-    return { event: 'connected', data: 'Connection established' };
+    return `connected`;
   }
 
-  async handleDisconnect(client: Socket): Promise<WsResponse<string>> {
+  async handleDisconnect(client: Socket): Promise<string> {
     const user = client.request.user;
 
     if (!user) {
@@ -96,14 +95,14 @@ export class AppGateway
     client.disconnect();
     this.logger.debug(`Client ${user.username} disconnected`);
 
-    return { event: 'disconnected', data: 'Connection terminated' };
+    return `disconnected`;
   }
 
   @SubscribeMessage('message')
   async conMessage(
     @MessageBody() body: MessagePayload, // TODO: Create a DTO for this
     @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
+  ): Promise<string> {
     const { user } = client.request;
     const { room, conversationId, content, to: receiverUsername } = body;
 
@@ -121,14 +120,14 @@ export class AppGateway
 
     this.server.to(room).emit('onMessage', message);
 
-    return { event: 'message', data: 'Message sent' };
+    return receiverUsername;
   }
 
   @SubscribeMessage('join')
   async onJoin(
     @MessageBody() room: string,
     @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
+  ): Promise<string> {
     const user = client.request.user;
 
     if (!user) {
@@ -140,14 +139,14 @@ export class AppGateway
 
     this.logger.debug(`Client ${user.username} joined room ${room}`);
 
-    return { event: 'joined', data: `Joined room ${room}` };
+    return room;
   }
 
   @SubscribeMessage('leave')
   async onLeave(
     @MessageBody() room: string,
     @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
+  ): Promise<string> {
     const user = client.request.user;
 
     if (!user) {
@@ -161,14 +160,14 @@ export class AppGateway
 
     this.logger.debug(`Client ${user.username} left room ${room}`);
 
-    return { event: 'left', data: `Left room ${room}` };
+    return room;
   }
 
   @SubscribeMessage('createRoom')
   async onCreateRoom(
     @MessageBody() payload: any, // TODO: Create a DTO for this
     @ConnectedSocket() client: Socket,
-  ): Promise<WsResponse<string>> {
+  ): Promise<string> {
     const { to: receiver, roomName } = payload;
     const { user } = client.request;
 
@@ -180,75 +179,68 @@ export class AppGateway
     this.server.to(receiver).socketsJoin(roomName);
     this.server.to(user.username).socketsJoin(roomName);
 
-    // Because the server's response doesn't reach the client.
-    client.emit('joinedRoom', roomName, (ack: string) => {
-      console.log({
-        joinedRoomAck: ack,
-      });
-    });
-
     // create a conversation in the database
 
-    return { event: 'createRoom', data: `Created room ${roomName}` };
+    return roomName;
   }
 
   // @SubscribeMessage('typing')
   // async onTyping(
   //   @MessageBody() payload: any, // TODO: Create a DTO for this
   //   @ConnectedSocket() client: Socket,
-  // ): Promise<WsResponse<string>> {
+  // ): Promise<string> {
   //   // const { to: toUsername, roomName } = payload;
   //   // const { user } = client.request;
 
   //   // this.server.to(roomName).emit('onTyping', toUsername);
 
-  //   return { event: 'typing', data: 'Started typing a message' };
+  //   return 'typing';
   // }
 
   // @SubscribeMessage('stopTyping')
   // async onStopTyping(
   //   @MessageBody() payload: any, // TODO: Create a DTO for this
   //   @ConnectedSocket() client: Socket,
-  // ): Promise<WsResponse<string>> {
+  // ): Promise<string> {
   //   // const { to: toUsername, roomName } = payload;
   //   // const { user } = client.request;
 
   //   // this.server.to(roomName).emit('onStopTyping', toUsername);
 
-  //   return { event: 'stopTyping', data: 'Stopped typing a message' };
+  //   return 'stopTyping';
   // }
 
   // @SubscribeMessage('read')
   // async onRead(
   //   @MessageBody() payload: any, // TODO: Create a DTO for this
   //   @ConnectedSocket() client: Socket,
-  // ): Promise<WsResponse<string>> {
+  // ): Promise<string> {
   //   // const { to: toUsername, roomName } = payload;
   //   // const { user } = client.request;
 
   //   // this.server.to(roomName).emit('onRead', toUsername);
 
-  //   return { event: 'read', data: 'Read a message' };
+  //   return 'read';
   // }
 
   // @SubscribeMessage('status')
   // async onStatus(
   //   @MessageBody() payload: UserStatusDto,
   //   @ConnectedSocket() client: Socket,
-  // ): Promise<WsResponse<string>> {
+  // ): Promise<string> {
   //   // const { to: toUsername, roomName } = payload;
   //   // const { user } = client.request;
 
   //   // this.server.to(roomName).emit('onStatus', toUsername);
 
-  //   return { event: 'status', data: `Status changed to ${payload.status}` };
+  //   return 'status';
   // }
 
   // @SubscribeMessage('notification')
   // async onNotification(
   //   @MessageBody() payload: any, // TODO: Use notification DTO for this
   //   @ConnectedSocket() client: Socket,
-  // ): Promise<WsResponse<string>> {
-  //   return { event: 'notification', data: 'Notification received' };
+  // ): Promise<string> {
+  //   return `notification`;
   // }
 }
