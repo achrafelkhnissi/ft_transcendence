@@ -77,22 +77,11 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
         roomName: res.name,
         type: res.type,
         to: username,
-      }, function createdAck(response: any) {
-        // TODO: Check why this is not called
-        console.log({
-          "Response from server": response,
-        });
+      }, function createdAck(room: string) {
+        console.log(`I joined room ${room} successfully!`);
         router.push(`/messages/${res.id}`)
       });
 
-      // Because for some reason we don't get the ack from the server in the previous emit
-      socket?.on('joinedRoom', (roomName: string, callback) => {
-        console.log('socket joined room')
-        router.push(`/messages/${res.id}`)
-        callback(`I joined room ${roomName} successfully!`); // Send ack to server
-      });
-
-      console.log('socket joined room')
     })
   }
   
