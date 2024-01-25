@@ -1,8 +1,10 @@
-import axios from "axios";
+import axios from 'axios';
 
-async function acceptFirendRequest(friend:string) {
-
-  const { data } = await axios.get(`http://localhost:3000/api/users/friends/requests/accept?username=${friend}`, {withCredentials: true} );
+async function acceptFirendRequest(friend: string) {
+  const { data } = await axios.get(
+    `http://localhost:3000/api/users/friends/requests/accept?username=${friend}`,
+    { withCredentials: true },
+  );
 
   return data;
 }

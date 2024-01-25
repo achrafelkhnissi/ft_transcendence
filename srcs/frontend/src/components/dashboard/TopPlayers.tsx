@@ -1,32 +1,31 @@
-'use client'
+'use client';
 
-import { FaCrown } from "react-icons/fa";
-import Image from "next/image";
+import { FaCrown } from 'react-icons/fa';
+import Image from 'next/image';
 // import { IoTerminalSharp } from "react-icons/io5";
 // import UserName from "../userProfile/UserName";
-import getRankings from "@/services/getRankings";
-import { useEffect, useState } from "react";
+import getRankings from '@/services/getRankings';
+import { useEffect, useState } from 'react';
 
 interface User {
   username: string;
   avatar: string;
-  stats : {
-      wins: number;
-      level: number;
-      losses: number;
-  }
+  stats: {
+    wins: number;
+    level: number;
+    losses: number;
+  };
 }
 
 const TopPlayers = () => {
-
   const [ranking, setRanking] = useState<User[]>([]);
 
   useEffect(() => {
-    getRankings().then(res => {
+    getRankings().then((res) => {
       const data: User[] = res;
       setRanking(data);
-    })
-  }, [])
+    });
+  }, []);
 
   return (
     <div className="py-4 w-full">
@@ -55,13 +54,11 @@ const TopPlayers = () => {
                     w-full h-16
                     rounded-full
                     text-white
-                    ${!(index % 2) && "bg-[#1C1C43]"}
+                    ${!(index % 2) && 'bg-[#1C1C43]'}
                     `}
                   >
                     <td className=" flex h-full gap-3 justify-center px-2 py-[0.6rem] text-white/30 text-center">
-                      <p className="self-center">
-                        #{index + 1}
-                      </p>
+                      <p className="self-center">#{index + 1}</p>
                       <img
                         src={`http://localhost:3000/api/users/${item.username}/avatar`}
                         alt=""
@@ -72,9 +69,9 @@ const TopPlayers = () => {
                                         rounded-full"
                       />
                     </td>
-                      <td className="px-2 py-[0.6rem] text-center">
-                          {item.username}
-                      </td>
+                    <td className="px-2 py-[0.6rem] text-center">
+                      {item.username}
+                    </td>
                     <td className=" text-center pr-4 py-[0.6rem]">
                       {item.stats.wins + item.stats.losses}
                     </td>

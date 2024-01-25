@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { LuSearch } from "react-icons/lu";
-import { CiSearch } from "react-icons/ci";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { LuSearch } from 'react-icons/lu';
+import { CiSearch } from 'react-icons/ci';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const SearchInput = () => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [input, setInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [input, setInput] = useState('');
 
   const onSearch = () => {
-    setInput(""); // clear input
+    setInput(''); // clear input
     const encodedQuery = encodeURIComponent(searchQuery);
     router.push(`/search?query=${encodedQuery}`);
-    console.log("searching for", searchQuery);
+    console.log('searching for', searchQuery);
   };
 
   return (
@@ -32,10 +32,10 @@ const SearchInput = () => {
       <button className="absolute top-0 bottom-0 right-2" onClick={onSearch}>
         <CiSearch
           style={{
-            color: "white",
+            color: 'white',
             opacity: 0.6,
-            width: "1.8rem",
-            height: "1.8rem",
+            width: '1.8rem',
+            height: '1.8rem',
           }}
         />
       </button>

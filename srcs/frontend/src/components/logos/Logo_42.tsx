@@ -4,7 +4,6 @@ interface Logo_42Props {
   height: string;
 }
 
-
 const Logo_42: React.FC<Logo_42Props> = ({ color, width, height }) => {
   const svgString = `
   <svg version="1.1"
@@ -41,7 +40,7 @@ const Logo_42: React.FC<Logo_42Props> = ({ color, width, height }) => {
         width,
         height,
         background: `url("data:image/svg+xml;base64,${btoa(
-          svgString
+          svgString,
         )}") center center/cover no-repeat`,
       }}
     ></div>

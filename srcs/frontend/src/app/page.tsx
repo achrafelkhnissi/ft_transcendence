@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Logo_42 from "../components/logos/Logo_42";
+import Logo_42 from '../components/logos/Logo_42';
 // import Back from "../components/Background";
-import { pixelifySans, roboto } from "../fonts";
-import Link from "next/link";
-import { PureComponent, useState } from "react";
+import { pixelifySans, roboto } from '../fonts';
+import Link from 'next/link';
+import { PureComponent, useState } from 'react';
 
 export default function Home() {
   const [isClicked, setIsClicked] = useState(false);
@@ -38,7 +38,7 @@ export default function Home() {
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
         <div className="self-center mt-16">
-          <Link className="" href={"http://localhost:3000/api/auth/ft"}>
+          <Link className="" href={'http://localhost:3000/api/auth/ft'}>
             <div className="inline-block">
               <button
                 className={` 
@@ -57,14 +57,16 @@ export default function Home() {
           active:bg-gray-100/5
           active:shadow-blue-300/10 
           `}
-          disabled={isClicked}
+                disabled={isClicked}
                 onClick={() => {
                   setIsClicked((prev) => !prev);
                 }}
               >
                 {isClicked && (
                   <div role="status" className="flex gap-4 ">
-                    <span className="text-blue-700/60 font-normal">Loading...</span>
+                    <span className="text-blue-700/60 font-normal">
+                      Loading...
+                    </span>
                     <svg
                       aria-hidden="true"
                       className="inline w-6 h-6 text-blue-300/60 animate-spin dark:text-gray-600 fill-blue-700  

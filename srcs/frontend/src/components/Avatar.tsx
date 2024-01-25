@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import Link from "next/link";
-import AvatarImage from "./AvatarImage";
+import Link from 'next/link';
+import AvatarImage from './AvatarImage';
 
 const Avatar = () => {
   return (
@@ -19,8 +19,8 @@ const Avatar = () => {
      outline-gray-400/60
      cursor-pointer`}
     >
-      <Link href={"/profile/me"}>
-        <AvatarImage/>
+      <Link href={'/profile/me'}>
+        <AvatarImage />
       </Link>
     </div>
   );

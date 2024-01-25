@@ -1,28 +1,28 @@
 interface EmojiProps {
-    color: string;
-    width: string;
-    height: string;
-  }
-  
-  const Emoji: React.FC<EmojiProps> = ({ color, width, height }) => {
-    const svgString = `
+  color: string;
+  width: string;
+  height: string;
+}
+
+const Emoji: React.FC<EmojiProps> = ({ color, width, height }) => {
+  const svgString = `
     <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 31 31" fill="none">
     <path fill-rule="evenodd" clip-rule="evenodd" d="M3.05267 3.05218C0.916992 5.18786 0.916992 8.62519 0.916992 15.4998C0.916992 22.3745 0.916992 25.8118 3.05267 27.9475C5.18835 30.0832 8.62568 30.0832 15.5003 30.0832C22.375 30.0832 25.8123 30.0832 27.948 27.9475C30.0837 25.8118 30.0837 22.3745 30.0837 15.4998C30.0837 8.62519 30.0837 5.18786 27.948 3.05218C25.8123 0.916504 22.375 0.916504 15.5003 0.916504C8.62568 0.916504 5.18835 0.916504 3.05267 3.05218ZM19.8753 15.4998C20.6807 15.4998 21.3337 14.5205 21.3337 13.3123C21.3337 12.1042 20.6807 11.1248 19.8753 11.1248C19.0699 11.1248 18.417 12.1042 18.417 13.3123C18.417 14.5205 19.0699 15.4998 19.8753 15.4998ZM12.5837 13.3123C12.5837 14.5205 11.9307 15.4998 11.1253 15.4998C10.3199 15.4998 9.66699 14.5205 9.66699 13.3123C9.66699 12.1042 10.3199 11.1248 11.1253 11.1248C11.9307 11.1248 12.5837 12.1042 12.5837 13.3123ZM10.2466 20.6819C10.6064 20.1966 11.2914 20.0948 11.7766 20.4545C12.8388 21.2418 14.1209 21.6978 15.5003 21.6978C16.8798 21.6978 18.1619 21.2418 19.224 20.4545C19.7093 20.0948 20.3943 20.1966 20.754 20.6819C21.1137 21.1671 21.0119 21.8521 20.5266 22.2119C19.1085 23.263 17.3742 23.8853 15.5003 23.8853C13.6264 23.8853 11.8921 23.263 10.474 22.2119C9.98873 21.8521 9.88693 21.1671 10.2466 20.6819Z" fill="#20204A"/>
   </svg>
       `;
-  
-    return (
-      <div
-        className="h-screen w-screen flex justify-center items-center relative -ml-[0.4rem] "
-        style={{
-          width,
-          height,
-          background: `url("data:image/svg+xml;base64,${btoa(
-            svgString
-          )}") center center/cover no-repeat`,
-        }}
-      ></div>
-    );
-  };
-  
-  export default Emoji;
+
+  return (
+    <div
+      className="h-screen w-screen flex justify-center items-center relative -ml-[0.4rem] "
+      style={{
+        width,
+        height,
+        background: `url("data:image/svg+xml;base64,${btoa(
+          svgString,
+        )}") center center/cover no-repeat`,
+      }}
+    ></div>
+  );
+};
+
+export default Emoji;

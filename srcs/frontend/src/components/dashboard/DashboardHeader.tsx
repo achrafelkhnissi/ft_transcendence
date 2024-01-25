@@ -1,19 +1,22 @@
 const DashboardHeader = () => {
-    return ( <div className="w-full h-80 px-4 ">
-        <div className="w-full h-full rounded-[1.6rem] relative shadow-2xl">
-            <video className='w-full 
+  return (
+    <div className="w-full h-80 px-4 ">
+      <div className="w-full h-full rounded-[1.6rem] relative shadow-2xl">
+        <video
+          className="w-full 
                                 h-full 
                                 rounded-[1.6rem] 
                                 object-cover 
                                 absolute
-                                    '
-                                autoPlay
-                                loop 
-                                >
-                <source src="/videos/pong.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>  
-            <button className='absolute 
+                                    "
+          autoPlay
+          loop
+        >
+          <source src="/videos/pong.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <button
+          className="absolute 
                             text-[#60B3FF] 
                             bg-[#4E4B8B]/70 
                             py-2 
@@ -29,9 +32,14 @@ const DashboardHeader = () => {
                             hover:bg-[#4E4B8B]
                             hover:text-[#64beff]
                             active:shadow-none
-            '> Play Now </button>
-        </div>
-    </div> )
-}
+            "
+        >
+          {' '}
+          Play Now{' '}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default DashboardHeader;

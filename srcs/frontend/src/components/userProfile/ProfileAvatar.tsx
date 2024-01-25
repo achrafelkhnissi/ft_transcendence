@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { useEffect, useRef } from "react";
+import Image from 'next/image';
+import { useEffect, useRef } from 'react';
 interface Props {
   avatar: string;
   experiencePoints: number;
@@ -12,15 +12,15 @@ const ProfileAvatar: React.FC<Props> = ({
   level,
 }) => {
   const progressRef = useRef<HTMLDivElement>(null);
-    // experiencePoints = 70;
+  // experiencePoints = 70;
   useEffect(() => {
     const width = progressRef.current?.offsetWidth;
     const height = progressRef.current?.offsetHeight;
     const totalLength = width && height ? width * 2 + height * 2 : 0;
     const progressLength = (totalLength * experiencePoints) / 100;
 
-    var backgroundSize = "";
-    var backgroundPosition = "";
+    var backgroundSize = '';
+    var backgroundPosition = '';
     const halfBottomEdge = totalLength / 4 / 2;
 
     if (experiencePoints <= 12.5) {
@@ -128,7 +128,7 @@ const ProfileAvatar: React.FC<Props> = ({
             background-position: ${backgroundPosition};
 
     `;
-    progressRef.current?.setAttribute("style", style);
+    progressRef.current?.setAttribute('style', style);
   }, [experiencePoints]);
 
   return (
@@ -138,7 +138,7 @@ const ProfileAvatar: React.FC<Props> = ({
         className=" rectangulaire-progress-bar rounded-2xl flex justify-center"
       >
         <div className="self-center relative">
-          {avatar != "" && (
+          {avatar != '' && (
             <img
               src={avatar}
               width={40}
@@ -151,7 +151,7 @@ const ProfileAvatar: React.FC<Props> = ({
             `}
             />
           )}
-          {avatar === "" && (
+          {avatar === '' && (
             <div
               className="w-[6.1rem] 
                         h-[6.1rem]

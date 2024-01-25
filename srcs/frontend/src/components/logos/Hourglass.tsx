@@ -21,7 +21,7 @@ const Hourglass: React.FC<HourglassProps> = ({ color, width, height }) => {
         width,
         height,
         background: `url("data:image/svg+xml;base64,${btoa(
-          svgString
+          svgString,
         )}") center center/cover no-repeat`,
       }}
     ></div>

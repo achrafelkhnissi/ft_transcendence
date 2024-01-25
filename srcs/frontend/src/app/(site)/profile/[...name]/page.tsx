@@ -1,22 +1,21 @@
-"use client";
+'use client';
 
-import UserInfo from "../../../../components/userProfile/UserInfo";
-import GameHistory from "../../../../components/userProfile/GameHistory";
-import Achievements from "../../../../components/userProfile/Achievements";
-import Friends from "../../../../components/userProfile/Friends";
-import getCurrentUser from "@/services/getCurrentUser";
-import { useState } from "react";
-import { useEffect } from "react";
-import getUser from "@/services/getUser";
-import { User, defaultInfos } from "@/components/userProfile/types";
-
+import UserInfo from '../../../../components/userProfile/UserInfo';
+import GameHistory from '../../../../components/userProfile/GameHistory';
+import Achievements from '../../../../components/userProfile/Achievements';
+import Friends from '../../../../components/userProfile/Friends';
+import getCurrentUser from '@/services/getCurrentUser';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import getUser from '@/services/getUser';
+import { User, defaultInfos } from '@/components/userProfile/types';
 
 const Home = ({ params }: { params: { name: string } }) => {
   const abortController = new AbortController();
   const [user, setUser] = useState<User>(defaultInfos);
 
   useEffect(() => {
-    if (params.name == "me") {
+    if (params.name == 'me') {
       getCurrentUser().then((res) => {
         const userData: User = res;
         userData.me = true;
@@ -42,7 +41,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         <div className="min-[880px]:row-span-2 ">
           <GameHistory />
         </div>
-        <Friends friends = {user.friends} />
+        <Friends friends={user.friends} />
         <Achievements />
       </div>
     </div>

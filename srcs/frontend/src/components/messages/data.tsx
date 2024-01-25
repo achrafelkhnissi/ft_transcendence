@@ -1,38 +1,38 @@
-export type UserStatuses = Record<number, string>; 
+export type UserStatuses = Record<number, string>;
 
 export interface User {
-    username:  string;
-    avatar: string;
-    status: string;
+  username: string;
+  avatar: string;
+  status: string;
 }
 
-export interface Message{
-    sender : User;
-    receiver: User;
-    content: string;
-    createdAt: string;
-    isRead: boolean;
-    conversationId: number;
+export interface Message {
+  sender: User;
+  receiver: User;
+  content: string;
+  createdAt: string;
+  isRead: boolean;
+  conversationId: number;
 }
 
-export interface Conversation{
-    id: number;
-    type: string;
-    password: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-    participants: User[];
-    oweners: User[];
-    admins: User[];
-    messages: Message[];
-    image: string;
+export interface Conversation {
+  id: number;
+  type: string;
+  password: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  participants: User[];
+  oweners: User[];
+  admins: User[];
+  messages: Message[];
+  image: string;
 }
 
 export type ConversationsMap = {
-    [key: number]: Conversation;
-  };
-  
+  [key: number]: Conversation;
+};
+
 // export const messagesProps : Message[] = [
 //     {
 //         id: 0,

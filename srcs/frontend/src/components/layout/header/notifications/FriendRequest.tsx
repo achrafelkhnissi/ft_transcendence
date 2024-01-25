@@ -1,9 +1,9 @@
-import Image from "next/image";
-import { NotificationsType } from "./Notifications";
-import acceptFriendRequest from "@/services/acceptFriendRequest";
-import deleteNotification from "@/services/deleteNotification";
-import declineFirendRequest from "@/services/declineFriendRequest";
-import { useState } from "react";
+import Image from 'next/image';
+import { NotificationsType } from './Notifications';
+import acceptFriendRequest from '@/services/acceptFriendRequest';
+import deleteNotification from '@/services/deleteNotification';
+import declineFirendRequest from '@/services/declineFriendRequest';
+import { useState } from 'react';
 
 const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const [actionDone, setActionDone] = useState(false);
@@ -24,13 +24,15 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
 
   return (
     <div className="relative">
-        <div className={`text-[0.8rem] text-center opacity-0 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-400 z-10
-        transition-all ease-out duration-300 delay-200 ${actionDone && " opacity-100 "}`}>
-          Friend request accepted successfully!
-        </div>
+      <div
+        className={`text-[0.8rem] text-center opacity-0 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-400 z-10
+        transition-all ease-out duration-300 delay-200 ${actionDone && ' opacity-100 '}`}
+      >
+        Friend request accepted successfully!
+      </div>
       <div
         className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
-                    ${actionDone && " opacity-0 "}`}
+                    ${actionDone && ' opacity-0 '}`}
       >
         <img
           alt=""

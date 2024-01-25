@@ -1,5 +1,5 @@
-import Hourglass from "./Hourglass";
-import { pixelifySans } from "../../fonts";
+import Hourglass from './Hourglass';
+import { pixelifySans } from '../../fonts';
 
 const Logo = () => {
   return (
