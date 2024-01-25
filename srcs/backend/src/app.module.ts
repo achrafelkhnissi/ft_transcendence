@@ -12,8 +12,8 @@ import { SmsModule } from './auth/sms/sms.module';
 import { ChatModule } from './users/chat/chat.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
-import { AppGateway } from './app.gateway';
 import { MessageModule } from './users/chat/message/message.module';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [

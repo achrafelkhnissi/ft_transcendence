@@ -1,4 +1,4 @@
-import { UserType } from 'src/common/interfaces/user.interface';
+import { UsersService } from 'src/users/users.service';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
@@ -11,11 +11,12 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Status } from '@prisma/client';
+import { ConversationType, Status } from '@prisma/client';
 import { ChatService } from 'src/users/chat/chat.service';
 import { MessageService } from 'src/users/chat/message/message.service';
 import { WsAuthenticatedGuard } from './common/guards/ws.guard';
 import { IsEnum } from 'class-validator';
+import { CreateChatDto } from './users/chat/dto/create-chat.dto';
 
 interface MessagePayload {
   room: string;
@@ -48,6 +49,7 @@ export class AppGateway
   constructor(
     private readonly chatService: ChatService,
     private readonly messageService: MessageService,
+    private readonly usersService: UsersService,
   ) {}
 
   afterInit() {
@@ -165,23 +167,35 @@ export class AppGateway
 
   @SubscribeMessage('createRoom')
   async onCreateRoom(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
+    @MessageBody() payload: CreateChatDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    const { to: receiver, roomName } = payload;
-    const { user } = client.request;
+  ): Promise<number> {
+    const user = client.request.user;
 
-    console.log({
-      user,
-      receiver,
-    });
+    const { type, participants } = payload;
 
-    this.server.to(receiver).socketsJoin(roomName);
-    this.server.to(user.username).socketsJoin(roomName);
+    if (type == ConversationType.DM && participants.length === 1) {
+      console.log('DM must have only two participants');
+      participants.push(user.id);
+      const sortedIds = participants.sort();
+      payload.name = `Room${sortedIds[0]}-${sortedIds[1]}`;
+    } else {
+      payload.ownerId = user.id;
+    }
+
+    console.log({ payload });
+
+    const chat = await this.chatService.create(payload);
+
+    const receiverId = participants.find((id) => id !== user.id);
+    const receiver = await this.usersService.findById(receiverId);
+
+    this.server.to(receiver.username).socketsJoin(chat.name);
+    this.server.to(user.username).socketsJoin(chat.name);
 
     // create a conversation in the database
 
-    return roomName;
+    return chat.id;
   }
 
   // @SubscribeMessage('typing')

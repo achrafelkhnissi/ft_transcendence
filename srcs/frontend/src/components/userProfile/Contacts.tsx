@@ -63,26 +63,17 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
 
   const router = useRouter();
   const createRoom = () => {
-    const convo = {
-      type: "DM", 
-      to: id,
+
+    const payload = {
+      type: 'DM',
+      participants: [id],
     }
 
-    createNewConv(convo).then( (res) => {
-    
-      console.log("created ");
-      console.log(res);
-
-      socket?.emit('createRoom', {
-        roomName: res.name,
-        type: res.type,
-        to: username,
-      }, function createdAck(room: string) {
-        console.log(`I joined room ${room} successfully!`);
-        router.push(`/messages/${res.id}`)
+      socket?.emit('createRoom', payload
+      , function createdAck(id: string) {
+        console.log(`I joined room ${id} successfully!`);
+        router.push(`/messages/${+id}`)
       });
-
-    })
   }
   
   return (

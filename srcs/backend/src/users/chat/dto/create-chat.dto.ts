@@ -1,7 +1,9 @@
 import { $Enums } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
@@ -18,12 +20,13 @@ export class CreateChatDto {
   @IsOptional()
   image?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MinLength(6, {
     message: 'Name must be at least 6 characters long',
   })
-  name: string;
+  name?: string;
 
   /**
    * (?=.*[a-z]): The string must contain at least 1 lowercase alphabetical character.
@@ -45,4 +48,13 @@ export class CreateChatDto {
     },
   )
   password: string;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsNumber()
+  ownerId?: number;
+
+  @IsOptional()
+  @IsNumber({}, { each: true })
+  participants: number[];
 }
