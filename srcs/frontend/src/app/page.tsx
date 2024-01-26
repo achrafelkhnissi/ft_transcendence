@@ -38,7 +38,12 @@ export default function Home() {
           Welcome to our Pong game! Get ready to bounce and let the ball roll.
         </p>
         <div className="self-center mt-16">
-          <Link className="" href={'http://localhost:3000/api/auth/ft'}>
+          <Link
+            className=""
+            href={
+              'http://localhost:3000/api/auth/ft' /* TODO: Handle errors! onClick maybe? */
+            }
+          >
             <div className="inline-block">
               <button
                 className={` 
