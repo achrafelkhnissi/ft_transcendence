@@ -15,7 +15,6 @@ import { ConversationType, Status } from '@prisma/client';
 import { ChatService } from 'src/users/chat/chat.service';
 import { MessageService } from 'src/users/chat/message/message.service';
 import { WsAuthenticatedGuard } from './common/guards/ws.guard';
-import { IsEnum } from 'class-validator';
 import { CreateChatDto } from './users/chat/dto/create-chat.dto';
 
 interface MessagePayload {
@@ -23,11 +22,6 @@ interface MessagePayload {
   to: string;
   content: string;
   conversationId: number;
-}
-
-class UserStatusDto {
-  @IsEnum(Status)
-  status: Status;
 }
 
 @UseGuards(WsAuthenticatedGuard)
@@ -42,6 +36,7 @@ export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(AppGateway.name);
+  private readonly roomCounts = new Map<string, number>();
 
   @WebSocketServer()
   server: Server;
@@ -68,6 +63,10 @@ export class AppGateway
     // Join the user's room to keep track of all the user's sockets
     client.join(user.username);
 
+    // Keep track of the number of sockets connected to the user's room
+    const roomCount = this.roomCounts.get(user.username) || 0;
+    this.roomCounts.set(user.username, roomCount + 1);
+
     this.server.to(client.id).emit('status', { status: Status.ONLINE });
     await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
 
@@ -88,11 +87,16 @@ export class AppGateway
       return 'unauthorized';
     }
 
-    this.server.to(user.username).emit('status', { status: Status.OFFLINE });
-    await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
+    // Check if room user.username is empty
+    // If it is, then the user has no more sockets connected
+    // and we can set the user's status to offline
+    const roomCount = this.roomCounts.get(user.username) || 0;
+    this.roomCounts.set(user.username, roomCount - 1);
+    if (roomCount - 1 === 0) {
+      this.server.to(user.username).emit('status', { status: Status.OFFLINE });
+      await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
+    }
 
-    client.leave(user.username);
-    client.disconnect();
     this.logger.debug(`Client ${user.username} disconnected`);
 
     return `disconnected`;
@@ -100,7 +104,7 @@ export class AppGateway
 
   @SubscribeMessage('message')
   async conMessage(
-    @MessageBody() body: MessagePayload, // TODO: Create a DTO for this
+    @MessageBody() body: MessagePayload, // TODO: Change to DTO and validate it (make it same as prisma model)
     @ConnectedSocket() client: Socket,
   ): Promise<string> {
     const { user } = client.request;
@@ -154,7 +158,6 @@ export class AppGateway
       throw new UnauthorizedException('Unauthorized');
     }
 
-    // client.leave(room);
     this.server.to(user.username).socketsLeave(room);
     this.server.to(room).emit('onLeave', user.username);
 
@@ -232,18 +235,5 @@ export class AppGateway
     this.server.to(payload.name).emit('onRead', user.username);
 
     return 'read';
-  }
-
-  @SubscribeMessage('status')
-  async onStatus(
-    @MessageBody() payload: UserStatusDto,
-    @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    const { user } = client.request;
-
-    // Only update the status if the room `user.username` is empty
-    this.server.to(user.username).emit('status', payload);
-
-    return 'status';
   }
 }
