@@ -8,7 +8,6 @@ import { FriendshipStatus, NotificationType } from '@prisma/client';
 import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-//TODO: Test notifications for friend requests
 @Injectable()
 export class FriendRequestsService {
   private readonly logger = new Logger(FriendRequestsService.name);
@@ -18,7 +17,6 @@ export class FriendRequestsService {
     private readonly notification: NotificationsService,
   ) {}
 
-  // TODO: See where to put this
   private async isFriends(
     senderId: number,
     receiverId: number,
@@ -93,7 +91,7 @@ export class FriendRequestsService {
     const notification = await this.notification.create({
       receiverId: receiver.id,
       senderId: senderId,
-      type: NotificationType.FRIEND_REQUEST,
+      type: NotificationType.FRIEND_REQUEST_SENT,
       friendRequestId: request.id,
     });
 
@@ -154,7 +152,7 @@ export class FriendRequestsService {
     const notification = await this.notification.create({
       receiverId: receiverId,
       senderId: sender.id,
-      type: NotificationType.FRIEND_REQUEST, // TODO: Change to FRIEND_REQUEST_ACCEPT
+      type: NotificationType.FRIEND_REQUEST_ACCEPTED,
       friendRequestId: request.id,
     });
 
