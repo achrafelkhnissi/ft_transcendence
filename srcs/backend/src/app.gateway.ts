@@ -60,9 +60,9 @@ export class AppGateway
     const { user } = client.request;
 
     if (!user) {
-      client.disconnect();
+      client.emit('unauthorized');
       this.logger.error('Unauthorized');
-      throw new UnauthorizedException('Unauthorized'); // TODO: This crashes the server when you delete a session but keep logged in in other tabs
+      return 'unauthorized';
     }
 
     // Join the user's room to keep track of all the user's sockets
@@ -83,8 +83,9 @@ export class AppGateway
     const user = client.request.user;
 
     if (!user) {
-      client.disconnect();
-      throw new UnauthorizedException('Unauthorized');
+      client.emit('unauthorized');
+      this.logger.error('Unauthorized');
+      return 'unauthorized';
     }
 
     this.server.to(user.username).emit('status', { status: Status.OFFLINE });

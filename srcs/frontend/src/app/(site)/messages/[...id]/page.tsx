@@ -58,6 +58,15 @@ const Home = ({ params }: { params: { id: number } }) => {
         // console.log('Socket ID:', socket.id);
       });
 
+      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
+      socket.on('unauthorized', (error) => {
+        console.log('unauthorized: ', error);
+
+        socket.disconnect();
+
+        window.location.href = '/';
+      });
+
       socket.on('onMessage', (message: Message) => {
         // console.log('New message:', message);
         setConversations((prev) => ({
