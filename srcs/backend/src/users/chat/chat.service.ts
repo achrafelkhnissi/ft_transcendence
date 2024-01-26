@@ -1,9 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-// import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
-import { ConversationType, Status } from '@prisma/client';
+import { Conversation, ConversationType, Status } from '@prisma/client';
+import { CreateChatDto } from './dto/create-chat.dto';
+import { ChatData } from 'src/common/interfaces/chat-data.interface';
 
 @Injectable()
 export class ChatService {
@@ -16,58 +16,44 @@ export class ChatService {
     return `Room${sortedIds[0]}-${sortedIds[1]}`;
   }
 
-  // TODO: Update any to CreateChatDto
-  async create(createChatDto: any) {
+  async create(createChatDto: CreateChatDto) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
 
-    const { type } = createChatDto;
-
-    if (type == ConversationType.DM) {
-      const { participants } = createChatDto;
-      const roomName = this.createUniqueRoomName(
-        participants[0],
-        participants[1],
-      );
-
-      // Check if the chat already exists
-      const chat = await this.prismaService.conversation.findUnique({
+    const chat: Conversation = await this.prismaService.conversation.findUnique(
+      {
         where: {
-          name: roomName,
+          name: createChatDto.name,
         },
-      });
+      },
+    );
 
-      if (chat) {
-        return chat;
-      }
-
-      const user1Id = participants[0];
-      const user2Id = participants[1];
-
-      return this.prismaService.conversation.create({
-        data: {
-          name: roomName,
-          type,
-          participants: {
-            connect: [
-              {
-                id: user1Id,
-              },
-              {
-                id: user2Id,
-              },
-            ],
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-          type: true,
-        },
-      });
+    if (chat) {
+      return chat;
     }
 
+    const data: ChatData = {
+      type: createChatDto.type,
+      name: createChatDto.name,
+      participants: {
+        connect: createChatDto.participants.map((participantId: number) => ({
+          id: participantId,
+        })),
+      },
+    };
+
+    if (createChatDto.type != ConversationType.DM) {
+      data.owner = {
+        connect: {
+          id: createChatDto.ownerId,
+        },
+      };
+    }
+
+    if (createChatDto.password) data.password = createChatDto.password;
+    if (createChatDto.image) data.image = createChatDto.image;
+
     return this.prismaService.conversation.create({
-      data: createChatDto,
+      data,
     });
   }
 
@@ -155,7 +141,8 @@ export class ChatService {
     });
   }
 
-  update(id: number, updateChatDto: UpdateChatDto) {
+  update(id: number, updateChatDto: any) {
+    // TODO: Update any to UpdateChatDto
     this.logger.log(`Updating chat with id ${id}`);
 
     return this.prismaService.conversation.update({

@@ -10,14 +10,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-// import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
-// import { ConversationType } from '@prisma/client';
-
-// interface CreateConversationDto {}
+import { CreateChatDto } from './dto/create-chat.dto';
+import { UserType } from 'src/common/interfaces/user.interface';
 
 /**
  * TODO:
@@ -34,24 +32,12 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  async create(
-    @User() user,
-    @Body() createChatDto: any, // TODO: Change any to CreateChatDto
-  ) {
+  async create(@User() user: UserType, @Body() createChatDto: CreateChatDto) {
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const { type, to: receiverId } = createChatDto;
-
-    const createChat = {
-      type,
-      participants: [user.id, receiverId],
-    };
-
-    const chat = await this.chatService.create(createChat);
-
-    return chat;
+    return this.chatService.create(createChatDto);
   }
 
   @Get()

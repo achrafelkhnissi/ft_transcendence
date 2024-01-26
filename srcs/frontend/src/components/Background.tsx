@@ -8,7 +8,7 @@ const Back = () => {
       className="h-screen w-screen flex justify-center items-center relative"
       style={{
         background: `url("data:image/svg+xml;base64,${btoa(
-          svgString
+          svgString,
         )}") center center/cover no-repeat`,
       }}
     ></div>

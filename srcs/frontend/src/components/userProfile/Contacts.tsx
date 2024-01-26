@@ -1,14 +1,13 @@
-
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import sendFriendRequest from "@/services/sendFriendRequest";
-import removeFriend from "@/services/removeFriend";
-import cancelFriendRequest from "@/services/cancelFriendRequest";
-import { stat } from "fs";
-import { useSocket } from "@/contexts/socketContext";
-import { ContactsItems, FriendshipStatus } from "./types";
-import createNewConv from "@/services/createNewConv";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import sendFriendRequest from '@/services/sendFriendRequest';
+import removeFriend from '@/services/removeFriend';
+import cancelFriendRequest from '@/services/cancelFriendRequest';
+import { stat } from 'fs';
+import { useSocket } from '@/contexts/socketContext';
+import { ContactsItems, FriendshipStatus } from './types';
+import createNewConv from '@/services/createNewConv';
+import { useRouter } from 'next/navigation';
 
 interface ContactsProps {
   username: string;
@@ -18,17 +17,23 @@ interface ContactsProps {
   id: number | null;
 }
 
-
-const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) => {
-
-  const [isClicked, setIsClicked] = useState<"send" | "cancel" | "">("");
-  const [friendshipState, setFriendshipState] = useState<FriendshipStatus | false>(status);
+const Contacts: React.FC<ContactsProps> = ({
+  username,
+  me,
+  status,
+  url,
+  id,
+}) => {
+  const [isClicked, setIsClicked] = useState<'send' | 'cancel' | ''>('');
+  const [friendshipState, setFriendshipState] = useState<
+    FriendshipStatus | false
+  >(status);
   const { socket } = useSocket();
 
   useEffect(() => {
     if (socket) {
       // Listen for the 'connect' event
-      console.log(socket)
+      console.log(socket);
       socket.on('connect', () => {
         console.log({
           message: 'Connected to socket server from userContact',
@@ -39,71 +44,45 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
         console.log('Socket ID:', socket.id);
       });
     }
-  },[])
+  }, []);
 
   useEffect(() => {
     setFriendshipState(status);
-  }, [status])
-  
-  useEffect(() => {
+  }, [status]);
 
-    if (isClicked == "send"  ) {
+  useEffect(() => {
+    if (isClicked == 'send') {
       sendFriendRequest(username).then((res) => {
-        setIsClicked("");
-         setFriendshipState(res.request.friendshipStatus);
+        setIsClicked('');
+        setFriendshipState(res.request.friendshipStatus);
       });
-    }
-    else if ( isClicked == "cancel" ){
-      cancelFriendRequest(username).then( (res) => {
-        setIsClicked("");
-         setFriendshipState(false);
+    } else if (isClicked == 'cancel') {
+      cancelFriendRequest(username).then((res) => {
+        setIsClicked('');
+        setFriendshipState(false);
       });
     }
   }, [isClicked, username, friendshipState]);
 
   const router = useRouter();
   const createRoom = () => {
-    const convo = {
-      type: "DM", 
-      to: id,
-    }
+    const payload = {
+      type: 'DM',
+      participants: [id],
+    };
 
-    createNewConv(convo).then( (res) => {
-    
-      console.log("created ");
-      console.log(res);
+    socket?.emit('createRoom', payload, function createdAck(id: string) {
+      console.log(`I joined room ${id} successfully!`);
+      router.push(`/messages/${+id}`);
+    });
+  };
 
-      socket?.emit('createRoom', {
-        roomName: res.name,
-        type: res.type,
-        to: username,
-      }, function createdAck(response: any) {
-        // TODO: Check why this is not called
-        console.log({
-          "Response from server": response,
-        });
-        router.push(`/messages/${res.id}`)
-      });
-
-      // Because for some reason we don't get the ack from the server in the previous emit
-      socket?.on('joinedRoom', (roomName: string, callback) => {
-        console.log('socket joined room')
-        router.push(`/messages/${res.id}`)
-        callback(`I joined room ${roomName} successfully!`); // Send ack to server
-      });
-
-      console.log('socket joined room')
-    })
-  }
-  
   return (
     <div className="flex justify-center gap-4 px-6">
-
-
       {!me && friendshipState == false && (
         <button
           onClick={() => {
-            setIsClicked("send")
+            setIsClicked('send');
             console.log('sending');
           }}
           className={`
@@ -113,62 +92,63 @@ const Contacts: React.FC<ContactsProps> = ({ username, me, status, url , id}) =>
           `}
         >
           {ContactsItems.sendRequest.icon}
-          </button>
+        </button>
       )}
       {!me && friendshipState == FriendshipStatus.PENDING && (
         <button
           onClick={() => {
-            setIsClicked("cancel");
+            setIsClicked('cancel');
           }}
           className={`
           rounded-xl
           bg-[${ContactsItems.cancelRequest.color}]
           p-2
           `}
-          >
+        >
           {ContactsItems.cancelRequest.icon}
         </button>
       )}
-      {
-        !me && friendshipState == FriendshipStatus.ACCEPTED && (
-          <button
+      {!me && friendshipState == FriendshipStatus.ACCEPTED && (
+        <button
           disabled
           className={`
           rounded-xl
           bg-[${ContactsItems.acceptRequest.color}]
           p-2
-          `}>
-            {ContactsItems.acceptRequest.icon}
-            </button>
-        )
-      }
+          `}
+        >
+          {ContactsItems.acceptRequest.icon}
+        </button>
+      )}
 
-      {!me && 
-      <button
-      onClick={() => {console.log('clicked') ;createRoom()}}
-
-      className={`
+      {!me && (
+        <button
+          onClick={() => {
+            console.log('clicked');
+            createRoom();
+          }}
+          className={`
       rounded-xl
       bg-[${ContactsItems.sendMessage.color}]
-      p-2`}>
-        {ContactsItems.sendMessage.icon}
-      </button>
-      
-      }
-      
+      p-2`}
+        >
+          {ContactsItems.sendMessage.icon}
+        </button>
+      )}
+
       <Link
-      target="_blank"
+        target="_blank"
         href={url}
         className={`
         rounded-xl
                         bg-[#6257FE]
                         p-2
                         `}
-                        >
+      >
         {ContactsItems.intra.icon}
       </Link>
     </div>
-    );
+  );
 };
 
 export default Contacts;

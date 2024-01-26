@@ -1,23 +1,21 @@
- "use client";
+'use client';
 
-import Image from "next/image";
-import Avatar from "../Avatar";
-import ProfileAvatar from "./ProfileAvatar";
-import UserName from "./UserName";
-import Stats from "./Stats";
-import Contacts from "./Contacts";
-import { User } from "./types";
+import Image from 'next/image';
+import Avatar from '../Avatar';
+import ProfileAvatar from './ProfileAvatar';
+import UserName from './UserName';
+import Stats from './Stats';
+import Contacts from './Contacts';
+import { User } from './types';
 
-
-
-const UserInfo: React.FC<User> = ({ 
-  username, 
+const UserInfo: React.FC<User> = ({
+  username,
   stats,
-  me, 
-  isFriend, 
-  url, 
-  id}) => {
-
+  me,
+  isFriend,
+  url,
+  id,
+}) => {
   return (
     <div className="w-full p-4">
       <div className="w-full relative  h-[400px]">
@@ -34,9 +32,15 @@ const UserInfo: React.FC<User> = ({
         <div className="absolute w-full h-28 max-[880px]:h-64 bottom-8 rounded-[2.5rem] bg-[#20204A]/90 ">
           <div className="w-full relative h-full flex justify-center">
             <div className="absolute left-1/2 transform  -translate-x-1/2 -translate-y-1/2">
-              <ProfileAvatar 
-              avatar={ username ? `http://localhost:3000/api/users/${username}/avatar`: ""} 
-              experiencePoints={stats.exp} level={stats.level} />
+              <ProfileAvatar
+                avatar={
+                  username
+                    ? `http://localhost:3000/api/users/${username}/avatar`
+                    : ''
+                }
+                experiencePoints={stats.exp}
+                level={stats.level}
+              />
             </div>
             <div className=" absolute bottom-2 max-[880px]:top-16">
               <UserName name={username} />
@@ -54,7 +58,13 @@ const UserInfo: React.FC<User> = ({
                 <Stats />
               </div>
               <div className="self-center">
-                <Contacts username={username} me={me} status={isFriend} url={url} id={id}/>
+                <Contacts
+                  username={username}
+                  me={me}
+                  status={isFriend}
+                  url={url}
+                  id={id}
+                />
               </div>
             </div>
           </div>
