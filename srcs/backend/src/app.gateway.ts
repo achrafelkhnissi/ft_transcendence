@@ -62,7 +62,7 @@ export class AppGateway
     if (!user) {
       client.disconnect();
       this.logger.error('Unauthorized');
-      throw new UnauthorizedException('Unauthorized');
+      throw new UnauthorizedException('Unauthorized'); // TODO: This crashes the server when you delete a session but keep logged in in other tabs
     }
 
     // Join the user's room to keep track of all the user's sockets
