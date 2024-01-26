@@ -10,7 +10,6 @@ export class FriendRequestsController {
 
   constructor(private readonly friendRequestsService: FriendRequestsService) {}
 
-  // TODO: Adding an existing friend should return an error
   @Get('send')
   async sendFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
     const senderId = user?.id;

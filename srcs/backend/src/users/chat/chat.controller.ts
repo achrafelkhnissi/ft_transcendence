@@ -54,13 +54,13 @@ export class ChatController {
     return this.chatService.findOne(+id);
   }
 
-  // TODO: Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint
+  // Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
     return this.chatService.update(+id, updateChatDto);
   }
 
-  // todo: only the owner of the chat should be able to delete it
+  // only the owner of the chat should be able to delete it
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatService.remove(+id);

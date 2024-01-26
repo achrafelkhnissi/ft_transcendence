@@ -1,7 +1,6 @@
 import { $Enums, FriendshipStatus, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
-// TODO: Make this work
 export class UserResponseDto implements User {
   id: number;
   username: string;

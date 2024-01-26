@@ -9,7 +9,6 @@ export class MessageService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  // TODO: Check if senderId is needed because we can get it from the currently logged in user
   async create(createMessageDto: CreateMessageDto) {
     const { content, conversationId, senderId, receiverUsername } =
       createMessageDto;

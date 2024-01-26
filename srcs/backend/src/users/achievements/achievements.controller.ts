@@ -65,13 +65,11 @@ export class AchievementsController {
     return this.achievementsService.getUserAchievementsByUsername(username);
   }
 
-  // TODO: Maybe change id to name?
   @Get(':id/users')
   getAchievementUsers(@Param('id') id: string) {
     return this.achievementsService.getAchievementUsers(+id);
   }
 
-  // TODO: Give achievement to user
   @Post(':id/users')
   giveAchievementToUser(@Body() body) {
     // const { achievementName, userName  } = body;
@@ -83,7 +81,6 @@ export class AchievementsController {
     );
   }
 
-  // TODO: Remove achievement from user
   @Delete(':id/users')
   removeAchievementFromUser(@Body() body) {
     const { achievementId, userId } = body;
@@ -94,7 +91,6 @@ export class AchievementsController {
     );
   }
 
-  // TODO: Create many achievements
   @Post('many')
   createMany(@Body() createAchievementDtos: CreateAchievementDto[]) {
     return this.achievementsService.createMany(createAchievementDtos);

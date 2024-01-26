@@ -81,8 +81,6 @@ export class SmsService {
     return await this.updatePhoneNumberVerificationStatus(userId);
   }
 
-  // TODO: Change the name of this method
-  // TODO: Only update the verified or twoFactorEnabled based on the user's actions
   async updatePhoneNumberVerificationStatus(userId: number) {
     return this.prismaService.userSettings.update({
       where: {

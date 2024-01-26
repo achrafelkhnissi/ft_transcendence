@@ -198,42 +198,4 @@ export class AppGateway
 
     return chat.id;
   }
-
-  @SubscribeMessage('typing')
-  async onTyping(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    const { user } = client.request;
-
-    this.server.to(payload.name).emit('onTyping', `${user.username} is typing`);
-
-    return 'typing';
-  }
-
-  @SubscribeMessage('stopTyping')
-  async onStopTyping(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    const { user } = client.request;
-
-    this.server
-      .to(payload.name)
-      .emit('onStopTyping', `${user.username} stopped typing`);
-
-    return 'stopTyping';
-  }
-
-  @SubscribeMessage('read')
-  async onRead(
-    @MessageBody() payload: any, // TODO: Create a DTO for this
-    @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    const { user } = client.request;
-
-    this.server.to(payload.name).emit('onRead', user.username);
-
-    return 'read';
-  }
 }

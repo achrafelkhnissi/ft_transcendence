@@ -158,7 +158,6 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
 
       const numberOfUsers = randomNumber(1, 20);
       for (let i = 0; i < numberOfUsers; i++) {
-        // limit the username to minimum 8 lowercase characters without any special characters
         const username = faker.internet
           .userName()
           .toLowerCase()
@@ -175,12 +174,10 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
 
       const users = await prisma.user.findMany();
 
-      // TODO: Remove this after testing
       for (let i = 0; i < 5; i++) {
         await createConversation(users);
       }
 
-      // TODO: Remove this after testing
       for (let i = 0; i < 5; i++) {
         await createConversation([
           user,
