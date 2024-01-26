@@ -15,7 +15,11 @@ export class FtSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: number, done: CallableFunction) {
-    const user = await this.usersService.findById(userId); // TODO: This crashes the server when you delete a user but keep the session open
-    done(null, user);
+    try {
+      const user = await this.usersService.findById(userId);
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
   }
 }
