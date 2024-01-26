@@ -40,6 +40,11 @@ async function bootstrap() {
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
     }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+      httpOnly: true,
+      secure: false,
+    },
   });
 
   app.use(sessionMiddleware);

@@ -52,7 +52,16 @@ export class AuthController {
         `Redirecting to ${process.env.FRONTEND_URL} after logging out`,
       );
 
-      res.redirect(process.env.FRONTEND_URL);
+      req.session.destroy(() => {
+        res.clearCookie('connect.sid', {
+          path: '/',
+          domain: 'localhost',
+          httpOnly: true,
+          secure: false,
+        });
+        this.logger.debug(`Session destroyed`);
+        res.redirect(process.env.FRONTEND_URL);
+      });
     });
   }
 }
