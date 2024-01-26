@@ -7,13 +7,6 @@ LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
 ENV NODE_ENV development
 
-# TODO: Add the following environment variables
-# ARG NEST_PORT
-# ARG PRISMA_STUDIO_PORT
-
-# TODO: remove the following line
-RUN apk update && apk add postgresql
-
 USER node
 
 WORKDIR /app
