@@ -31,11 +31,25 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       withCredentials: true,
     }); // Replace with your server URL
 
+    // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
+    newSocket.on('unauthorized', (error) => {
+      console.log('unauthorized: ', error);
+
+      newSocket.disconnect();
+
+      window.location.href = '/';
+    });
+
     newSocket.on('connect', async () => {
       console.log({
         message: 'Connected to socket server',
         socketId: newSocket.id,
       });
+    });
+
+    // Testing notification
+    newSocket.on('onNotification', (data) => {
+      console.log('New notification: ', data);
     });
 
     setSocket(newSocket);

@@ -19,4 +19,5 @@ export interface UserType {
   updatedAt: Date;
 
   settings?: UserSettings;
+  isNew?: boolean;
 }
