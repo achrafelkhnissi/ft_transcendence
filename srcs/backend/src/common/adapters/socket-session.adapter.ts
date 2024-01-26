@@ -3,10 +3,11 @@ import { INestApplicationContext } from '@nestjs/common';
 import { Server, ServerOptions } from 'socket.io';
 import * as express from 'express';
 import * as passport from 'passport';
+import { UserType } from '../interfaces/user.interface';
 
 declare module 'http' {
   export interface IncomingMessage {
-    user?: any; // TODO: Replace `any` with the actual type of `user` if known
+    user?: UserType;
   }
 }
 
@@ -25,7 +26,6 @@ export class SessionAdapter extends IoAdapter {
       middleware(socket.request, {}, next);
 
     server.use((socket, next) => {
-      socket.data.username = 'test'; //passing random property to see if use method is working
       socket.data.user = socket.request.user;
       socket.data.session = this.session;
       next();
