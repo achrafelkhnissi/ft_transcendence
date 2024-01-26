@@ -74,9 +74,6 @@ export class AppGateway
     const rooms: string[] = await this.chatService.getRoomsByUserId(user.id);
     rooms.forEach((room) => client.join(room));
 
-    //q: How to get all the room that exists in the server?
-    // const rooms = this.server.sockets.adapter.rooms;
-
     this.logger.debug(`Client ${user.username} connected`);
 
     return `connected`;
@@ -193,78 +190,59 @@ export class AppGateway
     this.server.to(receiver.username).socketsJoin(chat.name);
     this.server.to(user.username).socketsJoin(chat.name);
 
-    // create a conversation in the database
+    this.server.to(receiver.username).emit('onNotification', chat);
 
     return chat.id;
   }
 
-  @SubscribeMessage('notification')
-  async onNotification(
-    @MessageBody() payload: any, // TODO: Use notification DTO for this
+  @SubscribeMessage('typing')
+  async onTyping(
+    @MessageBody() payload: any, // TODO: Create a DTO for this
     @ConnectedSocket() client: Socket,
   ): Promise<string> {
-    console.log({ payload });
+    const { user } = client.request;
 
-    return `notification`;
+    this.server.to(payload.name).emit('onTyping', `${user.username} is typing`);
+
+    return 'typing';
   }
 
-  // @SubscribeMessage('typing')
-  // async onTyping(
-  //   @MessageBody() payload: any, // TODO: Create a DTO for this
-  //   @ConnectedSocket() client: Socket,
-  // ): Promise<string> {
-  //   // const { to: toUsername, roomName } = payload;
-  //   // const { user } = client.request;
+  @SubscribeMessage('stopTyping')
+  async onStopTyping(
+    @MessageBody() payload: any, // TODO: Create a DTO for this
+    @ConnectedSocket() client: Socket,
+  ): Promise<string> {
+    const { user } = client.request;
 
-  //   // this.server.to(roomName).emit('onTyping', toUsername);
+    this.server
+      .to(payload.name)
+      .emit('onStopTyping', `${user.username} stopped typing`);
 
-  //   return 'typing';
-  // }
+    return 'stopTyping';
+  }
 
-  // @SubscribeMessage('stopTyping')
-  // async onStopTyping(
-  //   @MessageBody() payload: any, // TODO: Create a DTO for this
-  //   @ConnectedSocket() client: Socket,
-  // ): Promise<string> {
-  //   // const { to: toUsername, roomName } = payload;
-  //   // const { user } = client.request;
+  @SubscribeMessage('read')
+  async onRead(
+    @MessageBody() payload: any, // TODO: Create a DTO for this
+    @ConnectedSocket() client: Socket,
+  ): Promise<string> {
+    const { user } = client.request;
 
-  //   // this.server.to(roomName).emit('onStopTyping', toUsername);
+    this.server.to(payload.name).emit('onRead', user.username);
 
-  //   return 'stopTyping';
-  // }
+    return 'read';
+  }
 
-  // @SubscribeMessage('read')
-  // async onRead(
-  //   @MessageBody() payload: any, // TODO: Create a DTO for this
-  //   @ConnectedSocket() client: Socket,
-  // ): Promise<string> {
-  //   // const { to: toUsername, roomName } = payload;
-  //   // const { user } = client.request;
+  @SubscribeMessage('status')
+  async onStatus(
+    @MessageBody() payload: UserStatusDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<string> {
+    const { user } = client.request;
 
-  //   // this.server.to(roomName).emit('onRead', toUsername);
+    // Only update the status if the room `user.username` is empty
+    this.server.to(user.username).emit('status', payload);
 
-  //   return 'read';
-  // }
-
-  // @SubscribeMessage('status')
-  // async onStatus(
-  //   @MessageBody() payload: UserStatusDto,
-  //   @ConnectedSocket() client: Socket,
-  // ): Promise<string> {
-  //   // const { to: toUsername, roomName } = payload;
-  //   // const { user } = client.request;
-
-  //   // this.server.to(roomName).emit('onStatus', toUsername);
-
-  //   return 'status';
-  // }
-
-  // @SubscribeMessage('notification')
-  // async onNotification(
-  //   @MessageBody() payload: any, // TODO: Use notification DTO for this
-  //   @ConnectedSocket() client: Socket,
-  // ): Promise<string> {
-  //   return `notification`;
-  // }
+    return 'status';
+  }
 }

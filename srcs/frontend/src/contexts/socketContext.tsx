@@ -38,6 +38,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       });
     });
 
+    // Testing notification
+    newSocket.on('onNotification', (data) => {
+      console.log('New notification: ', data);
+    });
+
     setSocket(newSocket);
 
     return () => {
