@@ -198,6 +198,16 @@ export class AppGateway
     return chat.id;
   }
 
+  @SubscribeMessage('notification')
+  async onNotification(
+    @MessageBody() payload: any, // TODO: Use notification DTO for this
+    @ConnectedSocket() client: Socket,
+  ): Promise<string> {
+    console.log({ payload });
+
+    return `notification`;
+  }
+
   // @SubscribeMessage('typing')
   // async onTyping(
   //   @MessageBody() payload: any, // TODO: Create a DTO for this

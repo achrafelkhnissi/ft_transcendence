@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class NotificationsService {
@@ -21,13 +22,18 @@ export class NotificationsService {
     },
   };
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly server: Server,
+  ) {}
 
   async create(createNotificationDto: CreateNotificationDto) {
     try {
       const notification = await this.prismaService.notification.create({
         data: createNotificationDto,
       });
+
+      this.server.emit('notification', notification);
 
       return notification;
     } catch (error) {
