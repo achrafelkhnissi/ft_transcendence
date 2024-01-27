@@ -14,13 +14,12 @@ import { SessionAdapter } from './common/adapters/socket-session.adapter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Configure Cross-Origin Resource Sharing (CORS)
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || new URL(origin).port === '1337') {
-        console.log('main: true origin', origin);
         callback(null, true);
       } else {
-        console.log('main: false origin', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -29,15 +28,18 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Configure global pipes
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      transform: true,
+      whitelist: true, // remove unknown properties
+      transform: true, // transform payloads to be objects typed according to their DTO classes
+      enableDebugMessages: true, // enable debug messages. TODO: remove in production
     }),
   );
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Configure global middlewares
+  app.use(express.json()); // parse application/json
+  app.use(express.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
   app.use(cookieParser());
 
   const sessionMiddleware = session({
