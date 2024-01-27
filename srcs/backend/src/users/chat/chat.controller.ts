@@ -106,4 +106,9 @@ export class ChatController {
 
     return this.chatService.getUserChats(username);
   }
+
+  @Get('names')
+  getChatNames() {
+    return this.chatService.getChatNames();
+  }
 }

@@ -417,4 +417,14 @@ export class ChatService {
         throw new NotFoundException(err.message);
       });
   }
+
+  async getChatNames() {
+    return this.prismaService.conversation
+      .findMany({
+        select: {
+          name: true,
+        },
+      })
+      .then((chats) => chats.map((chat) => chat.name));
+  }
 }
