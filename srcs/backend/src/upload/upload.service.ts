@@ -15,4 +15,15 @@ export class UploadService {
       },
     });
   }
+
+  uploadChannelAvatar(channelId: number, image: Express.Multer.File) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        image: image.path,
+      },
+    });
+  }
 }
