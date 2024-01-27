@@ -15,7 +15,16 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || new URL(origin).port === '1337') {
+        console.log('main: true origin', origin);
+        callback(null, true);
+      } else {
+        console.log('main: false origin', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+
     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     credentials: true,
   });
