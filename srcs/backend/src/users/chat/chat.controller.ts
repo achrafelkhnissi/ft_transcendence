@@ -37,6 +37,10 @@ export class ChatController {
       throw new NotFoundException('User not found');
     }
 
+    if (createChatDto.type != 'DM') {
+      createChatDto.ownerId = user.id;
+    }
+
     return this.chatService.create(createChatDto);
   }
 

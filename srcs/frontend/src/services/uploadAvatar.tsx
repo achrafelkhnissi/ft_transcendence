@@ -12,18 +12,19 @@ const uploadAvatar = async (newAvatar: File | null) => {
   formData.append('image', newAvatar);
 
   // Send a POST request
-  axios.post('http://localhost:3000/api/upload/avatar', formData, {
-    withCredentials: true,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  // .then((response) => {
-  //     console.log('File uploaded successfully', response.data);
-  // })
-  // .catch((error) => {
-  //     console.error('File upload failed', error);
-  // });
+  axios
+    .post('http://localhost:3000/api/upload/avatar', formData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      console.log('File uploaded successfully', response.data);
+    })
+    .catch((error) => {
+      console.error('File upload failed', error);
+    });
 };
 
 export default uploadAvatar;

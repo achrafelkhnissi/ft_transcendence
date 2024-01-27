@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 export class UploadService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  uploadAvatar(userId: number, image: Express.Multer.File) {
+  uploadUserAvatar(userId: number, image: Express.Multer.File) {
     return this.prismaService.user.update({
       where: {
         id: userId,
@@ -16,14 +16,7 @@ export class UploadService {
     });
   }
 
-  uploadChannelAvatar(channelId: number, image: Express.Multer.File) {
-    return this.prismaService.conversation.update({
-      where: {
-        id: channelId,
-      },
-      data: {
-        image: image.path,
-      },
-    });
+  uploadChannelAvatar(image: Express.Multer.File) {
+    return image.path;
   }
 }
