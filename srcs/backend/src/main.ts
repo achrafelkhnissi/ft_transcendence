@@ -39,22 +39,23 @@ async function bootstrap() {
 
   // Configure global middlewares
   app.use(express.json()); // parse application/json
-  app.use(express.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
+  app.use(express.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded (extended: true allows parsing of nested objects)
   app.use(cookieParser());
 
   const sessionMiddleware = session({
-    secret: process.env.NEST_SESSION_SECRET || 'secret',
-    resave: false,
-    saveUninitialized: false,
+    name: 'pong-time_sid', // Session ID cookie name
+    secret: process.env.NEST_SESSION_SECRET || 'secret', // Used to sign the session ID cookie
+    resave: false, // Don't save session if unmodified
+    saveUninitialized: false, // Only save session if a property has been added to req.session
     store: new PrismaSessionStore(new PrismaClient(), {
-      checkPeriod: 2 * 60 * 1000, // 2 minutes
+      checkPeriod: 2 * 60 * 1000, // Check for expired sessions every 2 minutes to clean up
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
     }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-      httpOnly: true,
-      secure: false,
+      httpOnly: true, // Prevents client side JS from reading the cookie
+      secure: false, // Sent over HTTP and HTTPS
     },
   });
 
