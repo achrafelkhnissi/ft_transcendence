@@ -53,7 +53,7 @@ export class AuthController {
       );
 
       req.session.destroy(() => {
-        res.clearCookie('connect.sid', {
+        res.clearCookie('pong-time.sid', {
           path: '/',
           domain: 'localhost',
           httpOnly: true,

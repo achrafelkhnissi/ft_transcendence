@@ -43,14 +43,14 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const sessionMiddleware = session({
-    name: 'pong-time_sid', // Session ID cookie name
+    name: 'pong-time.sid', // Session ID cookie name
     secret: process.env.NEST_SESSION_SECRET || 'secret', // Used to sign the session ID cookie
     resave: false, // Don't save session if unmodified
     saveUninitialized: false, // Only save session if a property has been added to req.session
     store: new PrismaSessionStore(new PrismaClient(), {
       checkPeriod: 2 * 60 * 1000, // Check for expired sessions every 2 minutes to clean up
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
+      dbRecordIdIsSessionId: false, // Don't use the database record ID as the session ID
+      dbRecordIdFunction: () => `pong-time.sid.${Date.now()}`,
     }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
