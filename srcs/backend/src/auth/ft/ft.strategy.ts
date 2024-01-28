@@ -2,6 +2,7 @@ import { UsersService } from 'src/users/users.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
+import { Request } from 'express';
 
 // TODO: Remove this after testing
 import { ConversationType, PrismaClient } from '@prisma/client';
@@ -128,14 +129,25 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       clientID: process.env.FT_CLIENT_ID,
       clientSecret: process.env.FT_CLIENT_SECRET,
       callbackURL: process.env.FT_REDIRECT_URI,
+      passReqToCallback: true,
       Scope: ['profile', 'email'],
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: Profile) {
+  async validate(
+    request: Request,
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+  ) {
     const { username } = profile;
     const email = profile.emails[0].value;
     const url = process.env.FT_PROFILE_URL + username;
+
+    // Get frontend url from request
+    const frontend = request.headers.referer;
+
+    process.env.FRONTEND_URL = frontend;
 
     this.logger.debug(`validating user ${username}`);
 
