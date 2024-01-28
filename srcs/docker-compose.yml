@@ -69,7 +69,7 @@ services:
     environment:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
-      - DDOMAIN_NAME=${DOMAIN_NAME}
+      - DOMAIN_NAME=${DOMAIN_NAME}
     volumes:
       - ./frontend:/app # for hot reloading
     networks:
