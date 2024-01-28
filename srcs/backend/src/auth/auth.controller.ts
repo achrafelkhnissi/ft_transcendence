@@ -25,11 +25,11 @@ export class AuthController {
 
     // TODO: To be tested
     // Set a cookie to be used by the frontend to determine if the user is logged in
-    res.cookie('pong-time.authenticated', 'true', {
-      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-      httpOnly: false, // Allow client side JS to read the cookie
-      secure: false, // Sent over HTTP and HTTPS
-    });
+    // res.cookie('pong-time.authenticated', 'true', {
+    //   maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+    //   httpOnly: false, // Allow client side JS to read the cookie
+    //   secure: false, // Sent over HTTP and HTTPS
+    // });
 
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
@@ -68,12 +68,12 @@ export class AuthController {
           secure: false,
         });
 
-        res.clearCookie('pong-time.authenticated', {
-          path: '/',
-          domain: process.env.DOMAIN_NAME,
-          httpOnly: false,
-          secure: false,
-        });
+        // res.clearCookie('pong-time.authenticated', {
+        //   path: '/',
+        //   domain: process.env.DOMAIN_NAME,
+        //   httpOnly: false,
+        //   secure: false,
+        // });
 
         this.logger.debug(`Session destroyed`);
 
