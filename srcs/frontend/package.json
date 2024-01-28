@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "dev": "next dev -p ${NEXT_PORT:-3001}",
+    "dev": "HOST=${DOMAIN_NAME} next dev -p ${NEXT_PORT}",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

@@ -28,13 +28,7 @@ interface MessagePayload {
 @WebSocketGateway({
   namespace: '',
   cors: {
-    origin: (origin, callback) => {
-      if (!origin || new URL(origin).port === '1337') {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: process.env.FRONTEND,
     credentials: true,
   },
 })

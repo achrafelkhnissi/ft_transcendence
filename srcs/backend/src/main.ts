@@ -16,14 +16,7 @@ async function bootstrap() {
 
   // Configure Cross-Origin Resource Sharing (CORS)
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || new URL(origin).port === '1337') {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-
+    origin: process.env.FRONTEND,
     methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     credentials: true,
   });
