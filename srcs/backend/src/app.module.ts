@@ -14,6 +14,10 @@ import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
 import { MessageModule } from './users/chat/message/message.module';
 import { AppGateway } from './app.gateway';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
+import authConfig from './config/authConfig';
+import twilioConfig from './config/twilioConfig';
 
 @Module({
   imports: [
@@ -24,6 +28,9 @@ import { AppGateway } from './app.gateway';
     FriendRequestsModule,
     NotificationsModule,
     MessageModule,
+    SmsModule,
+    ChatModule,
+    UploadModule,
     RouterModule.register([
       {
         path: 'users',
@@ -40,9 +47,10 @@ import { AppGateway } from './app.gateway';
         ],
       },
     ]),
-    SmsModule,
-    ChatModule,
-    UploadModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration, authConfig, twilioConfig],
+    }),
   ],
   controllers: [AppController],
   providers: [

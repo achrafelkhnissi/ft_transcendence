@@ -1,14 +1,18 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SmsService {
   private twilioClient: Twilio;
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
     this.twilioClient = new Twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN,
+      this.configService.get<string>('twilio.accountSid'),
+      this.configService.get<string>('twilio.authToken'),
     );
   }
 
@@ -27,7 +31,7 @@ export class SmsService {
   ): Promise<{ status: string; message: string }> {
     try {
       const result = await this.twilioClient.verify.v2
-        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .services(this.configService.get<string>('twilio.verifyServiceSid'))
         .verifications.create({
           to: phoneNumber,
           channel: 'sms',
