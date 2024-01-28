@@ -63,8 +63,6 @@ export class ChatService {
   }
 
   async findAllChatForUser(userId: number) {
-    this.logger.log(`Finding all chats for user with id ${userId}`);
-
     const blockedUsers = await this.prismaService.friendRequest
       .findMany({
         where: {
@@ -90,8 +88,6 @@ export class ChatService {
           )
           .filter((id) => id !== userId);
       });
-
-    console.log({ blockedUsers });
 
     const userInfoSelect = {
       id: true,
@@ -156,13 +152,17 @@ export class ChatService {
       })
       .then((chats) => {
         return chats.filter((chat) => {
+          // Filter out DMs with blocked users
           if (chat.type === ConversationType.DM) {
             return !chat.participants.some((participant) =>
               blockedUsers.includes(participant.id),
             );
           }
 
-          // TODO: Check if there's a way to exclude messages from blocked users
+          // Filter out blocked users messages from group chats
+          chat.messages = chat.messages.filter(
+            (message) => !blockedUsers.includes(message.sender.id),
+          );
 
           return true;
         });
