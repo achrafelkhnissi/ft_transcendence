@@ -71,6 +71,6 @@ async function bootstrap() {
 
   app.useWebSocketAdapter(new SessionAdapter(sessionMiddleware, app));
 
-  await app.listen(process.env.NEST_PORT || 3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
