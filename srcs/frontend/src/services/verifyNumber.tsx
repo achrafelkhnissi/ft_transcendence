@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 const verifyNumber = async (num?: string) => {
   try {
     const response = await axios.post(
-      'http://localhost:3000/api/sms/verify',
+      process.env.BACKEND + '/api/sms/verify',
       { phoneNumber: num },
       { withCredentials: true },
     );

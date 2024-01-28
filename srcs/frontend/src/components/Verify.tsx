@@ -17,7 +17,7 @@ const Verify = () => {
       confirmCode(code, null).then((res) => {
         if (res) router.push('/dashboard');
         else {
-          // router.push('http://localhost:3000/api/auth/logout');
+          // router.push(process.env.BACKEND + '/api/auth/logout')
           e.target.value = '';
         }
       });

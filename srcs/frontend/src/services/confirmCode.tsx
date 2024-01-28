@@ -8,7 +8,7 @@ const confirmCode = async (code: string, phoneNumber: string | null) => {
 
   try {
     const response = await axios.post(
-      'http://localhost:3000/api/sms/confirm',
+      process.env.BACKEND + '/api/sms/confirm',
       { code, phoneNumber },
       { withCredentials: true },
     );

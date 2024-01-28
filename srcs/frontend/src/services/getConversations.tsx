@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function getConversations() {
-  const { data } = await axios.get(`http://localhost:3000/api/users/chat`, {
+  const { data } = await axios.get(process.env.BACKEND + `/api/users/chat`, {
     withCredentials: true,
   });
 

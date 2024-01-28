@@ -1,7 +1,15 @@
-const nextConfig = {}
+const nextConfig = {};
 
 module.exports = {
-    images: {
-        domains: ['cdn.intra.42.fr','i.imgur.com','localhost'],
-      },
-}
+  env: {
+    BACKEND: process.env.BACKEND,
+  },
+  images: {
+    domains: [
+      'cdn.intra.42.fr',
+      'i.imgur.com',
+      'localhost',
+      `${process.env.DOMAIN_NAME}`,
+    ],
+  },
+};

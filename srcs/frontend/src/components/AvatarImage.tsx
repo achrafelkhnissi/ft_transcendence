@@ -8,7 +8,7 @@ const AvatarImage = () => {
   const [src, setSrc] = useState<string>('');
   useEffect(() => {
     getCurrentUser().then((res) => {
-      setSrc(`http://localhost:3000/api/users/${res.username}/avatar`);
+      setSrc(process.env.BACKEND + `/api/users/${res.username}/avatar`);
     });
   }, []);
 

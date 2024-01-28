@@ -20,7 +20,7 @@ const Friends: React.FC<FriendsComponentProps> = ({ friends }) => {
           <FriendAvatar
             key={index}
             name={item.username}
-            avatar={`http://localhost:3000/api/users/${item.username}/avatar`}
+            avatar={process.env.BACKEND + `/api/users/${item.username}/avatar`}
           />
         ))}
       </div>

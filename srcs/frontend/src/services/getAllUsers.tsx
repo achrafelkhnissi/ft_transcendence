@@ -2,7 +2,7 @@ import axios from 'axios';
 
 async function getAllUsers() {
   const { data } = await axios.get(
-    `http://localhost:3000/api/users/usernames`,
+    process.env.BACKEND + `/api/users/usernames`,
     { withCredentials: true },
   );
 

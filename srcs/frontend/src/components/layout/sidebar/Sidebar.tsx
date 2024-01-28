@@ -48,7 +48,7 @@ const Sidebar = () => {
         })}
       </div>
       <button
-        onClick={() => route.push('http://localhost:3000/api/auth/logout')}
+        onClick={() => route.push(process.env.BACKEND + '/api/auth/logout')}
         className={`bottom-0 
         self-center 
         flex 

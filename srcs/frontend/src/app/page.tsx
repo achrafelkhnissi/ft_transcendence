@@ -41,7 +41,8 @@ export default function Home() {
           <Link
             className=""
             href={
-              'http://localhost:3000/api/auth/ft' /* TODO: Handle errors! onClick maybe? */
+              `${process.env.BACKEND}/api/auth/ft`
+              /* TODO: Handle errors! onClick maybe? */
             }
           >
             <div className="inline-block">

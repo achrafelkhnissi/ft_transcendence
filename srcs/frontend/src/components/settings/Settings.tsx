@@ -73,14 +73,14 @@ const Settings = () => {
       setData((prev) => {
         return {
           ...prev,
-          avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
         };
       });
       setNewData((prev) => {
         return {
           ...prev,
           phoneNumber: '',
-          avatar: `http://localhost:3000/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
         };
       });
     });

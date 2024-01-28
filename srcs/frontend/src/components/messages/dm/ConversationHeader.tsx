@@ -12,7 +12,7 @@ const ConversationHeader = (receiver: User) => {
     >
       <div className="p-2 flex gap-2 self-center">
         <img
-          src={`http://localhost:3000/api/users/${receiver.username}/avatar`}
+          src={process.env.BACKEND + `/api/users/${receiver.username}/avatar`}
           alt="receiver"
           width={100}
           height={100}

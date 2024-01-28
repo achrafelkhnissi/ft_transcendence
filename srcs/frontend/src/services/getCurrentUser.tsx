@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function getCurrentUser() {
-  const { data } = await axios.get('http://localhost:3000/api/users/me', {
+  const { data } = await axios.get(process.env.BACKEND + `/api/users/me`, {
     withCredentials: true,
   });
 

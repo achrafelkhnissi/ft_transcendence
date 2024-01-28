@@ -27,7 +27,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000', {
+    const newSocket = io(`${process.env.BACKEND}`, {
       withCredentials: true,
     }); // Replace with your server URL
 

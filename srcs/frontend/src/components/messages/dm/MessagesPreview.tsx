@@ -48,7 +48,10 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
             >
               <div className="self-center ">
                 <img
-                  src={`http://localhost:3000/api/users/${friend?.username}/avatar`}
+                  src={
+                    process.env.BACKEND +
+                    `/api/users/${friend?.username}/avatar`
+                  }
                   alt=""
                   width={100}
                   height={100}

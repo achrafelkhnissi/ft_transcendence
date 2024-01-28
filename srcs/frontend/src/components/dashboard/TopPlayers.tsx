@@ -60,7 +60,10 @@ const TopPlayers = () => {
                     <td className=" flex h-full gap-3 justify-center px-2 py-[0.6rem] text-white/30 text-center">
                       <p className="self-center">#{index + 1}</p>
                       <img
-                        src={`http://localhost:3000/api/users/${item.username}/avatar`}
+                        src={
+                          process.env.BACKEND +
+                          `/api/users/${item.username}/avatar`
+                        }
                         alt=""
                         width={40}
                         height={40}

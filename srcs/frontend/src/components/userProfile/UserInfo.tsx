@@ -35,7 +35,7 @@ const UserInfo: React.FC<User> = ({
               <ProfileAvatar
                 avatar={
                   username
-                    ? `http://localhost:3000/api/users/${username}/avatar`
+                    ? process.env.BACKEND + `/api/users/${username}/avatar`
                     : ''
                 }
                 experiencePoints={stats.exp}

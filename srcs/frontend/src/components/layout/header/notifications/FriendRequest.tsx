@@ -36,7 +36,9 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
       >
         <img
           alt=""
-          src={`http://localhost:3000/api/users/${notif.sender.username}/avatar`}
+          src={
+            process.env.BACKEND + `/api/users/${notif.sender.username}/avatar`
+          }
           width={20}
           height={20}
           className="w-[2.5rem] h-[2.5rem] rounded-full  self-center"

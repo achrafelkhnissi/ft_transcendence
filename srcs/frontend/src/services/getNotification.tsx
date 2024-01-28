@@ -2,7 +2,7 @@ import axios from 'axios';
 
 async function getNotifications() {
   const { data } = await axios.get(
-    `http://localhost:3000/api/users/notifications`,
+    process.env.BACKEND + `/api/users/notifications`,
     { withCredentials: true },
   );
 

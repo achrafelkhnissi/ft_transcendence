@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function getRankings() {
-  const { data } = await axios.get(`http://localhost:3000/api/users/ranking`, {
+  const { data } = await axios.get(process.env.BACKEND + `/api/users/ranking`, {
     withCredentials: true,
   });
 

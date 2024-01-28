@@ -2,7 +2,7 @@ import axios from 'axios';
 
 async function deleteNotification(notificationId: number) {
   const { data } = await axios.delete(
-    `http://localhost:3000/api/users/notifications/${notificationId}`,
+    process.env.BACKEND + `/api/users/notifications/${notificationId}`,
     { withCredentials: true },
   );
 

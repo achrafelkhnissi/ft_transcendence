@@ -2,7 +2,7 @@ import axios from 'axios';
 
 async function acceptFirendRequest(friend: string) {
   const { data } = await axios.get(
-    `http://localhost:3000/api/users/friends/requests/accept?username=${friend}`,
+    `${process.env.BACKEND}/api/users/friends/requests/accept?username=${friend}`,
     { withCredentials: true },
   );
 

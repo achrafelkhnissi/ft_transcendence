@@ -5,7 +5,7 @@ interface Props {
   to: number | null;
 }
 
-const API_URL = 'http://localhost:3000/api/users/chat';
+const API_URL = process.env.BACKEND + '/api/users/chat';
 
 const createNewConv = async (convo: Props) => {
   try {

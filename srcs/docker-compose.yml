@@ -29,7 +29,7 @@ services:
     # env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
-      - PORT=${NEST_PORT}
+      - NEST_PORT=${NEST_PORT}
       - FRONTEND=${FRONTEND}
       - DATABASE_URL=${DATABASE_URL}
       - FT_CLIENT_ID=${FT_CLIENT_ID}
@@ -69,6 +69,7 @@ services:
     environment:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
+      - DDOMAIN_NAME=${DOMAIN_NAME}
     volumes:
       - ./frontend:/app # for hot reloading
     networks:
