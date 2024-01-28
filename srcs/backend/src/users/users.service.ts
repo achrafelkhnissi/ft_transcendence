@@ -140,6 +140,23 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
+    const blockedUsers = await this.prisma.friendRequest.findMany({
+      where: {
+        sender: {
+          username,
+        },
+        friendshipStatus: 'BLOCKED',
+      },
+      select: {
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+
     const user = await this.prisma.user.findUnique({
       where: { username },
       select: {
@@ -180,6 +197,7 @@ export class UsersService {
     return {
       ...user,
       friends: await this.friendsService.listFriendsByUsername(username),
+      blockedUsers,
     };
   }
 
@@ -223,25 +241,56 @@ export class UsersService {
     return user?.avatar ?? null;
   }
 
-  getRanking() {
-    return this.prisma.user.findMany({
-      orderBy: {
-        stats: {
-          level: 'desc',
+  async getRanking(userId: number) {
+    const blockedUsers = await this.prisma.friendRequest
+      .findMany({
+        where: {
+          OR: [
+            {
+              senderId: userId,
+            },
+            {
+              receiverId: userId,
+            },
+          ],
+          friendshipStatus: 'BLOCKED',
         },
-      },
-      select: {
-        avatar: true,
-        username: true,
-        stats: {
-          select: {
-            level: true,
-            wins: true,
-            losses: true,
+        select: {
+          senderId: true,
+          receiverId: true,
+        },
+      })
+      .then((blockedUsers) => {
+        return blockedUsers
+          .map((user) =>
+            user.senderId === userId ? user.receiverId : user.senderId,
+          )
+          .filter((id) => id !== userId);
+      });
+
+    return this.prisma.user
+      .findMany({
+        orderBy: {
+          stats: {
+            level: 'desc',
           },
         },
-      },
-    });
+        select: {
+          id: true,
+          avatar: true,
+          username: true,
+          stats: {
+            select: {
+              level: true,
+              wins: true,
+              losses: true,
+            },
+          },
+        },
+      })
+      .then((users) => {
+        return users.filter((user) => !blockedUsers.includes(user.id));
+      });
   }
 
   getUserChats(username: string) {

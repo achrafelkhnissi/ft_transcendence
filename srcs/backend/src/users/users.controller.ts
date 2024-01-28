@@ -79,8 +79,8 @@ export class UsersController {
   }
 
   @Get('ranking')
-  getRanking() {
-    return this.usersService.getRanking();
+  getRanking(@User() user: UserType) {
+    return this.usersService.getRanking(user.id);
   }
 
   @Get('phoneNumbers')
