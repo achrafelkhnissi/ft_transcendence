@@ -181,19 +181,12 @@ export class FriendsService {
       throw new BadRequestException(`User <${friendUsername}> is not blocked`);
     }
 
-    const request = await this.prisma.friendRequest.update({
+    const request = await this.prisma.friendRequest.delete({
       where: {
         senderId_receiverId: {
           senderId: friendRequest.senderId,
           receiverId: friendRequest.receiverId,
         },
-      },
-      data: {
-        friendshipStatus: FriendshipStatus.PENDING,
-      },
-      select: {
-        id: true,
-        friendshipStatus: true,
       },
     });
 
