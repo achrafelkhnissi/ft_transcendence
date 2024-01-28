@@ -30,7 +30,7 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - PORT=${NEST_PORT}
-      - FRONTEND_URL=${FRONTEND_URL}
+      - FRONTEND=${FRONTEND}
       - DATABASE_URL=${DATABASE_URL}
       - FT_CLIENT_ID=${FT_CLIENT_ID}
       - FT_CLIENT_SECRET=${FT_CLIENT_SECRET}
@@ -68,7 +68,7 @@ services:
       - "${NEXT_PORT:-3001}:${NEXT_PORT:-3001}"
     environment:
       - NEXT_PORT=${NEXT_PORT}
-      - BACKEND_URL=${BACKEND_URL}
+      - BACKEND=${BACKEND}
     volumes:
       - ./frontend:/app # for hot reloading
     networks:

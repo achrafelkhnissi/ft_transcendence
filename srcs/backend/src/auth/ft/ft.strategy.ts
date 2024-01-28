@@ -144,11 +144,6 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const email = profile.emails[0].value;
     const url = process.env.FT_PROFILE_URL + username;
 
-    // Get frontend url from request
-    const frontend = request.headers.referer;
-
-    process.env.FRONTEND_URL = frontend;
-
     this.logger.debug(`validating user ${username}`);
 
     try {

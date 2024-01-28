@@ -33,19 +33,19 @@ export class AuthController {
 
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
-      return res.redirect(`${process.env.FRONTEND_URL}/settings`);
+      return res.redirect(`${process.env.FRONTEND}/settings`);
     }
 
     if (settings?.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
-      return res.redirect(`${process.env.FRONTEND_URL}/verify`);
+      return res.redirect(`${process.env.FRONTEND}/verify`);
     }
 
     this.logger.debug(
-      `Redirecting user ${user.username} to ${process.env.FRONTEND_URL}/dashboard`,
+      `Redirecting user ${user.username} to ${process.env.FRONTEND}/dashboard`,
     );
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    res.redirect(`${process.env.FRONTEND}/dashboard`);
   }
 
   @UseGuards(AuthGuard)
@@ -57,27 +57,27 @@ export class AuthController {
         return err;
       }
       this.logger.debug(
-        `Redirecting to ${process.env.FRONTEND_URL} after logging out`,
+        `Redirecting to ${process.env.FRONTEND} after logging out`,
       );
 
       req.session.destroy(() => {
         res.clearCookie('pong-time.sid', {
           path: '/',
-          domain: 'localhost',
+          domain: process.env.DOMAIN_NAME,
           httpOnly: true,
           secure: false,
         });
 
         res.clearCookie('pong-time.authenticated', {
           path: '/',
-          domain: 'localhost',
+          domain: process.env.DOMAIN_NAME,
           httpOnly: false,
           secure: false,
         });
 
         this.logger.debug(`Session destroyed`);
 
-        res.redirect(process.env.FRONTEND_URL);
+        res.redirect(process.env.FRONTEND);
       });
     });
   }
