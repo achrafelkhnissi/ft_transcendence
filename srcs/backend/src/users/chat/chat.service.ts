@@ -62,8 +62,36 @@ export class ChatService {
     return this.prismaService.conversation.findMany();
   }
 
-  findAllChatForUser(id: number) {
-    this.logger.log(`Finding all chats for user with id ${id}`);
+  async findAllChatForUser(userId: number) {
+    this.logger.log(`Finding all chats for user with id ${userId}`);
+
+    const blockedUsers = await this.prismaService.friendRequest
+      .findMany({
+        where: {
+          OR: [
+            {
+              senderId: userId,
+            },
+            {
+              receiverId: userId,
+            },
+          ],
+          friendshipStatus: 'BLOCKED',
+        },
+        select: {
+          senderId: true,
+          receiverId: true,
+        },
+      })
+      .then((blockedUsers) => {
+        return blockedUsers
+          .map((user) =>
+            user.senderId === userId ? user.receiverId : user.senderId,
+          )
+          .filter((id) => id !== userId);
+      });
+
+    console.log({ blockedUsers });
 
     const userInfoSelect = {
       id: true,
@@ -79,19 +107,19 @@ export class ChatService {
             {
               participants: {
                 some: {
-                  id,
+                  id: userId,
                 },
               },
             },
             {
               admins: {
                 some: {
-                  id,
+                  id: userId,
                 },
               },
             },
             {
-              ownerId: id,
+              ownerId: userId,
             },
           ],
         },
@@ -125,6 +153,19 @@ export class ChatService {
             },
           },
         },
+      })
+      .then((chats) => {
+        return chats.filter((chat) => {
+          if (chat.type === ConversationType.DM) {
+            return !chat.participants.some((participant) =>
+              blockedUsers.includes(participant.id),
+            );
+          }
+
+          // TODO: Check if there's a way to exclude messages from blocked users
+
+          return true;
+        });
       })
       .catch((err) => {
         this.logger.error(err.message);
