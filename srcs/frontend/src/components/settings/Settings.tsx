@@ -120,6 +120,18 @@ const Settings = () => {
         };
       });
     }
+    else {
+      setTimeout(() => {
+        setFileError(0);
+        setNewData( (prev) => {
+          return {
+            ...prev,
+            avatar: data.avatar,
+            newAvatar: null,
+          }
+        })
+      }, 3000);
+    }
   };
 
   const isValidUsername = (name: string) => {

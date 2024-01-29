@@ -16,7 +16,7 @@ export interface Message {
 }
 
 export interface Conversation {
-  id: number;
+  id: number ;
   type: string;
   password: string;
   name: string;
