@@ -81,12 +81,12 @@ export class ChatService {
           receiverId: true,
         },
       })
-      .then((blockedUsers) => {
+      .then((friendRequests) => {
         return blockedUsers
-          .map((user) =>
-            user.senderId === userId ? user.receiverId : user.senderId,
+          .map((req) =>
+            req.senderId === userId ? req.receiverId : req.senderId,
           )
-          .filter((id) => id !== userId);
+          .filter((id: number) => id !== userId);
       });
 
     const userInfoSelect = {
