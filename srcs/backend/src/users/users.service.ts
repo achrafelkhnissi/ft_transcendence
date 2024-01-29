@@ -140,22 +140,45 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    const blockedUsers = await this.prisma.friendRequest.findMany({
-      where: {
-        sender: {
-          username,
+    const blockedUsers = await this.prisma.friendRequest
+      .findMany({
+        where: {
+          OR: [
+            {
+              sender: {
+                username,
+              },
+            },
+            {
+              receiver: {
+                username,
+              },
+            },
+          ],
+          friendshipStatus: 'BLOCKED',
         },
-        friendshipStatus: 'BLOCKED',
-      },
-      select: {
-        receiver: {
-          select: {
-            id: true,
-            username: true,
+        select: {
+          receiver: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          sender: {
+            select: {
+              id: true,
+              username: true,
+            },
           },
         },
-      },
-    });
+      })
+      .then((friendRequests) => {
+        return friendRequests
+          .map((req) =>
+            username === req.receiver.username ? req.receiver : req.sender,
+          )
+          .filter((user) => user.username !== username);
+      });
 
     const user = await this.prisma.user.findUnique({
       where: { username },
