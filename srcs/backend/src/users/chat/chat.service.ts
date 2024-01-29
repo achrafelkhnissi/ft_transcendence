@@ -82,7 +82,7 @@ export class ChatService {
         },
       })
       .then((friendRequests) => {
-        return blockedUsers
+        return friendRequests
           .map((req) =>
             req.senderId === userId ? req.receiverId : req.senderId,
           )
