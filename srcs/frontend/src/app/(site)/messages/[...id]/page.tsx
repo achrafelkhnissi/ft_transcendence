@@ -176,7 +176,7 @@ const Home = ({ params }: { params: { id: number } }) => {
           onClick={() => setCreateChannel(false)}
         >
           <div
-            className="w-2/5 h-4/5 self-center bg-[#101038]  z-40 
+            className="w-[500px] h-[600px] self-center bg-[#101038]  z-40 
                             rounded-[2rem] border-4 border-blue-500/30"
             onClick={(e) => e.stopPropagation()}
           >
