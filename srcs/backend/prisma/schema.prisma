@@ -32,7 +32,6 @@ model User {
   notificationsReceived  Notification[]  @relation("ReceivedNotifications")
 
   messagesSent     Message[] @relation("SentMessages")
-  messagesReceived Message[] @relation("ReceivedMessages")
 
   achievements Achievement[]
 
@@ -107,8 +106,6 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   senderId       Int
   sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiverId     Int
-  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

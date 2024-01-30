@@ -19,7 +19,6 @@ import { CreateChatDto } from './users/chat/dto/create-chat.dto';
 
 interface MessagePayload {
   room: string;
-  to: string;
   content: string;
   conversationId: number;
 }
@@ -108,7 +107,7 @@ export class AppGateway
     @ConnectedSocket() client: Socket,
   ): Promise<string> {
     const { user } = client.request;
-    const { room, conversationId, content, to: receiverUsername } = body;
+    const { room, conversationId, content } = body;
 
     if (!user) {
       client.disconnect();
@@ -119,12 +118,11 @@ export class AppGateway
       content,
       conversationId,
       senderId: user.id,
-      receiverUsername,
     });
 
     this.server.to(room).emit('onMessage', message);
 
-    return receiverUsername;
+    return 'Message sent';
   }
 
   @SubscribeMessage('join')

@@ -3,33 +3,26 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+interface MessagePayload {
+  senderId: number;
+  content: string;
+  conversationId: number;
+}
+
 @Injectable()
 export class MessageService {
   private readonly logger = new Logger(MessageService.name);
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createMessageDto: CreateMessageDto) {
-    const { content, conversationId, senderId, receiverUsername } =
-      createMessageDto;
-
-    const receiverId: number = await this.prismaService.user
-      .findUnique({
-        where: {
-          username: receiverUsername,
-        },
-        select: {
-          id: true,
-        },
-      })
-      .then((user) => user.id);
+  async create(messageData: MessagePayload) {
+    const { content, conversationId, senderId } = messageData;
 
     return this.prismaService.message.create({
       data: {
         content,
         conversationId,
         senderId,
-        receiverId,
       },
       select: {
         id: true,
@@ -38,14 +31,6 @@ export class MessageService {
         createdAt: true,
         conversationId: true,
         sender: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        receiver: {
           select: {
             id: true,
             username: true,
