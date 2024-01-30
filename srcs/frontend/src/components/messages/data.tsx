@@ -4,6 +4,7 @@ export interface User {
   username: string;
   avatar: string;
   status: string;
+  id: number;
 }
 
 export interface Message {

@@ -143,6 +143,19 @@ const CreateChannel = () => {
     }
   }
 
+  const deleteMember = (id : number) => {
+    const newParicipantsInfos = newChannel.participantsInfos.filter((member) => member.id != id);
+    const newParticipants = newChannel.participants.filter((num) => id != num );
+
+    setNewChannel((prev) => {
+      return {
+        ...prev,
+        participantsInfos : newParicipantsInfos,
+        participants: newParticipants,
+      }
+    })
+  }
+
   return (
     <div className="pt-8 flex justify-center flex-col gap-6 px-6">
       <h1 className="mx-auto text-white font-bold text-2xl">New Channel</h1>
@@ -296,7 +309,11 @@ const CreateChannel = () => {
                         className="rounded-full h-12 w-12 border-2 self-center "
                         />
                         <p className="self-center text-white/90 text-sm"> {member.username} </p>
-                    <span className="absolute -top-[0.2rem] right-1 text-red-700 font-bold cursor-pointer">x</span>
+                    <span 
+                      className="absolute -top-[0.2rem] right-1 text-red-700 font-bold cursor-pointer"
+                      onClick={() => deleteMember(member.id)}
+                    >
+                      x</span>
                     </div>
                     )
                   })}
