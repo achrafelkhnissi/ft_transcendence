@@ -1,10 +1,12 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoIosAddCircle } from 'react-icons/io';
 import { IoAdd } from 'react-icons/io5';
 import { MdModeEdit } from 'react-icons/md';
 import { RiAddFill } from 'react-icons/ri';
 import { Conversation, User } from '../data';
 import getUser from '@/services/getUser';
+import { ToastContainer } from 'react-toastify';
+import getAllChannelNames from '@/services/getAllChannelNames';
 
 interface NewChannel {
   type: string;
@@ -40,16 +42,27 @@ const channelNameErrorMessage = {
   2: 'Entry must be 8+ lowercase letters and may include one mid-string hyphen.',
 };
 
+const newMemberError = {
+  0: 'valid',
+  1: 'user already exist!',
+  2: 'invalid user!',
+}
+
 const CreateChannel = () => {
-  // const [newChannel, setNewChannel] = useState<Conversation>({})
-  const [privateChannel, setPrivate] = useState<boolean>(false);
-  const [lockedChannel, setProtected] = useState<boolean>(false);
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
   const [fileError, setFileError] = useState<0 | 1 | 2>(0);
   const [channelNameError, setChannelNameError] = useState<0 | 1 | 2>(0);
+  const [memberError, setMemeberError] = useState<0 | 1| 2 >(0);
   const [channelNames, setChannelNames] = useState<string[]>([]);
   const [newMember, setNewMember] = useState<string>("");
 
+  useEffect(() => {
+
+    getAllChannelNames().then((res) => {
+      if (res)
+        setChannelNames(res);
+    })
+  }, [])
 
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
@@ -93,12 +106,12 @@ const CreateChannel = () => {
   };
 
   const isValidChannelName = (name: string) => {
-    const regex = /^(?=[a-z-]{8,}$)[a-z]+(?:-[a-z]+)?$/;
+    const regex = /^(?=[a-z-]{5,}$)[a-z]+(?:-[a-z]+)?$/;
 
-    // if (channelNames?.some((str) => str === name)) {
-    //   setChannelNameError(1);
-    //   return false;
-    // }
+    if (channelNames?.some((str) => str === name)) {
+      setChannelNameError(1);
+      return false;
+    }
     if (!regex.test(name)) {
       setChannelNameError(2);
       return false;
@@ -130,6 +143,7 @@ const CreateChannel = () => {
       getUser(newMember).then((res) => {
         if (res){
           if (newChannel.participants.every((id) => id != res.id)){
+            setMemeberError(0);
             setNewChannel((prev) => {
               return {
                 ...prev,
@@ -138,8 +152,17 @@ const CreateChannel = () => {
               }
             })
           }
+          else{
+              setMemeberError(1);
+          }
+        } else {
+            setMemeberError(2);
         }
       })
+      setNewMember('');
+      setTimeout(() => {
+        setMemeberError(0);
+      }, 4000);
     }
   }
 
@@ -156,13 +179,23 @@ const CreateChannel = () => {
     })
   }
 
+  const handleSubmit = (e:  FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+
+  }
+
   return (
-    <div className="pt-8 flex justify-center flex-col gap-6 px-6">
+    <>
+    <ToastContainer autoClose={3000} className={'absolute'} />
+    <form 
+    onSubmit={handleSubmit}
+    className="pt-8 flex justify-start flex-col gap-6 px-6 relative w-full h-full">
       <h1 className="mx-auto text-white font-bold text-2xl">New Channel</h1>
       <div className="flex justify-center gap-6">
         <div className="relative">
           <img
-            src={newChannel.newImage}
+          src={newChannel.newImage}
             alt=""
             className="w-[4.6rem] h-[4.6rem] border-[3px] border-blue-500/80 rounded-full object-cover self-center"
           />
@@ -172,7 +205,7 @@ const CreateChannel = () => {
               className="rounded-full bg-white flex justify-center w-[1.2rem] h-[1.2rem] "
             >
               <RiAddFill
-                className=" self-center text-lg  text-blue-500/80 font-bold w-8 h-8
+              className=" self-center text-lg  text-blue-500/80 font-bold w-8 h-8
                                                     cursor-pointer "
               />
             </label>
@@ -183,12 +216,13 @@ const CreateChannel = () => {
 
           {fileError > 0 && (
           <p className="text-red-500 text-xs absolute text-center w-24 -ml-3 mt-1">{fileErrorMessage[fileError]}</p>
-        )}
+          )}
         </div>
         {/* channel name */}
         <div className='relative w-2/5 h-10 self-center '>
         <input
           type="text"
+          required
           id="channelName"
           maxLength={25}
           onChange={handleChannelName}
@@ -279,6 +313,7 @@ const CreateChannel = () => {
                   id="phone-number"
                   maxLength={13}
                   placeholder={"Add memeber"}
+                  value={newMember}
                   onChange={(e) => {
                     setNewMember(e.target.value);
                   }}
@@ -289,14 +324,21 @@ const CreateChannel = () => {
                   htmlFor="phone-number"
                   className="cursor-pointer rounded-full w-[1.3rem] h-[1.3rem] bg-white flex justify-center
                               absolute right-2 bottom-[0.7rem] "
-                  onClick={handleNewMemmber}
+                              onClick={handleNewMemmber}
                 >
                   <RiAddFill
                     className="text-blue-500 font-bold self-center w-8 h-8 -mb-[0.07rem]"
                     />
                   </label>
+                  {
+                    memberError > 0 && (
+                      <p className='absolute text-red-600 text-xs left-2 pt-[0.2rem]'> 
+                      {newMemberError[memberError]} 
+                      </p>
+                    )
+                  }
                 </div>
-                  <div className='mt-2 flex gap-2  overflow-x-auto scroll-smooth w-full'>
+                  <div className='mt-4 flex gap-2  overflow-x-auto scroll-smooth w-full'>
                   {newChannel.participantsInfos.map((member, index) => {
                     return (
                       <div
@@ -309,17 +351,26 @@ const CreateChannel = () => {
                         className="rounded-full h-12 w-12 border-2 self-center "
                         />
                         <p className="self-center text-white/90 text-sm"> {member.username} </p>
-                    <span 
+                        <span 
                       className="absolute -top-[0.2rem] right-1 text-red-700 font-bold cursor-pointer"
                       onClick={() => deleteMember(member.id)}
-                    >
+                      >
                       x</span>
                     </div>
                     )
                   })}
                   </div>
             </div>
-          </div>
+            <button 
+            type='submit'
+            className='w-24 h-12 p-2 absolute bg-blue-400/70 hover:bg-blue-400/60 text-white/90
+            bottom-6 left-1/2 transform -translate-x-1/2 
+            rounded-xl cursor-pointer '
+            >
+              Create
+            </button>
+          </form>
+</>
 )
 }
 
