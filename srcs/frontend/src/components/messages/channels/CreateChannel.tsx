@@ -5,8 +5,11 @@ import { MdModeEdit } from 'react-icons/md';
 import { RiAddFill } from 'react-icons/ri';
 import { Conversation, User } from '../data';
 import getUser from '@/services/getUser';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import getAllChannelNames from '@/services/getAllChannelNames';
+import uploadChannelImage from '@/services/uploadChannelImage';
+import createNewConv from '@/services/createNewConv';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface NewChannel {
   type: string;
@@ -179,9 +182,32 @@ const CreateChannel = () => {
     })
   }
 
-  const handleSubmit = (e:  FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e:  FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    if (newChannel.name != ""){
+      if(newChannel.imageFile){
+        const img = await uploadChannelImage(newChannel.imageFile);
+        console.log(img);
+        setNewChannel((prev) => {
+          return {
+            ...prev,
+            image: img,
+          }
+        })
+        console.log('image ', newChannel.image);
+      }
+      createNewConv({
+        type: newChannel.type,
+        image: newChannel.image,
+        name: newChannel.name,
+        password: newChannel.password,
+        participants: newChannel.participants,
+      }).then((res) => {
+        if (res)
+        toast.success('Channel created successfully!')
+      })
+    }
 
   }
 

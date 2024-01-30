@@ -2,7 +2,10 @@ import axios from 'axios';
 
 interface Props {
   type: string;
-  to: number | null;
+  image?: string;
+  name?: string;
+  password: string;
+  participants: number[];
 }
 
 const API_URL = process.env.BACKEND + '/api/users/chat';
