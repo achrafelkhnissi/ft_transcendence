@@ -53,11 +53,6 @@ export class ChatController {
     return this.chatService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatService.findOne(+id);
-  }
-
   // Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
@@ -113,6 +108,7 @@ export class ChatController {
 
   @Get('names')
   getChatNames() {
+    console.log('Getting chat names in ChatController');
     return this.chatService.getChatNames();
   }
 }
