@@ -173,15 +173,6 @@ export class ChatService {
       });
   }
 
-  findOne(id: number) {
-    this.logger.log(`Finding chat with id ${id}`);
-    return this.prismaService.conversation.findUnique({
-      where: {
-        id,
-      },
-    });
-  }
-
   update(id: number, updateChatDto: any) {
     // TODO: Update any to UpdateChatDto
     this.logger.log(`Updating chat with id ${id}`);
