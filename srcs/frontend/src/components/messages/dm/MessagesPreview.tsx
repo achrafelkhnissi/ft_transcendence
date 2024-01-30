@@ -69,7 +69,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
               </p>
               {lastMessage &&
                 !lastMessage.isRead &&
-                lastMessage.sender.username === friend.username &&
+                lastMessage?.sender.username === friend?.username &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2 top-1/2"></div>
                 )}

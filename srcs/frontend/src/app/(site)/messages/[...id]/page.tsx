@@ -180,7 +180,9 @@ const Home = ({ params }: { params: { id: number } }) => {
                             rounded-[2rem] border-4 border-blue-500/30 max-h-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <CreateChannel />
+            <CreateChannel 
+              currentUser={currentUser}
+            />
           </div>
         </div>
       )}

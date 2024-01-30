@@ -82,7 +82,6 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
       socket?.emit(
         'message',
         {
-          to: receiver.username,
           content: newMessage,
           conversationId: Number(conversationId),
           room: conversationsMap[conversationId].name,
@@ -105,6 +104,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         <>
           {conversationsMap[conversationId].type === 'DM' && (
             <ConversationHeader
+              id={receiver.id}
               username={receiver.username}
               avatar={receiver.avatar}
               status={receiver.status}

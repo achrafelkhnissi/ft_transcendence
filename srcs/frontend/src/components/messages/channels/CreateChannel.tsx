@@ -51,7 +51,10 @@ const newMemberError = {
   2: 'invalid user!',
 }
 
-const CreateChannel = () => {
+interface props {
+  currentUser: string;
+}
+const CreateChannel  : React.FC<props>  = ({currentUser}) => {
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
   const [fileError, setFileError] = useState<0 | 1 | 2>(0);
   const [channelNameError, setChannelNameError] = useState<0 | 1 | 2>(0);
@@ -142,7 +145,7 @@ const CreateChannel = () => {
   };
 
   const handleNewMemmber = () => {
-    if (newMember != ''){
+    if (newMember != '' && newMember != currentUser){
       getUser(newMember).then((res) => {
         if (res){
           if (newChannel.participants.every((id) => id != res.id)){
@@ -169,7 +172,7 @@ const CreateChannel = () => {
     }
   }
 
-  const deleteMember = (id : number) => {
+  const deleteMember = (id : number | undefined) => {
     const newParicipantsInfos = newChannel.participantsInfos.filter((member) => member.id != id);
     const newParticipants = newChannel.participants.filter((num) => id != num );
 
@@ -187,15 +190,13 @@ const CreateChannel = () => {
     
     if (newChannel.name != ""){
       if(newChannel.imageFile){
-        const img = await uploadChannelImage(newChannel.imageFile);
-        console.log(img);
-        setNewChannel((prev) => {
+        const img = await uploadChannelImage(newChannel.imageFile);        
+        img && setNewChannel((prev) => {
           return {
             ...prev,
             image: img,
           }
         })
-        console.log('image ', newChannel.image);
       }
       createNewConv({
         type: newChannel.type,
@@ -206,9 +207,13 @@ const CreateChannel = () => {
       }).then((res) => {
         if (res)
         toast.success('Channel created successfully!')
+      }).catch(() => {
+        toast.error('Somthing went wrong!');
       })
     }
-
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   }
 
   return (
