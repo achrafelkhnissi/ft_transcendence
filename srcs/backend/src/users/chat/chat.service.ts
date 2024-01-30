@@ -143,9 +143,6 @@ export class ChatService {
               sender: {
                 select: userInfoSelect,
               },
-              receiver: {
-                select: userInfoSelect,
-              },
             },
           },
         },
@@ -435,9 +432,6 @@ export class ChatService {
               isRead: true,
               createdAt: true,
               sender: {
-                select: userInfoSelect,
-              },
-              receiver: {
                 select: userInfoSelect,
               },
             },

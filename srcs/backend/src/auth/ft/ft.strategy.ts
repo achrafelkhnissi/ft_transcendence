@@ -112,7 +112,6 @@ async function createConversation(users) {
         content: faker.lorem.sentence(),
         conversationId: conversation.id,
         senderId: randomUser().id,
-        receiverId: randomUser().id,
       },
     });
   }
