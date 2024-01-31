@@ -66,6 +66,11 @@ export class ChatController {
     return this.chatService.remove(+id);
   }
 
+  @Get(':id/avatar')
+  getAvatar(@Param('id') id: string) {
+    return this.chatService.getAvatar(+id);
+  }
+
   @Get(':id/messages')
   findMessages(@Param('id') id: string) {
     return this.chatService.findMessages(+id);

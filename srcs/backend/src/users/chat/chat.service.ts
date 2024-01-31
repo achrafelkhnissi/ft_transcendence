@@ -513,4 +513,14 @@ export class ChatService {
       })
       .then((chats) => chats.map((chat) => chat.name));
   }
+
+  getAvatar(id: number) {
+    return this.prismaService.conversation
+      .findUnique({
+        where: {
+          id,
+        },
+      })
+      .then((chat) => chat.image);
+  }
 }
