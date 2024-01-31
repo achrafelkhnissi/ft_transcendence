@@ -68,26 +68,7 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       socket.on('onMessage', (message: Message) => {
         // console.log('New message:', message);
-        if (conversations[message.conversationId]){
-            setConversations((prev) => ({
-              ...prev,
-              [message.conversationId]: {
-                ...prev[message.conversationId],
-                messages: [...prev[message.conversationId].messages, message],
-                updatedAt: new Date().toISOString(),
-              },
-            }));
-        }
-        else {
-          getConversations(message.conversationId).then(res => {
-            setConversations((prev) => {
-              return {
-                ...prev,
-                [message.conversationId]: res,
-              }
-            })
-          })
-        }
+        addMessageToConversation(message);
       });
     }
 
@@ -135,8 +116,40 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
     } else {
       // Handle case where the conversation is new or not loaded
+      getConversations(newMessage.conversationId).then(res => {
+        setConversations((prev) => {
+          return {
+            ...prev,
+            [newMessage.conversationId]: res,
+          }
+        })
+        setConversationOrder( (prevOrder) => {
+          return {
+            conversationId,
+            ...prevOrder,
+          }
+        })
+      })
     }
   };
+
+  const addConversation = (id: number) => {
+    getConversations(id).then( (res) => {
+      console.log(res);
+      setConversations((prev) => {
+        return {
+          ...prev,
+          [id] : res,
+        }
+      })
+      setConversationOrder( (prev) => {
+        return {
+          id,
+          ...prev,
+        }
+      })
+    })
+  }
 
   const updateUserStatus = (userId: string, status: string) => {
     setUserStatuses((prevStatuses) => ({
@@ -147,7 +160,7 @@ const Home = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     getConversations().then((res) => {
-      console.log('res', res);
+      console.log('res conco', res);
       initializeConversations(res);
     });
     getCurrentUser().then((res) => {
@@ -174,9 +187,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         conversationId={selectedConversationId}
         conversationsMap={conversations}
         statuses={userStatuses}
-        orderedConversations={conversationOrder}
         currentUser={currentUser}
-        addMessageToConversation={addMessageToConversation}
       />
       {createChannel && (
         <div
@@ -192,6 +203,9 @@ const Home = ({ params }: { params: { id: number } }) => {
           >
             <CreateChannel 
               currentUser={currentUser}
+              conversationsMap={conversations}
+              updateSelectedConversation={setSelectedConversationId}
+              updateConversations={addConversation}
             />
           </div>
         </div>

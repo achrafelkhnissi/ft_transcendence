@@ -14,19 +14,15 @@ import ChannelMessageContainer from './channels/ChannelMessageContainer';
 interface ViewConversationsProps {
   conversationId: number;
   conversationsMap: ConversationsMap;
-  orderedConversations: number[];
   statuses: UserStatuses;
   currentUser: string;
-  addMessageToConversation: Function;
 }
 
 const ViewConversations: React.FC<ViewConversationsProps> = ({
   conversationId,
   conversationsMap,
-  orderedConversations,
   statuses,
   currentUser,
-  addMessageToConversation,
 }) => {
   const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>('');

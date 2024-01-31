@@ -3,13 +3,14 @@ import { IoIosAddCircle } from 'react-icons/io';
 import { IoAdd } from 'react-icons/io5';
 import { MdModeEdit } from 'react-icons/md';
 import { RiAddFill } from 'react-icons/ri';
-import { Conversation, User } from '../data';
+import { Conversation, ConversationsMap, User } from '../data';
 import getUser from '@/services/getUser';
 import { ToastContainer, toast } from 'react-toastify';
 import getAllChannelNames from '@/services/getAllChannelNames';
 import uploadChannelImage from '@/services/uploadChannelImage';
 import createNewConv from '@/services/createNewConv';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSocket } from '@/contexts/socketContext';
 
 interface NewChannel {
   type: string;
@@ -53,14 +54,27 @@ const newMemberError = {
 
 interface props {
   currentUser: string;
+  conversationsMap: ConversationsMap;
+  updateSelectedConversation: Function;
+  updateConversations: Function;
 }
-const CreateChannel  : React.FC<props>  = ({currentUser}) => {
+
+const CreateChannel  : React.FC<props>  = (
+  {
+  currentUser,
+  conversationsMap,
+  updateConversations,
+  updateSelectedConversation,
+
+  }) => {
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
   const [fileError, setFileError] = useState<0 | 1 | 2>(0);
   const [channelNameError, setChannelNameError] = useState<0 | 1 | 2>(0);
   const [memberError, setMemeberError] = useState<0 | 1| 2 >(0);
   const [channelNames, setChannelNames] = useState<string[]>([]);
   const [newMember, setNewMember] = useState<string>("");
+  const { socket } = useSocket();
+
 
   useEffect(() => {
 
@@ -198,22 +212,25 @@ const CreateChannel  : React.FC<props>  = ({currentUser}) => {
           }
         })
       }
-      createNewConv({
-        type: newChannel.type,
-        image: newChannel.image,
-        name: newChannel.name,
-        password: newChannel.password,
-        participants: newChannel.participants,
-      }).then((res) => {
-        if (res)
-        toast.success('Channel created successfully!')
-      }).catch(() => {
-        toast.error('Somthing went wrong!');
-      })
+      socket?.emit(
+        'createRoom',
+        {
+          type: newChannel.type,
+          image: newChannel.image,
+          name: newChannel.name,
+          password: newChannel.password,
+          participants: newChannel.participants,
+        }, (res: number) => {
+          console.log('res ', res);
+          toast.success('Channel created successfully!');
+          updateConversations(res);
+          // updateSelectedConversation(res);
+        }
+      )
     }
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 3000);
   }
 
   return (
