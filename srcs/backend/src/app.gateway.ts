@@ -186,13 +186,15 @@ export class AppGateway
 
     const chat = await this.chatService.create(payload);
 
-    const receiverId = participants.find((id) => id !== user.id);
-    const receiver = await this.usersService.findById(receiverId);
+    const participantsUsernames =
+      await this.usersService.getUsernamesFromIds(participants);
 
-    this.server.to(receiver.username).socketsJoin(chat.name);
+    participantsUsernames.forEach((username) => {
+      this.server.to(username).socketsJoin(chat.name);
+      this.server.to(username).emit('onNotification', chat);
+    });
+
     this.server.to(user.username).socketsJoin(chat.name);
-
-    this.server.to(receiver.username).emit('onNotification', chat);
 
     return chat.id;
   }
