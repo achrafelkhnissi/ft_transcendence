@@ -50,21 +50,16 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     }
   }, [conversationsMap[conversationId]?.messages]);
 
-  let sender: User,
-    receiver: User = {
+    let receiver: User = {
       username: '',
       avatar: '',
       status: '',
     };
 
-  if (conversationId >= 0) {
+  if (conversationId >= 0 && conversationsMap[conversationId].type == 'DM') {
     const [firstParticipant, secondParticipant] =
       conversationsMap[conversationId].participants;
 
-    sender =
-      firstParticipant.username === currentUser
-        ? firstParticipant
-        : secondParticipant;
     receiver =
       firstParticipant.username === currentUser
         ? secondParticipant

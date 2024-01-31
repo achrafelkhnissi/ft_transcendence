@@ -31,15 +31,52 @@ const Home = ({ params }: { params: { id: number } }) => {
 
     const initialOrder = sortedConversations.map((convo) => convo.id);
     const initialConversationsMap =
-      initialConversations.reduce<ConversationsMap>((acc, convo) => {
+    initialConversations.reduce<ConversationsMap>((acc, convo) => {
         acc[convo.id] = convo;
         return acc;
       }, {});
+      
+      setConversationOrder(initialOrder);
+      setConversations(initialConversationsMap);
+      if (params.id > 0) {
+        setSelectedConversationId(params.id);
+    }
+  };
 
-    setConversationOrder(initialOrder);
-    setConversations(initialConversationsMap);
-    if (params.id > 0) {
-      setSelectedConversationId(params.id);
+
+  const addMessageToConversation = (newMessage: Message) => {
+    const conversationId = Number(newMessage.conversationId);
+    if (conversations.hasOwnProperty(conversationId)) {
+      setConversations((prev) => ({
+        ...prev,
+        [conversationId]: {
+          ...prev[conversationId],
+          messages: [...prev[conversationId].messages, newMessage],
+          updatedAt: new Date().toISOString(),
+        },
+      }));
+      setConversationOrder((prevOrder) => {
+        return [
+          conversationId,
+          ...prevOrder.filter((id) => id != conversationId),
+        ];
+      });
+    } else {
+      // Handle case where the conversation is new or not loaded
+      getConversations(newMessage.conversationId).then(res => {
+        setConversations((prev) => {
+          return {
+            ...prev,
+            [newMessage.conversationId]: res,
+          }
+        })
+        setConversationOrder( (prevOrder) => {
+          return [
+            conversationId,
+          ...prevOrder.filter((id) => id != conversationId),
+          ]
+        })
+      })
     }
   };
 
@@ -97,45 +134,9 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  const addMessageToConversation = (newMessage: Message) => {
-    const conversationId = Number(newMessage.conversationId);
-    if (conversations[conversationId]) {
-      setConversations((prev) => ({
-        ...prev,
-        [conversationId]: {
-          ...prev[conversationId],
-          messages: [...prev[conversationId].messages, newMessage],
-          updatedAt: new Date().toISOString(),
-        },
-      }));
-      setConversationOrder((prevOrder) => {
-        return [
-          conversationId,
-          ...prevOrder.filter((id) => id != conversationId),
-        ];
-      });
-    } else {
-      // Handle case where the conversation is new or not loaded
-      getConversations(newMessage.conversationId).then(res => {
-        setConversations((prev) => {
-          return {
-            ...prev,
-            [newMessage.conversationId]: res,
-          }
-        })
-        setConversationOrder( (prevOrder) => {
-          return {
-            conversationId,
-            ...prevOrder,
-          }
-        })
-      })
-    }
-  };
 
   const addConversation = (id: number) => {
     getConversations(id).then( (res) => {
-      console.log(res);
       setConversations((prev) => {
         return {
           ...prev,
@@ -143,10 +144,10 @@ const Home = ({ params }: { params: { id: number } }) => {
         }
       })
       setConversationOrder( (prev) => {
-        return {
+        return [
           id,
           ...prev,
-        }
+        ]
       })
     })
   }
@@ -160,7 +161,6 @@ const Home = ({ params }: { params: { id: number } }) => {
 
   useEffect(() => {
     getConversations().then((res) => {
-      console.log('res conco', res);
       initializeConversations(res);
     });
     getCurrentUser().then((res) => {
@@ -206,6 +206,7 @@ const Home = ({ params }: { params: { id: number } }) => {
               conversationsMap={conversations}
               updateSelectedConversation={setSelectedConversationId}
               updateConversations={addConversation}
+              updateCreateChannelState={setCreateChannel}
             />
           </div>
         </div>

@@ -57,6 +57,7 @@ interface props {
   conversationsMap: ConversationsMap;
   updateSelectedConversation: Function;
   updateConversations: Function;
+  updateCreateChannelState: Function;
 }
 
 const CreateChannel  : React.FC<props>  = (
@@ -65,7 +66,7 @@ const CreateChannel  : React.FC<props>  = (
   conversationsMap,
   updateConversations,
   updateSelectedConversation,
-
+  updateCreateChannelState,
   }) => {
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
   const [fileError, setFileError] = useState<0 | 1 | 2>(0);
@@ -221,16 +222,14 @@ const CreateChannel  : React.FC<props>  = (
           password: newChannel.password,
           participants: newChannel.participants,
         }, (res: number) => {
-          console.log('res ', res);
           toast.success('Channel created successfully!');
           updateConversations(res);
-          // updateSelectedConversation(res);
         }
-      )
+        )
+        setTimeout(() => {
+          updateCreateChannelState(false);
+        }, 1500)
     }
-    // setTimeout(() => {
-    //   window.location.reload();
-    // }, 3000);
   }
 
   return (
