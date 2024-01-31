@@ -401,4 +401,19 @@ export class UsersService {
       },
     });
   }
+
+  async getUsernamesFromIds(ids: number[]): Promise<string[]> {
+    return this.prisma.user
+      .findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+        select: {
+          username: true,
+        },
+      })
+      .then((users) => users.map((user) => user.username));
+  }
 }
