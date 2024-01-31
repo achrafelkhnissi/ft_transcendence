@@ -72,9 +72,8 @@ export class ChatController {
   async getAvatar(@Param('id') id: string, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);
 
-    // TODO: to be removed
     if (avatar && avatar.startsWith('http')) {
-      res.redirect(avatar);
+      return res.redirect(avatar);
     }
 
     return res.sendFile(avatar, { root: './' });
