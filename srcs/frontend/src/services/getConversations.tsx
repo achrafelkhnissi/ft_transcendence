@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-async function getConversations() {
-  const { data } = await axios.get(process.env.BACKEND + `/api/users/chat`, {
+async function getConversations(id? : number) {
+  const { data } = await axios.get(process.env.BACKEND + `/api/users/chat${id? `?=${id}`: '' }`, {
     withCredentials: true,
   });
 

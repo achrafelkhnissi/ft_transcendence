@@ -18,8 +18,7 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
   const [conversationOrder, setConversationOrder] = useState<number[]>([]);
   const [conversations, setConversations] = useState<ConversationsMap>({});
-  const [selectedConversationId, setSelectedConversationId] =
-    useState<number>(-1);
+  const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
   const [currentUser, setCurrentUser] = useState<string>('');
   const [createChannel, setCreateChannel] = useState<boolean>(false);
   const { socket } = useSocket();
@@ -69,15 +68,26 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       socket.on('onMessage', (message: Message) => {
         // console.log('New message:', message);
-        setConversations((prev) => ({
-          ...prev,
-          [message.conversationId]: {
-            ...prev[message.conversationId],
-            messages: [...prev[message.conversationId].messages, message],
-            updatedAt: new Date().toISOString(),
-          },
-        }));
-        console.log('houna');
+        if (conversations[message.conversationId]){
+            setConversations((prev) => ({
+              ...prev,
+              [message.conversationId]: {
+                ...prev[message.conversationId],
+                messages: [...prev[message.conversationId].messages, message],
+                updatedAt: new Date().toISOString(),
+              },
+            }));
+        }
+        else {
+          getConversations(message.conversationId).then(res => {
+            setConversations((prev) => {
+              return {
+                ...prev,
+                [message.conversationId]: res,
+              }
+            })
+          })
+        }
       });
     }
 
