@@ -181,7 +181,7 @@ export class AppGateway
     } else {
       payload.ownerId = user.id;
 
-      if (payload.image == null) {
+      if (!payload.image || payload.image === '') {
         const avatar = `uploads/chat-default-images/chat-image-${Math.floor(
           Math.random() * 6 + 1,
         )}.jpg`;
