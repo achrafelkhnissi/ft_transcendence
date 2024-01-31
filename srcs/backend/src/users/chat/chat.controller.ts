@@ -8,6 +8,7 @@ import {
   Delete,
   NotFoundException,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -45,12 +46,12 @@ export class ChatController {
   }
 
   @Get()
-  findAll(@User() user: UserType) {
-    if (user) {
-      return this.chatService.findAllChatForUser(user.id);
+  findAll(@User() user: UserType, @Query('id') id: string) {
+    if (id) {
+      return this.chatService.findOne(+id);
     }
 
-    return this.chatService.findAll();
+    return this.chatService.findAllChatForUser(user.id);
   }
 
   // Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint

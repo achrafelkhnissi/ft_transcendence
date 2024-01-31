@@ -170,6 +170,61 @@ export class ChatService {
       });
   }
 
+  findOne(id: number) {
+    this.logger.log(`Finding chat with id ${id}`);
+    return this.prismaService.conversation.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        type: true,
+        name: true,
+        updatedAt: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        participants: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        admins: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        messages: {
+          select: {
+            id: true,
+            content: true,
+            isRead: true,
+            createdAt: true,
+            sender: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                status: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   update(id: number, updateChatDto: any) {
     // TODO: Update any to UpdateChatDto
     this.logger.log(`Updating chat with id ${id}`);
