@@ -180,6 +180,14 @@ export class AppGateway
       payload.name = `Room${sortedIds[0]}-${sortedIds[1]}`;
     } else {
       payload.ownerId = user.id;
+
+      if (payload.image == null) {
+        const avatar = `uploads/chat-default-images/chat-image-${Math.floor(
+          Math.random() * 6 + 1,
+        )}.jpg`;
+
+        payload.image = avatar;
+      }
     }
 
     console.log({ payload });

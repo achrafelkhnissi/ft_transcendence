@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseGuards,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -17,6 +18,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { Response } from 'express';
 
 /**
  * TODO:
@@ -64,6 +66,18 @@ export class ChatController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatService.remove(+id);
+  }
+
+  @Get(':id/avatar')
+  async getAvatar(@Param('id') id: string, @Res() res: Response) {
+    const avatar = await this.chatService.getAvatar(+id);
+
+    // TODO: to be removed
+    if (avatar && avatar.startsWith('http')) {
+      res.redirect(avatar);
+    }
+
+    return res.sendFile(avatar, { root: './' });
   }
 
   @Get(':id/messages')

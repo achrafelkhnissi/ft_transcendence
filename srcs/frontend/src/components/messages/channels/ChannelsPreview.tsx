@@ -50,7 +50,9 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
             >
               <div className="self-center ">
                 <img
-                  src={channel.image}
+                  src={
+                    process.env.BACKEND + `/api/users/chat/${channel.id}/avatar`
+                  }
                   alt=""
                   width={100}
                   height={100}
@@ -63,7 +65,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                   <span className="font-normal">
                     {lastMessage?.sender.username}
                   </span>
-                  {lastMessage ? ":" : ""} {lastMessage?.content.slice(0, 80)}
+                  {lastMessage ? ':' : ''} {lastMessage?.content.slice(0, 80)}
                 </p>
               </div>
               <p className="text-[0.6rem] font-light text-white/60 mt-1 w-10">

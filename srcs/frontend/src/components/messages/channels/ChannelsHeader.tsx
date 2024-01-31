@@ -16,7 +16,7 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({ channel }) => {
     >
       <div className="p-2 flex gap-2 self-center">
         <img
-          src={channel.image}
+          src={process.env.BACKEND + `/api/users/chat/${channel.id}/avatar`}
           alt=""
           width={100}
           height={100}
