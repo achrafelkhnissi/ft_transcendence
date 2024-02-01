@@ -23,6 +23,47 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [createChannel, setCreateChannel] = useState<boolean>(false);
   const { socket } = useSocket();
 
+  useEffect(() => {
+    getConversations().then((res) => {
+      initializeConversations(res);
+    });
+    getCurrentUser().then((res) => {
+      setCurrentUser(res.username);
+    });
+  }, []);
+
+  // socket
+  useEffect(() => {
+    if (socket) {
+      socket.on('connect', () => {
+        console.log({
+          message: 'from messages Connected to socket server',
+          socketId: socket.id,
+        });
+      });
+
+      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
+      socket.on('unauthorized', (error) => {
+        console.log('unauthorized: ', error);
+
+        socket.disconnect();
+
+        window.location.href = '/';
+      });
+
+      socket.on('onMessage', (message: Message) => {
+        addMessageToConversation(message);
+      });
+    }
+    
+    return () => {
+      if (socket) {
+        socket.off('connect');
+        socket.off('onMessage');
+      }
+    };
+  }, [socket, conversations]);
+
   const initializeConversations = (initialConversations: Conversation[]) => {
     const sortedConversations = initialConversations.sort(
       (a, b) =>
@@ -39,13 +80,14 @@ const Home = ({ params }: { params: { id: number } }) => {
       setConversationOrder(initialOrder);
       setConversations(initialConversationsMap);
       if (params.id > 0) {
+        //check if the convo deos not exist
         setSelectedConversationId(params.id);
     }
   };
 
-
   const addMessageToConversation = (newMessage: Message) => {
     const conversationId = Number(newMessage.conversationId);
+
     if (conversations.hasOwnProperty(conversationId)) {
       setConversations((prev) => ({
         ...prev,
@@ -63,59 +105,10 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
     } else {
       // Handle case where the conversation is new or not loaded
-      getConversations(newMessage.conversationId).then(res => {
-        setConversations((prev) => {
-          return {
-            ...prev,
-            [newMessage.conversationId]: res,
-          }
-        })
-        setConversationOrder( (prevOrder) => {
-          return [
-            conversationId,
-          ...prevOrder.filter((id) => id != conversationId),
-          ]
-        })
-      })
+      addConversation(conversationId);
     }
   };
 
-  // socket
-  useEffect(() => {
-    if (socket) {
-      // Listen for the 'connect' event
-      socket.on('connect', () => {
-        console.log({
-          message: 'from messages Connected to socket server',
-          socketId: socket.id,
-        });
-
-        // // You can also log the socket ID
-        // console.log('Socket ID:', socket.id);
-      });
-
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-
-        socket.disconnect();
-
-        window.location.href = '/';
-      });
-
-      socket.on('onMessage', (message: Message) => {
-        // console.log('New message:', message);
-        addMessageToConversation(message);
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.off('connect');
-        socket.off('onMessage');
-      }
-    };
-  }, [socket]);
 
   const markLastMessageAsRead = (conversationId: number) => {
     setConversations((prevConversations) => {
@@ -159,14 +152,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     }));
   };
 
-  useEffect(() => {
-    getConversations().then((res) => {
-      initializeConversations(res);
-    });
-    getCurrentUser().then((res) => {
-      setCurrentUser(res.username);
-    });
-  }, []);
   return (
     <div
       className={` flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  relative

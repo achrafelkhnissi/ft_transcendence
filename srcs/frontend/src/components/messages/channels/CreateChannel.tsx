@@ -11,6 +11,9 @@ import uploadChannelImage from '@/services/uploadChannelImage';
 import createNewConv from '@/services/createNewConv';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSocket } from '@/contexts/socketContext';
+import { PiEyeBold } from "react-icons/pi";
+import { PiEyeClosedBold } from "react-icons/pi";
+import { hashPassword } from '../hashPass';
 
 interface NewChannel {
   type: string;
@@ -67,6 +70,7 @@ const CreateChannel  : React.FC<props>  = (
   updateConversations,
   updateSelectedConversation,
   updateCreateChannelState,
+
   }) => {
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
   const [fileError, setFileError] = useState<0 | 1 | 2>(0);
@@ -74,8 +78,10 @@ const CreateChannel  : React.FC<props>  = (
   const [memberError, setMemeberError] = useState<0 | 1| 2 >(0);
   const [channelNames, setChannelNames] = useState<string[]>([]);
   const [newMember, setNewMember] = useState<string>("");
+  const [weakPasswrod, setWeakPassword] = useState<boolean> (false);
+  const [visiblePass, setVisiblePass] = useState<boolean> (false);
+  const [password, setPassword] = useState<string>('');
   const { socket } = useSocket();
-
 
   useEffect(() => {
 
@@ -200,6 +206,23 @@ const CreateChannel  : React.FC<props>  = (
     })
   }
 
+  const handlePassword =  (e: ChangeEvent<HTMLInputElement>) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const pass = e.target.value;
+
+    if(pass == '') {
+      setWeakPassword(false);
+    }
+    else if(passwordRegex.test(pass)){
+      setWeakPassword(false);
+      setPassword(pass);
+    }
+    else{
+      setWeakPassword(true);
+      setPassword('');
+    }
+  }
+
   const handleSubmit = async (e:  FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -212,6 +235,23 @@ const CreateChannel  : React.FC<props>  = (
             image: img,
           }
         })
+      }
+      if (password != ''){
+        try{
+          const hashedpass = await hashPassword(password);
+          console.log('hash ',hashedpass);
+          hashedpass != '' && setNewChannel(prev => {
+            return {
+              ...prev,
+              password: hashedpass,
+            }
+          })
+          console.log(newChannel.password);
+        }
+        catch{
+          toast.error('something went wrong!');
+          updateCreateChannelState(false);
+        }
       }
       socket?.emit(
         'createRoom',
@@ -285,7 +325,7 @@ const CreateChannel  : React.FC<props>  = (
         </div>
       </div>
       {/* Accessibility */}
-      <div className="flex flex-col gap-4 justify-center pt-4">
+      <div className="flex flex-col gap-4 justify-center pt-4 relative">
         <h2 className=" text-white mb-3">Accessibility</h2>
 
                 <div className="flex gap-2  items-center text-white">
@@ -317,8 +357,8 @@ const CreateChannel  : React.FC<props>  = (
 
 
           <span className="ml-2 text-white/80">Make Channel Private </span>
-        </div>
-
+          </div>
+                {/* protected Channel */}
                 <div className="flex gap-2  items-center text-white">
                   <label
                   htmlFor="lockSwitch"
@@ -347,8 +387,45 @@ const CreateChannel  : React.FC<props>  = (
                 </label>
                 <span className="ml-2 text-white/80">Lock Channel </span>
                 </div>
+                {newChannel.type === 'PROTECTED' && 
+                (
+                  <div className='w-[8.5rem] h-[2.3rem] absolute right-[5.4rem] -bottom-1'>
+                    <input
+                    type= {visiblePass ? 'text' : 'password'}
+                    onChange={handlePassword}
+                    id="password"
+                    required
+                    placeholder='password'
+                    className='w-full h-full outline-none border-2 border-blue-500/80 pr-6 pl-2 text-sm text-white
+                    rounded-[0.7rem] bg-white/5 placeholder:text-sm placeholder:opacity-40
+                    relatve '
+                    />
+                    {weakPasswrod && (
+                      <p
+                      className='text-xs text-red-600 w-40 pt-1'>
+                        Password must be strong: 8+ chars, upper/lowercase, digits, special chars.
+                      </p>
+                    )}
+                    {!visiblePass && (
+                      <PiEyeBold 
+                      className="absolute top-[0.6rem] right-[0.55rem] text-white/70 w-4 h-4 cursor-pointer
+                                hover:text-white "
+                                onClick={() => {
+                                  setVisiblePass(true);
+                                }} />
+                    )
+                    } {visiblePass && (
+                      <PiEyeClosedBold
+                      className="absolute top-[0.6rem] right-[0.55rem] text-white/70 w-4 h-4 cursor-pointer
+                                hover:text-white "
+                                onClick={() => {
+                                  setVisiblePass(false);
+                                }} />
+                    )
+                    }
+                  </div>
+                )}
               </div>
-
                {/* Memembers    */}
               <div className="flex flex-col gap-2 justify-center pt-4">
                 <h2 className="text-white">
