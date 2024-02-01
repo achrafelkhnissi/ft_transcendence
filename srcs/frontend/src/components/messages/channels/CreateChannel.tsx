@@ -226,6 +226,8 @@ const CreateChannel  : React.FC<props>  = (
   const handleSubmit = async (e:  FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    let hashedpass = '';
+
     if (newChannel.name != ""){
       if(newChannel.imageFile){
         const img = await uploadChannelImage(newChannel.imageFile);        
@@ -238,15 +240,7 @@ const CreateChannel  : React.FC<props>  = (
       }
       if (password != ''){
         try{
-          const hashedpass = await hashPassword(password);
-          console.log('hash ',hashedpass);
-          hashedpass != '' && setNewChannel(prev => {
-            return {
-              ...prev,
-              password: hashedpass,
-            }
-          })
-          console.log(newChannel.password);
+          hashedpass = await hashPassword(password);
         }
         catch{
           toast.error('something went wrong!');
@@ -259,7 +253,7 @@ const CreateChannel  : React.FC<props>  = (
           type: newChannel.type,
           image: newChannel.image,
           name: newChannel.name,
-          password: newChannel.password,
+          password: hashedpass,
           participants: newChannel.participants,
         }, (res: number) => {
           toast.success('Channel created successfully!');
