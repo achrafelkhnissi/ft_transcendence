@@ -13,7 +13,7 @@ const Emoji: React.FC<EmojiProps> = ({ color, width, height }) => {
 
   return (
     <div
-      className="h-screen w-screen flex justify-center items-center relative -ml-[0.4rem] "
+      className="h-full w-full flex justify-center items-center relative -ml-[0.4rem]  "
       style={{
         width,
         height,

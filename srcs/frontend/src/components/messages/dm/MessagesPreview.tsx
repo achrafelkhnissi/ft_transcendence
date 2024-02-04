@@ -9,6 +9,7 @@ interface MessagesPreviewProps {
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
   currentUser: string;
+  updateShowConversation: Function;
 }
 
 const MessagesPreview: React.FC<MessagesPreviewProps> = ({
@@ -19,10 +20,12 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
   markLastMessageAsRead,
   currentUser,
   statuses,
+  updateShowConversation,
 }) => {
   const handleClick = (id: number) => {
     updateSelectedConversation(id);
     markLastMessageAsRead(id);
+    updateShowConversation(true);
   };
 
   return (

@@ -1,14 +1,20 @@
 import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
 import { User } from '../data';
+import { IoIosArrowBack } from "react-icons/io";
 
-const ConversationHeader = (receiver: User) => {
+ interface props {
+    receiver: User;
+    updateConversations: Function;
+ }
+
+const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) => {
   return (
     <div
       className="absolute w-full h-16 top-0 rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
         shadow-[0_6px_7px_0_rgba(0,0,0,0.25)]
         flex justify-between p-6
-        bg-[#25244E]"
+        bg-[#25244E] "
     >
       <div className="p-2 flex gap-2 self-center">
         <img
@@ -40,7 +46,12 @@ const ConversationHeader = (receiver: User) => {
           <BlockUser color={'#59598E'} width={'29px'} height={'29px'} />
         </div>
       </div>
-    </div>
+      <IoIosArrowBack className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer 
+      hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)] md:hidden" 
+      onClick={ () => {
+        updateConversations(false);
+      }}/>
+    </div> 
   );
 };
 

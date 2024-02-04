@@ -10,12 +10,16 @@ import { useSocket } from '@/contexts/socketContext';
 import ConversationHeader from './dm/ConversationHeader';
 import ChannelsHeader from './channels/ChannelsHeader';
 import ChannelMessageContainer from './channels/ChannelMessageContainer';
+import { IoIosArrowBack } from "react-icons/io";
+
 
 interface ViewConversationsProps {
   conversationId: number;
   conversationsMap: ConversationsMap;
   statuses: UserStatuses;
   currentUser: string;
+  showConversation: boolean;
+  updateShowConversation: Function;
 }
 
 const ViewConversations: React.FC<ViewConversationsProps> = ({
@@ -23,6 +27,8 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   conversationsMap,
   statuses,
   currentUser,
+  showConversation,
+  updateShowConversation
 }) => {
   const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>('');
@@ -42,19 +48,20 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   };
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const messages = conversationsMap[conversationId]?.messages;
 
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [conversationsMap[conversationId]?.messages]);
+  }, [messages]);
 
-    let receiver: User = {
-      username: '',
-      avatar: '',
-      status: '',
-    };
+  let receiver: User = {
+    username: '',
+    avatar: '',
+    status: '',
+  };
 
   if (conversationId >= 0 && conversationsMap[conversationId].type == 'DM') {
     const [firstParticipant, secondParticipant] =
@@ -87,22 +94,22 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
 
   return (
     <div
-      className="w-4/6 bg-[#25244E] rounded-[3rem] max-[900px]:w-full
-        shadow-[0_10px_20px_15px_rgba(0,0,0,0.2)] relative text-white"
+      className={`md:w-4/6 bg-[#25244E] rounded-[3rem] w-full h-full 
+        shadow-[0_10px_20px_15px_rgba(0,0,0,0.2)] relative text-white 
+        ${showConversation ? '' : 'hidden md:block'}`}
     >
       {/* Header */}
       {conversationId >= 0 && (
         <>
           {conversationsMap[conversationId].type === 'DM' && (
             <ConversationHeader
-              id={receiver.id}
-              username={receiver.username}
-              avatar={receiver.avatar}
-              status={receiver.status}
-            />
+            receiver={receiver} 
+            updateConversations={updateShowConversation}            />
           )}
           {conversationsMap[conversationId].type != 'DM' && (
-            <ChannelsHeader channel={conversationsMap[conversationId]} />
+            <ChannelsHeader 
+            channel={conversationsMap[conversationId]} 
+            updateConversations={updateShowConversation}/>
           )}
           {/* Messages */}
           <div className="w-full h-full overflow-hidden py-6 ">
@@ -150,10 +157,11 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
               onClick={toggleEmojiPicker}
             >
-              <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
-              <div className="absolute bottom-0 left-12">
+              <Emoji color={'#20204A'} width={'29px'} height={'29px'}  />
+              <div className="absolute bottom-10 left-0 ">
                 {showEmojiPicker && (
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                  <EmojiPicker onEmojiClick={handleEmojiSelect} 
+                  className=''/>
                 )}
               </div>
             </div>
@@ -163,7 +171,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="bg-transparent w-full h-full outline-none px-6
-                                placeholder:text-white/20 palceholder:text-sm resize-none pt-[0.7rem] overflow-y-auto"
+                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm "
                 placeholder="Type a message here..."
               />
             </div>

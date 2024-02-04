@@ -18,9 +18,11 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
   const [conversationOrder, setConversationOrder] = useState<number[]>([]);
   const [conversations, setConversations] = useState<ConversationsMap>({});
-  const [selectedConversationId, setSelectedConversationId] = useState<number>(-1);
+  const [selectedConversationId, setSelectedConversationId] =
+    useState<number>(-1);
   const [currentUser, setCurrentUser] = useState<string>('');
   const [createChannel, setCreateChannel] = useState<boolean>(false);
+  const [showConversation, setShowConversation] = useState<boolean>(false);
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         addMessageToConversation(message);
       });
     }
-    
+
     return () => {
       if (socket) {
         socket.off('connect');
@@ -72,16 +74,16 @@ const Home = ({ params }: { params: { id: number } }) => {
 
     const initialOrder = sortedConversations.map((convo) => convo.id);
     const initialConversationsMap =
-    initialConversations.reduce<ConversationsMap>((acc, convo) => {
+      initialConversations.reduce<ConversationsMap>((acc, convo) => {
         acc[convo.id] = convo;
         return acc;
       }, {});
-      
-      setConversationOrder(initialOrder);
-      setConversations(initialConversationsMap);
-      if (params.id > 0) {
-        //check if the convo deos not exist
-        setSelectedConversationId(params.id);
+
+    setConversationOrder(initialOrder);
+    setConversations(initialConversationsMap);
+    if (params.id > 0) {
+      //check if the convo deos not exist
+      setSelectedConversationId(params.id);
     }
   };
 
@@ -109,7 +111,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     }
   };
 
-
   const markLastMessageAsRead = (conversationId: number) => {
     setConversations((prevConversations) => {
       const updatedConversations = { ...prevConversations };
@@ -127,23 +128,19 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
-
   const addConversation = (id: number) => {
-    getConversations(id).then( (res) => {
+    getConversations(id).then((res) => {
       setConversations((prev) => {
         return {
           ...prev,
-          [id] : res,
-        }
-      })
-      setConversationOrder( (prev) => {
-        return [
-          id,
-          ...prev,
-        ]
-      })
-    })
-  }
+          [id]: res,
+        };
+      });
+      setConversationOrder((prev) => {
+        return [id, ...prev];
+      });
+    });
+  };
 
   const updateUserStatus = (userId: string, status: string) => {
     setUserStatuses((prevStatuses) => ({
@@ -154,48 +151,53 @@ const Home = ({ params }: { params: { id: number } }) => {
 
   return (
     <div
-      className={` flex gap-6 w-full h-screen max-[900px]:flex-col px-6 py-4  relative
-    `}
+      className={` flex px-6 py-4 justify-center h-[90vh] min-w-[300px] min-h-[600px]`}
     >
-      <Preview
-        conversationsMap={conversations}
-        orderedConversations={conversationOrder}
-        statuses={userStatuses}
-        selectedConversation={selectedConversationId}
-        updateSelectedConversation={setSelectedConversationId}
-        markLastMessageAsRead={markLastMessageAsRead}
-        createBtn={createChannel}
-        setCreateBtn={setCreateChannel}
-        currentUser={currentUser}
-      />
-      <ViewConversations
-        conversationId={selectedConversationId}
-        conversationsMap={conversations}
-        statuses={userStatuses}
-        currentUser={currentUser}
-      />
-      {createChannel && (
-        <div
-          className={`absolute w-full h-full flex justify-center
+      <div className='relative w-full h-full flex gap-6 self-center md:flex-row flex-col'>
+        <Preview
+          conversationsMap={conversations}
+          orderedConversations={conversationOrder}
+          statuses={userStatuses}
+          selectedConversation={selectedConversationId}
+          updateSelectedConversation={setSelectedConversationId}
+          markLastMessageAsRead={markLastMessageAsRead}
+          createBtn={createChannel}
+          setCreateBtn={setCreateChannel}
+          currentUser={currentUser}
+          showConversation={showConversation}
+          updateShowConversation={setShowConversation}
+        />
+        <ViewConversations
+          conversationId={selectedConversationId}
+          conversationsMap={conversations}
+          statuses={userStatuses}
+          currentUser={currentUser}
+          showConversation={showConversation}
+          updateShowConversation={setShowConversation}
+        />
+        {createChannel && (
+          <div
+            className={`absolute w-full h-full flex justify-center
         top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
         ${createChannel && 'blur-container'} `}
-          onClick={() => setCreateChannel(false)}
-        >
-          <div
-            className="w-[500px] h-[700px] self-center bg-[#101038]  z-40 
-                            rounded-[2rem] border-4 border-blue-500/30 max-h-full"
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setCreateChannel(false)}
           >
-            <CreateChannel 
-              currentUser={currentUser}
-              conversationsMap={conversations}
-              updateSelectedConversation={setSelectedConversationId}
-              updateConversations={addConversation}
-              updateCreateChannelState={setCreateChannel}
-            />
+            <div
+              className="max-w-[500px] w-full h-[700px] self-center bg-[#101038]  z-40 
+                            rounded-[2rem] border-4 border-blue-500/30 max-h-full text-xs md:text-base "
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CreateChannel
+                currentUser={currentUser}
+                conversationsMap={conversations}
+                updateSelectedConversation={setSelectedConversationId}
+                updateConversations={addConversation}
+                updateCreateChannelState={setCreateChannel}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

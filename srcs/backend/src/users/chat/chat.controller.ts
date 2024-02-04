@@ -12,7 +12,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { UpdateChatDto } from './dto/update-chat.dto' ;
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';

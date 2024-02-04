@@ -271,8 +271,8 @@ const CreateChannel  : React.FC<props>  = (
     <ToastContainer autoClose={3000} className={'absolute'} />
     <form 
     onSubmit={handleSubmit}
-    className="pt-8 flex justify-start flex-col gap-6 px-6 relative w-full h-full">
-      <h1 className="mx-auto text-white font-bold text-2xl">New Channel</h1>
+    className="md:pt-8 pt-2 flex justify-start flex-col md:gap-6 gap-2 md:px-6 px-2 relative w-full h-full">
+      <h1 className="mx-auto text-white font-bold md:text-2xl text-lg">New Channel</h1>
       <div className="flex justify-center gap-6">
         <div className="relative">
           <img
@@ -308,18 +308,18 @@ const CreateChannel  : React.FC<props>  = (
           maxLength={25}
           onChange={handleChannelName}
           placeholder="Channel Name"
-          className=" w-full h-full outline-none border-2 border-blue-500/80 px-4 text-sm text-white
-                            rounded-[0.7rem] bg-white/5 placeholder:text-sm placeholder:opacity-40"
+          className=" w-full h-full outline-none border-2 border-blue-500/80 px-4 md:text-sm text-xs text-white
+                            rounded-[0.7rem] bg-white/5 md:placeholder:text-sm placeholder:opacity-40 placeholder:text-[0.65rem]"
                             />
           {channelNameError > 0 && (
-            <p className="text-red-500 text-xs absolute right-0 mt-1">
+            <p className="text-red-500 md:text-xs text-[0.65rem] absolute right-0 mt-1">
             {channelNameErrorMessage[channelNameError]}
           </p>
         )}
         </div>
       </div>
       {/* Accessibility */}
-      <div className="flex flex-col gap-4 justify-center pt-4 relative">
+      <div className="flex flex-col md:gap-4 gap-2 justify-center pt-2 relative md:pb-4 pb-10">
         <h2 className=" text-white mb-3">Accessibility</h2>
 
                 <div className="flex gap-2  items-center text-white">
@@ -383,20 +383,20 @@ const CreateChannel  : React.FC<props>  = (
                 </div>
                 {newChannel.type === 'PROTECTED' && 
                 (
-                  <div className='w-[8.5rem] h-[2.3rem] absolute right-[5.4rem] -bottom-1'>
+                  <div className='w-[8.5rem] h-[2.3rem] absolute md:right-[5.4rem] md:bottom-2 right-0 -bottom-[0.2rem]'>
                     <input
                     type= {visiblePass ? 'text' : 'password'}
                     onChange={handlePassword}
                     id="password"
                     required
                     placeholder='password'
-                    className='w-full h-full outline-none border-2 border-blue-500/80 pr-6 pl-2 text-sm text-white
-                    rounded-[0.7rem] bg-white/5 placeholder:text-sm placeholder:opacity-40
+                    className='w-full h-full outline-none border-2 border-blue-500/80 pr-6 pl-2 text-xs text-white
+                    rounded-[0.7rem] bg-white/5 md:placeholder:text-sm placeholder:opacity-40 md:text-sm placeholder:text-xs
                     relatve '
                     />
                     {weakPasswrod && (
                       <p
-                      className='text-xs text-red-600 w-40 pt-1'>
+                      className='md:text-xs  text-[0.6rem] text-red-600 w-40 pt-1'>
                         Password must be strong: 8+ chars, upper/lowercase, digits, special chars.
                       </p>
                     )}
@@ -421,11 +421,11 @@ const CreateChannel  : React.FC<props>  = (
                 )}
               </div>
                {/* Memembers    */}
-              <div className="flex flex-col gap-2 justify-center pt-4">
+              <div className="flex flex-col gap-2 justify-center pt-4  text-sx md:text-sm">
                 <h2 className="text-white">
                     Members
                 </h2>
-                <div className="relative w-2/5 h-10 ">
+                <div className="relative md:w-2/5 h-10  ">
                   <input
                   type="text"
                   id="phone-number"
@@ -436,7 +436,7 @@ const CreateChannel  : React.FC<props>  = (
                     setNewMember(e.target.value);
                   }}
                   className={`w-full h-full rounded-[0.7rem] border-2 border-blue-500/80 bg-white/5 outline-none px-4
-                  text-white text-sm font-normal placeholder:opacity-40 `}
+                  text-white text-xs font-normal placeholder:opacity-40 placeholder:text-xs md:placeholder:text-sm`}
                   />
                 <label
                   htmlFor="phone-number"
@@ -468,7 +468,7 @@ const CreateChannel  : React.FC<props>  = (
                         alt="member"
                         className="rounded-full h-12 w-12 border-2 self-center "
                         />
-                        <p className="self-center text-white/90 text-sm"> {member.username} </p>
+                        <p className="self-center text-white/90 text-xs md:text-sm"> {member.username} </p>
                         <span 
                       className="absolute -top-[0.2rem] right-1 text-red-700 font-bold cursor-pointer"
                       onClick={() => deleteMember(member.id)}

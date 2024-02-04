@@ -17,6 +17,8 @@ interface PreviewProps {
   currentUser: string;
   createBtn: boolean;
   setCreateBtn: Function;
+  showConversation: boolean;
+  updateShowConversation: Function;
 }
 
 const Preview: React.FC<PreviewProps> = ({
@@ -29,37 +31,40 @@ const Preview: React.FC<PreviewProps> = ({
   markLastMessageAsRead,
   createBtn,
   setCreateBtn,
+  showConversation,
+  updateShowConversation,
 }) => {
-  const [active, setActive] = useState<'messages' | 'channels'>('messages');
+  const [active, setActive] = useState<'messages' | 'channels'>('messages'); 
   return (
     <div
-      className="relative w-2/5  bg-[#25244E] rounded-[3rem] max-[900px]:w-full 
-            shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2 overflow-hidden"
+      className={`relative md:w-2/5  bg-[#25244E] rounded-[3rem] w-full h-full 
+            shadow-[0_20px_40px_15px_rgba(0,0,0,0.2)] p-2 overflow-hidden
+            ${showConversation && ' hidden md:block'} `}
     >
       <div className="w-full flex flex-col justify-center pt-2 gap-2">
         {/* switch */}
         <div
           className="
-                                w-[350px] h-14 bg-[#101038] m-auto rounded-[1.2rem] px-2
+                                max-w-[350px] h-14 bg-[#101038] m-auto rounded-[1.2rem] px-2 w-full
                                 shadow-[inset_0_4px_11px_0px_rgba(0,0,0,0.38)]
                                 flex justify-around
-                                text-[#453e76] font-bold
+                                text-[#453e76] font-bold text-sm sm:text-base
                                 "
         >
           <div
-            className={`self-center
+            className={`self-center w-1/2
                         ${active === 'messages' && 'border-2 border-white/40 text-white bg-[#363366]'} 
-                        px-[2.7rem] rounded-xl py-2 drop-shadow-2xl
-                        hover:cursor-pointer
+                         rounded-xl py-2 drop-shadow-2xl text-sm sm:text-base
+                        hover:cursor-pointer text-center
                         `}
             onClick={() => setActive('messages')}
           >
             Messages
           </div>
           <div
-            className={`self-center
+            className={`self-center w-1/2
                         ${active === 'channels' && 'border-2 border-white/40 text-white bg-[#363366]'} 
-                        px-[2.7rem] rounded-xl py-2 drop-shadow-2xl
+                        text-center rounded-xl py-2 drop-shadow-2xl
                         hover:cursor-pointer
                         `}
             onClick={() => setActive('channels')}
@@ -68,7 +73,7 @@ const Preview: React.FC<PreviewProps> = ({
           </div>
         </div>
         {/* search bar */}
-        <div className="w-[350px] m-auto">
+        <div className="max-w-[350px] m-auto w-full">
           <form
             action=""
             className="w-full h-[2.6rem]  bg-[#101038] rounded-2xl 
@@ -104,6 +109,7 @@ const Preview: React.FC<PreviewProps> = ({
             updateSelectedConversation={updateSelectedConversation}
             markLastMessageAsRead={markLastMessageAsRead}
             currentUser={currentUser}
+            updateShowConversation={updateShowConversation}
           />
         </div>
       )}
@@ -117,6 +123,7 @@ const Preview: React.FC<PreviewProps> = ({
             updateSelectedConversation={updateSelectedConversation}
             markLastMessageAsRead={markLastMessageAsRead}
             currentUser={currentUser}
+            updateShowConversation={updateShowConversation}
           />
         </div>
       )}

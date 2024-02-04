@@ -162,34 +162,34 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
         avatar,
       });
 
-      const numberOfUsers = randomNumber(1, 20);
-      for (let i = 0; i < numberOfUsers; i++) {
-        const username = faker.internet
-          .userName()
-          .toLowerCase()
-          .replace(/[^a-z]/g, '')
-          .substring(0, 8);
+      // const numberOfUsers = randomNumber(1, 20);
+      // for (let i = 0; i < numberOfUsers; i++) {
+      //   const username = faker.internet
+      //     .userName()
+      //     .toLowerCase()
+      //     .replace(/[^a-z]/g, '')
+      //     .substring(0, 8);
 
-        await this.usersService.create({
-          email: faker.internet.email(),
-          username,
-          url: faker.internet.url(),
-          avatar: faker.image.avatar(),
-        });
-      }
+      //   await this.usersService.create({
+      //     email: faker.internet.email(),
+      //     username,
+      //     url: faker.internet.url(),
+      //     avatar: faker.image.avatar(),
+      //   });
+      // }
 
-      const users = await prisma.user.findMany();
+      // const users = await prisma.user.findMany();
 
-      for (let i = 0; i < 5; i++) {
-        await createConversation(users);
-      }
+      // for (let i = 0; i < 5; i++) {
+      //   await createConversation(users);
+      // }
 
-      for (let i = 0; i < 5; i++) {
-        await createConversation([
-          user,
-          users[Math.floor(Math.random() * users.length)],
-        ]);
-      }
+      // for (let i = 0; i < 5; i++) {
+      //   await createConversation([
+      //     user,
+      //     users[Math.floor(Math.random() * users.length)],
+      //   ]);
+      // }
 
       return {
         ...user,

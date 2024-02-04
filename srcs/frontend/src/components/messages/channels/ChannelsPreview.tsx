@@ -10,6 +10,7 @@ interface ChannelsPreviewProps {
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
   currentUser: string;
+  updateShowConversation: Function;
 }
 
 const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
@@ -20,10 +21,12 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
   markLastMessageAsRead,
   currentUser,
   statuses,
+  updateShowConversation,
 }) => {
   const handleClick = (id: number) => {
     updateSelectedConversation(id);
     markLastMessageAsRead(id);
+    updateShowConversation(true);
   };
 
   const isChannel = (type: string) => {
