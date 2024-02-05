@@ -1,9 +1,11 @@
-"use client";
-import { Scene } from "phaser";
-import { cursorTo } from "readline";
-import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, SPEED } from "./constants";
-import { Vector } from "matter";
-import { Socket } from "socket.io-client";
+'use client';
+
+import { Scene } from 'phaser';
+
+import { cursorTo } from 'readline';
+import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, SPEED } from './constants';
+import { Vector } from 'matter';
+import { Socket } from 'socket.io-client';
 
 export default class GameScene extends Scene {
   private CANVAS_HEIGHT: number = 0;
@@ -23,7 +25,7 @@ export default class GameScene extends Scene {
   constructor(
     config: Phaser.Types.Scenes.SettingsConfig | undefined,
     socket: Socket,
-    playerNumber: string | null
+    playerNumber: string | null,
   ) {
     super(config);
     this.socket = socket;
@@ -31,7 +33,7 @@ export default class GameScene extends Scene {
   }
 
   create() {
-    console.log("gamescene is created");
+    console.log('gamescene is created');
     this.CANVAS_HEIGHT = this.sys.canvas.height;
     this.CANVAS_WIDTH = this.sys.canvas.width;
 
@@ -41,58 +43,58 @@ export default class GameScene extends Scene {
       this.CANVAS_HEIGHT / 2,
       PADDLE_WIDTH,
       PADDLE_HEIGHT,
-      0xffffff
+      0xffffff,
     );
     const right = this.add.rectangle(
       this.CANVAS_WIDTH - PADDLE_WIDTH / 2 - 10,
       this.CANVAS_HEIGHT / 2,
       PADDLE_WIDTH,
       PADDLE_HEIGHT,
-      0xffffff
+      0xffffff,
     );
     const ball = this.add.circle(
       this.CANVAS_WIDTH / 2,
       this.CANVAS_HEIGHT / 2,
       BALLRADIUS,
-      0xffffff
+      0xffffff,
     );
 
     this.physics.add.existing(left);
     this.physics.add.existing(right);
 
-    if (this.playerNumber === "leftPaddle") {
+    if (this.playerNumber === 'leftPaddle') {
       this.paddle = left;
       this.opponentPaddle = right;
-    } else if (this.playerNumber === "rightPaddle") {
+    } else if (this.playerNumber === 'rightPaddle') {
       this.paddle = right;
       this.opponentPaddle = left;
     }
     this.ball = ball;
 
-    this.socket.on("updateOpponentPaddle", (data: { x: number; y: number }) => {
-      console.log("updateOpponentPaddle");
+    this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
+      console.log('updateOpponentPaddle');
       const { x, y } = data;
       this.opponentPaddle?.setX(x);
       this.opponentPaddle?.setY(y);
     });
 
-    this.socket.on("updateBallState", (data) => {
+    this.socket.on('updateBallState', (data) => {
       this.ball.setX(data.x);
       this.ball.setY(data.y);
     });
 
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH/2 - 30 , 30, "0", {
-      fontSize: "40px",
-      fontFamily: "Arial, sans-serif",
-      color: "#ffffff",
+    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30, 30, '0', {
+      fontSize: '40px',
+      fontFamily: 'Arial, sans-serif',
+      color: '#ffffff',
     });
-    this.scoreText2 = this.add.text(this.CANVAS_WIDTH/2 + 30 , 30, "0", {
-      fontSize: "40px",
-      fontFamily: "Arial, sans-serif",
-      color: "#ffffff",
+    this.scoreText2 = this.add.text(this.CANVAS_WIDTH / 2 + 30, 30, '0', {
+      fontSize: '40px',
+      fontFamily: 'Arial, sans-serif',
+      color: '#ffffff',
     });
 
-    this.socket.on('updateScore', (data)=>{
+    this.socket.on('updateScore', (data) => {
       this.scoreText1.setText(`${data.scorePlayer1}`);
       this.scoreText2.setText(`${data.scorePlayer2}`);
     });
@@ -102,10 +104,10 @@ export default class GameScene extends Scene {
     const newPaddleVelocity = new Phaser.Math.Vector2(0, 0);
 
     if (this.cursors?.up.isDown) {
-      console.log("up");
+      console.log('up');
       newPaddleVelocity.y -= SPEED;
     } else if (this.cursors?.down.isDown) {
-      console.log("down");
+      console.log('down');
       newPaddleVelocity.y += SPEED;
     } else newPaddleVelocity.y = 0;
 
@@ -116,20 +118,21 @@ export default class GameScene extends Scene {
         Phaser.Math.Clamp(
           this.paddle?.y,
           PADDLE_HEIGHT / 2,
-          this.CANVAS_HEIGHT - PADDLE_HEIGHT / 2
-        )
+          this.CANVAS_HEIGHT - PADDLE_HEIGHT / 2,
+        ),
       );
     }
 
     if (this.paddle?.y != this.prevY) {
-      console.log("padddle position ", this.paddle?.y);
-      this.socket.emit("sendMyPaddlePosition", {
+      console.log('padddle position ', this.paddle?.y);
+      this.socket.emit('sendMyPaddlePosition', {
         x: this.paddle?.x,
         y: this.paddle?.y,
       });
     }
 
-    if (this.paddle) this.prevY = this.paddle.y;    this.socket.on('updateScore', (data)=>{
+    if (this.paddle) this.prevY = this.paddle.y;
+    this.socket.on('updateScore', (data) => {
       this.scoreText1.setText(`${data.scorePlayer1}`);
       this.scoreText2.setText(`${data.scorePlayer2}`);
     });

@@ -18,6 +18,7 @@
     "form-data": "^4.0.0",
     "next": "^13.5.4",
     "phaser": "^3.70.0",
+    "phaser3spectorjs": "^0.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
