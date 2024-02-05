@@ -1,6 +1,8 @@
+import { PrismaService } from './../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
+import { CreateGameDto } from './dto/create-game.dto';
 
 interface Player {
   id: string;
@@ -11,6 +13,8 @@ interface Player {
 export class GameService {
   private activeMatches: { [key: string]: Match } = {};
   private playerQueue: Player[] = [];
+
+  constructor(private readonly prismaService: PrismaService) {}
 
   addUser(user: Player): void {
     this.playerQueue.push(user);
@@ -47,5 +51,11 @@ export class GameService {
 
   removeUserById(userId: string): void {
     this.playerQueue = this.playerQueue.filter((user) => user.id !== userId);
+  }
+
+  saveMatch(data: CreateGameDto) {
+    this.prismaService.game.create({
+      data,
+    });
   }
 }
