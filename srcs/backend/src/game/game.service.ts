@@ -60,4 +60,19 @@ export class GameService {
       data,
     });
   }
+
+  // // getGameHistory(userId: string) {
+  // //   return this.prismaService.game.findMany({
+  // //     where: {
+  // //       OR: [
+  // //         {
+  // //           winnerId: userId,
+  // //         },
+  // //         {
+  // //           loserId: userId,
+  // //         },
+  // //       ],
+  // //     },
+  // //   });
+  // }
 }
