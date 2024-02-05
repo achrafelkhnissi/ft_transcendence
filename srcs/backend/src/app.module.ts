@@ -14,6 +14,7 @@ import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
 import { MessageModule } from './users/chat/message/message.module';
 import { AppGateway } from './app.gateway';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AppGateway } from './app.gateway';
     SmsModule,
     ChatModule,
     UploadModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [

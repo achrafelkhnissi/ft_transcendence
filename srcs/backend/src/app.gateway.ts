@@ -1,3 +1,4 @@
+import { GameService } from './game/game.service';
 import { UsersService } from 'src/users/users.service';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
@@ -44,6 +45,7 @@ export class AppGateway
     private readonly chatService: ChatService,
     private readonly messageService: MessageService,
     private readonly usersService: UsersService,
+    private readonly gameService: GameService,
   ) {}
 
   afterInit() {
@@ -205,5 +207,23 @@ export class AppGateway
     this.server.to(user.username).socketsJoin(chat.name);
 
     return chat.id;
+  }
+
+  @SubscribeMessage('joinQueue')
+  joinGameQueue(client: Socket): void {
+    this.gameService.addUser({ id: client.id, socket: client });
+    if (this.gameService.getAllUsers().length >= 2) {
+      const client1 = this.gameService.removeUser();
+      client1.socket.emit('opponentFound', {
+        playerPosition: 'leftPaddle',
+        id: client1.id,
+      });
+      const client2 = this.gameService.removeUser();
+      client2.socket.emit('opponentFound', {
+        playerPosition: 'rightPaddle',
+        id: client2.id,
+      });
+      this.gameService.createMatch(client1.socket, client2.socket);
+    }
   }
 }
