@@ -38,6 +38,7 @@ import { GameModule } from './game/game.module';
           { path: 'notifications', module: NotificationsModule },
           { path: 'chat', module: ChatModule },
           { path: 'achievements', module: AchievementsModule },
+          { path: 'game', module: GameModule },
         ],
       },
     ]),
