@@ -60,4 +60,36 @@ export class GameService {
       data,
     });
   }
+
+  getGameHistory(userId: number) {
+    return this.prismaService.game.findMany({
+      where: {
+        OR: [
+          {
+            winnerId: userId,
+          },
+          {
+            loserId: userId,
+          },
+        ],
+      },
+      select: {
+        winner: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        loser: {
+          select: {
+            id: true,
+            avatar: true,
+            username: true,
+          },
+        },
+        score: true,
+      },
+    });
+  }
 }
