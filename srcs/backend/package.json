@@ -47,6 +47,7 @@
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
     "phaser": "^3.70.0",
+    "phaser3spectorjs": "^0.0.8",
     "react-input-emoji": "^5.6.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

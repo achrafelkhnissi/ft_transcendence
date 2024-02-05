@@ -1,7 +1,7 @@
 'use client'
 import { useState, useContext, useEffect } from 'react';
 import { useSocket } from "../../contexts/socketContext";
-import Game from "../game/page";
+import Game from "../../components/game/Game";
 
 
 
