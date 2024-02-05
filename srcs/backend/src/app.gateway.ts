@@ -211,7 +211,9 @@ export class AppGateway
 
   @SubscribeMessage('joinQueue')
   joinGameQueue(client: Socket): void {
-    this.gameService.addUser({ id: client.id, socket: client });
+    const user = client.request.user;
+
+    this.gameService.addUser({ id: client.id, socket: client, user });
     if (this.gameService.getAllUsers().length >= 2) {
       const client1 = this.gameService.removeUser();
       client1.socket.emit('opponentFound', {

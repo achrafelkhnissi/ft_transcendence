@@ -3,10 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
+import { UserType } from 'src/common/interfaces/user.interface';
 
 interface Player {
   id: string;
   socket: Socket;
+  user: UserType;
 }
 
 @Injectable()
