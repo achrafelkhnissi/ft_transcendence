@@ -3,7 +3,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { GameService } from './game.service';
 
-@Controller('game')
+@Controller()
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
