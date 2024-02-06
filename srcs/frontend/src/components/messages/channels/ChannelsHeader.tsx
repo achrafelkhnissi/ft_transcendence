@@ -1,15 +1,21 @@
 import React from 'react';
 import { Conversation } from '../data';
-import Info from './Info';
-import { IoIosArrowBack } from "react-icons/io";
-
+import InfoIcon from './InfoIcon';
+import { IoIosArrowBack } from 'react-icons/io';
 
 interface ChannelsHeaderProps {
   channel: Conversation;
   updateConversations: Function;
+  showChannelInfo: boolean;
+  setShowChannelInfo: Function;
 }
 
-const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({ channel , updateConversations}) => {
+const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({
+  channel,
+  updateConversations,
+  showChannelInfo,
+  setShowChannelInfo,
+}) => {
   return (
     <div
       className="absolute w-full h-16 top-0  rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
@@ -23,7 +29,7 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({ channel , updateConvers
           alt=""
           width={100}
           height={100}
-          className="w-10 h-10 rounded-full self-center"
+          className="w-10 h-10 rounded-full self-center object-cover"
         />
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{channel.name}</h6>
@@ -32,14 +38,17 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({ channel , updateConvers
           </p>
         </div>
       </div>
-      <div className="self-center">
-        <Info />
+      <div className="self-center"
+      onClick={() => setShowChannelInfo(!showChannelInfo)}>
+        <InfoIcon />
       </div>
-      <IoIosArrowBack className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)]
-      md:hidden" 
-      onClick={ () => {
-        updateConversations(false);
-      }}/>
+      <IoIosArrowBack
+        className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)]
+      md:hidden"
+        onClick={() => {
+          updateConversations(false);
+        }}
+      />
     </div>
   );
 };

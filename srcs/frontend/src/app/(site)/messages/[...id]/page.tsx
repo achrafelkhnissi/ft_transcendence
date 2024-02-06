@@ -8,6 +8,7 @@ import {
   UserStatuses,
   Conversation,
   ConversationsMap,
+  User,
 } from '../../../../components/messages/data';
 import getConversations from '@/services/getConversations';
 import getCurrentUser from '@/services/getCurrentUser';
@@ -142,6 +143,32 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
+  const addMemberToConversation = (conversationId: number, user: User) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = { ...prevConversations };
+      const conversation = updatedConversations[conversationId];
+
+      if (conversation) {
+        conversation.participants.push(user);
+      }
+
+      return updatedConversations;
+    });
+  }
+
+  const addAdminToConversation = (conversationId: number, user: User) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = { ...prevConversations };
+      const conversation = updatedConversations[conversationId];
+
+      if (conversation) {
+        conversation.admins.push(user);
+      }
+
+      return updatedConversations;
+    });
+  }
+
   const updateUserStatus = (userId: string, status: string) => {
     setUserStatuses((prevStatuses) => ({
       ...prevStatuses,
@@ -174,6 +201,8 @@ const Home = ({ params }: { params: { id: number } }) => {
           currentUser={currentUser}
           showConversation={showConversation}
           updateShowConversation={setShowConversation}
+          addMember={addMemberToConversation}
+          addAdmin={addAdminToConversation}          
         />
         {createChannel && (
           <div

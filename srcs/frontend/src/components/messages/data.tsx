@@ -24,7 +24,7 @@ export interface Conversation {
   createdAt: string;
   updatedAt: string;
   participants: User[];
-  oweners: User[];
+  owner: User;
   admins: User[];
   messages: Message[];
   image: string;
