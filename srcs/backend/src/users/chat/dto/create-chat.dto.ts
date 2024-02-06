@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { $Enums } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
@@ -12,6 +13,19 @@ import {
 } from 'class-validator';
 
 export class CreateChatDto {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: 'The type of the chat',
+    enum: $Enums.ConversationType,
+    isArray: true,
+    example: [
+      $Enums.ConversationType.DM,
+      $Enums.ConversationType.PROTECTED,
+      $Enums.ConversationType.PUBLIC,
+      $Enums.ConversationType.PRIVATE,
+    ],
+  })
   @IsEnum($Enums.ConversationType)
   @IsNotEmpty()
   type: $Enums.ConversationType;
@@ -34,6 +48,12 @@ export class CreateChatDto {
    * (?=.*[@$!%*?&]): The string must contain at least one special character.
    * [A-Za-z\d@$!%*?&]{8,}: The string must be eight characters or longer.
    */
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'The password for the protected chat',
+    example: 'Password123!',
+  })
   @ValidateIf((o) => o.type === $Enums.ConversationType.PROTECTED)
   @IsNotEmpty()
   @IsString()
@@ -53,6 +73,12 @@ export class CreateChatDto {
   @IsNumber()
   ownerId?: number;
 
+  @ApiProperty({
+    type: [Number],
+    required: false,
+    description: 'The list of participants in the chat',
+    example: [1, 2, 3],
+  })
   @IsOptional()
   @IsNumber({}, { each: true })
   participants: number[];
