@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { NotificationType } from '@prisma/client';
 import {
   IsBoolean,
@@ -14,6 +15,16 @@ export class CreateNotificationDto {
   @IsBoolean()
   read?: boolean;
 
+  @ApiProperty({
+    description: 'The type of the notification',
+    enum: NotificationType,
+    isArray: true,
+    example: [
+      NotificationType.FRIEND_REQUEST_ACCEPTED,
+      NotificationType.FRIEND_REQUEST_SENT,
+      NotificationType.MATCH,
+    ],
+  })
   @IsNotEmpty()
   @IsEnum(NotificationType)
   @IsString()
