@@ -10,6 +10,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SessionAdapter } from './common/adapters/socket-session.adapter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -63,6 +64,15 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.useWebSocketAdapter(new SessionAdapter(sessionMiddleware, app));
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Pong Time')
+    .setDescription('The Pong Time API')
+    .setVersion('1.0')
+    .addTag('PongTime')
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, swaggerDocument);
 
   await app.listen(process.env.NEST_PORT || 3000);
 }
