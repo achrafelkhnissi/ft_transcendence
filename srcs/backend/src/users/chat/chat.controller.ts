@@ -12,13 +12,14 @@ import {
   Res,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { UpdateChatDto } from './dto/update-chat.dto' ;
+import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 /**
  * TODO:
@@ -29,6 +30,7 @@ import { Response } from 'express';
  * - Channel owner should be able to kick, ban, mute, etc. users
  */
 
+@ApiTags('chat')
 @UseGuards(AuthGuard)
 @Controller()
 export class ChatController {

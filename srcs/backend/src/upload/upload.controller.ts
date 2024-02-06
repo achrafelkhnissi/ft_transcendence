@@ -8,7 +8,9 @@ import {
   ChannelAvatarUploadInterceptor,
   UserAvatarUploadInterceptor,
 } from './utils/UploadInterceptor';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('upload')
 @UseGuards(AuthGuard)
 @Controller('upload')
 export class UploadController {

@@ -16,7 +16,9 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('notifications')
 @UseGuards(AuthGuard)
 @Controller()
 export class NotificationsController {

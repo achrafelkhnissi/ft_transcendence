@@ -3,7 +3,9 @@ import { FriendRequestsService } from './requests.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { QueryDto } from 'src/users/dto/query.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('friend-requests')
 @Controller()
 export class FriendRequestsController {
   private readonly logger = new Logger(FriendRequestsController.name);
