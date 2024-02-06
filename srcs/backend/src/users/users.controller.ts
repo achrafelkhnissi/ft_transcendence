@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Res,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,7 +19,14 @@ import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { User } from 'src/common/decorators/user.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('users')
 @UseGuards(AuthGuard)
@@ -50,10 +58,27 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Patch(':username')
-  update(@Param() params: UsernameDto, @Body() updateUserDto: UpdateUserDto) {
-    const { username } = params;
-    return this.usersService.update(username, updateUserDto);
+  @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    type: UpdateUserDto,
+    description: 'The user has been successfully updated.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({ summary: 'Update user by id' })
+  @ApiBody({ type: UpdateUserDto })
+  async updateById(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':username')

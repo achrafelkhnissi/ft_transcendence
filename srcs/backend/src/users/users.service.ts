@@ -224,10 +224,19 @@ export class UsersService {
     };
   }
 
-  update(username: string, updateUserDto: UpdateUserDto) {
-    this.logger.debug(`updating user ${username}`);
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id <${userId}> not found`);
+    }
+
     return this.prisma.user.update({
-      where: { username },
+      where: { id: userId },
       data: updateUserDto,
     });
   }
