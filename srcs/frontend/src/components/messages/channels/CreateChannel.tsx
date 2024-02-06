@@ -428,7 +428,7 @@ const CreateChannel  : React.FC<props>  = (
                 <div className="relative md:w-2/5 h-10  ">
                   <input
                   type="text"
-                  id="phone-number"
+                  id="new-member"
                   maxLength={13}
                   placeholder={"Add memeber"}
                   value={newMember}
@@ -439,7 +439,7 @@ const CreateChannel  : React.FC<props>  = (
                   text-white text-xs font-normal placeholder:opacity-40 placeholder:text-xs md:placeholder:text-sm`}
                   />
                 <label
-                  htmlFor="phone-number"
+                  htmlFor="new-member"
                   className="cursor-pointer rounded-full w-[1.3rem] h-[1.3rem] bg-white flex justify-center
                               absolute right-2 bottom-[0.7rem] "
                               onClick={handleNewMemmber}

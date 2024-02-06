@@ -11,6 +11,7 @@ import ConversationHeader from './dm/ConversationHeader';
 import ChannelsHeader from './channels/ChannelsHeader';
 import ChannelMessageContainer from './channels/ChannelMessageContainer';
 import { IoIosArrowBack } from "react-icons/io";
+import ChannelInfo from './channels/ChannelInfo';
 
 
 interface ViewConversationsProps {
@@ -20,6 +21,8 @@ interface ViewConversationsProps {
   currentUser: string;
   showConversation: boolean;
   updateShowConversation: Function;
+  addMember: Function;
+  addAdmin: Function;
 }
 
 const ViewConversations: React.FC<ViewConversationsProps> = ({
@@ -28,11 +31,13 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   statuses,
   currentUser,
   showConversation,
-  updateShowConversation
+  updateShowConversation,
+  addMember,
+  addAdmin,
 }) => {
   const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>('');
-
+  const [showChannelInfo, setShowChannelInfo] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
   const handleEmojiSelect = (
@@ -107,9 +112,25 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
             updateConversations={updateShowConversation}            />
           )}
           {conversationsMap[conversationId].type != 'DM' && (
-            <ChannelsHeader 
-            channel={conversationsMap[conversationId]} 
-            updateConversations={updateShowConversation}/>
+            <>
+            <ChannelsHeader
+              channel={conversationsMap[conversationId]}
+              updateConversations={updateShowConversation}
+              showChannelInfo = {showChannelInfo} 
+              setShowChannelInfo = {setShowChannelInfo}
+              />
+              {
+                showChannelInfo && 
+                <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 ">
+                  <ChannelInfo 
+                    currentUser={currentUser}
+                    addMember={addMember}
+                    addAdmin={addAdmin}
+                    channel={conversationsMap[conversationId]}
+                  />
+                </div>
+              }
+              </>
           )}
           {/* Messages */}
           <div className="w-full h-full overflow-hidden py-6 ">
