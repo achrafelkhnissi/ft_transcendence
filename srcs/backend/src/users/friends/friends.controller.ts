@@ -12,7 +12,9 @@ import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('friends')
 @UseGuards(AuthGuard)
 @Controller()
 export class FriendsController {
