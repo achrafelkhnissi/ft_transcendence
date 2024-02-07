@@ -36,6 +36,9 @@ import {
 import { Response } from 'express';
 
 @ApiTags('users')
+@ApiForbiddenResponse({
+  description: 'Forbidden',
+})
 @UseGuards(AuthGuard)
 @Controller()
 export class UsersController {
@@ -190,6 +193,11 @@ export class UsersController {
     return res.sendFile(avatar, { root: './' });
   }
 
+  @ApiOkResponse({
+    type: [UpdateUserDto],
+    description: 'Ranking has been successfully displayed.',
+  })
+  @ApiOperation({ summary: 'Get ranking' })
   @Get('ranking')
   getRanking(@User() user: UserType) {
     return this.usersService.getRanking(user.id);
