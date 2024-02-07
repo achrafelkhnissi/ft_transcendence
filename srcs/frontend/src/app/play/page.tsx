@@ -5,6 +5,8 @@ import Game from '../../components/game/Game';
 import PongTable from '@/components/svgAssets/PongTable';
 import Image from 'next/image';
 import CostumizeGame from '@/components/game/CostumizeGame';
+import { RxExit } from 'react-icons/rx';
+import Link from 'next/link';
 
 const PlayPage = () => {
   const { socket } = useSocket();
@@ -42,7 +44,10 @@ const PlayPage = () => {
   }, [socket]);
 
   return (
-    <>
+    <div className="w-full h-full relative">
+      <Link href="/dashboard">
+        <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
+      </Link>
       {!position && (
         <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
           <div className="text-center p-4 flex justify-center">
@@ -74,10 +79,10 @@ const PlayPage = () => {
       )}
       {/* // {isWaiting && <div className="mt-4 spinner">Loading...</div>} popup  */}
       {/* // )} */}
-      <div className='flex justify-center h-full'>
-      {!isWaiting && position && <Game position={position} color={bgColor} />}
+      <div className="flex justify-center h-full">
+        {!isWaiting && position && <Game position={position} color={bgColor} />}
       </div>
-    </>
+    </div>
   );
 };
 
