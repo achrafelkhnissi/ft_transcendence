@@ -5,9 +5,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { UserNotFoundException } from 'src/common/exceptions/UserNotFound.exception';
-import { PrismaError } from 'src/common/enums/PrismaError';
 
 @Injectable()
 export class UsersService {
@@ -234,10 +231,9 @@ export class UsersService {
     });
   }
 
-  remove(username: string) {
-    this.logger.debug(`deleting user ${username}`);
+  remove(userId: number) {
     return this.prisma.user.delete({
-      where: { username },
+      where: { id: userId },
     });
   }
 
