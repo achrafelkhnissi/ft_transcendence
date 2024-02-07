@@ -213,6 +213,10 @@ export class UsersController {
   }
 
   @Get('usernames')
+  @ApiOkResponse({
+    description: 'Usernames have been successfully displayed.',
+  })
+  @ApiOperation({ summary: 'Get all usernames' })
   getUsernames() {
     return this.usersService.getUsernames();
   }
