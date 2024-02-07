@@ -20,7 +20,9 @@ import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { User } from 'src/common/decorators/user.decorator';
 import {
+  ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -35,6 +37,22 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ApiBody({
+    type: CreateUserDto,
+    description: 'Create user',
+    required: true,
+  })
+  @ApiOkResponse({
+    type: CreateUserDto,
+    description: 'The user has been successfully created.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiConflictResponse({
+    description: 'User already exists',
+  })
+  @ApiOperation({ summary: 'Create user' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
