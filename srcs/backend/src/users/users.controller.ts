@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -11,20 +10,14 @@ import {
   Res,
   ParseIntPipe,
   HttpStatus,
-  HttpCode,
   SerializeOptions,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
-import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { User } from 'src/common/decorators/user.decorator';
 import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -43,46 +36,6 @@ import { Response } from 'express';
 @Controller()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  @ApiBody({
-    type: CreateUserDto,
-    description: 'Create user',
-    required: true,
-  })
-  @ApiOkResponse({
-    type: CreateUserDto,
-    description: 'The user has been successfully created.',
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request',
-  })
-  @ApiConflictResponse({
-    description: 'User already exists',
-  })
-  @ApiOperation({ summary: 'Create user' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  // @Get()
-  // async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
-  //   const { username: usernameQuery, id: idQuery } = query;
-
-  //   if (usernameQuery) {
-  //     const user = await this.usersService.findByUsername(usernameQuery);
-  //     return {
-  //       ...user,
-  //       isFriend: await this.usersService.isFriend(userId, user.id),
-  //     };
-  //   }
-
-  //   if (idQuery) {
-  //     return this.usersService.findById(idQuery);
-  //   }
-
-  //   return this.usersService.findAll();
-  // }
 
   @ApiQuery({
     name: 'id',
