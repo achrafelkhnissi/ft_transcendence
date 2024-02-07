@@ -15,7 +15,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
-import { QueryDto } from './dto/query.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { User } from 'src/common/decorators/user.decorator';
@@ -23,10 +22,12 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiConflictResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -57,20 +58,43 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  // @Get()
+  // async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
+  //   const { username: usernameQuery, id: idQuery } = query;
+
+  //   if (usernameQuery) {
+  //     const user = await this.usersService.findByUsername(usernameQuery);
+  //     return {
+  //       ...user,
+  //       isFriend: await this.usersService.isFriend(userId, user.id),
+  //     };
+  //   }
+
+  //   if (idQuery) {
+  //     return this.usersService.findById(idQuery);
+  //   }
+
+  //   return this.usersService.findAll();
+  // }
+
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: false,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    type: [UpdateUserDto],
+    description: 'The user has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({ summary: 'Find user by id or all users' })
   @Get()
-  async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
-    const { username: usernameQuery, id: idQuery } = query;
-
-    if (usernameQuery) {
-      const user = await this.usersService.findByUsername(usernameQuery);
-      return {
-        ...user,
-        isFriend: await this.usersService.isFriend(userId, user.id),
-      };
-    }
-
-    if (idQuery) {
-      return this.usersService.findById(idQuery);
+  async find(@Query('id') id?: number) {
+    if (id) {
+      return this.usersService.findById(id);
     }
 
     return this.usersService.findAll();
@@ -118,6 +142,14 @@ export class UsersController {
   }
 
   @Get('me')
+  @ApiOkResponse({
+    type: UpdateUserDto,
+    description: 'The current user has been successfully found.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden',
+  })
+  @ApiOperation({ summary: 'Get the current user' })
   getMe(@User() { username }: UserType) {
     return this.usersService.findByUsername(username);
   }
