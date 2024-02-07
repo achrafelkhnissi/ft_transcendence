@@ -15,5 +15,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <SocketProvider>{children}</SocketProvider>;
+  return (
+    <SocketProvider>
+      <div className="w-full h-full">{children}</div>
+    </SocketProvider>
+  );
 }
