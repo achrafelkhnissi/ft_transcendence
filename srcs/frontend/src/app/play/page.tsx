@@ -44,7 +44,7 @@ const PlayPage = () => {
   return (
     <>
       {!position && (
-        <div className=" flex flex-col justify-center w-full h-full gap-12">
+        <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
           <div className="text-center p-4 flex justify-center">
             <CostumizeGame setBgColor={setBgColor} />
           </div>
@@ -54,11 +54,14 @@ const PlayPage = () => {
             className={`text-white 
                             mx-auto
                             bg-[#6257FE]
-                            px-[2.6rem]
+                            md:px-[2.8rem]
+                            md:py-[0.6rem]
+                            px-[2.5rem]
                             py-[0.5rem]
                             rounded-[0.6rem]
                             font-semibold
-                            text-lg
+                            text-md
+                            md:text-2xl
                             shadow-[inset_0_12px_11px_rgba(255,255,255,0.26)]
                             ${isWaiting ? 'opacity-50 cursor-not-allowed' : ''}
                             {isWaiting ? 'Finding Opponent...' : 'Play'}
