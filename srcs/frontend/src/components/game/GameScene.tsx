@@ -111,6 +111,12 @@ export default class GameScene extends Scene {
       newPaddleVelocity.y += SPEED;
     } else newPaddleVelocity.y = 0;
 
+    this.input.on('pointermove',  (pointer : any) => {
+      this.paddle?.setY(Phaser.Math.Clamp(pointer.y, PADDLE_HEIGHT / 2,
+        this.CANVAS_HEIGHT - PADDLE_HEIGHT / 2
+      ));
+  }, this);
+
     if (this.paddle?.body) this.paddle.body.velocity.y = newPaddleVelocity.y;
 
     if (this.paddle) {
