@@ -45,6 +45,7 @@
     "express-session": "^1.17.3",
     "file-type": "^18.7.0",
     "matter-js": "^0.19.0",
+    "nestjs-prisma": "^0.23.0",
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
     "phaser": "^3.70.0",
