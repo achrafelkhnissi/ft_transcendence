@@ -249,10 +249,10 @@ export class UsersService {
     return avatar;
   }
 
-  async getAvatarByUsername(username: string) {
+  async getAvatarById(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: {
-        username,
+        id: userId,
       },
       select: {
         avatar: true,

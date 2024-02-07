@@ -10,6 +10,9 @@ import {
   UseGuards,
   Res,
   ParseIntPipe,
+  HttpStatus,
+  HttpCode,
+  SerializeOptions,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,6 +33,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('users')
 @UseGuards(AuthGuard)
@@ -154,11 +158,30 @@ export class UsersController {
     return this.usersService.findByUsername(username);
   }
 
-  @Get(':username/avatar')
-  async getAvatar(@Param() params: UsernameDto, @Res() res) {
-    const { username } = params;
+  @Get(':id/avatar')
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user avatar has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'Avatar not found',
+  })
+  @ApiOperation({ summary: 'Get user avatar by id' })
+  @SerializeOptions({ strategy: 'excludeAll' })
+  async getAvatar(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Res() res: Response,
+  ) {
+    const avatar = await this.usersService.getAvatarById(id);
 
-    const avatar = await this.usersService.getAvatarByUsername(username);
+    if (!avatar) {
+      return res.status(HttpStatus.NOT_FOUND).send('Avatar not found');
+    }
 
     if (avatar.startsWith('http')) {
       return res.redirect(avatar);
