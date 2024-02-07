@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { FriendshipStatus } from '@prisma/client';
+import { UserNotFoundException } from 'src/common/exceptions/UserNotFound.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -59,17 +60,14 @@ export class FriendsService {
     return friends;
   }
 
-  async removeFriend(userId: number, friendUsername: string) {
-    this.logger.log(
-      `Removing friend <${friendUsername}> from user <${userId}>`,
-    );
-
+  async removeFriend(userId: number, friendId: number) {
+    // TODO: Remove this and use friendId instead and check what is the best way to handle this
     const friend = await this.prisma.user.findUnique({
-      where: { username: friendUsername },
+      where: { id: friendId },
     });
 
     if (!friend) {
-      throw new NotFoundException(`User <${friendUsername}> not found`);
+      throw new UserNotFoundException(friendId);
     }
 
     const friendRequests = await this.prisma.friendRequest.deleteMany({

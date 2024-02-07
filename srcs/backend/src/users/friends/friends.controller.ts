@@ -28,14 +28,11 @@ export class FriendsController {
   }
 
   @Get('remove')
-  async removeFriend(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: friendUsername } = query;
-
-    this.logger.log(
-      `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
-    );
-
-    return this.friendsService.removeFriend(user.id, friendUsername);
+  async removeFriend(
+    @Query('id', new ParseIntPipe()) id: number,
+    @User() user: UserType,
+  ) {
+    return this.friendsService.removeFriend(user.id, id);
   }
 
   @Get('blocked')
