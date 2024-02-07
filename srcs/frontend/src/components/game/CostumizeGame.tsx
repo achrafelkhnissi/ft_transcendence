@@ -12,7 +12,7 @@ const CostumizeGame: React.FC<CostumizeGameProps> = ({ setBgColor }) => {
       className="
         w-full h-full
         flex flex-col  
-        md:gap-12 
+        md:gap-14
         gap-4
         justify-center
         self-center
