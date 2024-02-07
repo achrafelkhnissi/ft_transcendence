@@ -23,10 +23,8 @@ export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   @Get()
-  list(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username } = query;
-
-    return this.friendsService.listFriendsByUsername(username || user.username);
+  list(@Query('id', new ParseIntPipe()) id: number, @User() user: UserType) {
+    return this.friendsService.listFriendsById(id || user.id);
   }
 
   @Get('remove')
@@ -66,13 +64,6 @@ export class FriendsController {
     );
 
     return this.friendsService.unblockUser(user.id, blockedUsername);
-  }
-
-  @Get(':username/friends')
-  getFriendsByUsername(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.friendsService.listFriendsByUsername(username);
   }
 
   @Get(':id/friends')

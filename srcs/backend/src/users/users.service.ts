@@ -219,7 +219,7 @@ export class UsersService {
 
     return {
       ...user,
-      friends: await this.friendsService.listFriendsByUsername(username),
+      friends: await this.friendsService.listFriendsById(user.id),
       blockedUsers,
     };
   }

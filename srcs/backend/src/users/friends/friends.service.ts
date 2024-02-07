@@ -8,9 +8,9 @@ export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
   constructor(private readonly prisma: PrismaService) {}
 
-  async listFriendsByUsername(username: string) {
+  async listFriendsById(userId: number) {
     const user = await this.prisma.user.findUnique({
-      where: { username: username },
+      where: { id: userId },
       include: {
         friendRequestsSent: {
           where: {
@@ -46,7 +46,7 @@ export class FriendsService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User <${username}> not found`);
+      throw new NotFoundException(`User with id <${userId}> not found`);
     }
 
     const friends = [
@@ -191,58 +191,5 @@ export class FriendsService {
     });
 
     return { message: 'User unblocked', request };
-  }
-
-  listFriendsById(id: number) {
-    return this.prisma.friendRequest
-      .findMany({
-        where: {
-          AND: [
-            {
-              OR: [
-                {
-                  senderId: { equals: id },
-                },
-                {
-                  receiverId: { equals: id },
-                },
-              ],
-            },
-            {
-              friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-            },
-          ],
-        },
-        select: {
-          id: true,
-          senderId: true,
-          sender: {
-            select: {
-              id: true,
-              username: true,
-              avatar: true,
-              status: true,
-            },
-          },
-          receiverId: true,
-          receiver: {
-            select: {
-              id: true,
-              username: true,
-              avatar: true,
-              status: true,
-            },
-          },
-        },
-      })
-      .then((friendRequests) => {
-        const friends = friendRequests.map((friendRequest) => {
-          if (friendRequest.senderId === id) {
-            return friendRequest.receiver;
-          }
-          return friendRequest.sender;
-        });
-        return friends;
-      });
   }
 }
