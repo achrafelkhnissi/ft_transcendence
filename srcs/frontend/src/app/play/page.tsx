@@ -71,7 +71,9 @@ const PlayPage = () => {
       )}
       {/* // {isWaiting && <div className="mt-4 spinner">Loading...</div>} popup  */}
       {/* // )} */}
+      <div className='flex justify-center h-full'>
       {!isWaiting && position && <Game position={position} color={bgColor} />}
+      </div>
     </>
   );
 };

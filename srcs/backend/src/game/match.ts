@@ -103,7 +103,7 @@ export class Match {
     };
     // console.log(paddle.position);
     Body.setVelocity(this.ball, velocity);
-    this.speed += 0.01;
+    this.speed += 0.1;
   }
 
   private resetGame() {
@@ -116,7 +116,6 @@ export class Match {
 
   public gameStart() {
     Events.on(this.engine, 'collisionStart', (event) => {
-      console.log('position ', this.rightPaddle.position.y);
       const pair = event.pairs[0];
       const object = pair.bodyA === this.ball ? pair.bodyB : pair.bodyA;
       this.Collision(object);
@@ -168,6 +167,7 @@ export class Match {
     const data = { x: this.ball.position.x, y: this.ball.position.y };
     this.player1.emit('updateBallState', data);
     this.player2.emit('updateBallState', data);
+    console.log('data : ',data);
   }
 
   private updateScore() {

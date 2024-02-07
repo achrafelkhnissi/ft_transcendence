@@ -6,18 +6,11 @@ import { useSocket } from '../../contexts/socketContext';
 
 const Game = (props: any) => {
   const { socket } = useSocket();
-  // const socket = props.socket;
   const playerPosition = props.position;
-  const RESOLUTION = { width: 800, height: 400 };
+  const RESOLUTION = { width: 1000, height: 500 };
   const TARGET_FPS = 60;
 
   const [game, setGame] = useState<GameType>();
-
-  // if (!playerPosition){
-  //   return (<>
-  //   <div>Player not found</div>
-  //   </>)
-  // }
 
   useEffect(() => {
     async function initPhaser() {
@@ -65,7 +58,7 @@ const Game = (props: any) => {
   return (
     <>
       <div
-        className="max-w-[800px] max-h-[400px]"
+        className="max-w-[1000px] max-h-[500px] self-center"
         id="game-container"
         key="game-container"
       ></div>

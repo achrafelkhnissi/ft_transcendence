@@ -3,7 +3,7 @@
 import { Scene } from 'phaser';
 
 import { cursorTo } from 'readline';
-import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, SPEED } from './constants';
+import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, PADDLE_SPEED } from './constants';
 import { Vector } from 'matter';
 import { Socket } from 'socket.io-client';
 
@@ -110,10 +110,10 @@ export default class GameScene extends Scene {
 
     if (this.cursors?.up.isDown) {
       console.log('up');
-      newPaddleVelocity.y -= SPEED;
+      newPaddleVelocity.y -= PADDLE_SPEED;
     } else if (this.cursors?.down.isDown) {
       console.log('down');
-      newPaddleVelocity.y += SPEED;
+      newPaddleVelocity.y += PADDLE_SPEED;
     } else newPaddleVelocity.y = 0;
 
     this.input.on('pointermove',  (pointer : any) => {
