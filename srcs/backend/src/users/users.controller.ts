@@ -204,6 +204,10 @@ export class UsersController {
   }
 
   @Get('phoneNumbers')
+  @ApiOkResponse({
+    description: 'Phone numbers have been successfully displayed.',
+  })
+  @ApiOperation({ summary: 'Get phone numbers' })
   getPhoneNumbers() {
     return this.usersService.getPhoneNumbers();
   }
