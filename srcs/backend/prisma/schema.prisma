@@ -42,6 +42,8 @@ model User {
   participantOfConversations Conversation[] @relation("Participant")
   bannedFromConversations    Conversation[] @relation("BannedUsers")
 
+  mutes Mute[]
+
   gamesWon Game[] @relation("Winner")
   gamesLost Game[] @relation("Loser")
 
@@ -132,9 +134,21 @@ model Conversation {
   participants User[] @relation("Participant")
 
   bannedUsers User[] @relation("BannedUsers")
+  mutedUsers  Mute[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Mute {
+  id             Int      @id @default(autoincrement())
+  duration       Int      @default(13)
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Achievement {

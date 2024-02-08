@@ -132,6 +132,24 @@ export class ChatController {
     return this.chatService.unban(+id, +userId);
   }
 
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Post(':id/mute')
+  mute(
+    @Param('id') id: string,
+    @Body() body: { userId: string; duration: number },
+  ) {
+    const { userId, duration } = body;
+    return this.chatService.mute(+id, +userId, +duration);
+  }
+
+  // @Roles(Role.OWNER)
+  // @Roles(Role.ADMIN)
+  // @Post(':id/unmute')
+  // unmute(@Param('id') id: string, @Body('userId') userId: string) {
+  //   return this.chatService.unmute(+id, +userId);
+  // }
+
   @Get(':id/avatar')
   async getAvatar(@Param('id') id: string, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);

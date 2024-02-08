@@ -660,4 +660,24 @@ export class ChatService {
       },
     });
   }
+
+  async getBannedUsers(chatId: number) {
+    return this.prismaService.conversation
+      .findUnique({
+        where: {
+          id: chatId,
+        },
+      })
+      .bannedUsers();
+  }
+
+  async mute(chatId: number, userId: number, duration: number) {
+    const mute = await this.prismaService.mute.create({
+      data: {
+        userId: userId,
+        conversationId: chatId,
+        duration,
+      },
+    });
+  }
 }
