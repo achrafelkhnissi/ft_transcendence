@@ -25,16 +25,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Conversation } from '@prisma/client';
-
-/**
- * TODO:
- * - Add guards to routes
- * - Add the ability to change access type of chat [public, private, protected]
- * - What should happen if the owner of a chat leaves the chat?
- * - The owner should be able to change the password of a chat
- * - Channel owner should be able to kick, ban, mute, etc. users
- */
 
 @ApiTags('chat')
 @UseGuards(AuthGuard)
@@ -67,47 +57,65 @@ export class ChatController {
 
   @Roles(Role.OWNER)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateChatDto: UpdateChatDto,
+  ) {
     return this.chatService.update(+id, updateChatDto);
   }
 
   @Roles(Role.OWNER)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.remove(+id);
   }
 
   @Post(':id/participants/add')
-  addParticipant(@Param('id') id: string, @Body('userId') userId: string) {
+  addParticipant(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
     return this.chatService.addParticipant(+id, +userId);
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/participants/remove')
-  removeParticipant(@Param('id') id: string, @Body('userId') userId: string) {
+  removeParticipant(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
     return this.chatService.removeParticipant(+id, +userId);
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/admins/add')
-  addAdmin(@Param('id') id: string, @Body('userId') userId: string) {
+  addAdmin(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
     return this.chatService.addAdmin(+id, +userId);
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/admins/remove')
-  removeAdmin(@Param('id') id: string, @Body('userId') userId: string) {
+  removeAdmin(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
     return this.chatService.removeAdmin(+id, +userId);
   }
 
   @Post(':id/leave')
-  leaveChat(@Param('id') id: string, @User() user: UserType) {
+  leaveChat(@Param('id', ParseIntPipe) id: number, @User() user: UserType) {
     return this.chatService.leaveChat(+id, user.id);
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/ban')
-  async ban(@Param('id') id: string, @Body('userId') userId: string) {
+  async ban(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
     const chat = await this.chatService.findOne(+id);
 
     if (chat.ownerId === +userId) {
@@ -124,14 +132,14 @@ export class ChatController {
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unban')
-  unban(@Param('id') id: string, @Body('userId') userId: string) {
+  unban(@Param('id', ParseIntPipe) id: number, @Body('userId') userId: string) {
     return this.chatService.unban(+id, +userId);
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/mute')
   async mute(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: { userId: string; duration: number },
   ) {
     const { userId, duration } = body;
@@ -147,15 +155,15 @@ export class ChatController {
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unmute')
   unmute(
-    @Param('id', new ParseIntPipe())
+    @Param('id', ParseIntPipe)
     id: number,
-    @Body('userId', new ParseIntPipe()) userId: number,
+    @Body('userId', ParseIntPipe) userId: number,
   ) {
     return this.chatService.unmute(id, userId);
   }
 
   @Get(':id/avatar')
-  async getAvatar(@Param('id') id: string, @Res() res: Response) {
+  async getAvatar(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);
 
     if (avatar && avatar.startsWith('http')) {
@@ -166,22 +174,22 @@ export class ChatController {
   }
 
   @Get(':id/messages')
-  findMessages(@Param('id') id: string) {
+  findMessages(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findMessages(+id);
   }
 
   @Get(':id/participants')
-  findParticipants(@Param('id') id: string) {
+  findParticipants(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findParticipants(+id);
   }
 
   @Get(':id/admins')
-  findAdmins(@Param('id') id: string) {
+  findAdmins(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findAdmins(+id);
   }
 
   @Get(':id/owner')
-  findOwner(@Param('id') id: string) {
+  findOwner(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findOwner(+id);
   }
 
