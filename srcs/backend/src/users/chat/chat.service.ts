@@ -672,11 +672,20 @@ export class ChatService {
   }
 
   async mute(chatId: number, userId: number, duration: number) {
-    const mute = await this.prismaService.mute.create({
+    return this.prismaService.mute.create({
       data: {
         userId: userId,
         conversationId: chatId,
         duration,
+      },
+    });
+  }
+
+  async unmute(chatId: number, userId: number) {
+    return this.prismaService.mute.deleteMany({
+      where: {
+        userId,
+        conversationId: chatId,
       },
     });
   }

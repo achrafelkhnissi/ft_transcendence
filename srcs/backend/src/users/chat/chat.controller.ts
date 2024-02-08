@@ -11,6 +11,7 @@ import {
   Query,
   Res,
   ForbiddenException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -129,20 +130,29 @@ export class ChatController {
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/mute')
-  mute(
+  async mute(
     @Param('id') id: string,
     @Body() body: { userId: string; duration: number },
   ) {
     const { userId, duration } = body;
+
+    const chat = await this.chatService.findOne(+id);
+    if (chat.ownerId === +userId) {
+      throw new ForbiddenException('You cannot mute the owner of the chat');
+    }
+
     return this.chatService.mute(+id, +userId, +duration);
   }
 
-  // @Roles(Role.OWNER)
-  // @Roles(Role.ADMIN)
-  // @Post(':id/unmute')
-  // unmute(@Param('id') id: string, @Body('userId') userId: string) {
-  //   return this.chatService.unmute(+id, +userId);
-  // }
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/unmute')
+  unmute(
+    @Param('id', new ParseIntPipe())
+    id: number,
+    @Body('userId', new ParseIntPipe()) userId: number,
+  ) {
+    return this.chatService.unmute(id, userId);
+  }
 
   @Get(':id/avatar')
   async getAvatar(@Param('id') id: string, @Res() res: Response) {
