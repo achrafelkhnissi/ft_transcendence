@@ -538,4 +538,19 @@ export class ChatService {
       },
     });
   }
+
+  async removeParticipant(chatId: number, participantId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          disconnect: {
+            id: participantId,
+          },
+        },
+      },
+    });
+  }
 }
