@@ -37,19 +37,30 @@ export class GameService {
     const match = new Match(player1, player2);
 
     this.activeMatches[matchKey] = match;
-    setTimeout(() => match.gameStart(), 2000);
-    // match.gameStart();
+    setTimeout(() => match.gameStart(), 3000);
   }
 
-  // readyForGame(){
-  //   if (this.getAllUsers().length >= 2){
-  //     const client1 = this.removeUser().socket;
-  //     client1.emit('playerNumber', {playerNumber : 1 , id : client1.id});
-  //     const client2 = this.removeUser().socket;
-  //     client2.emit('playerNumber', {playerNumber : 2 , id : client1.id});
-  //     this.createMatch(client1, client2);
-  //   }
-  // }
+  readyForGame(){
+    setTimeout(()=>{
+      if (this.getAllUsers().length == 1){
+        const lonly = this.removeUser();
+        lonly.socket.emit('nta wahid');
+      }
+    },10000)
+    if (this.getAllUsers().length >= 2) {
+      const client1 = this.removeUser();
+      client1.socket.emit('opponentFound', {
+        playerPosition: 'leftPaddle',
+        id: client1.id,
+      });
+      const client2 = this.removeUser();
+      client2.socket.emit('opponentFound', {
+        playerPosition: 'rightPaddle',
+        id: client2.id,
+      });
+      this.createMatch(client1.socket, client2.socket);
+    }
+  }
 
   removeUserById(userId: string): void {
     this.playerQueue = this.playerQueue.filter((user) => user.id !== userId);

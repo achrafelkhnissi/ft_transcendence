@@ -21,11 +21,13 @@ export class Match {
   private speed: number;
   private loop: string | number | NodeJS.Timeout;
   public score: { player1: number; player2: number };
+  public isFinished : boolean;
 
   constructor(
     public player1: Socket,
     public player2: Socket,
   ) {
+    this.isFinished = false;
     this.score = { player1: 0, player2: 0 };
     this.engine = Engine.create();
     this.world = this.engine.world;
@@ -167,7 +169,6 @@ export class Match {
     const data = { x: this.ball.position.x, y: this.ball.position.y };
     this.player1.emit('updateBallState', data);
     this.player2.emit('updateBallState', data);
-    console.log('data : ',data);
   }
 
   private updateScore() {
@@ -192,6 +193,7 @@ export class Match {
     clearInterval(this.loop);
     this.player1.removeAllListeners();
     this.player2.removeAllListeners();
+    this.isFinished = true;
     console.log('endgame');
   }
 

@@ -214,24 +214,6 @@ export class AppGateway
     const user = client.request.user;
 
     this.gameService.addUser({ id: client.id, socket: client, user })
-    setTimeout(()=>{
-      if (this.gameService.getAllUsers().length == 1){
-        const lonly = this.gameService.removeUser();
-        lonly.socket.emit('nta wahid');
-      }
-    },10000)
-    if (this.gameService.getAllUsers().length >= 2) {
-      const client1 = this.gameService.removeUser();
-      client1.socket.emit('opponentFound', {
-        playerPosition: 'leftPaddle',
-        id: client1.id,
-      });
-      const client2 = this.gameService.removeUser();
-      client2.socket.emit('opponentFound', {
-        playerPosition: 'rightPaddle',
-        id: client2.id,
-      });
-      this.gameService.createMatch(client1.socket, client2.socket);
-    }
+    this.gameService.readyForGame();
   }
 }

@@ -46,9 +46,10 @@ const Game = (props: any) => {
         });
         setGame(PhaserGame);
         return () => {
-          // setReady(false)
-          console.log('game distroyed');
-          PhaserGame.destroy(true);
+          if (PhaserGame){
+            console.log('game distroyed');
+            PhaserGame.destroy(true);
+          }
         };
       }
     }
