@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 import { Conversation, ConversationType, Status } from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class ChatService {
@@ -181,6 +182,7 @@ export class ChatService {
         type: true,
         name: true,
         updatedAt: true,
+        ownerId: true,
         owner: {
           select: {
             id: true,
@@ -583,6 +585,52 @@ export class ChatService {
         admins: {
           disconnect: {
             id: adminId,
+          },
+        },
+      },
+    });
+  }
+
+  async ban(chatId: number, userId: number, role: Role) {
+    let updateData = {
+      bannedUsers: {
+        connect: {
+          id: userId,
+        },
+      },
+    };
+
+    if (role === Role.ADMIN) {
+      updateData['admins'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    } else {
+      updateData['participants'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: updateData,
+    });
+  }
+
+  async unban(chatId: number, userId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        bannedUsers: {
+          disconnect: {
+            id: userId,
           },
         },
       },

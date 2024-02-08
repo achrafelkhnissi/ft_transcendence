@@ -10,6 +10,7 @@ import {
   UseGuards,
   Query,
   Res,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -23,6 +24,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Conversation } from '@prisma/client';
 
 /**
  * TODO:
@@ -103,6 +105,31 @@ export class ChatController {
   @Post(':id/leave')
   leaveChat(@Param('id') id: string, @User() user: UserType) {
     return this.chatService.leaveChat(+id, user.id);
+  }
+
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Post(':id/ban')
+  async ban(@Param('id') id: string, @Body('userId') userId: string) {
+    const chat = await this.chatService.findOne(+id);
+
+    if (chat.ownerId === +userId) {
+      throw new ForbiddenException('You cannot ban the owner of the chat');
+    }
+
+    const admins = chat.admins.map((admin) => admin.id);
+    if (admins.includes(+userId)) {
+      return this.chatService.ban(+id, +userId, Role.ADMIN);
+    }
+
+    return this.chatService.ban(+id, +userId, Role.USER);
+  }
+
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Post(':id/unban')
+  unban(@Param('id') id: string, @Body('userId') userId: string) {
+    return this.chatService.unban(+id, +userId);
   }
 
   @Get(':id/avatar')
