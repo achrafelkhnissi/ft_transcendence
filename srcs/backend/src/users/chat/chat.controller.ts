@@ -68,9 +68,8 @@ export class ChatController {
     return this.chatService.update(+id, updateChatDto);
   }
 
-  // only the owner of the chat should be able to delete it
-  @Delete(':id')
   @Roles(Role.OWNER)
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatService.remove(+id);
   }
@@ -80,9 +79,30 @@ export class ChatController {
     return this.chatService.addParticipant(+id, +userId);
   }
 
-  @Post(':id/participants/remove')
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Delete(':id/participants/remove')
   removeParticipant(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.removeParticipant(+id, +userId);
+  }
+
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Post(':id/admins/add')
+  addAdmin(@Param('id') id: string, @Body('userId') userId: string) {
+    return this.chatService.addAdmin(+id, +userId);
+  }
+
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
+  @Delete(':id/admins/remove')
+  removeAdmin(@Param('id') id: string, @Body('userId') userId: string) {
+    return this.chatService.removeAdmin(+id, +userId);
+  }
+
+  @Post(':id/leave')
+  leaveChat(@Param('id') id: string, @User() user: UserType) {
+    return this.chatService.leaveChat(+id, user.id);
   }
 
   @Get(':id/avatar')
@@ -114,16 +134,6 @@ export class ChatController {
   @Get(':id/owner')
   findOwner(@Param('id') id: string) {
     return this.chatService.findOwner(+id);
-  }
-
-  @Post(':id/admins')
-  addAdmin(@Param('id') id: string, @Body() userId: number) {
-    return this.chatService.addAdmin(+id, userId);
-  }
-
-  @Delete(':id/admins/:userId')
-  removeAdmin(@Param('id') id: string, @Param('userId') userId: string) {
-    return this.chatService.removeAdmin(+id, +userId);
   }
 
   @Get(':username/chats')

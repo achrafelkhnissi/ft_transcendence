@@ -292,22 +292,6 @@ export class ChatService {
       .owner();
   }
 
-  addAdmin(id: number, userId: number) {
-    this.logger.log(`Adding admin with id ${userId} to chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
-
   // TODO: Check if the logged in user has permission to remove a user from a chat
   // removeUser(id: number, userId: number) {
   //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
@@ -324,22 +308,6 @@ export class ChatService {
   //     },
   //   });
   // }
-
-  removeAdmin(id: number, userId: number) {
-    this.logger.log(`Removing admin with id ${userId} from chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          disconnect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
 
   /* --- Gateway --- */
   getUserFromSocket(socket: Socket) {
@@ -548,6 +516,73 @@ export class ChatService {
         participants: {
           disconnect: {
             id: participantId,
+          },
+        },
+      },
+    });
+  }
+
+  async leaveChat(chatId: number, userId: number) {
+    const chat = await this.prismaService.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        admins: true,
+      },
+    });
+
+    if (chat.ownerId === userId) {
+      const newOwner = chat.admins.length
+        ? chat.admins[0].id
+        : chat.participants[0].id;
+
+      return this.replaceOwner(chatId, newOwner);
+    }
+
+    if (chat.admins.some((admin) => admin.id === userId)) {
+      return this.removeAdmin(chatId, userId);
+    }
+
+    return this.removeParticipant(chatId, userId);
+  }
+
+  async replaceOwner(chatId: number, newOwnerId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        ownerId: newOwnerId,
+      },
+    });
+  }
+
+  async addAdmin(chatId: number, adminId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        admins: {
+          connect: {
+            id: adminId,
+          },
+        },
+      },
+    });
+  }
+
+  async removeAdmin(chatId: number, adminId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        admins: {
+          disconnect: {
+            id: adminId,
           },
         },
       },
