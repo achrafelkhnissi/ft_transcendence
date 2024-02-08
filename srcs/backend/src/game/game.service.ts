@@ -17,19 +17,19 @@ export class GameService {
   private playerQueue: Player[] = [];
 
   constructor(private readonly prismaService: PrismaService) {
+    this.updateGame();
+  }
+
+  updateGame(){
     setInterval(async () => {
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
-
-        console.log('match.isFinished', match.isFinished);
         if (match.isFinished) {
           const id1: number = parseInt(key.split('-')[0]);
           const id2: number = parseInt(key.split('-')[1]);
-
-          console.log('match.score', match.score);
           await this.saveMatch({
             winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
-            loserId: match.score.player1 > match.score.player2 ? id1 : id2,
+            loserId: match.score.player1 < match.score.player2 ? id1 : id2,
             score: `${match.score.player1} - ${match.score.player2}`,
           });
           match.removeIt = true;

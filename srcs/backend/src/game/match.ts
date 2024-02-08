@@ -21,8 +21,8 @@ export class Match {
   private speed: number;
   private loop: string | number | NodeJS.Timeout;
   public score: { player1: number; player2: number };
-  public isFinished : boolean;
-  public removeIt : boolean;
+  public isFinished: boolean;
+  public removeIt: boolean;
 
   constructor(
     public player1: Socket,
@@ -68,14 +68,12 @@ export class Match {
     player1.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
       const { x, y } = data;
       Body.setPosition(this.leftPaddle, { x, y });
-      console.log('positionleft ', data, ' ', this.leftPaddle.position);
       player2.emit('updateOpponentPaddle', data);
     });
 
     player2.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
       const { x, y } = data;
       Body.setPosition(this.rightPaddle, { x, y });
-      console.log('positionRight ', data, ' ', this.rightPaddle.position);
       player1.emit('updateOpponentPaddle', data);
     });
 
@@ -83,19 +81,18 @@ export class Match {
       this.score.player1 = 0;
       this.score.player2 = 1;
       this.endGame();
-      console.log('Disconnect');
+      console.log('player1 Disconnect');
     });
 
     player2.on('disconnect', () => {
       this.score.player1 = 1;
       this.score.player2 = 0;
       this.endGame();
-      console.log('Disconnect');
+      console.log('player2 Disconnect');
     });
   }
 
   private Collision(paddle: Matter.Body) {
-    // console.log("colide");
     let collidePoint =
       this.ball.position.y - (paddle.position.y + PADDLE_HEIGHT / 2);
     collidePoint = collidePoint / (PADDLE_HEIGHT / 2);
@@ -105,7 +102,6 @@ export class Match {
       x: direction * this.speed * Math.cos(angleRad),
       y: this.speed * Math.sin(angleRad),
     };
-    // console.log(paddle.position);
     Body.setVelocity(this.ball, velocity);
     this.speed += 0.1;
   }
@@ -137,13 +133,9 @@ export class Match {
       }
 
       if (this.score.player1 == 5) {
-        console.log('this.score.player1', this.score.player1);
-        console.log('this.score.player2', this.score.player2);
         this.setWinner(1);
         this.endGame();
       } else if (this.score.player2 == 5) {
-        console.log('this.score.player1', this.score.player1);
-        console.log('this.score.player2', this.score.player2);
         this.setWinner(2);
         this.endGame();
       }
