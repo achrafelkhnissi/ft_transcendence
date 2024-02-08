@@ -523,4 +523,19 @@ export class ChatService {
       })
       .then((chat) => chat.image);
   }
+
+  async addParticipant(chatId: number, participantId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          connect: {
+            id: participantId,
+          },
+        },
+      },
+    });
+  }
 }
