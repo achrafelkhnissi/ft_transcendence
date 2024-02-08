@@ -562,17 +562,36 @@ export class ChatService {
   }
 
   async addAdmin(chatId: number, adminId: number) {
+    const chat = await this.prismaService.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+      },
+    });
+
+    let updateData = {
+      admins: {
+        connect: {
+          id: adminId,
+        },
+      },
+    };
+
+    if (!chat.participants.some((participant) => participant.id === adminId)) {
+      updateData['participants'] = {
+        disconnect: {
+          id: adminId,
+        },
+      };
+    }
+
     return this.prismaService.conversation.update({
       where: {
         id: chatId,
       },
-      data: {
-        admins: {
-          connect: {
-            id: adminId,
-          },
-        },
-      },
+      data: updateData,
     });
   }
 
@@ -584,6 +603,11 @@ export class ChatService {
       data: {
         admins: {
           disconnect: {
+            id: adminId,
+          },
+        },
+        participants: {
+          connect: {
             id: adminId,
           },
         },
