@@ -162,6 +162,11 @@ export class ChatController {
     return this.chatService.unmute(id, userId);
   }
 
+  @Get(':id/muted')
+  findMuted(@Param('id', ParseIntPipe) id: number) {
+    return this.chatService.findMuted(+id);
+  }
+
   @Get(':id/avatar')
   async getAvatar(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);

@@ -689,4 +689,12 @@ export class ChatService {
       },
     });
   }
+
+  async findMuted(chatId: number) {
+    return this.prismaService.mute.findMany({
+      where: {
+        conversationId: chatId,
+      },
+    });
+  }
 }
