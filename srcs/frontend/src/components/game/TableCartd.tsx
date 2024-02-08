@@ -29,8 +29,8 @@ const TableCard: React.FC<TableCardPorps> = ({
   return (
     <div
       className={`
-                    md:w-[29rem] 
-                    md:h-[18rem]
+                    md:w-[25rem] 
+                    md:h-[14rem]
                     w-[18rem]
                     h-[10rem]
                     md:rounded-[2.5rem] 
