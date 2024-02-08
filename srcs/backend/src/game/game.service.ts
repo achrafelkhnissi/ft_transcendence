@@ -62,8 +62,10 @@ export class GameService {
 
   readyForGame(){
     setTimeout(()=>{
-      if (this.getAllUsers().length == 1)
-        this.removeUser().socket.emit('nta wahid');
+      if (this.getAllUsers().length == 1){
+        const lonly = this.removeUser();
+        lonly.socket.emit('nta wahid');
+      }
     },10000)
     if (this.getAllUsers().length >= 2) {
       const client1 = this.removeUser();
