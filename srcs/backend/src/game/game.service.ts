@@ -8,7 +8,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 interface Player {
   id: string;
   socket: Socket;
-  user: UserType; 
+  user: UserType;
 }
 
 @Injectable()
@@ -17,27 +17,32 @@ export class GameService {
   private playerQueue: Player[] = [];
 
   constructor(private readonly prismaService: PrismaService) {
-   setInterval(() =>{
-     for (const key in this.activeMatches){
-      const match = this.activeMatches[key];
-      if (match.isFinished){
-        const id1 :number = parseInt(key.split('-')[0]); 
-        const id2 :number = parseInt(key.split('-')[1]);
-        this.saveMatch({
-        winnerId :  (match.score.player1 > match.score.player2) ? id1 : id2,
-        loserId :  (match.score.player1 > match.score.player2) ? id1 : id2,
-        score : `${match.score.player1} - ${match.score.player2}`,
-        }) 
-        match.removeIt = true;
-      }
-     }
-     const toRemoveEntries = Object.entries(this.activeMatches)
-     .filter(([key, gameInstance]) => gameInstance.removeIt);
+    setInterval(async () => {
+      for (const key in this.activeMatches) {
+        const match = this.activeMatches[key];
 
-     toRemoveEntries.forEach(([key])=>{
-      delete this.activeMatches[key];
-     });
-   }, 100);
+        console.log('match.isFinished', match.isFinished);
+        if (match.isFinished) {
+          const id1: number = parseInt(key.split('-')[0]);
+          const id2: number = parseInt(key.split('-')[1]);
+
+          console.log('match.score', match.score);
+          await this.saveMatch({
+            winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
+            loserId: match.score.player1 > match.score.player2 ? id1 : id2,
+            score: `${match.score.player1} - ${match.score.player2}`,
+          });
+          match.removeIt = true;
+        }
+      }
+      const toRemoveEntries = Object.entries(this.activeMatches).filter(
+        ([key, gameInstance]) => gameInstance.removeIt,
+      );
+
+      toRemoveEntries.forEach(([key]) => {
+        delete this.activeMatches[key];
+      });
+    }, 100);
   }
 
   addUser(user: Player): void {
@@ -53,20 +58,18 @@ export class GameService {
   }
 
   createMatch(player1: Player, player2: Player): void {
-
     const matchKey = `${player1.user.id}-${player2.user.id}`;
     const match = new Match(player1.socket, player2.socket);
     this.activeMatches[matchKey] = match;
     setTimeout(() => match.gameStart(), 3000);
   }
 
-  readyForGame(){
-    setTimeout(()=>{
-      if (this.getAllUsers().length == 1){
-        const lonly = this.removeUser();
-        lonly.socket.emit('nta wahid');
-      }
-    },10000)
+
+  readyForGame() {
+    setTimeout(() => {
+      if (this.getAllUsers().length == 1)
+        this.removeUser().socket.emit('nta wahid');
+    }, 10000);
     if (this.getAllUsers().length >= 2) {
       const client1 = this.removeUser();
       client1.socket.emit('opponentFound', {
@@ -86,8 +89,8 @@ export class GameService {
     this.playerQueue = this.playerQueue.filter((user) => user.id !== userId);
   }
 
-  saveMatch(data: CreateGameDto) {
-    this.prismaService.game.create({
+  async saveMatch(data: CreateGameDto) {
+    return this.prismaService.game.create({
       data,
     });
   }
