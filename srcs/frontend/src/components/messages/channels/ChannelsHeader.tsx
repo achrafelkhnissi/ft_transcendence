@@ -34,7 +34,9 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{channel.name}</h6>
           <p className="font-light text-xs text-white/30 mt-1">
-            {channel.participants.length} members
+            {channel.participants.length 
+            + channel.admins.length 
+            + 1} members
           </p>
         </div>
       </div>

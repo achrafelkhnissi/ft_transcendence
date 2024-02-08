@@ -1,9 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
+import { ChangeEvent } from 'react';
 import { Conversation, User } from '../data';
 import Member from './Member';
 import getUser from '@/services/getUser';
+import { FaCheck } from 'react-icons/fa';
 
 interface ChannelInfoProps {
   channel: Conversation;
@@ -27,6 +29,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const length = channel.participants.length + channel.admins.length + 1;
   const [newMember, setNewMember] = useState<string>('');
   const [memberError, setMemeberError] = useState<0 | 1 | 2>(0);
+  const [channelType, setChannelType] = useState<string>(channel.type);
+  const [password, setPassword] = useState<string>('');
+  const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
 
   const handleNewMemmber = () => {
     if (newMember != '' && newMember != currentUser) {
@@ -54,10 +59,29 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   };
 
   const handleLeaveChannel = () => {};
+
+  const updateChannelType = () => {};
+
+  const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const pass = e.target.value;
+
+    if (pass === '') {
+      setWeakPassword(false);
+    } else if (passwordRegex.test(pass)) {
+      setWeakPassword(false);
+      setPassword(pass);
+    } else {
+      setWeakPassword(true);
+      setPassword('');
+    }
+  };
+
   return (
     <div
       className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 
-                        flex flex-col gap-4"
+                        flex flex-col gap-4 "
     >
       <h1 className="self-center md:text-[1.5rem] text-xl text-white/90 font-semibold">
         Channel Info
@@ -79,18 +103,23 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             <label
               htmlFor="privateSwitch"
               className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                channel.type === 'PRIVATE' ? 'bg-blue-500/80' : 'bg-white/5'
+                channelType === 'PRIVATE' ? 'bg-blue-500/90' : 'bg-white/5'
               }`}
             >
               <input
                 type="checkbox"
                 id="privateSwitch"
                 className="sr-only"
-                onClick={() => {}}
+                onClick={(e) => {
+                  setChannelType((prev) =>
+                    prev === 'PRIVATE' ? 'PUBLIC' : 'PRIVATE',
+                  );
+                  updateChannelType();
+                }}
               />
               <div
                 className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
-                  channel.type === 'PRIVATE'
+                  channelType === 'PRIVATE'
                     ? 'translate-x-full bg-white'
                     : 'bg-white/80'
                 }`}
@@ -99,28 +128,69 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             <span className="ml-2 text-white/80">Make Channel Private </span>
           </div>
           {/* ///lock */}
-          <div className="flex gap-2  items-center text-white">
-            <label
-              htmlFor="lockSwitch"
-              className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                channel.type === 'PROTECTED' ? 'bg-blue-500/80' : 'bg-white/5'
-              }`}
-            >
-              <input
-                type="checkbox"
-                id="lockSwitch"
-                className="sr-only"
-                onClick={() => {}}
-              />
-              <div
-                className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
-                  channel.type === 'PROTECTED'
-                    ? 'translate-x-full bg-white'
-                    : 'bg-white/80'
+          <div className="flex gap-4 flex-col items-center text-white relative">
+            <div className="w-full h-full flex gap-2">
+              <label
+                htmlFor="lockSwitch"
+                className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
+                  channelType === 'PROTECTED' ? 'bg-blue-500/90' : 'bg-white/5'
                 }`}
-              ></div>
-            </label>
-            <span className="ml-2 text-white/80">Lock Channel </span>
+              >
+                <input
+                  type="checkbox"
+                  id="lockSwitch"
+                  className="sr-only"
+                  onClick={(e) => {
+                    setChannelType((prev) =>
+                      prev === 'PROTECTED' ? 'PUBLIC' : 'PROTECTED',
+                    );
+                    updateChannelType();
+                  }}
+                />
+                <div
+                  className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
+                    channelType === 'PROTECTED'
+                      ? 'translate-x-full bg-white'
+                      : 'bg-white/80'
+                  }`}
+                ></div>
+              </label>
+              <span className="ml-2 text-white/80">Lock Channel </span>
+            </div>
+            <div
+              className={`md:w-[12rem] w-[10rem] relative flex flex-col justify-center self-start 
+            ${channelType != 'PROTECTED' && 'hidden'}`}
+            >
+              <div className='relative w-full flex justify-center self-start  h-10'>
+              <input
+                type="text"
+                id="password"
+                maxLength={13}
+                placeholder={
+                  channel.type == 'PROTECTED' ? '**********' : 'password'
+                }
+                onChange={handlePassword}
+                className={`w-full h-full rounded-xl border-2 border-blue-500/80 bg-white/5 self-center outline-none px-4
+            text-white/60 text-md font-normal placeholder:opacity-40 md:text-md text-sm placeholder:text-sm`}
+              />
+              <label
+                htmlFor="password"
+                className="cursor-pointer  self-center rounded-full w-[1.3rem] h-[1.3rem] bg-white/10 flex justify-center
+                        absolute right-2 "
+              >
+                <FaCheck
+                  className="text-blue-500 font-bold self-center w-[0.8rem] h-[0.8rem]"
+                  // onClick={() => updatePassword()}
+                />
+              </label>
+              </div>
+              {weakPasswrod && (
+                <p className="md:text-xs  text-[0.6rem] text-red-600 w-full pl-2  pt-1 ">
+                  Password must be strong: 8+ chars, upper/lowercase, digits,
+                  special chars.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
