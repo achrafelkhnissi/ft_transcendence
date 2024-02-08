@@ -136,12 +136,12 @@ export class Match {
         this.resetGame();
       }
 
-      if (this.score.player1 == 10) {
+      if (this.score.player1 == 5) {
         console.log('this.score.player1', this.score.player1);
         console.log('this.score.player2', this.score.player2);
         this.setWinner(1);
         this.endGame();
-      } else if (this.score.player2 == 10) {
+      } else if (this.score.player2 == 5) {
         console.log('this.score.player1', this.score.player1);
         console.log('this.score.player2', this.score.player2);
         this.setWinner(2);
