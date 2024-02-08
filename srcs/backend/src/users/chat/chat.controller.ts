@@ -64,7 +64,7 @@ export class ChatController {
     return this.chatService.findAllChatForUser(user.id);
   }
 
-  // Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint
+  @Roles(Role.OWNER)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
     return this.chatService.update(+id, updateChatDto);

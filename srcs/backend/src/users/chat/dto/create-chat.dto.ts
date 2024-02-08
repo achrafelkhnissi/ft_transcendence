@@ -55,7 +55,7 @@ export class CreateChatDto {
     example: 'Password123!',
   })
   @ValidateIf((o) => o.type === $Enums.ConversationType.PROTECTED)
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Password is required when chat type is protected' })
   @IsString()
   @MinLength(8, {
     message: 'Password must be at least 8 characters long',
