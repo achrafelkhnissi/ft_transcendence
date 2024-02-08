@@ -28,7 +28,7 @@ export const defaultSidebarItems: DefaultSidebarItemsProps[] = [
   },
   {
     label: 'Play',
-    href: '/game',
+    href: '/play',
     icon: <RiPingPongLine className="w-6 h-6" />,
   },
   {

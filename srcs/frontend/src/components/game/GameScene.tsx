@@ -3,7 +3,7 @@
 import { Scene } from 'phaser';
 
 import { cursorTo } from 'readline';
-import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, SPEED } from './constants';
+import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, PADDLE_SPEED } from './constants';
 import { Vector } from 'matter';
 import { Socket } from 'socket.io-client';
 
@@ -38,6 +38,11 @@ export default class GameScene extends Scene {
     this.CANVAS_WIDTH = this.sys.canvas.width;
 
     this.cursors = this.input.keyboard?.createCursorKeys();
+    const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
+    middleLine.beginPath();
+    middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
+    middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
+    middleLine.strokePath();
     const left = this.add.rectangle(
       PADDLE_WIDTH / 2 + 10,
       this.CANVAS_HEIGHT / 2,
@@ -83,7 +88,7 @@ export default class GameScene extends Scene {
       this.ball.setY(data.y);
     });
 
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30, 30, '0', {
+    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30 - 40, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',
@@ -105,11 +110,17 @@ export default class GameScene extends Scene {
 
     if (this.cursors?.up.isDown) {
       console.log('up');
-      newPaddleVelocity.y -= SPEED;
+      newPaddleVelocity.y -= PADDLE_SPEED;
     } else if (this.cursors?.down.isDown) {
       console.log('down');
-      newPaddleVelocity.y += SPEED;
+      newPaddleVelocity.y += PADDLE_SPEED;
     } else newPaddleVelocity.y = 0;
+
+    this.input.on('pointermove',  (pointer : any) => {
+      this.paddle?.setY(Phaser.Math.Clamp(pointer.y, PADDLE_HEIGHT / 2,
+        this.CANVAS_HEIGHT - PADDLE_HEIGHT / 2
+      ));
+  }, this);
 
     if (this.paddle?.body) this.paddle.body.velocity.y = newPaddleVelocity.y;
 

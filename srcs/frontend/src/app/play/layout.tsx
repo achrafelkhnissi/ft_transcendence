@@ -16,11 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-      <SocketProvider>
-    <html lang="en">
-        
-      <body className={`${inter.className} `}>{children}</body>
-    </html>
-      </SocketProvider>
+    <SocketProvider>
+      <div className="w-full h-full">{children}</div>
+    </SocketProvider>
   );
 }

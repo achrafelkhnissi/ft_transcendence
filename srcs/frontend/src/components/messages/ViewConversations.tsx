@@ -121,7 +121,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
               />
               {
                 showChannelInfo && 
-                <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 ">
+                <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
                   <ChannelInfo 
                     currentUser={currentUser}
                     addMember={addMember}
