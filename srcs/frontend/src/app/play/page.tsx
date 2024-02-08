@@ -34,9 +34,12 @@ const PlayPage = () => {
     };
     socket?.on('opponentFound', handleOpponentFound);
 
+    socket?.on('nta wahid', ()=> console.log('nta wahid'))
+
     return () => {
       if (socket) {
         socket.off('opponentFound', handleOpponentFound);
+        socket?.off('nta wahid', ()=> console.log('nta wahid'))
       }
     };
   }, [socket]);

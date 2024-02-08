@@ -213,7 +213,13 @@ export class AppGateway
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
 
-    this.gameService.addUser({ id: client.id, socket: client, user });
+    this.gameService.addUser({ id: client.id, socket: client, user })
+    setTimeout(()=>{
+      if (this.gameService.getAllUsers().length == 1){
+        const lonly = this.gameService.removeUser();
+        lonly.socket.emit('nta wahid');
+      }
+    },10000)
     if (this.gameService.getAllUsers().length >= 2) {
       const client1 = this.gameService.removeUser();
       client1.socket.emit('opponentFound', {
