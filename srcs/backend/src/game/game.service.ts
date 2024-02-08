@@ -78,7 +78,7 @@ export class GameService {
         playerPosition: 'rightPaddle',
         id: client2.id,
       });
-      this.createMatch(client1.socket, client2.socket);
+      this.createMatch(client1, client2);
     }
   }
 
