@@ -87,6 +87,11 @@ export class ChatController {
     return this.chatService.removeParticipant(+id, +userId);
   }
 
+  @Post(':id/leave')
+  leaveChat(@Param('id') id: string, @User() user: UserType) {
+    return this.chatService.leaveChat(+id, user.id);
+  }
+
   @Get(':id/avatar')
   async getAvatar(@Param('id') id: string, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);
