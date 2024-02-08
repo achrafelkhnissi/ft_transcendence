@@ -81,22 +81,19 @@ export class ChatController {
     return this.chatService.addParticipant(+id, +userId);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/participants/remove')
   removeParticipant(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.removeParticipant(+id, +userId);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/admins/add')
   addAdmin(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.addAdmin(+id, +userId);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/admins/remove')
   removeAdmin(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.removeAdmin(+id, +userId);
@@ -107,8 +104,7 @@ export class ChatController {
     return this.chatService.leaveChat(+id, user.id);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/ban')
   async ban(@Param('id') id: string, @Body('userId') userId: string) {
     const chat = await this.chatService.findOne(+id);
@@ -125,15 +121,13 @@ export class ChatController {
     return this.chatService.ban(+id, +userId, Role.USER);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unban')
   unban(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.unban(+id, +userId);
   }
 
-  @Roles(Role.OWNER)
-  @Roles(Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/mute')
   mute(
     @Param('id') id: string,
