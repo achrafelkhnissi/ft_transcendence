@@ -20,6 +20,9 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 /**
  * TODO:
@@ -32,6 +35,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('chat')
 @UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @Controller()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
@@ -66,6 +70,7 @@ export class ChatController {
 
   // only the owner of the chat should be able to delete it
   @Delete(':id')
+  @Roles(Role.OWNER)
   remove(@Param('id') id: string) {
     return this.chatService.remove(+id);
   }
