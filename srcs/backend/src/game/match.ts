@@ -22,12 +22,14 @@ export class Match {
   private loop: string | number | NodeJS.Timeout;
   public score: { player1: number; player2: number };
   public isFinished : boolean;
+  public removeIt : boolean;
 
   constructor(
     public player1: Socket,
     public player2: Socket,
   ) {
     this.isFinished = false;
+    this.removeIt = false;
     this.score = { player1: 0, player2: 0 };
     this.engine = Engine.create();
     this.world = this.engine.world;
@@ -134,12 +136,12 @@ export class Match {
         this.resetGame();
       }
 
-      if (this.score.player1 == 10) {
+      if (this.score.player1 == 5) {
         console.log('this.score.player1', this.score.player1);
         console.log('this.score.player2', this.score.player2);
         this.setWinner(1);
         this.endGame();
-      } else if (this.score.player2 == 10) {
+      } else if (this.score.player2 == 5) {
         console.log('this.score.player1', this.score.player1);
         console.log('this.score.player2', this.score.player2);
         this.setWinner(2);
