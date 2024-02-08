@@ -161,28 +161,28 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
               className={`md:w-[12rem] w-[10rem] relative flex flex-col justify-center self-start 
             ${channelType != 'PROTECTED' && 'hidden'}`}
             >
-              <div className='relative w-full flex justify-center self-start  h-10'>
-              <input
-                type="text"
-                id="password"
-                maxLength={13}
-                placeholder={
-                  channel.type == 'PROTECTED' ? '**********' : 'password'
-                }
-                onChange={handlePassword}
-                className={`w-full h-full rounded-xl border-2 border-blue-500/80 bg-white/5 self-center outline-none px-4
+              <div className="relative w-full flex justify-center self-start  h-10">
+                <input
+                  type="text"
+                  id="password"
+                  maxLength={13}
+                  placeholder={
+                    channel.type == 'PROTECTED' ? '**********' : 'password'
+                  }
+                  onChange={handlePassword}
+                  className={`w-full h-full rounded-xl border-2 border-blue-500/80 bg-white/5 self-center outline-none px-4
             text-white/60 text-md font-normal placeholder:opacity-40 md:text-md text-sm placeholder:text-sm`}
-              />
-              <label
-                htmlFor="password"
-                className="cursor-pointer  self-center rounded-full w-[1.3rem] h-[1.3rem] bg-white/10 flex justify-center
-                        absolute right-2 "
-              >
-                <FaCheck
-                  className="text-blue-500 font-bold self-center w-[0.8rem] h-[0.8rem]"
-                  // onClick={() => updatePassword()}
                 />
-              </label>
+                <label
+                  htmlFor="password"
+                  className="cursor-pointer  self-center rounded-full w-[1.3rem] h-[1.3rem] bg-white/10 flex justify-center
+                        absolute right-2 "
+                >
+                  <FaCheck
+                    className="text-blue-500 font-bold self-center w-[0.8rem] h-[0.8rem]"
+                    // onClick={() => updatePassword()}
+                  />
+                </label>
               </div>
               {weakPasswrod && (
                 <p className="md:text-xs  text-[0.6rem] text-red-600 w-full pl-2  pt-1 ">
@@ -248,7 +248,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
           })}
           {channel.participants.map((participant, index) => {
             return (
-              <div key={index} className="text-white/80">
+              <div key={index} className="text-white/80 relative">
                 <Member
                   id={participant.id}
                   username={participant.username}
@@ -256,6 +256,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   role={''}
                   status={participant.status}
                 />
+                <div className="absolute border-2 w-24 h-16 "></div>
               </div>
             );
           })}
