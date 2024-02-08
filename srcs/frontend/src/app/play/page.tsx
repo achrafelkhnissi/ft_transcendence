@@ -7,12 +7,14 @@ import Image from 'next/image';
 import CostumizeGame from '@/components/game/CostumizeGame';
 import { RxExit } from 'react-icons/rx';
 import Link from 'next/link';
+import PlayerNotFound from '@/components/game/PlayerNotFound';
 
 const PlayPage = () => {
   const { socket } = useSocket();
   const [position, setPosition] = useState<null | string>(null);
   const [isWaiting, setIsWaiting] = useState(false);
   const [bgColor, setBgColor] = useState<string>('#000000');
+  const [playerNotFound, setPlayerNotFound] = useState(false);
 
   const handlePlayClick = async () => {
     setIsWaiting(true);
@@ -36,18 +38,24 @@ const PlayPage = () => {
     };
     socket?.on('opponentFound', handleOpponentFound);
 
-    socket?.on('nta wahid', ()=> console.log('nta wahid'))
+    socket?.on('nta wahid', () => {
+      console.log('nta wahid');
+      setPlayerNotFound(true);
+    });
 
     return () => {
       if (socket) {
         socket.off('opponentFound', handleOpponentFound);
-        socket?.off('nta wahid', ()=> console.log('nta wahid'))
+        socket?.off('nta wahid', () => console.log('nta wahid'));
       }
     };
   }, [socket]);
 
   return (
-    <div className="w-full h-full relative">
+    <div
+      className={`w-full h-full relative
+`}
+    >
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
@@ -78,6 +86,17 @@ const PlayPage = () => {
           >
             Play
           </button>
+          {playerNotFound && (
+            <div
+              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} `}
+              onClick={() => {
+                setPlayerNotFound(false);
+                setIsWaiting(false);
+              }}
+            >
+              <PlayerNotFound />
+            </div>
+          )}
         </div>
       )}
       {/* // {isWaiting && <div className="mt-4 spinner">Loading...</div>} popup  */}
