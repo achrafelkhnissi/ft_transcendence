@@ -80,6 +80,8 @@ export class ChatController {
     return this.chatService.addParticipant(+id, +userId);
   }
 
+  @Roles(Role.OWNER)
+  @Roles(Role.ADMIN)
   @Post(':id/participants/remove')
   removeParticipant(@Param('id') id: string, @Body('userId') userId: string) {
     return this.chatService.removeParticipant(+id, +userId);
