@@ -292,22 +292,6 @@ export class ChatService {
       .owner();
   }
 
-  addAdmin(id: number, userId: number) {
-    this.logger.log(`Adding admin with id ${userId} to chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
-
   // TODO: Check if the logged in user has permission to remove a user from a chat
   // removeUser(id: number, userId: number) {
   //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
@@ -571,6 +555,21 @@ export class ChatService {
       },
       data: {
         ownerId: newOwnerId,
+      },
+    });
+  }
+
+  async addAdmin(chatId: number, adminId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        admins: {
+          connect: {
+            id: adminId,
+          },
+        },
       },
     });
   }
