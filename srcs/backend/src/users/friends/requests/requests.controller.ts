@@ -1,9 +1,23 @@
-import { Controller, Get, Query, Logger, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Logger,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FriendRequestsService } from './requests.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { QueryDto } from 'src/users/dto/query.dto';
-import { ApiForbiddenResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('friend-requests')
@@ -15,22 +29,30 @@ export class FriendRequestsController {
 
   constructor(private readonly friendRequestsService: FriendRequestsService) {}
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User ID',
+  })
+  @ApiOkResponse({ description: 'Friend request sent' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({
     summary: 'Send a friend request to another user',
   })
   @Get('send')
-  async sendFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
+  async sendFriendRequest(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
     const senderId = user?.id;
-    const { username: receiverUsername } = query;
+    const receiverId = id;
 
     this.logger.log(
-      `User <${user?.username}> is adding user ${receiverUsername} as a friend`,
+      `User <${senderId}> is adding user ${receiverId} as a friend`,
     );
 
-    return this.friendRequestsService.sendFriendRequest(
-      senderId,
-      receiverUsername,
-    );
+    return this.friendRequestsService.sendFriendRequest(senderId, receiverId);
   }
 
   @ApiOperation({

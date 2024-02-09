@@ -48,38 +48,23 @@ export class FriendRequestsService {
     return !!friendRequest;
   }
 
-  async sendFriendRequest(senderId: number, receiverUsername: string) {
-    const [sender, receiver] = await Promise.all([
-      this.prisma.user.findUnique({
-        where: { id: senderId },
-      }),
-      this.prisma.user.findUnique({
-        where: { username: receiverUsername },
-      }),
-    ]);
-
-    if (!sender || !receiver) {
-      throw new NotFoundException(
-        `User <${senderId}> or <${receiverUsername}> not found`,
-      );
-    }
-
-    if (await this.isFriends(senderId, receiver.id)) {
+  async sendFriendRequest(senderId: number, receiverId: number) {
+    if (await this.isFriends(senderId, receiverId)) {
       throw new BadRequestException(
-        `Users <${sender.username}> and <${receiver.username}> are already friends`,
+        `Users <${senderId}> and <${receiverId}> are already friends`,
       );
     }
 
     const request = await this.prisma.friendRequest.upsert({
       where: {
-        senderId_receiverId: { senderId, receiverId: receiver.id },
+        senderId_receiverId: { senderId, receiverId: receiverId },
       },
       update: {
         friendshipStatus: FriendshipStatus.PENDING,
       },
       create: {
         senderId: senderId,
-        receiverId: receiver.id,
+        receiverId: receiverId,
         friendshipStatus: FriendshipStatus.PENDING,
       },
     });
@@ -89,7 +74,7 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      receiverId: receiver.id,
+      receiverId: receiverId,
       senderId: senderId,
       type: NotificationType.FRIEND_REQUEST_SENT,
       friendRequestId: request.id,
@@ -97,12 +82,12 @@ export class FriendRequestsService {
 
     if (!notification) {
       throw new BadRequestException(
-        `Friend request from <${sender.username}> to <${receiver.username}> already exists`,
+        `Friend request from <${senderId}> to <${receiverId}> already exists`,
       );
     }
 
     this.logger.log(
-      `User <${sender.username}> sent a friend request to <${receiver.username}>`,
+      `User <${senderId}> sent a friend request to <${receiverId}>`,
     );
 
     return { message: 'Friend request sent', request };
