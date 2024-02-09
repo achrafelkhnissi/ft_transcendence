@@ -160,7 +160,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       delete updatedConversations[id];
       return updatedConversations;
     });
-    setConversationOrder((prev) => prev.filter((convoId) => convoId !== id));
+    setConversationOrder((prev) => prev.filter((convoId) => convoId != id));
   };
 
   const addAdminToConversation = (conversationId: number, user: User) => {

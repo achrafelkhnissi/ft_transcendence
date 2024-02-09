@@ -70,7 +70,11 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   };
 
   const handleLeaveChannel = () => {
-    leaveChannel(channel.id, currentUser?.id).then((res) => {});
+    leaveChannel(channel.id, currentUser?.id).then((res) => {
+      if (res) {
+        removeConversation(channel.id);
+      }
+    });
   };
 
   const modifyChannelType = async (newChannelType: string) => {

@@ -69,7 +69,11 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     status: '',
   };
 
-  if (conversationId >= 0 && conversationsMap[conversationId].type == 'DM') {
+  if (
+    conversationId >= 0 &&
+    conversationsMap.hasOwnProperty(conversationId) &&
+    conversationsMap[conversationId].type == 'DM'
+  ) {
     const [firstParticipant, secondParticipant] =
       conversationsMap[conversationId].participants;
 
@@ -105,110 +109,114 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         ${showConversation ? '' : 'hidden md:block'}`}
     >
       {/* Header */}
-      {conversationId >= 0 && (
-        <>
-          {conversationsMap[conversationId].type === 'DM' && (
-            <ConversationHeader
-              receiver={receiver}
-              updateConversations={updateShowConversation}
-            />
-          )}
-          {conversationsMap[conversationId].type != 'DM' && (
-            <>
-              <ChannelsHeader
-                channel={conversationsMap[conversationId]}
+      {conversationId >= 0 &&
+        conversationsMap.hasOwnProperty(conversationId) && (
+          <>
+            {conversationsMap[conversationId].type === 'DM' && (
+              <ConversationHeader
+                receiver={receiver}
                 updateConversations={updateShowConversation}
-                showChannelInfo={showChannelInfo}
-                setShowChannelInfo={setShowChannelInfo}
               />
-              {showChannelInfo && (
-                <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
-                  <ChannelInfo
-                    currentUser={currentUser}
-                    addAdmin={addAdmin}
-                    channel={conversationsMap[conversationId]}
-                    updateConversations={updateConversations}
-                    removeConversation={removeConversation}
-                  />
-                </div>
-              )}
-            </>
-          )}
-          {/* Messages */}
-          <div className="w-full h-full overflow-hidden py-6 ">
-            <div
-              className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
-              ref={chatContainerRef}
-            >
-              {conversationsMap[conversationId].type === 'DM' &&
-                conversationsMap[conversationId].messages.map(
-                  (message, index) => {
-                    return (
-                      <MessageContainer
-                        isCurrentUser={currentUser?.id === message.sender.id}
-                        content={message.content}
-                        date={message.createdAt}
-                        key={index}
-                      />
-                    );
-                  },
+            )}
+            {conversationsMap[conversationId].type != 'DM' && (
+              <>
+                <ChannelsHeader
+                  channel={conversationsMap[conversationId]}
+                  updateConversations={updateShowConversation}
+                  showChannelInfo={showChannelInfo}
+                  setShowChannelInfo={setShowChannelInfo}
+                />
+                {showChannelInfo && (
+                  <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
+                    <ChannelInfo
+                      currentUser={currentUser}
+                      addAdmin={addAdmin}
+                      channel={conversationsMap[conversationId]}
+                      updateConversations={updateConversations}
+                      removeConversation={removeConversation}
+                    />
+                  </div>
                 )}
-              {conversationsMap[conversationId].type != 'DM' &&
-                conversationsMap[conversationId].messages.map(
-                  (message, index, array) => {
-                    return (
-                      <ChannelMessageContainer
-                        message={message}
-                        isCurrentUser={currentUser?.id === message.sender.id}
-                        displayAvatr={
-                          array[index + 1]?.sender != message.sender
-                        }
-                        key={index}
-                      />
-                    );
-                  },
-                )}
-            </div>
-          </div>
-          {/* Input */}
-          <div
-            className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
-                            bg-[#59598E4A] flex text-sm"
-          >
-            <div
-              className="self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
-              onClick={toggleEmojiPicker}
-            >
-              <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
-              <div className="absolute bottom-10 left-0 ">
-                {showEmojiPicker && (
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} className="" />
-                )}
+              </>
+            )}
+            {/* Messages */}
+            <div className="w-full h-full overflow-hidden py-6 ">
+              <div
+                className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
+                ref={chatContainerRef}
+              >
+                {conversationsMap[conversationId].type === 'DM' &&
+                  conversationsMap[conversationId].messages.map(
+                    (message, index) => {
+                      return (
+                        <MessageContainer
+                          isCurrentUser={currentUser?.id === message.sender.id}
+                          content={message.content}
+                          date={message.createdAt}
+                          key={index}
+                        />
+                      );
+                    },
+                  )}
+                {conversationsMap[conversationId].type != 'DM' &&
+                  conversationsMap[conversationId].messages.map(
+                    (message, index, array) => {
+                      return (
+                        <ChannelMessageContainer
+                          message={message}
+                          isCurrentUser={currentUser?.id === message.sender.id}
+                          displayAvatr={
+                            array[index + 1]?.sender != message.sender
+                          }
+                          key={index}
+                        />
+                      );
+                    },
+                  )}
               </div>
             </div>
-            <div className="w-full h-full flex py-2">
-              <textarea
-                name="message"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                className="bg-transparent w-full h-full outline-none px-6
-                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm "
-                placeholder="Type a message here..."
-              />
-            </div>
+            {/* Input */}
             <div
-              className="self-center pr-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
-              onClick={() => {
-                handleSend();
-              }}
+              className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
+                            bg-[#59598E4A] flex text-sm"
             >
-              <SendMessage color={'#20204A'} width={'29px'} height={'29px'} />
+              <div
+                className="self-center pl-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
+                onClick={toggleEmojiPicker}
+              >
+                <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
+                <div className="absolute bottom-10 left-0 ">
+                  {showEmojiPicker && (
+                    <EmojiPicker
+                      onEmojiClick={handleEmojiSelect}
+                      className=""
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="w-full h-full flex py-2">
+                <textarea
+                  name="message"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="bg-transparent w-full h-full outline-none px-6
+                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm "
+                  placeholder="Type a message here..."
+                />
+              </div>
+              <div
+                className="self-center pr-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
+                onClick={() => {
+                  handleSend();
+                }}
+              >
+                <SendMessage color={'#20204A'} width={'29px'} height={'29px'} />
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
     </div>
   );
 };
