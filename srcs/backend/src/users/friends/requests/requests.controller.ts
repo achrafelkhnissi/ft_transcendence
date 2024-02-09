@@ -142,21 +142,29 @@ export class FriendRequestsController {
     return this.friendRequestsService.listReceivedFriendRequests(user.id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User ID',
+  })
+  @ApiOkResponse({ description: 'Friend request cancelled' })
+  @ApiNotFoundResponse({ description: 'Friend request not found' })
   @ApiOperation({
     summary: 'Cancel a friend request sent to another user',
   })
   @Get('cancel')
-  async cancelFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: receiverUsername } = query;
+  async cancelFriendRequest(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    const receiverId = id;
     const senderId = user?.id;
 
     this.logger.log(
-      `User <${user?.username}> is cancelling a friend request to user <${receiverUsername}>`,
+      `User <${senderId}> is cancelling a friend request to user <${receiverId}>`,
     );
 
-    return this.friendRequestsService.cancelFriendRequest(
-      senderId,
-      receiverUsername,
-    );
+    return this.friendRequestsService.cancelFriendRequest(senderId, receiverId);
   }
 }
