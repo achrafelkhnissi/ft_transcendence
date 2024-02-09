@@ -124,34 +124,22 @@ export class FriendsService {
     return blockedUsers;
   }
 
-  async blockUser(userId: number, friendUsername: string) {
-    this.logger.log(
-      `Attempting to block user '${friendUsername}' for user ID ${userId}`,
-    );
-
-    const friend = await this.prisma.user.findUnique({
-      where: { username: friendUsername },
-    });
-
-    if (!friend) {
-      throw new NotFoundException(`User '${friendUsername}' not found.`);
-    }
-
+  async blockUser(userId: number, friendId: number) {
     return this.prisma.friendRequest.upsert({
       where: {
         senderId_receiverId: {
           senderId: userId,
-          receiverId: friend.id,
+          receiverId: friendId,
         },
       },
       update: {
         senderId: userId,
-        receiverId: friend.id,
+        receiverId: friendId,
         friendshipStatus: FriendshipStatus.BLOCKED,
       },
       create: {
         senderId: userId,
-        receiverId: friend.id,
+        receiverId: friendId,
         friendshipStatus: FriendshipStatus.BLOCKED,
       },
       select: {
@@ -161,14 +149,15 @@ export class FriendsService {
     });
   }
 
-  async unblockUser(userId: number, friendUsername: string) {
-    this.logger.debug(
-      `User ID <${userId}> is unblocking user <${friendUsername}>`,
-    );
+  async unblockUser(userId: number, friendId: number) {
+    this.logger.debug(`User ID <${userId}> is unblocking user <${friendId}>`);
 
     const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
-        receiver: { username: friendUsername },
+        AND: [
+          { senderId: { equals: userId } },
+          { receiverId: { equals: friendId } },
+        ],
       },
     });
 
@@ -176,7 +165,7 @@ export class FriendsService {
       !friendRequest ||
       friendRequest.friendshipStatus !== FriendshipStatus.BLOCKED
     ) {
-      throw new BadRequestException(`User <${friendUsername}> is not blocked`);
+      throw new BadRequestException(`User <${friendId}> is not blocked`);
     }
 
     const request = await this.prisma.friendRequest.delete({

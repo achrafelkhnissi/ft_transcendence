@@ -13,6 +13,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
 import {
+  ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -85,26 +86,50 @@ export class FriendsController {
     return this.friendsService.listBlockedUsers(user.id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully blocked.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiOperation({ summary: 'Block a user' })
   @Get('block')
-  async blockUser(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: blockedUsername } = query;
+  async blockUser(
+    @Query('id', new ParseIntPipe()) id: number,
+    @User() user: UserType,
+  ) {
+    this.logger.log(`User <${user?.id}> is blocking user <${id}>`);
 
-    this.logger.log(
-      `User <${user?.username}> is blocking user <${blockedUsername}>`,
-    );
-
-    return this.friendsService.blockUser(user.id, blockedUsername);
+    return this.friendsService.blockUser(user.id, id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully unblocked.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiOperation({ summary: 'Unblock a user' })
   @Get('unblock')
-  async unblockUser(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: blockedUsername } = query;
+  async unblockUser(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    this.logger.log(`User <${user?.id}> is unblocking user <${id}>`);
 
-    this.logger.log(
-      `User <${user?.username}> is unblocking user <${blockedUsername}>`,
-    );
-
-    return this.friendsService.unblockUser(user.id, blockedUsername);
+    return this.friendsService.unblockUser(user.id, id);
   }
 
   @Get(':id/friends')
