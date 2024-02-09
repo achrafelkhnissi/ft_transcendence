@@ -1,11 +1,13 @@
-import { Controller, Get, Query, Logger } from '@nestjs/common';
+import { Controller, Get, Query, Logger, UseGuards } from '@nestjs/common';
 import { FriendRequestsService } from './requests.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { QueryDto } from 'src/users/dto/query.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('friend-requests')
+@UseGuards(AuthGuard)
 @Controller()
 export class FriendRequestsController {
   private readonly logger = new Logger(FriendRequestsController.name);
