@@ -75,6 +75,11 @@ export class FriendsController {
   }
 
   @Get('blocked')
+  @ApiOkResponse({
+    type: [UserFriendResponseDto],
+    description: 'The blocked users have been successfully found.',
+  })
+  @ApiOperation({ summary: 'List blocked users' })
   async listBlockedUsers(@User() user: UserType) {
     this.logger.log(`Listing blocked users for user <${user?.id}>`);
     return this.friendsService.listBlockedUsers(user.id);
