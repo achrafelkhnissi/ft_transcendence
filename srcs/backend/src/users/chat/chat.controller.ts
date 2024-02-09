@@ -8,7 +8,6 @@ import {
   Delete,
   NotFoundException,
   UseGuards,
-  Query,
   Res,
   ForbiddenException,
   ParseIntPipe,
@@ -17,7 +16,6 @@ import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { UsernameDto } from 'src/users/dto/username.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
@@ -28,13 +26,15 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
+
+// TODO: ? maybe return ConversationDto for all methods
 
 @ApiTags('chat')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -70,6 +70,14 @@ export class ChatController {
     return this.chatService.findAllChatForUser(user.id);
   }
 
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'Chat id',
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Update a chat' })
   @Roles(Role.OWNER)
   @Patch(':id')
   update(
