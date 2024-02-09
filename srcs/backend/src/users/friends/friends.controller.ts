@@ -12,16 +12,42 @@ import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UsernameDto } from 'src/users/dto/username.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserFriendResponseDto } from './dto/user-friend-response.dto';
 
 @ApiTags('friends')
 @UseGuards(AuthGuard)
+@ApiForbiddenResponse({ description: 'Forbidden' })
 @Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
 
   constructor(private readonly friendsService: FriendsService) {}
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: false,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    type: [UserFriendResponseDto],
+    description: 'The user has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({
+    summary:
+      'List a user friends if id is provided, otherwise list the current user friends',
+  })
   @Get()
   list(@Query('id', new ParseIntPipe()) id: number, @User() user: UserType) {
     return this.friendsService.listFriendsById(id || user.id);
