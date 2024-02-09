@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 import { Conversation, ConversationType, Status } from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class ChatService {
@@ -181,6 +182,7 @@ export class ChatService {
         type: true,
         name: true,
         updatedAt: true,
+        ownerId: true,
         owner: {
           select: {
             id: true,
@@ -292,22 +294,6 @@ export class ChatService {
       .owner();
   }
 
-  addAdmin(id: number, userId: number) {
-    this.logger.log(`Adding admin with id ${userId} to chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
-
   // TODO: Check if the logged in user has permission to remove a user from a chat
   // removeUser(id: number, userId: number) {
   //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
@@ -324,22 +310,6 @@ export class ChatService {
   //     },
   //   });
   // }
-
-  removeAdmin(id: number, userId: number) {
-    this.logger.log(`Removing admin with id ${userId} from chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          disconnect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
 
   /* --- Gateway --- */
   getUserFromSocket(socket: Socket) {
@@ -433,7 +403,7 @@ export class ChatService {
       .then((rooms) => rooms.map((room) => room.name));
   }
 
-  async getUserChats(username: string) {
+  async getUserChats(userId: number) {
     const userInfoSelect = {
       id: true,
       username: true,
@@ -448,20 +418,20 @@ export class ChatService {
             {
               participants: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               admins: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               owner: {
-                username,
+                id: userId,
               },
             },
           ],
@@ -522,5 +492,209 @@ export class ChatService {
         },
       })
       .then((chat) => chat.image);
+  }
+
+  async addParticipant(chatId: number, participantId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          connect: {
+            id: participantId,
+          },
+        },
+      },
+    });
+  }
+
+  async removeParticipant(chatId: number, participantId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          disconnect: {
+            id: participantId,
+          },
+        },
+      },
+    });
+  }
+
+  async leaveChat(chatId: number, userId: number) {
+    const chat = await this.prismaService.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        admins: true,
+      },
+    });
+
+    if (chat.ownerId === userId) {
+      const newOwner = chat.admins.length
+        ? chat.admins[0].id
+        : chat.participants[0].id;
+
+      return this.replaceOwner(chatId, newOwner);
+    }
+
+    if (chat.admins.some((admin) => admin.id === userId)) {
+      return this.removeAdmin(chatId, userId);
+    }
+
+    return this.removeParticipant(chatId, userId);
+  }
+
+  async replaceOwner(chatId: number, newOwnerId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        ownerId: newOwnerId,
+      },
+    });
+  }
+
+  async addAdmin(chatId: number, adminId: number) {
+    const chat = await this.prismaService.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+      },
+    });
+
+    let updateData = {
+      admins: {
+        connect: {
+          id: adminId,
+        },
+      },
+    };
+
+    if (!chat.participants.some((participant) => participant.id === adminId)) {
+      updateData['participants'] = {
+        disconnect: {
+          id: adminId,
+        },
+      };
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: updateData,
+    });
+  }
+
+  async removeAdmin(chatId: number, adminId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        admins: {
+          disconnect: {
+            id: adminId,
+          },
+        },
+        participants: {
+          connect: {
+            id: adminId,
+          },
+        },
+      },
+    });
+  }
+
+  async ban(chatId: number, userId: number, role: Role) {
+    let updateData = {
+      bannedUsers: {
+        connect: {
+          id: userId,
+        },
+      },
+    };
+
+    if (role === Role.ADMIN) {
+      updateData['admins'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    } else {
+      updateData['participants'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: updateData,
+    });
+  }
+
+  async unban(chatId: number, userId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        bannedUsers: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+    });
+  }
+
+  async getBannedUsers(chatId: number) {
+    return this.prismaService.conversation
+      .findUnique({
+        where: {
+          id: chatId,
+        },
+      })
+      .bannedUsers();
+  }
+
+  async mute(chatId: number, userId: number, duration: number) {
+    return this.prismaService.mute.create({
+      data: {
+        userId: userId,
+        conversationId: chatId,
+        duration,
+      },
+    });
+  }
+
+  async unmute(chatId: number, userId: number) {
+    return this.prismaService.mute.deleteMany({
+      where: {
+        userId,
+        conversationId: chatId,
+      },
+    });
+  }
+
+  async findMuted(chatId: number) {
+    return this.prismaService.mute.findMany({
+      where: {
+        conversationId: chatId,
+      },
+    });
   }
 }

@@ -10,6 +10,8 @@ import {
   UseGuards,
   Query,
   Res,
+  ForbiddenException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -20,18 +22,13 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-
-/**
- * TODO:
- * - Add guards to routes
- * - Add the ability to change access type of chat [public, private, protected]
- * - What should happen if the owner of a chat leaves the chat?
- * - The owner should be able to change the password of a chat
- * - Channel owner should be able to kick, ban, mute, etc. users
- */
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags('chat')
 @UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @Controller()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
@@ -58,20 +55,120 @@ export class ChatController {
     return this.chatService.findAllChatForUser(user.id);
   }
 
-  // Check if we can add an admin to a chat using this endpoint or if we need a separate endpoint
+  @Roles(Role.OWNER)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateChatDto: UpdateChatDto,
+  ) {
     return this.chatService.update(+id, updateChatDto);
   }
 
-  // only the owner of the chat should be able to delete it
+  @Roles(Role.OWNER)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.remove(+id);
   }
 
+  @Post(':id/participants/add')
+  addParticipant(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.chatService.addParticipant(+id, +userId);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Delete(':id/participants/remove')
+  removeParticipant(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.chatService.removeParticipant(+id, +userId);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/admins/add')
+  addAdmin(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.chatService.addAdmin(+id, +userId);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Delete(':id/admins/remove')
+  removeAdmin(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.chatService.removeAdmin(+id, +userId);
+  }
+
+  @Post(':id/leave')
+  leaveChat(@Param('id', ParseIntPipe) id: number, @User() user: UserType) {
+    return this.chatService.leaveChat(+id, user.id);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/ban')
+  async ban(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    const chat = await this.chatService.findOne(+id);
+
+    if (chat.ownerId === +userId) {
+      throw new ForbiddenException('You cannot ban the owner of the chat');
+    }
+
+    const admins = chat.admins.map((admin) => admin.id);
+    if (admins.includes(+userId)) {
+      return this.chatService.ban(+id, +userId, Role.ADMIN);
+    }
+
+    return this.chatService.ban(+id, +userId, Role.USER);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/unban')
+  unban(@Param('id', ParseIntPipe) id: number, @Body('userId') userId: string) {
+    return this.chatService.unban(+id, +userId);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/mute')
+  async mute(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { userId: string; duration: number },
+  ) {
+    const { userId, duration } = body;
+
+    const chat = await this.chatService.findOne(+id);
+    if (chat.ownerId === +userId) {
+      throw new ForbiddenException('You cannot mute the owner of the chat');
+    }
+
+    return this.chatService.mute(+id, +userId, +duration);
+  }
+
+  @Roles(Role.OWNER, Role.ADMIN)
+  @Post(':id/unmute')
+  unmute(
+    @Param('id', ParseIntPipe)
+    id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.chatService.unmute(id, userId);
+  }
+
+  @Get(':id/muted')
+  findMuted(@Param('id', ParseIntPipe) id: number) {
+    return this.chatService.findMuted(+id);
+  }
+
   @Get(':id/avatar')
-  async getAvatar(@Param('id') id: string, @Res() res: Response) {
+  async getAvatar(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);
 
     if (avatar && avatar.startsWith('http')) {
@@ -82,44 +179,28 @@ export class ChatController {
   }
 
   @Get(':id/messages')
-  findMessages(@Param('id') id: string) {
+  findMessages(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findMessages(+id);
   }
 
   @Get(':id/participants')
-  findParticipants(@Param('id') id: string) {
+  findParticipants(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findParticipants(+id);
   }
 
   @Get(':id/admins')
-  findAdmins(@Param('id') id: string) {
+  findAdmins(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findAdmins(+id);
   }
 
   @Get(':id/owner')
-  findOwner(@Param('id') id: string) {
+  findOwner(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findOwner(+id);
   }
 
-  @Post(':id/admins')
-  addAdmin(@Param('id') id: string, @Body() userId: number) {
-    return this.chatService.addAdmin(+id, userId);
-  }
-
-  @Delete(':id/admins/:userId')
-  removeAdmin(@Param('id') id: string, @Param('userId') userId: string) {
-    return this.chatService.removeAdmin(+id, +userId);
-  }
-
-  @Get(':username/chats')
-  getUserChats(@Param() param: UsernameDto) {
-    const { username } = param;
-
-    console.log(
-      `Finding chats for user with username ${username} in ChatController`,
-    );
-
-    return this.chatService.getUserChats(username);
+  @Get(':id/chats')
+  getUserChats(@Param('id', ParseIntPipe) id: number) {
+    return this.chatService.getUserChats(id);
   }
 
   @Get('names')
