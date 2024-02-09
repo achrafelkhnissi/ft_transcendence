@@ -21,18 +21,33 @@ import { UsernameDto } from 'src/users/dto/username.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { ConversationDto } from './dto/chat.dto';
 
 @ApiTags('chat')
+@ApiForbiddenResponse({ description: 'Forbidden' })
 @UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 @Controller()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  @ApiBody({ type: CreateChatDto })
+  @ApiCreatedResponse({ description: 'Chat created' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Create a chat' })
   @Post()
   async create(@User() user: UserType, @Body() createChatDto: CreateChatDto) {
     if (!user) {
@@ -46,12 +61,12 @@ export class ChatController {
     return this.chatService.create(createChatDto);
   }
 
+  @ApiOperation({
+    summary: 'Find all chats for the logged in user',
+  })
+  @ApiOkResponse({ type: [ConversationDto] })
   @Get()
-  findAll(@User() user: UserType, @Query('id') id: string) {
-    if (id) {
-      return this.chatService.findOne(+id);
-    }
-
+  find(@User() user: UserType) {
     return this.chatService.findAllChatForUser(user.id);
   }
 
