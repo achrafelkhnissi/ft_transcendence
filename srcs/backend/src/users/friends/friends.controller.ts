@@ -53,6 +53,19 @@ export class FriendsController {
     return this.friendsService.listFriendsById(id || user.id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({ summary: 'Remove a friend' })
   @Get('remove')
   async removeFriend(
     @Query('id', new ParseIntPipe()) id: number,
