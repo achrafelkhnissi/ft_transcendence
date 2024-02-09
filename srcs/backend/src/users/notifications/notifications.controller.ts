@@ -90,6 +90,10 @@ export class NotificationsController {
     });
   }
 
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({ description: 'Notification removed' })
+  @ApiNotFoundResponse({ description: 'Notification not found' })
+  @ApiOperation({ summary: 'Remove notification' })
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: string) {
     return this.notificationsService.remove(+id);
