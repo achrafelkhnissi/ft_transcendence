@@ -44,6 +44,7 @@ export class NotificationsService {
     return this.prismaService.notification.update({
       where: { id },
       data: updateNotificationDto,
+      select: this.infoToSelect,
     });
   }
 

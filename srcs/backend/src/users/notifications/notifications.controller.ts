@@ -68,27 +68,23 @@ export class NotificationsController {
     return this.notificationsService.findOne(id);
   }
 
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({ description: 'Notification updated', type: NotificationDto })
+  @ApiNotFoundResponse({ description: 'Notification not found' })
+  @ApiOperation({ summary: 'Mark notification as read' })
   @Get(':id/read')
   async read(@Param('id', ParseIntPipe) id: number) {
-    const notification = await this.notificationsService.findOne(id);
-
-    if (!notification) {
-      throw new NotFoundException(`Notification with id <${id}> not found`);
-    }
-
     return this.notificationsService.update(id, {
       read: true,
     });
   }
 
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({ description: 'Notification updated', type: NotificationDto })
+  @ApiNotFoundResponse({ description: 'Notification not found' })
+  @ApiOperation({ summary: 'Mark notification as unread' })
   @Get(':id/unread')
   async unread(@Param('id', ParseIntPipe) id: number) {
-    const notification = await this.notificationsService.findOne(id);
-
-    if (!notification) {
-      throw new NotFoundException(`Notification with id <${id}> not found`);
-    }
-
     return this.notificationsService.update(id, {
       read: false,
     });
