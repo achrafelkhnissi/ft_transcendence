@@ -18,6 +18,16 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 
+const imageUploadSchema = {
+  type: 'object',
+  properties: {
+    image: {
+      type: 'string',
+      format: 'binary',
+    },
+  },
+};
+
 @ApiTags('upload')
 @ApiForbiddenResponse({ description: 'Forbidden' })
 @UseGuards(AuthGuard)
@@ -29,17 +39,7 @@ export class UploadController {
 
   @Post('avatar')
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
+  @ApiBody({ schema: imageUploadSchema })
   @ApiCreatedResponse({ description: 'User avatar uploaded' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Upload user avatar' })
@@ -54,17 +54,7 @@ export class UploadController {
 
   @Post('channel-avatar')
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
+  @ApiBody({ schema: imageUploadSchema })
   @ApiCreatedResponse({ description: 'Channel avatar uploaded' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Upload channel avatar' })
