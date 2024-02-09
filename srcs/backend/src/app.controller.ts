@@ -5,11 +5,6 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get(['/', 'help'])
-  getHelp(): object {
-    return this.appService.getHelp();
-  }
-
   @Get('authors')
   getAuthors(): object {
     return this.appService.getAuthors();
