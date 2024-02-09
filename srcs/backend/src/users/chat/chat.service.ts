@@ -50,7 +50,11 @@ export class ChatService {
       };
     }
 
-    if (createChatDto.password) data.password = createChatDto.password;
+    if (
+      createChatDto.type === ConversationType.PROTECTED &&
+      createChatDto.password
+    )
+      data.password = createChatDto.password;
     if (createChatDto.image) data.image = createChatDto.image;
 
     return this.prismaService.conversation.create({
