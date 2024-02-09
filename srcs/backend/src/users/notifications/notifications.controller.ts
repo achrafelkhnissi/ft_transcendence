@@ -19,6 +19,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 import {
   ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOperation,
@@ -35,6 +36,7 @@ export class NotificationsController {
   @ApiBody({ type: CreateNotificationDto })
   @ApiCreatedResponse({ description: 'Notification created' })
   @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiConflictResponse({ description: 'Conflict' })
   @ApiOperation({ summary: 'Create notification' })
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
