@@ -791,4 +791,33 @@ export class ChatService {
       },
     });
   }
+
+  async getPopularChats() {
+    return this.prismaService.conversation.findMany({
+      where: {
+        OR: [
+          { type: ConversationType.PUBLIC },
+          { type: ConversationType.PROTECTED },
+        ],
+      },
+      select: {
+        id: true,
+        type: true,
+        name: true,
+        image: true,
+        _count: {
+          select: {
+            participants: true,
+            admins: true,
+          },
+        },
+      },
+      orderBy: {
+        participants: {
+          _count: 'desc',
+        },
+      },
+      take: 4,
+    });
+  }
 }
