@@ -133,39 +133,32 @@ export class FriendRequestsService {
     return { message: 'Friend request accepted', request };
   }
 
-  async declineFriendRequest(receiverId: number, senderUsername: string) {
+  async declineFriendRequest(receiverId: number, senderId: number) {
     this.logger.log(
-      `Rejecting friend request from <${senderUsername}> to <${receiverId}>`,
+      `Rejecting friend request from <${senderId}> to <${receiverId}>`,
     );
-    const sender = await this.prisma.user.findUnique({
-      where: { username: senderUsername },
-    });
-
-    if (!sender) {
-      throw new NotFoundException(`User <${senderUsername}> not found`);
-    }
 
     const friendRequest = await this.prisma.friendRequest.findUnique({
       where: {
-        senderId_receiverId: { senderId: sender.id, receiverId },
+        senderId_receiverId: { senderId, receiverId },
       },
     });
 
     if (!friendRequest) {
       throw new NotFoundException(
-        `Friend request from <${senderUsername}> to <${receiverId}> not found`,
+        `Friend request from <${senderId}> to <${receiverId}> not found`,
       );
     }
 
     if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
       throw new BadRequestException(
-        `Friend request from <${senderUsername}> to <${receiverId}> not found`,
+        `Friend request from <${senderId}> to <${receiverId}> not found`,
       );
     }
 
     const request = await this.prisma.friendRequest.delete({
       where: {
-        senderId_receiverId: { senderId: sender.id, receiverId },
+        senderId_receiverId: { senderId, receiverId },
       },
     });
 

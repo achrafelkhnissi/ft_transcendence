@@ -86,21 +86,32 @@ export class FriendRequestsController {
     return this.friendRequestsService.acceptFriendRequest(receiverId, senderId);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User ID',
+  })
+  @ApiOkResponse({ description: 'Friend request declined' })
+  @ApiNotFoundResponse({ description: 'Friend request not found' })
   @ApiOperation({
     summary: 'Decline a friend request from another user',
   })
   @Get('decline')
-  async declineFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: senderUsername } = query;
+  async declineFriendRequest(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    const senderId = id;
     const receiverId = user?.id;
 
     this.logger.log(
-      `User <${user?.username}> is declining a friend request from user <${receiverId}>`,
+      `User <${senderId}> is declining a friend request from user <${receiverId}>`,
     );
 
     return this.friendRequestsService.declineFriendRequest(
       receiverId,
-      senderUsername,
+      senderId,
     );
   }
 
