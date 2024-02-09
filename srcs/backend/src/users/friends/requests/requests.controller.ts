@@ -129,6 +129,10 @@ export class FriendRequestsController {
     return this.friendRequestsService.listSentFriendRequests(user.id);
   }
 
+  @ApiOkResponse({
+    type: [RequestDto],
+    description: 'Friend request cancelled',
+  })
   @ApiOperation({
     summary: 'List received friend requests',
   })
