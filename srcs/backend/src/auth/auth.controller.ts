@@ -14,7 +14,12 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { SmsService } from './sms/sms.service';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiForbiddenResponse,
+  ApiFoundResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -23,12 +28,14 @@ export class AuthController {
 
   constructor(private readonly smsService: SmsService) {}
 
+  @ApiOperation({ summary: 'OAuth2.0 42 API' })
   @Get('ft')
   @UseGuards(FtAuthGuard)
   async ft() {
     this.logger.debug('ft');
   }
 
+  @ApiOperation({ summary: 'OAuth2.0 42 API redirect' })
   @Get('ft/redirect')
   @UseGuards(FtAuthGuard)
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
@@ -52,6 +59,9 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiFoundResponse({ description: 'Redirecting to frontend' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiOperation({ summary: 'Logout' })
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     req.logout((err) => {
@@ -79,6 +89,7 @@ export class AuthController {
   }
 
   @Get('is-authenticated')
+  @ApiOperation({ summary: 'Check if user is authenticated' })
   @SerializeOptions({ strategy: 'excludeAll' })
   async isAuthenticated(@Req() req: Request, @Res() res: Response) {
     if (req.isAuthenticated()) {

@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Logger,
-  Param,
   ParseIntPipe,
   Query,
   UseGuards,
@@ -11,72 +10,123 @@ import { FriendsService } from './friends.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { UsernameDto } from 'src/users/dto/username.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserFriendResponseDto } from './dto/user-friend-response.dto';
 
 @ApiTags('friends')
 @UseGuards(AuthGuard)
+@ApiForbiddenResponse({ description: 'Forbidden' })
 @Controller()
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
 
   constructor(private readonly friendsService: FriendsService) {}
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: false,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    type: [UserFriendResponseDto],
+    description: 'The user has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({
+    summary:
+      'List a user friends if id is provided, otherwise list the current user friends',
+  })
   @Get()
-  list(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username } = query;
-
-    return this.friendsService.listFriendsByUsername(username || user.username);
+  list(@Query('id', new ParseIntPipe()) id: number, @User() user: UserType) {
+    return this.friendsService.listFriendsById(id || user.id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully found.',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiOperation({ summary: 'Remove a friend' })
   @Get('remove')
-  async removeFriend(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: friendUsername } = query;
-
-    this.logger.log(
-      `User <${user?.username}> is removing user <${friendUsername}> as a friend`,
-    );
-
-    return this.friendsService.removeFriend(user.id, friendUsername);
+  async removeFriend(
+    @Query('id', new ParseIntPipe()) id: number,
+    @User() user: UserType,
+  ) {
+    return this.friendsService.removeFriend(user.id, id);
   }
 
   @Get('blocked')
+  @ApiOkResponse({
+    type: [UserFriendResponseDto],
+    description: 'The blocked users have been successfully found.',
+  })
+  @ApiOperation({ summary: 'List blocked users' })
   async listBlockedUsers(@User() user: UserType) {
     this.logger.log(`Listing blocked users for user <${user?.id}>`);
     return this.friendsService.listBlockedUsers(user.id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully blocked.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiOperation({ summary: 'Block a user' })
   @Get('block')
-  async blockUser(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: blockedUsername } = query;
+  async blockUser(
+    @Query('id', new ParseIntPipe()) id: number,
+    @User() user: UserType,
+  ) {
+    this.logger.log(`User <${user?.id}> is blocking user <${id}>`);
 
-    this.logger.log(
-      `User <${user?.username}> is blocking user <${blockedUsername}>`,
-    );
-
-    return this.friendsService.blockUser(user.id, blockedUsername);
+    return this.friendsService.blockUser(user.id, id);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User id',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully unblocked.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiOperation({ summary: 'Unblock a user' })
   @Get('unblock')
-  async unblockUser(@Query() query: UsernameDto, @User() user: UserType) {
-    const { username: blockedUsername } = query;
+  async unblockUser(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    this.logger.log(`User <${user?.id}> is unblocking user <${id}>`);
 
-    this.logger.log(
-      `User <${user?.username}> is unblocking user <${blockedUsername}>`,
-    );
-
-    return this.friendsService.unblockUser(user.id, blockedUsername);
-  }
-
-  @Get(':username/friends')
-  getFriendsByUsername(@Param() params: UsernameDto) {
-    const { username } = params;
-
-    return this.friendsService.listFriendsByUsername(username);
-  }
-
-  @Get(':id/friends')
-  getFriendsById(@Param('id', ParseIntPipe) id: number) {
-    return this.friendsService.listFriendsById(id);
+    return this.friendsService.unblockUser(user.id, id);
   }
 }

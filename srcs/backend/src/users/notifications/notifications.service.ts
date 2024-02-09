@@ -24,19 +24,9 @@ export class NotificationsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createNotificationDto: CreateNotificationDto) {
-    try {
-      const notification = await this.prismaService.notification.create({
-        data: createNotificationDto,
-      });
-
-      return notification;
-    } catch (error) {
-      this.logger.warn(
-        "Couldn't create notification because its already exists in the database",
-      );
-    }
-
-    return null;
+    return this.prismaService.notification.create({
+      data: createNotificationDto,
+    });
   }
 
   findByQuery(user: UserType, query: UpdateNotificationDto) {
@@ -54,11 +44,12 @@ export class NotificationsService {
     return this.prismaService.notification.update({
       where: { id },
       data: updateNotificationDto,
+      select: this.infoToSelect,
     });
   }
 
   findOne(id: number) {
-    return this.prismaService.notification.findUnique({
+    return this.prismaService.notification.findUniqueOrThrow({
       where: { id },
       select: this.infoToSelect,
     });

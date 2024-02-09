@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { CreateChatDto } from './create-chat.dto';
 import { $Enums } from '@prisma/client';
 import { ValidateIf } from 'class-validator';

@@ -219,23 +219,21 @@ export class UsersService {
 
     return {
       ...user,
-      friends: await this.friendsService.listFriendsByUsername(username),
+      friends: await this.friendsService.listFriendsById(user.id),
       blockedUsers,
     };
   }
 
-  update(username: string, updateUserDto: UpdateUserDto) {
-    this.logger.debug(`updating user ${username}`);
+  update(userId: number, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
-      where: { username },
+      where: { id: userId },
       data: updateUserDto,
     });
   }
 
-  remove(username: string) {
-    this.logger.debug(`deleting user ${username}`);
+  remove(userId: number) {
     return this.prisma.user.delete({
-      where: { username },
+      where: { id: userId },
     });
   }
 
@@ -251,10 +249,10 @@ export class UsersService {
     return avatar;
   }
 
-  async getAvatarByUsername(username: string) {
+  async getAvatarById(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: {
-        username,
+        id: userId,
       },
       select: {
         avatar: true,

@@ -8,7 +8,6 @@ import {
   Delete,
   NotFoundException,
   UseGuards,
-  Query,
   Res,
   ForbiddenException,
   ParseIntPipe,
@@ -17,22 +16,40 @@ import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
-import { UsernameDto } from 'src/users/dto/username.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { ConversationDto } from './dto/chat.dto';
+import Api from 'twilio/lib/rest/Api';
+
+// TODO: ? maybe return ConversationDto for all methods
 
 @ApiTags('chat')
+@ApiForbiddenResponse({ description: 'Forbidden' })
 @UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 @Controller()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  @ApiBody({ type: CreateChatDto })
+  @ApiCreatedResponse({ description: 'Chat created' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Create a chat' })
   @Post()
   async create(@User() user: UserType, @Body() createChatDto: CreateChatDto) {
     if (!user) {
@@ -46,15 +63,18 @@ export class ChatController {
     return this.chatService.create(createChatDto);
   }
 
+  @ApiOperation({
+    summary: 'Find all chats for the logged in user',
+  })
+  @ApiOkResponse({ type: [ConversationDto] })
   @Get()
-  findAll(@User() user: UserType, @Query('id') id: string) {
-    if (id) {
-      return this.chatService.findOne(+id);
-    }
-
+  find(@User() user: UserType) {
     return this.chatService.findAllChatForUser(user.id);
   }
 
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Update a chat' })
   @Roles(Role.OWNER)
   @Patch(':id')
   update(
@@ -64,12 +84,22 @@ export class ChatController {
     return this.chatService.update(+id, updateChatDto);
   }
 
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Remove a chat' })
   @Roles(Role.OWNER)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.remove(+id);
   }
 
+  // TODO: Test this
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({ type: UpdateChatDto })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Find a chat by id' })
   @Post(':id/participants/add')
   addParticipant(
     @Param('id', ParseIntPipe) id: number,
@@ -198,15 +228,9 @@ export class ChatController {
     return this.chatService.findOwner(+id);
   }
 
-  @Get(':username/chats')
-  getUserChats(@Param() param: UsernameDto) {
-    const { username } = param;
-
-    console.log(
-      `Finding chats for user with username ${username} in ChatController`,
-    );
-
-    return this.chatService.getUserChats(username);
+  @Get(':id/chats')
+  getUserChats(@Param('id', ParseIntPipe) id: number) {
+    return this.chatService.getUserChats(id);
   }
 
   @Get('names')

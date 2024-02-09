@@ -450,7 +450,7 @@ export class ChatService {
       .then((rooms) => rooms.map((room) => room.name));
   }
 
-  async getUserChats(username: string) {
+  async getUserChats(userId: number) {
     const userInfoSelect = {
       id: true,
       username: true,
@@ -465,20 +465,20 @@ export class ChatService {
             {
               participants: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               admins: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               owner: {
-                username,
+                id: userId,
               },
             },
           ],
