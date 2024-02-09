@@ -7,7 +7,6 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
-  NotFoundException,
   Query,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
@@ -26,7 +25,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { NotificationDto } from './dto/notification.dto';
