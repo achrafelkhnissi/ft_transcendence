@@ -22,8 +22,10 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
@@ -57,6 +59,10 @@ export class NotificationsController {
     return this.notificationsService.findByQuery(user, query);
   }
 
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({ description: 'Notification found', type: NotificationDto })
+  @ApiNotFoundResponse({ description: 'Notification not found' })
+  @ApiOperation({ summary: 'Find notification by id' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.notificationsService.findOne(id);

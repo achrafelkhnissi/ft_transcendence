@@ -48,7 +48,7 @@ export class NotificationsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.notification.findUnique({
+    return this.prismaService.notification.findUniqueOrThrow({
       where: { id },
       select: this.infoToSelect,
     });
