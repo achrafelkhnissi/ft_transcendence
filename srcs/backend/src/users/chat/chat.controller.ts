@@ -24,6 +24,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -33,6 +34,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
+import Api from 'twilio/lib/rest/Api';
 
 // TODO: ? maybe return ConversationDto for all methods
 
@@ -70,12 +72,7 @@ export class ChatController {
     return this.chatService.findAllChatForUser(user.id);
   }
 
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    required: true,
-    description: 'Chat id',
-  })
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiOkResponse({ type: ConversationDto })
   @ApiOperation({ summary: 'Update a chat' })
   @Roles(Role.OWNER)
@@ -87,12 +84,22 @@ export class ChatController {
     return this.chatService.update(+id, updateChatDto);
   }
 
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Remove a chat' })
   @Roles(Role.OWNER)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.remove(+id);
   }
 
+  // TODO: Test this
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({ type: UpdateChatDto })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Find a chat by id' })
   @Post(':id/participants/add')
   addParticipant(
     @Param('id', ParseIntPipe) id: number,
