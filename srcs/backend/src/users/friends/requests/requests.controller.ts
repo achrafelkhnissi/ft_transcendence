@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { RequestDto } from './dto/request.dto';
 
 @ApiTags('friend-requests')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -115,6 +116,10 @@ export class FriendRequestsController {
     );
   }
 
+  @ApiOkResponse({
+    type: [RequestDto],
+    description: 'Friend request cancelled',
+  })
   @ApiOperation({
     summary: 'List sent friend requests',
   })
