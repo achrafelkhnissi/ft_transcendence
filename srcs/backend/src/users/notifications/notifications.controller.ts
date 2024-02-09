@@ -22,9 +22,12 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { NotificationDto } from './dto/notification.dto';
 
 @ApiTags('notifications')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -43,6 +46,12 @@ export class NotificationsController {
     return this.notificationsService.create(createNotificationDto);
   }
 
+  @ApiOkResponse({
+    description: 'Notification found',
+    type: [NotificationDto],
+  })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Find notification by query' })
   @Get()
   findByQuery(@User() user: UserType, @Query() query: UpdateNotificationDto) {
     return this.notificationsService.findByQuery(user, query);

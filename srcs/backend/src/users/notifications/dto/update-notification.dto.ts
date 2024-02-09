@@ -23,7 +23,7 @@ export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  readonly recipientId?: number;
+  readonly receiverId?: number;
 
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
