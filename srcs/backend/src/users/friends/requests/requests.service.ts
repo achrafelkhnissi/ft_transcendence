@@ -93,41 +93,28 @@ export class FriendRequestsService {
     return { message: 'Friend request sent', request };
   }
 
-  async acceptFriendRequest(receiverId: number, senderUsername: string) {
-    const sender = await this.prisma.user.findUnique({
-      where: { username: senderUsername },
-    });
-
-    if (!sender) {
-      throw new NotFoundException(`User ${senderUsername} not found`);
-    }
-
-    this.logger.log({
-      receiverId,
-      senderUsername,
-    });
-
+  async acceptFriendRequest(receiverId: number, senderId: number) {
     const friendRequest = await this.prisma.friendRequest.findUnique({
       where: {
-        senderId_receiverId: { senderId: sender.id, receiverId },
+        senderId_receiverId: { senderId, receiverId },
       },
     });
 
     if (!friendRequest) {
       throw new NotFoundException(
-        `Friend request from <${sender.id}> to <${receiverId}> not found`,
+        `Friend request from <${senderId}> to <${receiverId}> not found`,
       );
     }
 
     if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
       throw new BadRequestException(
-        `Friend request from <${sender.id}> to <${receiverId}> is not pending`,
+        `Friend request from <${senderId}> to <${receiverId}> is not pending`,
       );
     }
 
     const request = await this.prisma.friendRequest.update({
       where: {
-        senderId_receiverId: { senderId: sender.id, receiverId },
+        senderId_receiverId: { senderId, receiverId },
       },
       data: {
         friendshipStatus: FriendshipStatus.ACCEPTED,
@@ -135,13 +122,13 @@ export class FriendRequestsService {
     });
 
     const notification = await this.notification.create({
-      receiverId: receiverId,
-      senderId: sender.id,
+      receiverId,
+      senderId,
       type: NotificationType.FRIEND_REQUEST_ACCEPTED,
       friendRequestId: request.id,
     });
 
-    this.logger.log(`Friend request accepted from <${senderUsername}>`);
+    this.logger.log(`Friend request accepted from <${senderId}>`);
 
     return { message: 'Friend request accepted', request };
   }

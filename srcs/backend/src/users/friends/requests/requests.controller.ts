@@ -13,6 +13,7 @@ import { QueryDto } from 'src/users/dto/query.dto';
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -36,7 +37,10 @@ export class FriendRequestsController {
     description: 'User ID',
   })
   @ApiOkResponse({ description: 'Friend request sent' })
-  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiBadRequestResponse({
+    description:
+      'Bad request, either users are already friends or the request is pending',
+  })
   @ApiOperation({
     summary: 'Send a friend request to another user',
   })
@@ -55,22 +59,31 @@ export class FriendRequestsController {
     return this.friendRequestsService.sendFriendRequest(senderId, receiverId);
   }
 
+  @ApiQuery({
+    name: 'id',
+    type: Number,
+    required: true,
+    description: 'User ID',
+  })
+  @ApiOkResponse({ description: 'Friend request accepted' })
+  @ApiNotFoundResponse({ description: 'Friend request not found' })
+  @ApiBadRequestResponse({ description: 'Friend request is not pending' })
   @ApiOperation({
     summary: 'Accept a friend request from another user',
   })
   @Get('accept')
-  async acceptFriendRequest(@Query() query: QueryDto, @User() user: UserType) {
-    const { username: senderUsername } = query;
+  async acceptFriendRequest(
+    @Query('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    const senderId = id;
     const receiverId = user?.id;
 
     this.logger.log(
-      `User <${user?.username}> is accepting a friend request from user <${receiverId}>`,
+      `User <${receiverId}> is accepting a friend request from user <${senderId}>`,
     );
 
-    return this.friendRequestsService.acceptFriendRequest(
-      receiverId,
-      senderUsername,
-    );
+    return this.friendRequestsService.acceptFriendRequest(receiverId, senderId);
   }
 
   @ApiOperation({
