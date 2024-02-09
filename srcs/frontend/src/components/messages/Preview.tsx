@@ -14,7 +14,7 @@ interface PreviewProps {
   selectedConversation: number;
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
-  currentUser: string;
+  currentUser: User | undefined;
   createBtn: boolean;
   setCreateBtn: Function;
   showConversation: boolean;
@@ -34,7 +34,7 @@ const Preview: React.FC<PreviewProps> = ({
   showConversation,
   updateShowConversation,
 }) => {
-  const [active, setActive] = useState<'messages' | 'channels'>('messages'); 
+  const [active, setActive] = useState<'messages' | 'channels'>('messages');
   return (
     <div
       className={`relative md:w-2/5  bg-[#25244E] rounded-[3rem] w-full h-full 

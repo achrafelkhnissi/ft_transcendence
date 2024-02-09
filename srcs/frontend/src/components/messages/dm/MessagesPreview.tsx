@@ -8,7 +8,7 @@ interface MessagesPreviewProps {
   selectedConversation: number;
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
-  currentUser: string;
+  currentUser: User | undefined;
   updateShowConversation: Function;
 }
 
@@ -37,7 +37,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
               conversationsMap[id].messages.length - 1
             ];
           const friend: User =
-            conversationsMap[id].participants[0].username === currentUser
+            conversationsMap[id].participants[0].id === currentUser?.id
               ? conversationsMap[id].participants[1]
               : conversationsMap[id].participants[0];
 

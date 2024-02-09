@@ -236,6 +236,53 @@ export class ChatService {
         id,
       },
       data: updateChatDto,
+      select: {
+        id: true,
+        type: true,
+        name: true,
+        updatedAt: true,
+        ownerId: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        participants: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        admins: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        messages: {
+          select: {
+            id: true,
+            content: true,
+            isRead: true,
+            createdAt: true,
+            sender: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                status: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -498,6 +545,53 @@ export class ChatService {
     return this.prismaService.conversation.update({
       where: {
         id: chatId,
+      },
+      select: {
+        id: true,
+        type: true,
+        name: true,
+        updatedAt: true,
+        ownerId: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        participants: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        admins: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        messages: {
+          select: {
+            id: true,
+            content: true,
+            isRead: true,
+            createdAt: true,
+            sender: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                status: true,
+              },
+            },
+          },
+        },
       },
       data: {
         participants: {

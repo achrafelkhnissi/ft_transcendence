@@ -21,7 +21,7 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [conversations, setConversations] = useState<ConversationsMap>({});
   const [selectedConversationId, setSelectedConversationId] =
     useState<number>(-1);
-  const [currentUser, setCurrentUser] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<User>();
   const [createChannel, setCreateChannel] = useState<boolean>(false);
   const [showConversation, setShowConversation] = useState<boolean>(false);
   const { socket } = useSocket();
@@ -31,7 +31,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       initializeConversations(res);
     });
     getCurrentUser().then((res) => {
-      setCurrentUser(res.username);
+      setCurrentUser(res);
     });
   }, []);
 
@@ -129,6 +129,17 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
+  const uppdateConversations = (newConversations: Conversation) => {
+    if (conversations.hasOwnProperty(newConversations.id)) {
+      setConversations((prev) => {
+        return {
+          ...prev,
+          [newConversations.id]: newConversations,
+        };
+      });
+    }
+  };
+
   const addConversation = (id: number) => {
     getConversations(id).then((res) => {
       setConversations((prev) => {
@@ -143,18 +154,14 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  const addMemberToConversation = (conversationId: number, user: User) => {
-    setConversations((prevConversations) => {
-      const updatedConversations = { ...prevConversations };
-      const conversation = updatedConversations[conversationId];
-
-      if (conversation) {
-        conversation.participants.push(user);
-      }
-
+  const removeConversation = (id: number) => {
+    setConversations((prev) => {
+      const updatedConversations = { ...prev };
+      delete updatedConversations[id];
       return updatedConversations;
     });
-  }
+    setConversationOrder((prev) => prev.filter((convoId) => convoId !== id));
+  };
 
   const addAdminToConversation = (conversationId: number, user: User) => {
     setConversations((prevConversations) => {
@@ -167,7 +174,7 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       return updatedConversations;
     });
-  }
+  };
 
   const updateUserStatus = (userId: string, status: string) => {
     setUserStatuses((prevStatuses) => ({
@@ -180,7 +187,7 @@ const Home = ({ params }: { params: { id: number } }) => {
     <div
       className={` flex px-6 py-4 justify-center h-[90vh] min-w-[300px] min-h-[600px]`}
     >
-      <div className='relative w-full h-full flex gap-6 self-center md:flex-row flex-col'>
+      <div className="relative w-full h-full flex gap-6 self-center md:flex-row flex-col">
         <Preview
           conversationsMap={conversations}
           orderedConversations={conversationOrder}
@@ -201,8 +208,9 @@ const Home = ({ params }: { params: { id: number } }) => {
           currentUser={currentUser}
           showConversation={showConversation}
           updateShowConversation={setShowConversation}
-          addMember={addMemberToConversation}
-          addAdmin={addAdminToConversation}          
+          addAdmin={addAdminToConversation}
+          updateConversations={uppdateConversations}
+          removeConversation={removeConversation}
         />
         {createChannel && (
           <div

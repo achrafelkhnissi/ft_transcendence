@@ -9,7 +9,7 @@ interface ChannelsPreviewProps {
   selectedConversation: number;
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
-  currentUser: string;
+  currentUser: User | undefined;
   updateShowConversation: Function;
 }
 
@@ -76,7 +76,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
               </p>
               {lastMessage &&
                 !lastMessage.isRead &&
-                lastMessage.sender.username != currentUser &&
+                lastMessage.sender.id != currentUser?.id &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2  top-1/2"></div>
                 )}

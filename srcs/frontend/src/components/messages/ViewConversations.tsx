@@ -10,19 +10,19 @@ import { useSocket } from '@/contexts/socketContext';
 import ConversationHeader from './dm/ConversationHeader';
 import ChannelsHeader from './channels/ChannelsHeader';
 import ChannelMessageContainer from './channels/ChannelMessageContainer';
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack } from 'react-icons/io';
 import ChannelInfo from './channels/ChannelInfo';
-
 
 interface ViewConversationsProps {
   conversationId: number;
   conversationsMap: ConversationsMap;
   statuses: UserStatuses;
-  currentUser: string;
+  currentUser: User | undefined;
   showConversation: boolean;
   updateShowConversation: Function;
-  addMember: Function;
   addAdmin: Function;
+  updateConversations: Function;
+  removeConversation: Function;
 }
 
 const ViewConversations: React.FC<ViewConversationsProps> = ({
@@ -32,8 +32,9 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   currentUser,
   showConversation,
   updateShowConversation,
-  addMember,
   addAdmin,
+  updateConversations,
+  removeConversation,
 }) => {
   const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>('');
@@ -73,7 +74,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
       conversationsMap[conversationId].participants;
 
     receiver =
-      firstParticipant.username === currentUser
+      firstParticipant.id === currentUser?.id
         ? secondParticipant
         : firstParticipant;
   }
@@ -108,29 +109,30 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         <>
           {conversationsMap[conversationId].type === 'DM' && (
             <ConversationHeader
-            receiver={receiver} 
-            updateConversations={updateShowConversation}            />
+              receiver={receiver}
+              updateConversations={updateShowConversation}
+            />
           )}
           {conversationsMap[conversationId].type != 'DM' && (
             <>
-            <ChannelsHeader
-              channel={conversationsMap[conversationId]}
-              updateConversations={updateShowConversation}
-              showChannelInfo = {showChannelInfo} 
-              setShowChannelInfo = {setShowChannelInfo}
+              <ChannelsHeader
+                channel={conversationsMap[conversationId]}
+                updateConversations={updateShowConversation}
+                showChannelInfo={showChannelInfo}
+                setShowChannelInfo={setShowChannelInfo}
               />
-              {
-                showChannelInfo && 
+              {showChannelInfo && (
                 <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
-                  <ChannelInfo 
+                  <ChannelInfo
                     currentUser={currentUser}
-                    addMember={addMember}
                     addAdmin={addAdmin}
                     channel={conversationsMap[conversationId]}
+                    updateConversations={updateConversations}
+                    removeConversation={removeConversation}
                   />
                 </div>
-              }
-              </>
+              )}
+            </>
           )}
           {/* Messages */}
           <div className="w-full h-full overflow-hidden py-6 ">
@@ -143,7 +145,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   (message, index) => {
                     return (
                       <MessageContainer
-                        isCurrentUser={currentUser === message.sender.username}
+                        isCurrentUser={currentUser?.id === message.sender.id}
                         content={message.content}
                         date={message.createdAt}
                         key={index}
@@ -157,7 +159,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                     return (
                       <ChannelMessageContainer
                         message={message}
-                        isCurrentUser={currentUser === message.sender.username}
+                        isCurrentUser={currentUser?.id === message.sender.id}
                         displayAvatr={
                           array[index + 1]?.sender != message.sender
                         }
@@ -178,11 +180,10 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
               onClick={toggleEmojiPicker}
             >
-              <Emoji color={'#20204A'} width={'29px'} height={'29px'}  />
+              <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
               <div className="absolute bottom-10 left-0 ">
                 {showEmojiPicker && (
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} 
-                  className=''/>
+                  <EmojiPicker onEmojiClick={handleEmojiSelect} className="" />
                 )}
               </div>
             </div>

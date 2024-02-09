@@ -15,7 +15,6 @@ const createNewConv = async (convo: Props) => {
     const { data } = await axios.post(API_URL, convo, {
       withCredentials: true,
     });
-    console.log('in function');
     console.log({
       data,
     });
