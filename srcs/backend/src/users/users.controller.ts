@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   HttpStatus,
   SerializeOptions,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,6 +28,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { QueryDto } from './dto/query.dto';
 
 @ApiTags('users')
 @ApiForbiddenResponse({
@@ -37,27 +39,27 @@ import { Response } from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiQuery({
-    name: 'id',
-    type: Number,
-    required: false,
-    description: 'User id',
-  })
-  @ApiOkResponse({
-    type: [UpdateUserDto],
-    description: 'The user has been successfully found.',
-  })
-  @ApiNotFoundResponse({
-    description: 'User not found',
-  })
-  @ApiOperation({ summary: 'Find user by id or all users' })
   @Get()
-  async find(@Query('id') id?: number) {
-    if (id) {
-      return this.usersService.findById(id);
+  async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
+    const { username: usernameQuery, id: idQuery } = query;
+
+    if (usernameQuery) {
+      const user = await this.usersService.findByUsername(usernameQuery);
+      return {
+        ...user,
+        isFriend: await this.usersService.isFriend(userId, user.id),
+      };
     }
 
-    return this.usersService.findAll();
+    if (idQuery) {
+      const user = await this.usersService.findById(idQuery, userId);
+      return {
+        ...user,
+        isFriend: await this.usersService.isFriend(userId, user.id),
+      };
+    }
+
+    throw new NotFoundException('User not found');
   }
 
   @Patch(':id')
