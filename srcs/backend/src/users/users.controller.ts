@@ -24,11 +24,11 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { QueryDto } from './dto/query.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @ApiTags('users')
 @ApiForbiddenResponse({
@@ -40,6 +40,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiOkResponse({
+    type: UserResponseDto,
+    description: 'Users have been successfully found.',
+  })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiOperation({ summary: 'Find users by username or id' })
   async find(@Query() query: QueryDto, @User() { id: userId }: UserType) {
     const { username: usernameQuery, id: idQuery } = query;
 

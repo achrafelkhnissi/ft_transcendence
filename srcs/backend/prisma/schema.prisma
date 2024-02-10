@@ -176,12 +176,9 @@ model Game {
 
 // ---- ENUMS ----
 enum Status {
-  ONLINE
+  ONLINAE
   OFFLINE
-  IDLE
-  DONOTDISTURB
-  INVISIBLE
-  INGAME
+  PLAYING
 }
 
 enum FriendshipStatus {
