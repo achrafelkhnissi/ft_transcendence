@@ -15,6 +15,7 @@ import { FaCheck } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
 
 export interface Data {
+  id: number;
   username: string;
   avatar: string;
   phoneNumber: string | null;
@@ -31,6 +32,7 @@ interface Users {
 }
 
 const defaultData: Data = {
+  id: -1,
   username: '',
   avatar: '',
   phoneNumber: null,
@@ -73,14 +75,14 @@ const Settings = () => {
       setData((prev) => {
         return {
           ...prev,
-          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
         };
       });
       setNewData((prev) => {
         return {
           ...prev,
           phoneNumber: '',
-          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
         };
       });
     });
@@ -119,17 +121,16 @@ const Settings = () => {
           newAvatar: file,
         };
       });
-    }
-    else {
+    } else {
       setTimeout(() => {
         setFileError(0);
-        setNewData( (prev) => {
+        setNewData((prev) => {
           return {
             ...prev,
             avatar: data.avatar,
             newAvatar: null,
-          }
-        })
+          };
+        });
       }, 3000);
     }
   };
