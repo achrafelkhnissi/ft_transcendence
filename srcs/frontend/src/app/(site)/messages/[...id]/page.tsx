@@ -37,6 +37,33 @@ const Home = ({ params }: { params: { id: number } }) => {
 
   // socket
   useEffect(() => {
+    const addMessageToConversation = (newMessage: Message) => {
+      const conversationId = Number(newMessage.conversationId);
+
+      if (
+        conversations.hasOwnProperty(conversationId) &&
+        conversations[conversationId]
+      ) {
+        setConversations((prev) => ({
+          ...prev,
+          [conversationId]: {
+            ...prev[conversationId],
+            messages: [...prev[conversationId].messages, newMessage],
+            updatedAt: new Date().toISOString(),
+          },
+        }));
+        setConversationOrder((prevOrder) => {
+          return [
+            conversationId,
+            ...prevOrder.filter((id) => id != conversationId),
+          ];
+        });
+      } else {
+        // Handle case where the conversation is new or not loaded
+        addConversation(conversationId);
+      }
+    };
+
     if (socket) {
       socket.on('connect', () => {
         console.log({
@@ -85,30 +112,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     if (params.id > 0) {
       //check if the convo deos not exist
       setSelectedConversationId(params.id);
-    }
-  };
-
-  const addMessageToConversation = (newMessage: Message) => {
-    const conversationId = Number(newMessage.conversationId);
-
-    if (conversations.hasOwnProperty(conversationId)) {
-      setConversations((prev) => ({
-        ...prev,
-        [conversationId]: {
-          ...prev[conversationId],
-          messages: [...prev[conversationId].messages, newMessage],
-          updatedAt: new Date().toISOString(),
-        },
-      }));
-      setConversationOrder((prevOrder) => {
-        return [
-          conversationId,
-          ...prevOrder.filter((id) => id != conversationId),
-        ];
-      });
-    } else {
-      // Handle case where the conversation is new or not loaded
-      addConversation(conversationId);
     }
   };
 

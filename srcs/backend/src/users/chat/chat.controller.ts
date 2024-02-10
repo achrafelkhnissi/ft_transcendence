@@ -72,6 +72,12 @@ export class ChatController {
     return this.chatService.findAllChatForUser(user.id);
   }
 
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    console.log('ChatController.findOne id:', id);
+    return this.chatService.findOne(id);
+  }
+
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiOkResponse({ type: ConversationDto })
   @ApiOperation({ summary: 'Update a chat' })
