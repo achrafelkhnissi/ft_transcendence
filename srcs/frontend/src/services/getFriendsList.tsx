@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-async function getFriendsList(username: string) {
+async function getFriendsList(id: number) {
   const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/friends?username=${username}`,
+    process.env.BACKEND + `/api/users/friends?id=${id}`,
     { withCredentials: true },
   );
 

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 import { NotificationsType } from './Notifications';
 import acceptFriendRequest from '@/services/acceptFriendRequest';
 import deleteNotification from '@/services/deleteNotification';
@@ -16,7 +16,7 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
   };
 
   const handleDecline = () => {
-    declineFirendRequest(notif.sender.username).then(() => {
+    declineFirendRequest(notif.sender.id).then(() => {
       deleteNotification(notif.id);
     });
     setActionDone(true);

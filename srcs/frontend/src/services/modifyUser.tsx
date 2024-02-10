@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const modifyUser = (username: string, data: any) => {
-  axios.patch(process.env.BACKEND + `/api/users/${username}`, data, {
+const modifyUser = (id: number, data: any) => {
+  axios.patch(process.env.BACKEND + `/api/users/${id}`, data, {
     withCredentials: true,
   });
 };

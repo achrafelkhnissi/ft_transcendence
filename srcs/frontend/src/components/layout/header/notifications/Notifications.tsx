@@ -6,12 +6,14 @@ import { IoIosNotificationsOutline } from 'react-icons/io';
 import getNotifications from '@/services/getNotification';
 import { useEffect, useState } from 'react';
 import FriendRequest from './FriendRequest';
+import { useSocket } from '@/contexts/socketContext';
 
 export interface NotificationsType {
   id: number;
   content: string;
   type: string;
   sender: {
+    id: number;
     username: string;
     avatar: string;
   };
@@ -21,6 +23,7 @@ export interface NotificationsType {
 const Notifications = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [notifications, setNotifications] = useState<NotificationsType[]>([]);
+  const { socket } = useSocket();
 
   const handleClick = () => {
     setIsClicked((prev) => !prev);
@@ -31,7 +34,14 @@ const Notifications = () => {
       const notif: NotificationsType[] = res;
       setNotifications(notif);
     });
-  }, []);
+
+    if (socket) {
+      socket.on('onNotification', (data: NotificationsType) => {
+        console.log('new notification', data);
+        setNotifications((prev) => [data, ...prev]);
+      });
+    }
+  }, [socket]);
 
   return (
     <div

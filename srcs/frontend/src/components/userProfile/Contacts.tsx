@@ -59,12 +59,12 @@ const Contacts: React.FC<ContactsProps> = ({
 
   useEffect(() => {
     if (isClicked == 'send') {
-      sendFriendRequest(username).then((res) => {
+      sendFriendRequest(id).then((res) => {
         setIsClicked('');
         setFriendshipState(res.request.friendshipStatus);
       });
     } else if (isClicked == 'cancel') {
-      cancelFriendRequest(username).then((res) => {
+      cancelFriendRequest(id).then((res) => {
         setIsClicked('');
         setFriendshipState(false);
       });

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { UserStatuses, ConversationsMap, User } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
 
