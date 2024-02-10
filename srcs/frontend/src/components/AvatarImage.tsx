@@ -8,13 +8,13 @@ const AvatarImage = () => {
   const [src, setSrc] = useState<string>('');
   useEffect(() => {
     getCurrentUser().then((res) => {
-      setSrc(process.env.BACKEND + `/api/users/${res.username}/avatar`);
+      setSrc(process.env.BACKEND + `/api/users/${res.id}/avatar`);
     });
   }, []);
 
   if (src != '')
     return (
-      <img src={src} alt="user" width={40} height={40} className="rounded-lg" />
+      <img src={src} alt="user" width={40} height={40} className="rounded-lg object-fill" />
     );
 };
 

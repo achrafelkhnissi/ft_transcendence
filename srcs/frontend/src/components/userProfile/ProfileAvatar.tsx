@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 interface Props {
@@ -12,7 +13,6 @@ const ProfileAvatar: React.FC<Props> = ({
   level,
 }) => {
   const progressRef = useRef<HTMLDivElement>(null);
-  // experiencePoints = 70;
   useEffect(() => {
     const width = progressRef.current?.offsetWidth;
     const height = progressRef.current?.offsetHeight;
