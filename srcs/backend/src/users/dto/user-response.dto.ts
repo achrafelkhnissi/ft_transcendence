@@ -1,5 +1,3 @@
-import { $Enums } from '@prisma/client';
-import { Exclude } from 'class-transformer';
 import { Status } from 'src/common/enums/status.enum';
 import { FriendshipStatus } from 'src/common/enums/friendRequestStatus.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -35,7 +33,21 @@ export class UserResponseDto {
   @ApiProperty({ description: 'The phone number of the user' })
   phoneNumber: string;
 
+  @ApiProperty({
+    type: () => SettingsDto,
+    description: 'The settings of the user',
+  })
   settings: SettingsDto;
+
+  @ApiPropertyOptional({
+    type: [UserDto],
+    description: 'The friends of the user',
+  })
   friends: UserDto[];
+
+  @ApiPropertyOptional({
+    type: [UserDto],
+    description: 'The blocked users of the user',
+  })
   blockedUsers: UserDto[];
 }
