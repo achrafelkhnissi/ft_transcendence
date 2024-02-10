@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
 
 interface FriendAvatarProps {
@@ -20,7 +20,8 @@ const FriendAvatar: React.FC<FriendAvatarProps> = ({ avatar, name }) => {
                         outline 
                         outline-2 
                         outline-offset-[1.5px]
-                        outline-gray-400/70 "
+                        outline-gray-400/70 
+                        object-fill"
           />
         </div>
         <p className="self-center text-center  text-white/70 text-sm font-light">

@@ -1,13 +1,11 @@
 'use client';
 
 import { FaCrown } from 'react-icons/fa';
-import Image from 'next/image';
-// import { IoTerminalSharp } from "react-icons/io5";
-// import UserName from "../userProfile/UserName";
 import getRankings from '@/services/getRankings';
 import { useEffect, useState } from 'react';
 
 interface User {
+  id: number;
   username: string;
   avatar: string;
   stats: {
@@ -61,15 +59,15 @@ const TopPlayers = () => {
                       <p className="self-center">#{index + 1}</p>
                       <img
                         src={
-                          process.env.BACKEND +
-                          `/api/users/${item.username}/avatar`
+                          process.env.BACKEND + `/api/users/${item.id}/avatar`
                         }
                         alt=""
                         width={40}
                         height={40}
                         className="w-10 h-10 
                                         self-center
-                                        rounded-full"
+                                        rounded-full
+                                        object-fill"
                       />
                     </td>
                     <td className="px-2 py-[0.6rem] text-center">
