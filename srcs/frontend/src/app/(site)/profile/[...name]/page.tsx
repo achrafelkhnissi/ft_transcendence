@@ -9,10 +9,12 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import getUser from '@/services/getUser';
 import { User, defaultInfos } from '@/components/userProfile/types';
+import { useRouter } from 'next/navigation';
 
 const Home = ({ params }: { params: { name: string } }) => {
   const abortController = new AbortController();
   const [user, setUser] = useState<User>(defaultInfos);
+  const router = useRouter();
 
   useEffect(() => {
     if (params.name == 'me') {
@@ -23,8 +25,12 @@ const Home = ({ params }: { params: { name: string } }) => {
       });
     } else {
       getUser(params.name).then((res) => {
-        const userData: User = res;
-        (userData.me = false), setUser(userData);
+        if (res) {
+          const userData: User = res;
+          (userData.me = false), setUser(userData);
+        } else {
+          router.push('/404');
+        }
       });
     }
 
