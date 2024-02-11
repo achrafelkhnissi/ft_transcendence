@@ -35,8 +35,17 @@ import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
 import { ConversationType } from '@prisma/client';
+import { Gateway } from 'src/gateway/gateway';
 
 // TODO: ? maybe return ConversationDto for all methods
+
+interface CreateChatPayload {
+  name?: string;
+  type: ConversationType;
+  image?: string;
+  ownerId?: number;
+  participants: number[];
+}
 
 @ApiTags('chat')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -44,7 +53,10 @@ import { ConversationType } from '@prisma/client';
 @UseGuards(RolesGuard)
 @Controller()
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly gateway: Gateway,
+  ) {}
 
   @ApiBody({ type: CreateChatDto })
   @ApiCreatedResponse({ description: 'Chat created' })
@@ -52,15 +64,36 @@ export class ChatController {
   @ApiOperation({ summary: 'Create a chat' })
   @Post()
   async create(@User() user: UserType, @Body() createChatDto: CreateChatDto) {
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const { type, participants } = createChatDto;
 
-    if (createChatDto.type != 'DM') {
+    if (type == ConversationType.DM && participants.length === 1) {
+      participants.push(user.id);
+      const sortedIds = participants.sort();
+      createChatDto.name = `Room${sortedIds[0]}-${sortedIds[1]}`;
+    } else {
       createChatDto.ownerId = user.id;
+
+      if (!createChatDto.image || createChatDto.image === '') {
+        const avatar = `uploads/chat-default-images/chat-image-${Math.floor(
+          Math.random() * 6 + 1,
+        )}.jpg`;
+
+        createChatDto.image = avatar;
+      }
     }
 
-    return this.chatService.create(createChatDto);
+    const chat = await this.chatService.create(createChatDto);
+
+    if (chat) {
+      participants.forEach((id) => {
+        const userRoomName = `user-${id}`;
+        this.gateway.server.to(userRoomName).socketsJoin(chat.name);
+        this.gateway.server.to(userRoomName).emit('onNotification', chat);
+      });
+      this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
+    }
+
+    return chat;
   }
 
   @ApiOperation({
@@ -107,20 +140,32 @@ export class ChatController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Find a chat by id' })
   @Post(':id/participants/add')
-  addParticipant(
+  async addParticipant(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.chatService.addParticipant(+id, +userId);
+    const chat = await this.chatService.addParticipant(+id, +userId);
+
+    if (chat) {
+      this.gateway.server.to(`user-${userId}`).socketsJoin(chat.name);
+    }
+
+    return chat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/participants/remove')
-  removeParticipant(
+  async removeParticipant(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.chatService.removeParticipant(+id, +userId);
+    const chat = await this.chatService.removeParticipant(+id, +userId);
+
+    if (chat) {
+      this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
+    }
+
+    return chat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
@@ -142,8 +187,17 @@ export class ChatController {
   }
 
   @Post(':id/leave')
-  leaveChat(@Param('id', ParseIntPipe) id: number, @User() user: UserType) {
-    return this.chatService.leaveChat(+id, user.id);
+  async leaveChat(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserType,
+  ) {
+    const chat = await this.chatService.leaveChat(+id, user.id);
+
+    if (chat) {
+      this.gateway.server.to(`user-${user.id}`).socketsLeave(chat.name);
+    }
+
+    return chat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
@@ -162,6 +216,8 @@ export class ChatController {
     if (admins.includes(+userId)) {
       return this.chatService.ban(+id, +userId, Role.ADMIN);
     }
+
+    this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
 
     return this.chatService.ban(+id, +userId, Role.USER);
   }

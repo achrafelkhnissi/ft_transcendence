@@ -36,10 +36,11 @@ export class CreateChatDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   @MinLength(6, {
     message: 'Name must be at least 6 characters long',
   })
-  name: string;
+  name?: string;
 
   /**
    * (?=.*[a-z]): The string must contain at least 1 lowercase alphabetical character.

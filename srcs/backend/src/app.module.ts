@@ -13,8 +13,8 @@ import { ChatModule } from './users/chat/chat.module';
 import { UploadModule } from './upload/upload.module';
 import { AchievementsModule } from './users/achievements/achievements.module';
 import { MessageModule } from './users/chat/message/message.module';
-import { AppGateway } from './app.gateway';
 import { GameModule } from './game/game.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -46,6 +46,7 @@ import { GameModule } from './game/game.module';
     ChatModule,
     UploadModule,
     GameModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [
@@ -54,8 +55,6 @@ import { GameModule } from './game/game.module';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
-    AppGateway,
   ],
-  exports: [AppGateway],
 })
 export class AppModule {}

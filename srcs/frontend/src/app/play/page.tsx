@@ -8,6 +8,7 @@ import CostumizeGame from '@/components/game/CostumizeGame';
 import { RxExit } from 'react-icons/rx';
 import Link from 'next/link';
 import PlayerNotFound from '@/components/game/PlayerNotFound';
+import axios from 'axios';
 
 const PlayPage = () => {
   const { socket } = useSocket();

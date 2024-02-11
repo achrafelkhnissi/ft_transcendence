@@ -82,6 +82,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
 
       socket.on('onMessage', (message: Message) => {
+        console.log('message', message);
         addMessageToConversation(message);
       });
     }

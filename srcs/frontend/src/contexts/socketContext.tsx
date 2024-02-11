@@ -52,6 +52,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.log('New notification: ', data);
     });
 
+    newSocket.on('onMessage', (data) => {
+      console.log('New message: ', data);
+    });
+
     setSocket(newSocket);
 
     return () => {

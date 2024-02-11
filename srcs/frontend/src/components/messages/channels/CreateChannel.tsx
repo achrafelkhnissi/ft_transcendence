@@ -14,6 +14,7 @@ import { useSocket } from '@/contexts/socketContext';
 import { PiEyeBold } from 'react-icons/pi';
 import { PiEyeClosedBold } from 'react-icons/pi';
 import { hashPassword } from '../hashPass';
+import axios from 'axios';
 
 interface NewChannel {
   type: string;
@@ -243,8 +244,23 @@ const CreateChannel: React.FC<props> = ({
           updateCreateChannelState(false);
         }
       }
-      socket?.emit(
-        'createRoom',
+      // socket?.emit(
+      //   'createRoom',
+      //   {
+      //     type: newChannel.type,
+      //     image: newChannel.image,
+      //     name: newChannel.name,
+      //     password: hashedpass,
+      //     participants: newChannel.participants,
+      //   },
+      //   (res: number) => {
+      //     toast.success('Channel created successfully!');
+      //     updateConversations(res);
+      //   },
+      // );
+
+      const { data } = await axios.post(
+        process.env.BACKEND + '/api/users/chat',
         {
           type: newChannel.type,
           image: newChannel.image,
@@ -252,11 +268,14 @@ const CreateChannel: React.FC<props> = ({
           password: hashedpass,
           participants: newChannel.participants,
         },
-        (res: number) => {
-          toast.success('Channel created successfully!');
-          updateConversations(res);
-        },
+        { withCredentials: true },
       );
+
+      if (data) {
+        toast.success('Channel created successfully!');
+        updateConversations(data.id);
+      }
+
       setTimeout(() => {
         updateCreateChannelState(false);
       }, 1500);

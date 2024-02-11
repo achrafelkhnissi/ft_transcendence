@@ -6,12 +6,16 @@ import { Conversation, ConversationType, Status } from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
 import { Role } from 'src/common/enums/role.enum';
+import { Gateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly gateway: Gateway,
+  ) {}
 
   createUniqueRoomName(id1: number, id2: number) {
     const sortedIds = [id1, id2].sort();

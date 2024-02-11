@@ -1,9 +1,9 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
-import { AppGateway } from 'src/app.gateway';
+import { Gateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class NotificationsService {
@@ -22,7 +22,7 @@ export class NotificationsService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly gateway: AppGateway,
+    private readonly gateway: Gateway,
   ) {}
 
   async create(createNotificationDto: CreateNotificationDto) {

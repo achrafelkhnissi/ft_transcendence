@@ -40,13 +40,13 @@ export class GameService {
     setTimeout(() => match.gameStart(), 3000);
   }
 
-  readyForGame(){
-    setTimeout(()=>{
-      if (this.getAllUsers().length == 1){
+  readyForGame() {
+    setTimeout(() => {
+      if (this.getAllUsers().length == 1) {
         const lonly = this.removeUser();
         lonly.socket.emit('nta wahid');
       }
-    },10000)
+    }, 10000);
     if (this.getAllUsers().length >= 2) {
       const client1 = this.removeUser();
       client1.socket.emit('opponentFound', {

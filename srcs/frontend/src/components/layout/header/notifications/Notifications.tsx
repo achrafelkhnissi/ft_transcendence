@@ -40,6 +40,10 @@ const Notifications = () => {
         console.log('new notification', data);
         setNotifications((prev) => [data, ...prev]);
       });
+
+      socket.on('onMessage', (data) => {
+        console.log('new message', data);
+      });
     }
   }, [socket]);
 

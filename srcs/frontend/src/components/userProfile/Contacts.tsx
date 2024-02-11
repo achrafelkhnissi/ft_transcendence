@@ -8,6 +8,8 @@ import { useSocket } from '@/contexts/socketContext';
 import { ContactsItems, FriendshipStatus } from './types';
 import createNewConv from '@/services/createNewConv';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { Data } from 'phaser';
 
 interface ContactsProps {
   username: string;
@@ -72,16 +74,26 @@ const Contacts: React.FC<ContactsProps> = ({
   }, [isClicked, username, friendshipState]);
 
   const router = useRouter();
-  const createRoom = () => {
+  const createRoom = async () => {
     const payload = {
       type: 'DM',
       participants: [id],
     };
 
-    socket?.emit('createRoom', payload, function createdAck(id: string) {
-      console.log(`I joined room ${id} successfully!`);
-      router.push(`/messages/${+id}`);
-    });
+    // socket?.emit('createRoom', payload, function createdAck(id: string) {
+    //   console.log(`I joined room ${id} successfully!`);
+    //   router.push(`/messages/${+id}`);
+    // });
+
+    const { data } = await axios.post(
+      process.env.BACKEND + '/api/users/chat',
+      payload,
+      { withCredentials: true },
+    );
+    console.log('data', data);
+    if (data.id) {
+      router.push(`/messages/${data.id}`);
+    }
   };
 
   return (

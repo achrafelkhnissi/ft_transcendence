@@ -12,6 +12,7 @@ import ChannelsHeader from './channels/ChannelsHeader';
 import ChannelMessageContainer from './channels/ChannelMessageContainer';
 import { IoIosArrowBack } from 'react-icons/io';
 import ChannelInfo from './channels/ChannelInfo';
+import axios from 'axios';
 
 interface ViewConversationsProps {
   conversationId: number;
@@ -83,21 +84,31 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         : firstParticipant;
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const onlySpacesRegex = /^\s*$/;
 
     if (!onlySpacesRegex.test(newMessage)) {
-      socket?.emit(
-        'message',
+      // socket?.emit(
+      //   'message',
+      //   {
+      //     content: newMessage,
+      //     conversationId: Number(conversationId),
+      //     room: conversationsMap[conversationId].name,
+      //   },
+      //   () => {
+      //     console.log('message sent ');
+      //   },
+      // );
+      const { data } = await axios.post(
+        process.env.BACKEND + '/api/message', // TODO: Change this to /api/users/chat/message
         {
           content: newMessage,
           conversationId: Number(conversationId),
           room: conversationsMap[conversationId].name,
         },
-        () => {
-          console.log('message sent ');
-        },
+        { withCredentials: true },
       );
+      console.log('data', data);
     }
     setNewMessage('');
   };
