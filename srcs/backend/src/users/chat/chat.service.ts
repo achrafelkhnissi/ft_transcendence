@@ -1,3 +1,4 @@
+import { conversationSelect } from './../../prisma/prisma.selects';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
@@ -177,53 +178,7 @@ export class ChatService {
       where: {
         id,
       },
-      select: {
-        id: true,
-        type: true,
-        name: true,
-        updatedAt: true,
-        ownerId: true,
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        participants: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        admins: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        messages: {
-          select: {
-            id: true,
-            content: true,
-            isRead: true,
-            createdAt: true,
-            sender: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
-            },
-          },
-        },
-      },
+      select: conversationSelect,
     });
   }
 
@@ -236,53 +191,7 @@ export class ChatService {
         id,
       },
       data: updateChatDto,
-      select: {
-        id: true,
-        type: true,
-        name: true,
-        updatedAt: true,
-        ownerId: true,
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        participants: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        admins: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        messages: {
-          select: {
-            id: true,
-            content: true,
-            isRead: true,
-            createdAt: true,
-            sender: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
-            },
-          },
-        },
-      },
+      select: conversationSelect,
     });
   }
 
@@ -483,32 +392,7 @@ export class ChatService {
             },
           ],
         },
-        select: {
-          id: true,
-          type: true,
-          name: true,
-          updatedAt: true,
-          owner: {
-            select: userInfoSelect,
-          },
-          participants: {
-            select: userInfoSelect,
-          },
-          admins: {
-            select: userInfoSelect,
-          },
-          messages: {
-            select: {
-              id: true,
-              content: true,
-              isRead: true,
-              createdAt: true,
-              sender: {
-                select: userInfoSelect,
-              },
-            },
-          },
-        },
+        select: conversationSelect,
       })
       .catch((err) => {
         this.logger.error(err.message);
@@ -546,53 +430,6 @@ export class ChatService {
       where: {
         id: chatId,
       },
-      select: {
-        id: true,
-        type: true,
-        name: true,
-        updatedAt: true,
-        ownerId: true,
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        participants: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        admins: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        messages: {
-          select: {
-            id: true,
-            content: true,
-            isRead: true,
-            createdAt: true,
-            sender: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
-            },
-          },
-        },
-      },
       data: {
         participants: {
           connect: {
@@ -600,6 +437,7 @@ export class ChatService {
           },
         },
       },
+      select: conversationSelect,
     });
   }
 
