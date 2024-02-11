@@ -4,7 +4,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { FriendshipStatus, NotificationType } from '@prisma/client';
+import {
+  FriendshipStatus,
+  NotificationType,
+  RequestStatus,
+} from '@prisma/client';
 import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -77,7 +81,8 @@ export class FriendRequestsService {
       receiverId: receiverId,
       senderId: senderId,
       type: NotificationType.FRIEND_REQUEST_SENT,
-      friendRequestId: request.id,
+      requestId: request.id,
+      requestStatus: RequestStatus.PENDING,
     });
 
     if (!notification) {
@@ -125,7 +130,8 @@ export class FriendRequestsService {
       receiverId,
       senderId,
       type: NotificationType.FRIEND_REQUEST_ACCEPTED,
-      friendRequestId: request.id,
+      requestId: request.id,
+      requestStatus: RequestStatus.ACCEPTED,
     });
 
     this.logger.log(`Friend request accepted from <${senderId}>`);

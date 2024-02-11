@@ -60,8 +60,8 @@ model Notification {
   receiverId Int
   receiver   User             @relation("ReceivedNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  friendRequestId Int? @unique
-  // gameInviteId    Int? @unique
+  requestStatus RequestStatus?
+  requestId    Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -176,7 +176,7 @@ model Game {
 
 // ---- ENUMS ----
 enum Status {
-  ONLINAE
+  ONLINE
   OFFLINE
   PLAYING
 }
@@ -214,8 +214,6 @@ enum NotificationType {
   FRIEND_REQUEST_SENT
   FRIEND_REQUEST_ACCEPTED
   MATCH
-  MESSAGE
-  OTHER
 }
 
 enum Role {
@@ -224,15 +222,8 @@ enum Role {
   PARTICIPANT
 }
 
-enum inviteType {
-  FRIEND
-  CHANNEL
-  GAME
-}
-
-enum inviteStatus {
+enum RequestStatus {
   PENDING
   ACCEPTED
   DECLINED
-  BLOCKED
 }
