@@ -17,6 +17,14 @@ export const messageSelect = {
   },
 };
 
+export const mutedUserSelect = {
+  select: {
+    id: true,
+    duration: true,
+    user: userSelect,
+  },
+};
+
 export const conversationSelect = {
   id: true,
   name: true,
