@@ -103,8 +103,12 @@ export class AppGateway
     return `disconnected`;
   }
 
+  sendEvent(event: string, data: any) {
+    this.server.emit(event, data);
+  }
+
   @SubscribeMessage('message')
-  async conMessage(
+  async onMessage(
     @MessageBody() body: MessagePayload, // TODO: Change to DTO and validate it (make it same as prisma model)
     @ConnectedSocket() client: Socket,
   ): Promise<string> {
@@ -213,7 +217,7 @@ export class AppGateway
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
 
-    this.gameService.addUser({ id: client.id, socket: client, user })
+    this.gameService.addUser({ id: client.id, socket: client, user });
     this.gameService.readyForGame();
   }
 }

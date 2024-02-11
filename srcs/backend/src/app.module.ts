@@ -56,5 +56,6 @@ import { GameModule } from './game/game.module';
     },
     AppGateway,
   ],
+  exports: [AppGateway],
 })
 export class AppModule {}

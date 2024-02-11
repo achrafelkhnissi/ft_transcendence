@@ -3,6 +3,7 @@ import { FriendshipStatus } from 'src/common/enums/friendRequestStatus.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserDto } from './user.dto';
 import { SettingsDto } from './settings.dto';
+import { $Enums } from '@prisma/client';
 
 export class UserResponseDto {
   @ApiProperty({ description: 'The ID of the user' })
