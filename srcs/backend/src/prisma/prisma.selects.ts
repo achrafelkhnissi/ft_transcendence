@@ -13,6 +13,14 @@ export const messageSelect = {
     content: true,
     isRead: true,
     createdAt: true,
+    sender: userSelect,
+  },
+};
+
+export const mutedUserSelect = {
+  select: {
+    id: true,
+    duration: true,
     user: userSelect,
   },
 };
@@ -28,5 +36,5 @@ export const conversationSelect = {
   participants: userSelect,
   messages: messageSelect,
   bannedUsers: userSelect,
-  mutedUsers: userSelect,
+  mutedUsers: mutedUserSelect,
 };

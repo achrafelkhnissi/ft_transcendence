@@ -23,7 +23,7 @@ interface ChannelInfoProps {
 const newMemberError = {
   0: 'valid',
   1: 'user already exist!',
-  2: 'invalid user!',
+  2: 'invalid user!', 
 };
 
 const ChannelInfo: React.FC<ChannelInfoProps> = ({
@@ -287,6 +287,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             avatar={channel.owner.avatar}
             role={'owner'}
             status={channel.owner.status}
+            updateConversations={updateConversations}
+            channelId={channel.id}
+            muted={true}
           />
           {channel.admins.map((admin, index) => {
             return (
@@ -297,6 +300,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   avatar={admin.avatar}
                   role={'admin'}
                   status={admin.status}
+                  updateConversations={updateConversations}
+                  channelId={channel.id}
+                  muted={false}
                 />
               </div>
             );
@@ -310,6 +316,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   avatar={participant.avatar}
                   role={''}
                   status={participant.status}
+                  updateConversations={updateConversations}
+                  channelId={channel.id}
+                  muted={false}
                 />
               </div>
             );

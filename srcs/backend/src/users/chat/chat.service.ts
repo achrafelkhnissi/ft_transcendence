@@ -453,6 +453,7 @@ export class ChatService {
           },
         },
       },
+      select: conversationSelect,
     });
   }
 
@@ -544,6 +545,7 @@ export class ChatService {
           },
         },
       },
+      select: conversationSelect,
     });
   }
 
