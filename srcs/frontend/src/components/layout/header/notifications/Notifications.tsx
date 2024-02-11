@@ -10,14 +10,13 @@ import { useSocket } from '@/contexts/socketContext';
 
 export interface NotificationsType {
   id: number;
-  content: string;
   type: string;
   sender: {
     id: number;
     username: string;
     avatar: string;
   };
-  friendRequestId: number;
+  requestId: number;
 }
 
 const Notifications = () => {
@@ -82,7 +81,7 @@ const Notifications = () => {
                 </p>
               )}
               {notifications.map((item, index) => {
-                if (item.type == 'FRIEND_REQUEST')
+                if (item.type == 'FRIEND_REQUEST_SENT')
                   return <FriendRequest {...item} key={index} />;
               })}
             </div>

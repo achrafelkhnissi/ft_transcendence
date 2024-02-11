@@ -28,11 +28,12 @@ export class NotificationsService {
   async create(createNotificationDto: CreateNotificationDto) {
     const notification = await this.prismaService.notification.create({
       data: createNotificationDto,
+      select: this.infoToSelect,
     });
 
     if (notification) {
       this.gateway.server
-        .to(`user-${notification.receiverId}`)
+        .to(`user-${createNotificationDto.receiverId}`)
         .emit('onNotification', notification);
     }
 
