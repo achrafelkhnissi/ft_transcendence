@@ -34,13 +34,17 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   removeConversation,
 }) => {
   const length = channel.participants.length + channel.admins.length + 1;
+  const currentUserRole =
+    channel.owner.id === currentUser?.id
+      ? 'owner'
+      : channel.admins.some((admin) => admin.id === currentUser?.id)
+        ? 'admin'
+        : '';
   const [newMember, setNewMember] = useState<string>('');
   const [memberError, setMemeberError] = useState<0 | 1 | 2>(0);
   const [channelType, setChannelType] = useState<string>(channel.type);
   const [password, setPassword] = useState<string>('');
   const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
-
-  console.log('channel:', channel);
 
   const handleNewMemmber = () => {
     if (newMember != '' && newMember != currentUser?.username) {
@@ -53,7 +57,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
           ) {
             addNewMember(res.id, channel.id).then((res) => {
               if (res) {
-                console.log('add member res:', res);
                 updateConversations(res);
               }
             });
@@ -86,7 +89,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     if (newChannelType != 'PROTECTED') {
       updateChannelType(channel.id, { type: newChannelType }).then((res) => {
         if (res) {
-          console.log('updateChannelType res:', res);
           updateConversations(res);
           setChannelType(newChannelType);
         }
@@ -100,7 +102,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             password: hashedpass,
           }).then((res) => {
             if (res) {
-              console.log('updateChannelType res:', res);
               updateConversations(res);
               setChannelType(newChannelType);
             } else {
@@ -178,7 +179,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   }`}
                 ></div>
               </label>
-              <span className="ml-2 text-white/80">Make Channel Private </span>
+              <span className="ml-2 text-white/80"> Private Channel </span>
             </div>
             {/* ///lock */}
             <div className="flex gap-4 flex-col items-center text-white relative">
@@ -209,7 +210,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                     }`}
                   ></div>
                 </label>
-                <span className="ml-2 text-white/80">Lock Channel </span>
+                <span className="ml-2 text-white/80">Locked Channel </span>
               </div>
               <div
                 className={`md:w-[12rem] w-[10rem] relative flex flex-col justify-center self-start 
@@ -253,7 +254,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
       )}
       {/* Members */}
       <div className="flex flex-col gap-2 text-sm md:text-[1rem] pb-2">
-        <h3 className="">{length} members</h3>
+        <h3 className="">members ({length})</h3>
         {/* add member */}
         <div className="relative w-full h-10 mb-2">
           <input
@@ -292,6 +293,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             updateConversations={updateConversations}
             channelId={channel.id}
             muted={true}
+            currentUserRole=""
           />
           {channel.admins.map((admin, index) => {
             return (
@@ -305,6 +307,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   updateConversations={updateConversations}
                   channelId={channel.id}
                   muted={false}
+                  currentUserRole={currentUserRole}
                 />
               </div>
             );
@@ -321,6 +324,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   updateConversations={updateConversations}
                   channelId={channel.id}
                   muted={false}
+                  currentUserRole={currentUserRole}
                 />
               </div>
             );
@@ -330,7 +334,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
       {/* banned users */}
       {channel.bannedUsers?.length > 0 && (
         <div className="flex flex-col gap-2 text-sm md:text-[1rem] pb-2">
-          <h3 className="">{channel.bannedUsers.length} banned users</h3>
+          <h3 className="">banned users ({channel.bannedUsers.length})</h3>
           <div className="flex gap-2 flex-col overflow-y-auto max-h-[500px] px-2">
             {channel.bannedUsers.map((banned, index) => {
               return (
@@ -344,6 +348,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                     updateConversations={updateConversations}
                     channelId={channel.id}
                     muted={false}
+                    currentUserRole={currentUserRole}
                   />
                 </div>
               );

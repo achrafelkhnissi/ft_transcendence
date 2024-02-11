@@ -458,6 +458,14 @@ export class ChatService {
   }
 
   async replaceOwner(chatId: number, newOwnerId: number) {
+    if (newOwnerId === null) {
+      return this.prismaService.conversation.delete({
+        where: {
+          id: chatId,
+        },
+      });
+    }
+
     return this.prismaService.conversation.update({
       where: {
         id: chatId,

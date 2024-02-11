@@ -8,6 +8,7 @@ import addAdmin from '@/services/addAmin';
 import { TbHammer } from 'react-icons/tb';
 import banUser from '@/services/banUser';
 import { TbHammerOff } from 'react-icons/tb';
+import unbanUser from '@/services/unbanUser';
 
 interface MemberProps {
   id: number | undefined;
@@ -18,6 +19,7 @@ interface MemberProps {
   status: string;
   muted: boolean;
   updateConversations: Function;
+  currentUserRole: string;
 }
 
 const Member: React.FC<MemberProps> = ({
@@ -29,8 +31,10 @@ const Member: React.FC<MemberProps> = ({
   id,
   channelId,
   updateConversations,
+  currentUserRole,
 }) => {
   const [muteOnHover, setMuteOnHover] = useState<boolean>(false);
+  const [muteClicked, setMuteClicked] = useState<boolean>(false);
   const [adminHover, setAdminHover] = useState<boolean>(false);
   const [banHover, setBanHover] = useState<boolean>(false);
 
@@ -44,7 +48,6 @@ const Member: React.FC<MemberProps> = ({
 
   const handleAdmin = () => {
     if (role == 'admin') {
-      console.log('remove admin');
       kickUser(id, channelId, role).then((res) => {
         if (res) {
           updateConversations(res);
@@ -68,12 +71,19 @@ const Member: React.FC<MemberProps> = ({
   };
 
   const handleBanUser = () => {
-    console.log('ban');
-    banUser(id, channelId).then((res) => {
-      if (res) {
-        updateConversations(res);
-      }
-    });
+    if (role == 'banned') {
+      unbanUser(id, channelId).then((res) => {
+        if (res) {
+          updateConversations(res);
+        }
+      });
+    } else {
+      banUser(id, channelId).then((res) => {
+        if (res) {
+          updateConversations(res);
+        }
+      });
+    }
   };
 
   return (
@@ -89,96 +99,105 @@ const Member: React.FC<MemberProps> = ({
           <p className="self-center text-xs text-white/30">{role}</p>
         </div>
       </div>
-      {role != 'owner' && role != 'banned' && (
-        <div className="self-center flex gap-1">
-          <div
-            className="self-center relative"
-            onClick={handleAdmin}
-            onMouseEnter={(e) => {
-              setAdminHover(true);
-            }}
-            onMouseLeave={(e) => {
-              setAdminHover(false);
-            }}
-          >
-            <MdOutlineAdminPanelSettings
-              className={` cursor-pointer
+      {role != 'owner' &&  
+        role != 'banned' &&
+        (currentUserRole == 'owner' || // owner can modify all roles
+          (currentUserRole == 'admin' && role == '')) && ( // admin can modify only members
+          <div className="self-center flex gap-1">
+            <div
+              className="self-center relative"
+              onClick={handleAdmin}
+              onMouseEnter={(e) => {
+                setAdminHover(true);
+              }}
+              onMouseLeave={(e) => {
+                setAdminHover(false);
+              }}
+            >
+              <MdOutlineAdminPanelSettings
+                className={` cursor-pointer
             ${role == 'admin' ? `text-yellow-300` : `text-yellow-700`}`}
-            />
-            {adminHover && (
-              <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.2rem] rounded-sm w-16 text-center">
-                {role == 'admin' ? 'remove admin' : 'make admin'}
-              </p>
-            )}
-          </div>
+              />
+              {adminHover && (
+                <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.2rem] rounded-sm w-16 text-center">
+                  {role == 'admin' ? 'remove admin' : 'make admin'}
+                </p>
+              )}
+            </div>
 
-          <div
-            className="self-center relative"
-            onClick={() => {
-              if (muted) handleMuteUser('UNMUTE');
-              else setMuteOnHover((prev) => !prev);
-            }}
-          >
-            <BiMessageAltX
-              className={`mt-1 cursor-pointer
+            <div
+              className="self-center relative"
+              onClick={() => {
+                if (muted) handleMuteUser('UNMUTE');
+                else setMuteClicked((prev) => !prev);
+              }}
+              onMouseEnter={(e) => {
+                setMuteClicked(true);
+              }}
+              onMouseLeave={(e) => {
+                setMuteClicked(false);
+              }}
+            >
+              <BiMessageAltX
+                className={`mt-1 cursor-pointer
               ${muted == true ? 'text-red-600' : 'text-red-600/40'}`}
-            />
-            {muteOnHover && muted && (
-              <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.2rem] rounded-sm">
-                unmute
-              </p>
-            )}
-            {muteOnHover && !muted && (
-              <div
-                className="absolute bottom-[1.2rem] text-[0.6rem] w-content flex right-4 flex-col w-14
+              />
+              {muteOnHover && muted && (
+                <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.2rem] rounded-sm">
+                  unmute
+                </p>
+              )}
+              {muteClicked && !muted && (
+                <div
+                  className="absolute bottom-[1.2rem] text-[0.6rem] w-content flex right-4 flex-col w-14
               gap-1 text-center "
-              >
-                <p
-                  className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
+                >
+                  <p
+                    className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
                  `}
-                  onClick={() => handleMuteUser('HOUR')}
-                >
-                  1-HOUR
-                </p>
-                <p
-                  className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
+                    onClick={() => handleMuteUser('HOUR')}
+                  >
+                    1-HOUR
+                  </p>
+                  <p
+                    className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
                   `}
-                  onClick={() => handleMuteUser('DAY')}
-                >
-                  1-DAY
-                </p>
-                <p
-                  className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
+                    onClick={() => handleMuteUser('DAY')}
+                  >
+                    1-DAY
+                  </p>
+                  <p
+                    className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
                   `}
-                  onClick={() => handleMuteUser('WEEK')}
-                >
-                  1-WEEK
+                    onClick={() => handleMuteUser('WEEK')}
+                  >
+                    1-WEEK
+                  </p>
+                </div>
+              )}
+            </div>
+            <div
+              className="self-center relative"
+              onMouseEnter={(e) => {
+                setBanHover(true);
+              }}
+              onMouseLeave={(e) => {
+                setBanHover(false);
+              }}
+              onClick={handleBanUser}
+            >
+              <TbHammer className="text-blue-500/80 cursor-pointer" />
+              {banHover && (
+                <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.4rem] rounded-sm">
+                  ban
                 </p>
-              </div>
-            )}
+              )}
+            </div>
+            <div className="self-center " onClick={handleKickUser}>
+              <FiMinusCircle className="w-[1.2rem] h-[1.2rem] text-white/60 cursor-pointer" />
+            </div>
           </div>
-          <div
-            className="self-center relative"
-            onMouseEnter={(e) => {
-              setBanHover(true);
-            }}
-            onMouseLeave={(e) => {
-              setBanHover(false);
-            }}
-            onClick={handleBanUser}
-          >
-            <TbHammer className="text-blue-500/80 cursor-pointer" />
-            {banHover && (
-              <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.4rem] rounded-sm">
-                ban
-              </p>
-            )}
-          </div>
-          <div className="self-center " onClick={handleKickUser}>
-            <FiMinusCircle className="w-[1.2rem] h-[1.2rem] text-white/60 cursor-pointer" />
-          </div>
-        </div>
-      )}
+        )}
       {role == 'banned' && (
         <div
           className="self-center relative"
@@ -190,12 +209,12 @@ const Member: React.FC<MemberProps> = ({
           }}
           onClick={handleBanUser}
         >
-          <TbHammerOff  className="text-blue-500/80 cursor-pointer" />
+          <TbHammerOff className="text-blue-500/80 cursor-pointer" />
           {banHover && (
-          <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.4rem] rounded-sm">
-            unban
-          </p>
-        )}
+            <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.4rem] rounded-sm">
+              unban
+            </p>
+          )}
         </div>
       )}
     </div>
