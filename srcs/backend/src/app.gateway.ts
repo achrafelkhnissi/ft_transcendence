@@ -61,12 +61,14 @@ export class AppGateway
       return 'unauthorized';
     }
 
+    const userRoomName = `user-${user.id}`;
+
     // Join the user's room to keep track of all the user's sockets
-    client.join(user.username);
+    client.join(userRoomName);
 
     // Keep track of the number of sockets connected to the user's room
-    const roomCount = this.roomCounts.get(user.username) || 0;
-    this.roomCounts.set(user.username, roomCount + 1);
+    const roomCount = this.roomCounts.get(userRoomName) || 0;
+    this.roomCounts.set(userRoomName, roomCount + 1);
 
     this.server.to(client.id).emit('status', { status: Status.ONLINE });
     await this.chatService.toggleUserStatus(user.id, Status.ONLINE);
@@ -88,23 +90,21 @@ export class AppGateway
       return 'unauthorized';
     }
 
+    const userRoomName = `user-${user.id}`;
+
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
     // and we can set the user's status to offline
-    const roomCount = this.roomCounts.get(user.username) || 0;
-    this.roomCounts.set(user.username, roomCount - 1);
+    const roomCount = this.roomCounts.get(userRoomName) || 0;
+    this.roomCounts.set(userRoomName, roomCount - 1);
     if (roomCount - 1 === 0) {
-      this.server.to(user.username).emit('status', { status: Status.OFFLINE });
+      this.server.to(userRoomName).emit('status', { status: Status.OFFLINE });
       await this.chatService.toggleUserStatus(user.id, Status.OFFLINE);
     }
 
     this.logger.debug(`Client ${user.username} disconnected`);
 
     return `disconnected`;
-  }
-
-  sendEvent(event: string, data: any) {
-    this.server.emit(event, data);
   }
 
   @SubscribeMessage('message')
@@ -143,7 +143,9 @@ export class AppGateway
       throw new UnauthorizedException('Unauthorized');
     }
 
-    this.server.to(user.username).socketsJoin(room);
+    const userRoomName = `user-${user.id}`;
+
+    this.server.to(userRoomName).socketsJoin(room);
 
     this.logger.debug(`Client ${user.username} joined room ${room}`);
 
@@ -162,7 +164,9 @@ export class AppGateway
       throw new UnauthorizedException('Unauthorized');
     }
 
-    this.server.to(user.username).socketsLeave(room);
+    const userRoomName = `user-${user.id}`;
+
+    this.server.to(userRoomName).socketsLeave(room);
     this.server.to(room).emit('onLeave', user.username);
 
     this.logger.debug(`Client ${user.username} left room ${room}`);
@@ -200,15 +204,13 @@ export class AppGateway
 
     const chat = await this.chatService.create(payload);
 
-    const participantsUsernames =
-      await this.usersService.getUsernamesFromIds(participants);
-
-    participantsUsernames.forEach((username) => {
-      this.server.to(username).socketsJoin(chat.name);
-      this.server.to(username).emit('onNotification', chat);
+    participants.forEach((id) => {
+      const userRoomName = `user-${id}`;
+      this.server.to(userRoomName).socketsJoin(chat.name);
+      this.server.to(userRoomName).emit('onNotification', chat);
     });
 
-    this.server.to(user.username).socketsJoin(chat.name);
+    this.server.to(`user-${user.id}`).socketsJoin(chat.name);
 
     return chat.id;
   }

@@ -7,8 +7,6 @@ import { AppGateway } from 'src/app.gateway';
 
 @Injectable()
 export class NotificationsService {
-  private readonly logger = new Logger(NotificationsService.name);
-
   private readonly infoToSelect = {
     id: true,
     read: true,
@@ -32,7 +30,12 @@ export class NotificationsService {
       data: createNotificationDto,
     });
 
-    this.gateway.sendEvent('onNotification', notification);
+    if (notification) {
+      this.gateway.server
+        .to(`user-${notification.receiverId}`)
+        .emit('onNotification', notification);
+    }
+
     return notification;
   }
 
