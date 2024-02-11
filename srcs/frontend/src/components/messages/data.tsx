@@ -28,6 +28,7 @@ export interface Conversation {
   admins: User[];
   messages: Message[];
   image: string;
+  bannedUsers: User[];
 }
 
 export type ConversationsMap = {

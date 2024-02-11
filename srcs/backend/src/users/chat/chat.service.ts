@@ -121,33 +121,7 @@ export class ChatService {
             },
           ],
         },
-        select: {
-          id: true,
-          type: true,
-          name: true,
-          updatedAt: true,
-          owner: {
-            select: userInfoSelect,
-          },
-          participants: {
-            select: userInfoSelect,
-          },
-          admins: {
-            select: userInfoSelect,
-          },
-          messages: {
-            select: {
-              id: true,
-              content: true,
-              isRead: true,
-              conversationId: true,
-              createdAt: true,
-              sender: {
-                select: userInfoSelect,
-              },
-            },
-          },
-        },
+        select: conversationSelect,
       })
       .then((chats) => {
         return chats.filter((chat) => {
@@ -512,19 +486,18 @@ export class ChatService {
       },
     };
 
-    if (!chat.participants.some((participant) => participant.id === adminId)) {
-      updateData['participants'] = {
-        disconnect: {
-          id: adminId,
-        },
-      };
-    }
+    updateData['participants'] = {
+      disconnect: {
+        id: adminId,
+      },
+    };
 
     return this.prismaService.conversation.update({
       where: {
         id: chatId,
       },
       data: updateData,
+      select: conversationSelect,
     });
   }
 
@@ -577,6 +550,7 @@ export class ChatService {
         id: chatId,
       },
       data: updateData,
+      select: conversationSelect,
     });
   }
 
@@ -592,6 +566,7 @@ export class ChatService {
           },
         },
       },
+      select: conversationSelect,
     });
   }
 

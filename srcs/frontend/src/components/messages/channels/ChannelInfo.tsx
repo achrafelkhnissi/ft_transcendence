@@ -23,7 +23,7 @@ interface ChannelInfoProps {
 const newMemberError = {
   0: 'valid',
   1: 'user already exist!',
-  2: 'invalid user!', 
+  2: 'invalid user!',
 };
 
 const ChannelInfo: React.FC<ChannelInfoProps> = ({
@@ -39,6 +39,8 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const [channelType, setChannelType] = useState<string>(channel.type);
   const [password, setPassword] = useState<string>('');
   const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
+
+  console.log('channel:', channel);
 
   const handleNewMemmber = () => {
     if (newMember != '' && newMember != currentUser?.username) {
@@ -325,6 +327,30 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
           })}
         </div>
       </div>
+      {/* banned users */}
+      {channel.bannedUsers?.length > 0 && (
+        <div className="flex flex-col gap-2 text-sm md:text-[1rem] pb-2">
+          <h3 className="">{channel.bannedUsers.length} banned users</h3>
+          <div className="flex gap-2 flex-col overflow-y-auto max-h-[500px] px-2">
+            {channel.bannedUsers.map((banned, index) => {
+              return (
+                <div key={index} className="text-white/80 ">
+                  <Member
+                    id={banned.id}
+                    username={banned.username}
+                    avatar={banned.avatar}
+                    role={'banned'}
+                    status={banned.status}
+                    updateConversations={updateConversations}
+                    channelId={channel.id}
+                    muted={false}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="self-center flex">
         <button
           className="px-4 py-2 bg-red-800 rounded-lg text-white/80 cursor-pointer hover:bg-red-700"
