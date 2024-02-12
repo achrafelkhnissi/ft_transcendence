@@ -207,7 +207,6 @@ export class ChatController {
     return chat;
   }
 
-  // TODO: Test this
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({ type: UpdateChatDto })
   @ApiOkResponse({ type: ConversationDto })
@@ -422,25 +421,25 @@ export class ChatController {
     return res.sendFile(avatar, { root: './' });
   }
 
-  @Get(':id/messages')
-  findMessages(@Param('id', ParseIntPipe) id: number) {
-    return this.chatService.findMessages(+id);
-  }
+  // @Get(':id/messages')
+  // findMessages(@Param('id', ParseIntPipe) id: number) {
+  //   return this.chatService.findMessages(+id);
+  // }
 
-  @Get(':id/participants')
-  findParticipants(@Param('id', ParseIntPipe) id: number) {
-    return this.chatService.findParticipants(+id);
-  }
+  // @Get(':id/participants')
+  // findParticipants(@Param('id', ParseIntPipe) id: number) {
+  //   return this.chatService.findParticipants(+id);
+  // }
 
-  @Get(':id/admins')
-  findAdmins(@Param('id', ParseIntPipe) id: number) {
-    return this.chatService.findAdmins(+id);
-  }
+  // @Get(':id/admins')
+  // findAdmins(@Param('id', ParseIntPipe) id: number) {
+  //   return this.chatService.findAdmins(+id);
+  // }
 
-  @Get(':id/owner')
-  findOwner(@Param('id', ParseIntPipe) id: number) {
-    return this.chatService.findOwner(+id);
-  }
+  // @Get(':id/owner')
+  // findOwner(@Param('id', ParseIntPipe) id: number) {
+  //   return this.chatService.findOwner(+id);
+  // }
 
   @Get(':id/chats')
   getUserChats(@Param('id', ParseIntPipe) id: number) {
