@@ -300,8 +300,16 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Remove an admin from chat' })
   @Delete(':id/admins/remove')
+  @Roles(Role.OWNER, Role.ADMIN)
   async removeAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
@@ -321,6 +329,11 @@ export class ChatController {
   }
 
   @Post(':id/leave')
+  @Roles(Role.OWNER, Role.ADMIN, Role.USER)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Leave a chat' })
   async leaveChat(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserType,
@@ -339,8 +352,16 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/ban')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Ban a user from chat' })
+  @Roles(Role.OWNER, Role.ADMIN)
   async ban(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
@@ -362,7 +383,7 @@ export class ChatController {
       this.gateway.server.to(chat.name).emit('action', {
         action: 'ban',
         user: userId,
-        data: chat,
+        data: newChat,
       });
       this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
     }
@@ -370,8 +391,16 @@ export class ChatController {
     return newChat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Unban a user from chat' })
   @Post(':id/unban')
+  @Roles(Role.OWNER, Role.ADMIN)
   async unban(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId') userId: string,
@@ -389,8 +418,8 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/mute')
+  @Roles(Role.OWNER, Role.ADMIN)
   async mute(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: { userId: string; duration: MuteDuration }, // CreateMuteDto
@@ -408,7 +437,7 @@ export class ChatController {
       this.gateway.server.to(chat.name).emit('action', {
         action: 'mute',
         user: userId,
-        data: chat,
+        data: newChat,
       });
     }
 

@@ -196,7 +196,9 @@ const Home = ({ params }: { params: { id: number } }) => {
             if (res.user == currentUser?.id) {
               removeConversation(res.data.id);
               setShowConversation(false);
-            } else uppdateConversations(res.data);
+            } else {
+              uppdateConversations(res.data);
+            }
             break;
           }
         }

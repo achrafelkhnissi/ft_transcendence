@@ -229,7 +229,7 @@ enum RequestStatus {
 }
 
 enum MuteDuration {
+  MINUTE
   HOUR
   DAY
-  WEEK
 }

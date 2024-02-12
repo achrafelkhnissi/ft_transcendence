@@ -83,6 +83,7 @@ const Member: React.FC<MemberProps> = ({
     }
   };
 
+  // TODO: Remove this!
   const handleBanUser = () => {
     if (role == 'banned') {
       unbanUser(id, channelId).then((res) => {
@@ -93,6 +94,7 @@ const Member: React.FC<MemberProps> = ({
     } else {
       banUser(id, channelId).then((res) => {
         if (res) {
+          console.log({ res });
           // updateConversations(res);
         }
       });
