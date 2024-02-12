@@ -12,6 +12,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
 import { Role } from 'src/common/enums/role.enum';
 import { Gateway } from 'src/gateway/gateway';
+import { UpdateChatDto } from './dto/update-chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -166,20 +167,18 @@ export class ChatService {
     });
   }
 
-  update(id: number, updateChatDto: any) {
-    // TODO: Update any to UpdateChatDto
+  update(id: number, data: { type?: ConversationType; password?: string }) {
     this.logger.log(`Updating chat with id ${id}`);
 
     return this.prismaService.conversation.update({
       where: {
         id,
       },
-      data: updateChatDto,
+      data,
       select: conversationSelect,
     });
   }
 
-  // TODO: Check if the logged in user has permission to remove a chat
   remove(id: number) {
     this.logger.log(`Removing chat with id ${id}`);
     return this.prismaService.conversation.delete({
@@ -189,7 +188,6 @@ export class ChatService {
     });
   }
 
-  // TODO: maybe use message service instead?
   findMessages(id: number) {
     this.logger.log(`Finding messages for chat with id ${id}`);
     return this.prismaService.conversation
@@ -325,17 +323,18 @@ export class ChatService {
   }
 
   async getChatNames() {
-    return this.prismaService.conversation.findMany({
-      where: {
-        type: {
-          not: ConversationType.DM,
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          type: {
+            not: ConversationType.DM,
+          },
         },
-      },
-      select: {
-        name: true,
-      },
-    });
-    // .then((chats) => chats.map((chat) => chat.name));
+        select: {
+          name: true,
+        },
+      })
+      .then((chats) => chats.map((chat) => chat.name));
   }
 
   getAvatar(id: number) {
