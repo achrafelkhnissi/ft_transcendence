@@ -326,11 +326,11 @@ export class ChatService {
   async getChatNames() {
     return this.prismaService.conversation
       .findMany({
-        // where: {
-        //   type: {
-        //     not: ConversationType.DM,
-        //   },
-        // },
+        where: {
+          type: {
+            not: ConversationType.DM,
+          },
+        },
         select: {
           name: true,
         },

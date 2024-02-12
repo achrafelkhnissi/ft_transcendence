@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
   UseGuards,
   Res,
   ForbiddenException,
@@ -36,16 +35,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
 import { ConversationType, MuteDuration } from '@prisma/client';
 import { Gateway } from 'src/gateway/gateway';
-
-// TODO: ? maybe return ConversationDto for all methods
-
-interface CreateChatPayload {
-  name?: string;
-  type: ConversationType;
-  image?: string;
-  ownerId?: number;
-  participants: number[];
-}
 
 @ApiTags('chat')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -95,6 +84,7 @@ export class ChatController {
         user: user.id,
         data: chat,
       });
+      this.gateway.server.to(chat.name).emit('notification', {});
     }
 
     return chat;
@@ -107,6 +97,42 @@ export class ChatController {
   @Get()
   find(@User() user: UserType) {
     return this.chatService.findAllChatForUser(user.id);
+  }
+
+  @Get('names')
+  @ApiOperation({ summary: 'Get chat names' })
+  @ApiOkResponse({ type: [String] })
+  getChatNames() {
+    console.log('Getting chat names in ChatController');
+    return this.chatService.getChatNames();
+  }
+
+  @Get('popular')
+  @ApiOperation({ summary: 'Get popular chats' })
+  @ApiOkResponse({
+    description: 'Gets the top 4 popular channels',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          type: { enum: ['DM', 'PUBLIC', 'PRIVATE', 'PROTECTED'] },
+          name: { type: 'string' },
+          image: { type: 'string' },
+          _count: {
+            type: 'object',
+            properties: {
+              participants: { type: 'number' },
+              admins: { type: 'number' },
+            },
+          },
+        },
+      },
+    },
+  })
+  getPopularChats() {
+    return this.chatService.getPopularChats();
   }
 
   @Get(':id')
@@ -419,39 +445,5 @@ export class ChatController {
   @Get(':id/chats')
   getUserChats(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.getUserChats(id);
-  }
-
-  @Get('names')
-  getChatNames() {
-    console.log('Getting chat names in ChatController');
-    return this.chatService.getChatNames();
-  }
-
-  @Get('popular')
-  @ApiOperation({ summary: 'Get popular chats' })
-  @ApiOkResponse({
-    description: 'Gets the top 4 popular channels',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'number' },
-          type: { enum: ['DM', 'PUBLIC', 'PRIVATE', 'PROTECTED'] },
-          name: { type: 'string' },
-          image: { type: 'string' },
-          _count: {
-            type: 'object',
-            properties: {
-              participants: { type: 'number' },
-              admins: { type: 'number' },
-            },
-          },
-        },
-      },
-    },
-  })
-  getPopularChats() {
-    return this.chatService.getPopularChats();
   }
 }
