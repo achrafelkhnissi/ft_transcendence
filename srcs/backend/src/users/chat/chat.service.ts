@@ -1,5 +1,10 @@
 import { conversationSelect } from './../../prisma/prisma.selects';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
 import {
@@ -337,10 +342,18 @@ export class ChatService {
   }
 
   async addParticipant(chatId: number, participantId: number) {
+    const conversation =
+      await this.prismaService.conversation.findUniqueOrThrow({
+        where: { id: chatId },
+        include: { bannedUsers: true },
+      });
+
+    if (conversation.bannedUsers.some((user) => user.id === participantId)) {
+      throw new BadRequestException('User is banned from this chat');
+    }
+
     return this.prismaService.conversation.update({
-      where: {
-        id: chatId,
-      },
+      where: { id: chatId },
       data: {
         participants: {
           connect: {
