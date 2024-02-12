@@ -10,6 +10,8 @@ import banUser from '@/services/banUser';
 import { TbHammerOff } from 'react-icons/tb';
 import unbanUser from '@/services/unbanUser';
 import removeAdmin from '@/services/removeAdmin';
+import unmuteUser from '@/services/unmuteUser';
+import muteUser from '@/services/muteUser';
 
 interface MemberProps {
   id: number | undefined;
@@ -66,8 +68,18 @@ const Member: React.FC<MemberProps> = ({
   const handleMuteUser = (param: string) => {
     if (param == 'UNMUTE') {
       console.log('unmute');
+      unmuteUser(id, channelId).then((res) => {
+        if (res) {
+          console.log('unmute', res);
+        }
+      });
     } else {
       console.log('duration', param);
+      muteUser(id, channelId, param).then((res) => {
+        if (res) {
+          console.log('mute', res);
+        }
+      });
     }
   };
 
@@ -75,13 +87,13 @@ const Member: React.FC<MemberProps> = ({
     if (role == 'banned') {
       unbanUser(id, channelId).then((res) => {
         if (res) {
-          updateConversations(res);
+          // updateConversations(res);
         }
       });
     } else {
       banUser(id, channelId).then((res) => {
         if (res) {
-          updateConversations(res);
+          // updateConversations(res);
         }
       });
     }
@@ -161,6 +173,13 @@ const Member: React.FC<MemberProps> = ({
                   <p
                     className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
                  `}
+                    onClick={() => handleMuteUser('MINUTE')}
+                  >
+                    1-MINITUE
+                  </p>
+                  <p
+                    className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
+                  `}
                     onClick={() => handleMuteUser('HOUR')}
                   >
                     1-HOUR
@@ -171,13 +190,6 @@ const Member: React.FC<MemberProps> = ({
                     onClick={() => handleMuteUser('DAY')}
                   >
                     1-DAY
-                  </p>
-                  <p
-                    className={`bg-red-600/55 p-[0.1rem] rounded-md text-white/70 hover:text-white cursor-pointer
-                  `}
-                    onClick={() => handleMuteUser('WEEK')}
-                  >
-                    1-WEEK
                   </p>
                 </div>
               )}

@@ -74,7 +74,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                   {lastMessage ? ':' : ''} {lastMessage?.content.slice(0, 80)}
                 </p>
               </div>
-              <p className="text-[0.6rem] font-light text-white/60 mt-1 w-10">
+              <p className="text-[0.6rem] font-light text-white/60 mt-1 w-12">
                 {lastMessage ? formatChatTimestamp(lastMessage.createdAt) : ''}
               </p>
               {lastMessage &&

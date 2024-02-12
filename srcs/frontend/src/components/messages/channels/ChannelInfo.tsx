@@ -307,7 +307,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   status={admin.status}
                   updateConversations={updateConversations}
                   channelId={channel.id}
-                  muted={false}
+                  muted={channel.mutedUsers.some(
+                    (obj) => obj.user.id == admin.id,
+                  )}
                   currentUserRole={currentUserRole}
                 />
               </div>
@@ -324,7 +326,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   status={participant.status}
                   updateConversations={updateConversations}
                   channelId={channel.id}
-                  muted={false}
+                  muted={channel.mutedUsers.some(
+                    (obj) => obj.user.id == participant.id,
+                  )}
                   currentUserRole={currentUserRole}
                 />
               </div>
