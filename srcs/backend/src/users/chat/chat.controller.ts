@@ -106,7 +106,6 @@ export class ChatController {
   @ApiOperation({ summary: 'Get chat names' })
   @ApiOkResponse({ type: [String] })
   getChatNames() {
-    console.log('Getting chat names in ChatController');
     return this.chatService.getChatNames();
   }
 
