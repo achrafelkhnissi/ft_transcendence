@@ -61,38 +61,35 @@ export class FriendsService {
   }
 
   async removeFriend(userId: number, friendId: number) {
-    // TODO: Remove this and use friendId instead and check what is the best way to handle this
-    const friend = await this.prisma.user.findUniqueOrThrow({
-      where: { id: friendId },
-    });
+    return this.prisma.friendRequest
+      .deleteMany({
+        where: {
+          AND: [
+            {
+              OR: [
+                {
+                  senderId: { equals: userId },
+                  receiverId: { equals: friendId },
+                },
+                {
+                  senderId: { equals: friendId },
+                  receiverId: { equals: userId },
+                },
+              ],
+            },
+            {
+              friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+            },
+          ],
+        },
+      })
+      .then((friendRequest) => {
+        if (friendRequest.count === 0) {
+          throw new UserNotFoundException(friendId);
+        }
 
-    if (!friend) {
-      throw new UserNotFoundException(friendId);
-    }
-
-    const friendRequests = await this.prisma.friendRequest.deleteMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              {
-                senderId: { equals: userId },
-                receiverId: { equals: friend.id },
-              },
-              {
-                senderId: { equals: friend.id },
-                receiverId: { equals: userId },
-              },
-            ],
-          },
-          {
-            friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-          },
-        ],
-      },
-    });
-
-    return { message: 'Friend removed', friendRequests };
+        return friendRequest;
+      });
   }
 
   async listBlockedUsers(userId: number) {
