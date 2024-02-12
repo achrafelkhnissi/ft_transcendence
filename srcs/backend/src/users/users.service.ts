@@ -61,7 +61,7 @@ export class UsersService {
   }
 
   async findById(id: number, userId?: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: id },
       select: {
         id: true,
@@ -180,7 +180,7 @@ export class UsersService {
           .filter((user) => user.username !== username);
       });
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: { username },
       select: {
         id: true,
@@ -250,7 +250,7 @@ export class UsersService {
   }
 
   async getAvatarById(userId: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: {
         id: userId,
       },

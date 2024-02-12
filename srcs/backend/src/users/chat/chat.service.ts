@@ -31,13 +31,12 @@ export class ChatService {
   async create(createChatDto: CreateChatDto) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
 
-    const chat: Conversation = await this.prismaService.conversation.findUnique(
-      {
+    const chat: Conversation =
+      await this.prismaService.conversation.findUniqueOrThrow({
         where: {
           name: createChatDto.name,
         },
-      },
-    );
+      });
 
     if (chat) {
       return chat;
@@ -159,7 +158,7 @@ export class ChatService {
 
   findOne(id: number) {
     this.logger.log(`Finding chat with id ${id}`);
-    return this.prismaService.conversation.findUnique({
+    return this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id,
       },
@@ -185,13 +184,14 @@ export class ChatService {
       where: {
         id,
       },
+      select: conversationSelect,
     });
   }
 
   findMessages(id: number) {
     this.logger.log(`Finding messages for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -202,7 +202,7 @@ export class ChatService {
   findParticipants(id: number) {
     this.logger.log(`Finding participants for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -213,7 +213,7 @@ export class ChatService {
   findAdmins(id: number) {
     this.logger.log(`Finding admins for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -224,7 +224,7 @@ export class ChatService {
   findOwner(id: number) {
     this.logger.log(`Finding owner for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -235,7 +235,7 @@ export class ChatService {
   getUserFromSession(session: any) {
     const userId = session.passport.user;
 
-    return this.prismaService.user.findUnique({
+    return this.prismaService.user.findUniqueOrThrow({
       where: {
         id: userId,
       },
@@ -339,7 +339,7 @@ export class ChatService {
 
   getAvatar(id: number) {
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -380,7 +380,7 @@ export class ChatService {
   }
 
   async leaveChat(chatId: number, userId: number) {
-    const chat = await this.prismaService.conversation.findUnique({
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id: chatId,
       },
@@ -430,7 +430,7 @@ export class ChatService {
   }
 
   async addAdmin(chatId: number, adminId: number) {
-    const chat = await this.prismaService.conversation.findUnique({
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id: chatId,
       },
@@ -533,7 +533,7 @@ export class ChatService {
 
   async getBannedUsers(chatId: number) {
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id: chatId,
         },
@@ -551,7 +551,7 @@ export class ChatService {
     });
 
     if (muted) {
-      return await this.prismaService.conversation.findUnique({
+      return await this.prismaService.conversation.findUniqueOrThrow({
         where: { id: chatId },
         select: conversationSelect,
       });
@@ -567,7 +567,7 @@ export class ChatService {
     });
 
     if (deleted) {
-      return await this.prismaService.conversation.findUnique({
+      return await this.prismaService.conversation.findUniqueOrThrow({
         where: { id: chatId },
         select: conversationSelect,
       });
@@ -612,7 +612,7 @@ export class ChatService {
   }
 
   async removeUser(chatId: number, userId: number) {
-    const chat = await this.prismaService.conversation.findUnique({
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id: chatId,
       },

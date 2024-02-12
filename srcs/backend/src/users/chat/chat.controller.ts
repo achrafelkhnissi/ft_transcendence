@@ -136,8 +136,11 @@ export class ChatController {
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Chat id' })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Conversation not found' })
+  @ApiOperation({ summary: 'Find chat by id' })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    console.log('ChatController.findOne id:', id);
     return this.chatService.findOne(id);
   }
 

@@ -10,7 +10,7 @@ export class FriendsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listFriendsById(userId: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
       include: {
         friendRequestsSent: {
@@ -62,7 +62,7 @@ export class FriendsService {
 
   async removeFriend(userId: number, friendId: number) {
     // TODO: Remove this and use friendId instead and check what is the best way to handle this
-    const friend = await this.prisma.user.findUnique({
+    const friend = await this.prisma.user.findUniqueOrThrow({
       where: { id: friendId },
     });
 
