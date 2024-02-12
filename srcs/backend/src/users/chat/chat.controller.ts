@@ -457,8 +457,16 @@ export class ChatController {
     return newChat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unmute')
+  @Roles(Role.OWNER, Role.ADMIN)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Unmute a user from chat' })
   async unmute(
     @Param('id', ParseIntPipe)
     id: number,
