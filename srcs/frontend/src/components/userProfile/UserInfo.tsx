@@ -53,7 +53,7 @@ const UserInfo: React.FC<User> = ({
               <div className="self-center">
                 <Stats />
               </div>
-              <div className="self-center">
+              <div className="self-center z-10">
                 <Contacts
                   username={username}
                   me={me}
