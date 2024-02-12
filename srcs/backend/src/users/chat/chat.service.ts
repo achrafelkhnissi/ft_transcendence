@@ -632,4 +632,8 @@ export class ChatService {
 
     return this.removeParticipant(chatId, userId);
   }
+
+  async getMutedUsers() {
+    return this.prismaService.mute.findMany();
+  }
 }

@@ -10,6 +10,7 @@ import {
   Res,
   ForbiddenException,
   ParseIntPipe,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -44,11 +45,50 @@ import { MuteDto } from './dto/mute.dto';
 @UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 @Controller()
-export class ChatController {
+export class ChatController implements OnModuleInit {
   constructor(
     private readonly chatService: ChatService,
     private readonly gateway: Gateway,
   ) {}
+
+  async onModuleInit() {
+    const mutedUsers = await this.chatService.getMutedUsers();
+
+    mutedUsers.forEach((mutedUser) => {
+      const { userId, conversationId, duration, createdAt } = mutedUser;
+
+      const time = new Date(createdAt).getTime();
+      const currentTime = new Date().getTime();
+      const difference = currentTime - time;
+      let timeLeft = 0;
+
+      switch (duration) {
+        case MuteDuration.MINUTE:
+          timeLeft = 60000 - difference;
+          break;
+        case MuteDuration.HOUR:
+          timeLeft = 3600000 - difference;
+          break;
+        case MuteDuration.DAY:
+          timeLeft = 86400000 - difference;
+          break;
+      }
+
+      if (timeLeft > 0) {
+        setTimeout(async () => {
+          const chat = await this.chatService.unmute(conversationId, userId);
+
+          if (chat) {
+            this.gateway.server.to(chat.name).emit('action', {
+              action: 'unmute',
+              user: userId,
+              data: chat,
+            });
+          }
+        }, timeLeft);
+      }
+    });
+  }
 
   @ApiBody({ type: CreateChatDto })
   @ApiCreatedResponse({ description: 'Chat created' })
