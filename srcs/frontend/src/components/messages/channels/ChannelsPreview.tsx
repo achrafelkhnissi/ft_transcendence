@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ConversationsMap, User, UserStatuses } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
 import CreateChannel from './CreateChannel';
@@ -39,9 +40,11 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
         if (isChannel(conversationsMap[id].type)) {
           const channel = conversationsMap[id];
           const lastMessage =
-            conversationsMap[id].messages[
-              conversationsMap[id].messages.length - 1
-            ];
+            conversationsMap[id].messages.length > 0
+              ? conversationsMap[id].messages[
+                  conversationsMap[id].messages?.length - 1
+                ]
+              : null;
 
           return (
             <div

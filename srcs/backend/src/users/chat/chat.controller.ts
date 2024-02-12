@@ -91,7 +91,7 @@ export class ChatController {
       });
       this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
       this.gateway.server.to(chat.name).emit('action', {
-        action: 'create',
+        action: 'add',
         user: user.id,
         data: chat,
       });
@@ -416,7 +416,7 @@ export class ChatController {
     return this.chatService.getUserChats(id);
   }
 
-  @Get('names')
+  @Get('channel-names')
   getChatNames() {
     console.log('Getting chat names in ChatController');
     return this.chatService.getChatNames();

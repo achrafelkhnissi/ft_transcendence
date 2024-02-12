@@ -57,7 +57,7 @@
     "twilio": "^3.40.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.1.0",
+    "@faker-js/faker": "^8.4.1",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

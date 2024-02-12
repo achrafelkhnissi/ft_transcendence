@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoIosAddCircle } from 'react-icons/io';
 import { IoAdd } from 'react-icons/io5';
@@ -47,7 +48,7 @@ const fileErrorMessage = {
 const channelNameErrorMessage = {
   0: 'valid',
   1: 'Channel name already exists! Please choose another one.',
-  2: 'Entry must be 8+ lowercase letters and may include one mid-string hyphen.',
+  2: 'Entry must be 6+ lowercase letters and may include one mid-string hyphen.',
 };
 
 const newMemberError = {
@@ -130,7 +131,7 @@ const CreateChannel: React.FC<props> = ({
   };
 
   const isValidChannelName = (name: string) => {
-    const regex = /^(?=[a-z-]{5,}$)[a-z]+(?:-[a-z]+)?$/;
+    const regex = /^(?=[a-z-]{6,}$)[a-z]+(?:-[a-z]+)?$/;
 
     if (channelNames?.some((str) => str === name)) {
       setChannelNameError(1);
@@ -244,37 +245,19 @@ const CreateChannel: React.FC<props> = ({
           updateCreateChannelState(false);
         }
       }
-      // socket?.emit(
-      //   'createRoom',
-      //   {
-      //     type: newChannel.type,
-      //     image: newChannel.image,
-      //     name: newChannel.name,
-      //     password: hashedpass,
-      //     participants: newChannel.participants,
-      //   },
-      //   (res: number) => {
-      //     toast.success('Channel created successfully!');
-      //     updateConversations(res);
-      //   },
-      // );
 
-      const { data } = await axios.post(
-        process.env.BACKEND + '/api/users/chat',
-        {
-          type: newChannel.type,
-          image: newChannel.image,
-          name: newChannel.name,
-          password: hashedpass,
-          participants: newChannel.participants,
-        },
-        { withCredentials: true },
-      );
-
-      if (data) {
-        toast.success('Channel created successfully!');
-        updateConversations(data.id);
-      }
+      createNewConv({
+        type: newChannel.type,
+        image: newChannel.image,
+        name: newChannel.name,
+        password: hashedpass,
+        participants: newChannel.participants,
+      }).then((res) => {
+        if (res) {
+          toast.success('Channel created successfully!');
+          // updateConversations(data.id);
+        }
+      });
 
       setTimeout(() => {
         updateCreateChannelState(false);

@@ -24,6 +24,7 @@ const newMemberError = {
   0: 'valid',
   1: 'user already exist!',
   2: 'invalid user!',
+  4: 'banned user!',
 };
 
 const ChannelInfo: React.FC<ChannelInfoProps> = ({
@@ -41,7 +42,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
         ? 'admin'
         : '';
   const [newMember, setNewMember] = useState<string>('');
-  const [memberError, setMemeberError] = useState<0 | 1 | 2>(0);
+  const [memberError, setMemeberError] = useState<0 | 1 | 2 | 4>(0);
   const [channelType, setChannelType] = useState<string>(channel.type);
   const [password, setPassword] = useState<string>('');
   const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
@@ -52,16 +53,21 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
         if (res) {
           if (
             channel.participants.every((obj) => obj.id != res.id) &&
-            channel.admins.every((obj) => obj != res.id) &&
+            channel.admins.every((obj) => obj.id != res.id) &&
             channel.owner.id != res.id
           ) {
             addNewMember(res.id, channel.id).then((res) => {
               if (res) {
-                updateConversations(res);
+                // updateConversations(res);
+                console.log('channel info add member');
+                
               }
             });
             setMemeberError(0);
-          } else {
+          } else if(channel.bannedUsers.some(user => user.id == res.id)) {
+            setMemeberError(4);
+          }
+           else {
             setMemeberError(1);
           }
         } else {

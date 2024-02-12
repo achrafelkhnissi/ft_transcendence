@@ -65,6 +65,7 @@ export class ChatService {
 
     return this.prismaService.conversation.create({
       data,
+      select: conversationSelect,
     });
   }
 
@@ -324,18 +325,17 @@ export class ChatService {
   }
 
   async getChatNames() {
-    return this.prismaService.conversation
-      .findMany({
-        // where: {
-        //   type: {
-        //     not: ConversationType.DM,
-        //   },
-        // },
-        select: {
-          name: true,
+    return this.prismaService.conversation.findMany({
+      where: {
+        type: {
+          not: ConversationType.DM,
         },
-      })
-      .then((chats) => chats.map((chat) => chat.name));
+      },
+      select: {
+        name: true,
+      },
+    });
+    // .then((chats) => chats.map((chat) => chat.name));
   }
 
   getAvatar(id: number) {
