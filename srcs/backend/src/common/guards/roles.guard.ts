@@ -15,6 +15,11 @@ interface RoleCondition {
       id: number;
     };
   };
+  participants?: {
+    some: {
+      id: number;
+    };
+  };
 }
 
 @Injectable()
@@ -45,6 +50,16 @@ export class RolesGuard implements CanActivate {
     if (roles.includes('admin')) {
       conditions.push({
         admins: {
+          some: {
+            id: request.user.id,
+          },
+        },
+      });
+    }
+
+    if (roles.includes('user')) {
+      conditions.push({
+        participants: {
           some: {
             id: request.user.id,
           },

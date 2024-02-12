@@ -300,8 +300,16 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Remove an admin from chat' })
   @Delete(':id/admins/remove')
+  @Roles(Role.OWNER, Role.ADMIN)
   async removeAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
@@ -321,6 +329,11 @@ export class ChatController {
   }
 
   @Post(':id/leave')
+  @Roles(Role.OWNER, Role.ADMIN, Role.USER)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Leave a chat' })
   async leaveChat(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserType,
