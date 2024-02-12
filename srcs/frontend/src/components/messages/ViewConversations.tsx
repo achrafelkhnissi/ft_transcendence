@@ -4,7 +4,7 @@ import Emoji from '../svgAssets/Emoji';
 import GameInvitation from '../svgAssets/GameInvitation';
 import SendMessage from '../svgAssets/SendMessage';
 import MessageContainer from './dm/MessageContainer';
-import { UserStatuses, ConversationsMap, User, Message } from './data';
+import { UserStatuses, ConversationsMap, User, Message, Mute } from './data';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { useSocket } from '@/contexts/socketContext';
 import ConversationHeader from './dm/ConversationHeader';
@@ -13,6 +13,8 @@ import ChannelMessageContainer from './channels/ChannelMessageContainer';
 import { IoIosArrowBack } from 'react-icons/io';
 import ChannelInfo from './channels/ChannelInfo';
 import axios from 'axios';
+import checkIfMuted from './tools/chaeckIfMuted';
+import unmuteUser from '@/services/unmuteUser';
 
 interface ViewConversationsProps {
   conversationId: number;
@@ -41,6 +43,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   const [newMessage, setNewMessage] = useState<string>('');
   const [showChannelInfo, setShowChannelInfo] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   const handleEmojiSelect = (
     emojiObject: EmojiClickData,
@@ -63,6 +66,31 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (
+      conversationId >= 0 &&
+      conversationsMap.hasOwnProperty(conversationId) &&
+      conversationsMap[conversationId].type != 'DM'
+    ) {
+      const muteObject = conversationsMap[conversationId]?.mutedUsers?.filter(
+        (mute) => mute.user.id === currentUser?.id,
+      )[0];
+      if (muteObject !== undefined) {
+        let res = checkIfMuted(muteObject);
+        if (res) {
+          setIsMuted(true);
+        } else {
+          unmuteUser(currentUser?.id, conversationId).then((res) => {
+            if (res) {
+              console.log('unmute', res);
+            }
+          });
+          setIsMuted(false);
+        }
+      } else setIsMuted(false);
+    }
+  }, [conversationId, conversationsMap, currentUser?.id]);
 
   let receiver: User = {
     username: '',
@@ -88,17 +116,6 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     const onlySpacesRegex = /^\s*$/;
 
     if (!onlySpacesRegex.test(newMessage)) {
-      // socket?.emit(
-      //   'message',
-      //   {
-      //     content: newMessage,
-      //     conversationId: Number(conversationId),
-      //     room: conversationsMap[conversationId].name,
-      //   },
-      //   () => {
-      //     console.log('message sent ');
-      //   },
-      // );
       const { data } = await axios.post(
         process.env.BACKEND + '/api/message', // TODO: Change this to /api/users/chat/message
         {
@@ -189,10 +206,11 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
               className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
                             bg-[#59598E4A] flex text-sm"
             >
-              <div
-                className="self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
+              <button
+                className={`self-center pl-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative ${isMuted && 'cursor-not-allowed'} `}
                 onClick={toggleEmojiPicker}
+                disabled={isMuted}
               >
                 <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
                 <div className="absolute bottom-10 left-0 ">
@@ -203,26 +221,30 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                     />
                   )}
                 </div>
-              </div>
+              </button>
               <div className="w-full h-full flex py-2">
                 <textarea
+                  disabled={isMuted}
                   name="message"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="bg-transparent w-full h-full outline-none px-6
-                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm "
                   placeholder="Type a message here..."
+                  className={`bg-transparent w-full h-full outline-none px-6
+                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm 
+                  ${isMuted && 'cursor-not-allowed'} `}
                 />
               </div>
-              <div
-                className="self-center pr-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
+              <button
+                className={`self-center pr-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]
+                ${isMuted && 'cursor-not-allowed'} `}
                 onClick={() => {
                   handleSend();
                 }}
+                disabled={isMuted}
               >
                 <SendMessage color={'#20204A'} width={'29px'} height={'29px'} />
-              </div>
+              </button>
             </div>
           </>
         )}

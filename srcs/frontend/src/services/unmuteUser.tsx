@@ -9,7 +9,7 @@ const unmuteUser = async (userId: number | undefined , channelId: number) => {
         );
         return data;
       } catch (error) {
-        console.log('Error adding member:', error);
+        console.log('Error muting member:', error);
         return null;
       }
 }

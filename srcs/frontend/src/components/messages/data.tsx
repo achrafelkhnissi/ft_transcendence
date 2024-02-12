@@ -18,7 +18,7 @@ export interface Message {
 
 export interface Mute {
   user: User;
-  duration: 'HOUR' | 'DAY' | 'WEEK' ;
+  duration: 'HOUR' | 'DAY' | 'MINUTE' ;
   createdAt: string;
 }
 

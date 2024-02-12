@@ -458,7 +458,7 @@ export class ChatController {
   }
 
   @Post(':id/unmute')
-  @Roles(Role.OWNER, Role.ADMIN)
+  @Roles(Role.OWNER, Role.ADMIN, Role.USER) // USER for auto-unmute
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
