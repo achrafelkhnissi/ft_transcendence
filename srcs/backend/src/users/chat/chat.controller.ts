@@ -37,7 +37,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
 import { ConversationType, MuteDuration } from '@prisma/client';
 import { Gateway } from 'src/gateway/gateway';
-import Api from 'twilio/lib/rest/Api';
 import { MuteDto } from './dto/mute.dto';
 
 @ApiTags('chat')
@@ -54,39 +53,8 @@ export class ChatController implements OnModuleInit {
   async onModuleInit() {
     const mutedUsers = await this.chatService.getMutedUsers();
 
-    mutedUsers.forEach((mutedUser) => {
-      const { userId, conversationId, duration, createdAt } = mutedUser;
-
-      const time = new Date(createdAt).getTime();
-      const currentTime = new Date().getTime();
-      const difference = currentTime - time;
-      let timeLeft = 0;
-
-      switch (duration) {
-        case MuteDuration.MINUTE:
-          timeLeft = 60000 - difference;
-          break;
-        case MuteDuration.HOUR:
-          timeLeft = 3600000 - difference;
-          break;
-        case MuteDuration.DAY:
-          timeLeft = 86400000 - difference;
-          break;
-      }
-
-      if (timeLeft > 0) {
-        setTimeout(async () => {
-          const chat = await this.chatService.unmute(conversationId, userId);
-
-          if (chat) {
-            this.gateway.server.to(chat.name).emit('action', {
-              action: 'unmute',
-              user: userId,
-              data: chat,
-            });
-          }
-        }, timeLeft);
-      }
+    mutedUsers.forEach(async (mutedUser) => {
+      await this.chatService.setMuteTimeout(mutedUser);
     });
   }
 
@@ -491,6 +459,14 @@ export class ChatController implements OnModuleInit {
         action: 'mute',
         user: userId,
         data: newChat,
+      });
+
+      const mutedUser = newChat.mutedUsers.find((m) => m.user.id === +userId);
+      await this.chatService.setMuteTimeout({
+        conversationId: +id,
+        userId: +userId,
+        duration,
+        createdAt: mutedUser.createdAt,
       });
     }
 

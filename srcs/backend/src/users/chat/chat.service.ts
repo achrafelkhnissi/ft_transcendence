@@ -636,4 +636,45 @@ export class ChatService {
   async getMutedUsers() {
     return this.prismaService.mute.findMany();
   }
+
+  async setMuteTimeout(mutedUser: {
+    createdAt: Date;
+    userId: number;
+    conversationId: number;
+    duration: MuteDuration;
+  }) {
+    const { userId, conversationId, duration, createdAt } = mutedUser;
+
+    const time = new Date(createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const difference = currentTime - time;
+    let timeLeft = 0;
+    // const duration = data.duration * 60000;
+
+    switch (duration) {
+      case MuteDuration.MINUTE:
+        timeLeft = 60000 - difference;
+        break;
+      case MuteDuration.HOUR:
+        timeLeft = 3600000 - difference;
+        break;
+      case MuteDuration.DAY:
+        timeLeft = 86400000 - difference;
+        break;
+    }
+
+    if (timeLeft > 0) {
+      setTimeout(async () => {
+        const chat = await this.unmute(conversationId, userId);
+
+        if (chat) {
+          this.gateway.server.to(chat.name).emit('action', {
+            action: 'unmute',
+            user: userId,
+            data: chat,
+          });
+        }
+      }, timeLeft);
+    }
+  }
 }
