@@ -85,12 +85,17 @@ const Home = ({ params }: { params: { id: number } }) => {
         console.log('message', message);
         addMessageToConversation(message);
       });
+
+      socket.on('action', (data: any) => {
+        console.log('action', data);
+      });
     }
 
     return () => {
       if (socket) {
         socket.off('connect');
         socket.off('onMessage');
+        socket.off('action');
       }
     };
   }, [socket, conversations]);

@@ -88,9 +88,13 @@ export class ChatController {
       participants.forEach((id) => {
         const userRoomName = `user-${id}`;
         this.gateway.server.to(userRoomName).socketsJoin(chat.name);
-        this.gateway.server.to(userRoomName).emit('onNotification', chat);
       });
       this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'create',
+        user: `user-${user.id}`,
+        data: chat,
+      });
     }
 
     return chat;
@@ -116,11 +120,22 @@ export class ChatController {
   @ApiOperation({ summary: 'Update a chat' })
   @Roles(Role.OWNER)
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateChatDto: UpdateChatDto,
+    @User() user: UserType,
   ) {
-    return this.chatService.update(+id, updateChatDto);
+    const chat = await this.chatService.update(+id, updateChatDto);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'update',
+        user: user.id,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
@@ -128,8 +143,18 @@ export class ChatController {
   @ApiOperation({ summary: 'Remove a chat' })
   @Roles(Role.OWNER)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.chatService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    const chat = await this.chatService.remove(+id);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'delete',
+        user: chat.ownerId,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   // TODO: Test this
@@ -148,6 +173,11 @@ export class ChatController {
 
     if (chat) {
       this.gateway.server.to(`user-${userId}`).socketsJoin(chat.name);
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'add',
+        user: userId,
+        data: chat,
+      });
     }
 
     return chat;
@@ -162,6 +192,11 @@ export class ChatController {
     const chat = await this.chatService.removeParticipant(+id, +userId);
 
     if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'remove',
+        user: userId,
+        data: chat,
+      });
       this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
     }
 
@@ -170,20 +205,40 @@ export class ChatController {
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/admins/add')
-  addAdmin(
+  async addAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.chatService.addAdmin(+id, +userId);
+    const chat = await this.chatService.addAdmin(+id, +userId);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'add',
+        user: userId,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/admins/remove')
-  removeAdmin(
+  async removeAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.chatService.removeAdmin(+id, +userId);
+    const chat = await this.chatService.removeAdmin(+id, +userId);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'remove',
+        user: userId,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   @Post(':id/leave')
@@ -195,6 +250,11 @@ export class ChatController {
 
     if (chat) {
       this.gateway.server.to(`user-${user.id}`).socketsLeave(chat.name);
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'leave',
+        user: user.id,
+        data: chat,
+      });
     }
 
     return chat;
@@ -217,15 +277,37 @@ export class ChatController {
       return this.chatService.ban(+id, +userId, Role.ADMIN);
     }
 
-    this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
+    const newChat = await this.chatService.ban(+id, +userId, Role.USER);
 
-    return this.chatService.ban(+id, +userId, Role.USER);
+    if (newChat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'ban',
+        user: userId,
+        data: chat,
+      });
+      this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
+    }
+
+    return newChat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unban')
-  unban(@Param('id', ParseIntPipe) id: number, @Body('userId') userId: string) {
-    return this.chatService.unban(+id, +userId);
+  async unban(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId') userId: string,
+  ) {
+    const chat = await this.chatService.unban(+id, +userId);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'unban',
+        user: userId,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
@@ -241,17 +323,37 @@ export class ChatController {
       throw new ForbiddenException('You cannot mute the owner of the chat');
     }
 
-    return this.chatService.mute(+id, +userId, +duration);
+    const newChat = await this.chatService.mute(+id, +userId, +duration);
+
+    if (newChat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'mute',
+        user: userId,
+        data: chat,
+      });
+    }
+
+    return newChat;
   }
 
   @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/unmute')
-  unmute(
+  async unmute(
     @Param('id', ParseIntPipe)
     id: number,
     @Body('userId', ParseIntPipe) userId: number,
   ) {
-    return this.chatService.unmute(id, userId);
+    const chat = await this.chatService.unmute(id, userId);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'unmute',
+        user: userId,
+        data: chat,
+      });
+    }
+
+    return chat;
   }
 
   @Get(':id/muted')

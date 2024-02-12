@@ -593,22 +593,36 @@ export class ChatService {
   }
 
   async mute(chatId: number, userId: number, duration: number) {
-    return this.prismaService.mute.create({
+    const muted = await this.prismaService.mute.create({
       data: {
         userId: userId,
         conversationId: chatId,
         duration,
       },
     });
+
+    if (muted) {
+      return await this.prismaService.conversation.findUnique({
+        where: { id: chatId },
+        select: conversationSelect,
+      });
+    }
   }
 
   async unmute(chatId: number, userId: number) {
-    return this.prismaService.mute.deleteMany({
+    const deleted = await this.prismaService.mute.deleteMany({
       where: {
         userId,
         conversationId: chatId,
       },
     });
+
+    if (deleted) {
+      return await this.prismaService.conversation.findUnique({
+        where: { id: chatId },
+        select: conversationSelect,
+      });
+    }
   }
 
   async findMuted(chatId: number) {
