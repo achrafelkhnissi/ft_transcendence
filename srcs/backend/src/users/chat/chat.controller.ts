@@ -486,11 +486,19 @@ export class ChatController {
   }
 
   @Get(':id/muted')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ type: [MuteDto] })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Find muted users' })
   findMuted(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.findMuted(+id);
   }
 
   @Get(':id/avatar')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiOkResponse({ description: 'Chat avatar', type: 'image' })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Get chat avatar' })
   async getAvatar(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const avatar = await this.chatService.getAvatar(+id);
 
@@ -522,6 +530,9 @@ export class ChatController {
   // }
 
   @Get(':id/chats')
+  @ApiParam({ description: 'User id', name: 'id', type: Number })
+  @ApiOkResponse({ type: [ConversationDto] })
+  @ApiOperation({ summary: 'Get user chats' })
   getUserChats(@Param('id', ParseIntPipe) id: number) {
     return this.chatService.getUserChats(id);
   }
