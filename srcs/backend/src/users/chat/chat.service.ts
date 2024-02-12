@@ -397,7 +397,6 @@ export class ChatService {
         ? chat.admins[0]?.id
         : chat.participants[0]?.id;
 
-      // If admins & participants is empty remove chat
       if (!newOwner) {
         this.remove(chatId);
       }
@@ -405,21 +404,11 @@ export class ChatService {
       return this.replaceOwner(chatId, newOwner);
     }
 
-    if (chat.admins.some((admin) => admin.id === userId)) {
-      return this.removeAdmin(chatId, userId);
-    }
-
-    return this.removeParticipant(chatId, userId);
+    return this.removeUser(chatId, userId);
   }
 
   async replaceOwner(chatId: number, newOwnerId: number) {
-    if (newOwnerId === null) {
-      return this.prismaService.conversation.delete({
-        where: {
-          id: chatId,
-        },
-      });
-    }
+    await this.removeUser(chatId, newOwnerId);
 
     return this.prismaService.conversation.update({
       where: {
