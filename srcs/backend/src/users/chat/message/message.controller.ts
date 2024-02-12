@@ -5,7 +5,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { MessageService } from './message.service';
 import { User } from 'src/common/decorators/user.decorator';
@@ -22,6 +28,13 @@ export class MessageController {
   ) {}
 
   @Post()
+  @ApiBody({ type: CreateMessageDto })
+  @ApiCreatedResponse({
+    description: 'The message has been successfully created.',
+    type: CreateMessageDto,
+  })
+  @ApiBadRequestResponse({ description: 'Bad request.' })
+  @ApiOperation({ summary: 'Create a new message.' })
   async create(
     @User('id', ParseIntPipe) userId: number,
     @Body() message: CreateMessageDto,
