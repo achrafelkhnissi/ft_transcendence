@@ -417,6 +417,7 @@ export class ChatService {
       data: {
         ownerId: newOwnerId,
       },
+      select: conversationSelect,
     });
   }
 
