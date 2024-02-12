@@ -9,6 +9,7 @@ import { TbHammer } from 'react-icons/tb';
 import banUser from '@/services/banUser';
 import { TbHammerOff } from 'react-icons/tb';
 import unbanUser from '@/services/unbanUser';
+import removeAdmin from '@/services/removeAdmin';
 
 interface MemberProps {
   id: number | undefined;
@@ -39,7 +40,7 @@ const Member: React.FC<MemberProps> = ({
   const [banHover, setBanHover] = useState<boolean>(false);
 
   const handleKickUser = () => {
-    kickUser(id, channelId, role).then((res) => {
+    kickUser(id, channelId).then((res) => {
       if (res) {
         updateConversations(res);
       }
@@ -48,7 +49,7 @@ const Member: React.FC<MemberProps> = ({
 
   const handleAdmin = () => {
     if (role == 'admin') {
-      kickUser(id, channelId, role).then((res) => {
+      removeAdmin(id, channelId).then((res) => {
         if (res) {
           updateConversations(res);
         }

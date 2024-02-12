@@ -186,16 +186,21 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       socket.on('action', (res: actionData) => {
         console.log('action', res);
-        switch(res.action){
-          case 'add': {
+        switch (res.action) {
+          case 'add':
+          case 'remove-admin':
+          case 'add-admin':
+          case 'mute':
+          case 'unmute':
+          {
             uppdateConversations(res.data);
             break;
           }
-          case 'remove': {
-            if(res.user == currentUser?.id)
-              removeConversation(res.data.id);
-            else
-              uppdateConversations(res.data);
+          case 'leave':
+          case 'remove':
+          case 'ban': {
+            if (res.user == currentUser?.id) removeConversation(res.data.id);
+            else uppdateConversations(res.data);
             break;
           }
         }

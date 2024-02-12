@@ -3,7 +3,7 @@ import axios from 'axios';
 async function getAllChannelNames() {
   try {
     const { data } = await axios.get(
-      process.env.BACKEND + `/api/users/chat/channel-names`,
+      process.env.BACKEND + `/api/users/chat/names`,
       { withCredentials: true },
     );
     return data;

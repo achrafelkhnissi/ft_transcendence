@@ -58,9 +58,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
           ) {
             addNewMember(res.id, channel.id).then((res) => {
               if (res) {
-                // updateConversations(res);
-                console.log('channel info add member');
-                
+                // updateConversations(res);                
               }
             });
             setMemeberError(0);
@@ -84,7 +82,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const handleLeaveChannel = () => {
     leaveChannel(channel.id, currentUser?.id).then((res) => {
       if (res) {
-        removeConversation(channel.id);
+        // removeConversation(channel.id);
       }
     });
   };

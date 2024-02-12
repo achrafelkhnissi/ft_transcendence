@@ -285,6 +285,7 @@ export class ChatController {
         user: userId,
         data: chat,
       });
+      this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
     }
 
     return chat;
@@ -298,12 +299,12 @@ export class ChatController {
     const chat = await this.chatService.leaveChat(+id, user.id);
 
     if (chat) {
-      this.gateway.server.to(`user-${user.id}`).socketsLeave(chat.name);
       this.gateway.server.to(chat.name).emit('action', {
         action: 'leave',
         user: user.id,
         data: chat,
       });
+      this.gateway.server.to(`user-${user.id}`).socketsLeave(chat.name);
     }
 
     return chat;

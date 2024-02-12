@@ -5,8 +5,6 @@ async function getConversations(id?: number) {
     const { data } = await axios.get(process.env.BACKEND + `/api/users/chat`, {
       withCredentials: true,
     });
-    console.log('w7da1')
-    console.log({ data });
     return data;
   } else {
     const { data } = await axios.get(
@@ -15,7 +13,6 @@ async function getConversations(id?: number) {
         withCredentials: true,
       },
     );
-    console.log('w7da2')
     console.log({ data });
     return data;
   }
