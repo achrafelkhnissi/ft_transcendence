@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -51,15 +52,21 @@ export class RolesGuard implements CanActivate {
       });
     }
 
-    const isAllowed = await this.prisma.conversation
-      .findFirst({
-        where: {
-          id: channelId,
-          OR: conditions,
-        },
-      })
-      .then((channel) => (channel ? true : false));
+    let isAllowed = false;
 
-    return isAllowed;
+    try {
+      isAllowed = await this.prisma.conversation
+        .findFirstOrThrow({
+          where: {
+            id: channelId,
+            OR: conditions,
+          },
+        })
+        .then((channel) => (channel ? true : false));
+
+      return isAllowed;
+    } catch (e) {
+      throw new NotFoundException('Channel not found');
+    }
   }
 }
