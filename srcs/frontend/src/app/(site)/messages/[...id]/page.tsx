@@ -9,6 +9,7 @@ import {
   Conversation,
   ConversationsMap,
   User,
+  actionData,
 } from '../../../../components/messages/data';
 import getConversations from '@/services/getConversations';
 import getCurrentUser from '@/services/getCurrentUser';
@@ -26,14 +27,111 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [showConversation, setShowConversation] = useState<boolean>(false);
   const { socket } = useSocket();
 
+  const markLastMessageAsRead = (conversationId: number) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = { ...prevConversations };
+      const conversation = updatedConversations[conversationId];
+
+      if (conversation && conversation.messages.length > 0) {
+        const lastMessageIndex = conversation.messages.length - 1;
+        conversation.messages[lastMessageIndex] = {
+          ...conversation.messages[lastMessageIndex],
+          isRead: true,
+        };
+      }
+
+      return updatedConversations;
+    });
+  };
+
+  const addConversation = (id: number) => {
+    getConversations(id).then((res) => {
+      setConversations((prev) => {
+        return {
+          ...prev,
+          [id]: res,
+        };
+      });
+      setConversationOrder((prev) => {
+        return [id, ...prev];
+      });
+    });
+  };
+
+  const removeConversation = (id: number) => {
+    setConversations((prev) => {
+      const updatedConversations = { ...prev };
+      delete updatedConversations[id];
+      return updatedConversations;
+    });
+    setConversationOrder((prev) => prev.filter((convoId) => convoId != id));
+  };
+
+  const addAdminToConversation = (conversationId: number, user: User) => {
+    setConversations((prevConversations) => {
+      const updatedConversations = { ...prevConversations };
+      const conversation = updatedConversations[conversationId];
+
+      if (conversation) {
+        conversation.admins.push(user);
+      }
+
+      return updatedConversations;
+    });
+  };
+
+  const updateUserStatus = (userId: string, status: string) => {
+    setUserStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [userId]: status,
+    }));
+  };
+
+  const uppdateConversations = (newConversation: Conversation) => {
+    setConversations((prev) => {
+      return {
+        ...prev,
+        [newConversation.id]: newConversation,
+      };
+    });
+    setConversationOrder((prevOrder) => {
+      return [
+        newConversation.id,
+        ...prevOrder.filter((id) => id != newConversation.id),
+      ];
+    });
+  };
+
+  //  initialize conversations
   useEffect(() => {
+    const initializeConversations = (initialConversations: Conversation[]) => {
+      const sortedConversations = initialConversations.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+
+      const initialOrder = sortedConversations.map((convo) => convo.id);
+      const initialConversationsMap =
+        initialConversations.reduce<ConversationsMap>((acc, convo) => {
+          acc[convo.id] = convo;
+          return acc;
+        }, {});
+
+      setConversationOrder(initialOrder);
+      setConversations(initialConversationsMap);
+      if (params.id > 0) {
+        //check if the convo deos not exist
+        setSelectedConversationId(params.id);
+      }
+    };
+
     getConversations().then((res) => {
       initializeConversations(res);
     });
     getCurrentUser().then((res) => {
       setCurrentUser(res);
     });
-  }, []);
+  }, [params.id]);
 
   // socket
   useEffect(() => {
@@ -86,8 +184,21 @@ const Home = ({ params }: { params: { id: number } }) => {
         addMessageToConversation(message);
       });
 
-      socket.on('action', (data: any) => {
-        console.log('action', data);
+      socket.on('action', (res: actionData) => {
+        console.log('action', res);
+        switch(res.action){
+          case 'add': {
+            uppdateConversations(res.data);
+            break;
+          }
+          case 'remove': {
+            if(res.user == currentUser?.id)
+              removeConversation(res.data.id);
+            else
+              uppdateConversations(res.data);
+            break;
+          }
+        }
       });
     }
 
@@ -98,99 +209,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         socket.off('action');
       }
     };
-  }, [socket, conversations]);
-
-  const initializeConversations = (initialConversations: Conversation[]) => {
-    const sortedConversations = initialConversations.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
-
-    const initialOrder = sortedConversations.map((convo) => convo.id);
-    const initialConversationsMap =
-      initialConversations.reduce<ConversationsMap>((acc, convo) => {
-        acc[convo.id] = convo;
-        return acc;
-      }, {});
-
-    setConversationOrder(initialOrder);
-    setConversations(initialConversationsMap);
-    if (params.id > 0) {
-      //check if the convo deos not exist
-      setSelectedConversationId(params.id);
-    }
-  };
-
-  const markLastMessageAsRead = (conversationId: number) => {
-    setConversations((prevConversations) => {
-      const updatedConversations = { ...prevConversations };
-      const conversation = updatedConversations[conversationId];
-
-      if (conversation && conversation.messages.length > 0) {
-        const lastMessageIndex = conversation.messages.length - 1;
-        conversation.messages[lastMessageIndex] = {
-          ...conversation.messages[lastMessageIndex],
-          isRead: true,
-        };
-      }
-
-      return updatedConversations;
-    });
-  };
-
-  const uppdateConversations = (newConversations: Conversation) => {
-    if (conversations.hasOwnProperty(newConversations.id)) {
-      setConversations((prev) => {
-        return {
-          ...prev,
-          [newConversations.id]: newConversations,
-        };
-      });
-    }
-  };
-
-  const addConversation = (id: number) => {
-    getConversations(id).then((res) => {
-      setConversations((prev) => {
-        return {
-          ...prev,
-          [id]: res,
-        };
-      });
-      setConversationOrder((prev) => {
-        return [id, ...prev];
-      });
-    });
-  };
-
-  const removeConversation = (id: number) => {
-    setConversations((prev) => {
-      const updatedConversations = { ...prev };
-      delete updatedConversations[id];
-      return updatedConversations;
-    });
-    setConversationOrder((prev) => prev.filter((convoId) => convoId != id));
-  };
-
-  const addAdminToConversation = (conversationId: number, user: User) => {
-    setConversations((prevConversations) => {
-      const updatedConversations = { ...prevConversations };
-      const conversation = updatedConversations[conversationId];
-
-      if (conversation) {
-        conversation.admins.push(user);
-      }
-
-      return updatedConversations;
-    });
-  };
-
-  const updateUserStatus = (userId: string, status: string) => {
-    setUserStatuses((prevStatuses) => ({
-      ...prevStatuses,
-      [userId]: status,
-    }));
-  };
+  }, [socket, conversations, currentUser]);
 
   return (
     <div

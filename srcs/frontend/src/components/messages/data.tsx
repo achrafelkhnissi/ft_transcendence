@@ -35,6 +35,11 @@ export type ConversationsMap = {
   [key: number]: Conversation;
 };
 
+export interface actionData {
+  action: string;
+  user: number;
+  data: Conversation;
+}
 // export const messagesProps : Message[] = [
 //     {
 //         id: 0,

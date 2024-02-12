@@ -65,6 +65,7 @@ export class ChatService {
 
     return this.prismaService.conversation.create({
       data,
+      select: conversationSelect,
     });
   }
 

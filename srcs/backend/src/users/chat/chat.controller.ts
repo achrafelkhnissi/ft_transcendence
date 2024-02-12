@@ -80,7 +80,7 @@ export class ChatController {
       });
       this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
       this.gateway.server.to(chat.name).emit('action', {
-        action: 'create',
+        action: 'add',
         user: user.id,
         data: chat,
       });

@@ -34,9 +34,11 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
       {orderedConversations.map((id) => {
         if (conversationsMap[id].type === 'DM') {
           const lastMessage =
-            conversationsMap[id].messages[
-              conversationsMap[id].messages.length - 1
-            ];
+            conversationsMap[id].messages.length > 0
+              ? conversationsMap[id].messages[
+                  conversationsMap[id].messages?.length - 1
+                ]
+              : null;
           const friend: User =
             conversationsMap[id].participants[0].id === currentUser?.id
               ? conversationsMap[id].participants[1]
@@ -52,10 +54,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
             >
               <div className="self-center ">
                 <img
-                  src={
-                    process.env.BACKEND +
-                    `/api/users/${friend?.id}/avatar`
-                  }
+                  src={process.env.BACKEND + `/api/users/${friend?.id}/avatar`}
                   alt=""
                   width={100}
                   height={100}
