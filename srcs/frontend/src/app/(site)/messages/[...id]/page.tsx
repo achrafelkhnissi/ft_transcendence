@@ -163,12 +163,12 @@ const Home = ({ params }: { params: { id: number } }) => {
     };
 
     if (socket) {
-    //   socket.on('connect', () => {
-    //     console.log({
-    //       message: 'from messages Connected to socket server',
-    //       socketId: socket.id,
-    //     });
-    //   });
+      //   socket.on('connect', () => {
+      //     console.log({
+      //       message: 'from messages Connected to socket server',
+      //       socketId: socket.id,
+      //     });
+      //   });
 
       // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
       socket.on('unauthorized', (error) => {
@@ -191,7 +191,8 @@ const Home = ({ params }: { params: { id: number } }) => {
           case 'remove-admin':
           case 'add-admin':
           case 'mute':
-          case 'unmute': {
+          case 'unmute':
+          case 'unban': {
             uppdateConversations(res.data);
             break;
           }
@@ -201,7 +202,9 @@ const Home = ({ params }: { params: { id: number } }) => {
             if (res.user == currentUser?.id) {
               removeConversation(res.data.id);
               setShowConversation(false);
-            } else uppdateConversations(res.data);
+            } else {
+              uppdateConversations(res.data);
+            }
             break;
           }
         }
