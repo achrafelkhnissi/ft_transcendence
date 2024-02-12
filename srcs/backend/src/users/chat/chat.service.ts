@@ -31,17 +31,6 @@ export class ChatService {
   async create(createChatDto: CreateChatDto) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
 
-    const chat: Conversation =
-      await this.prismaService.conversation.findUniqueOrThrow({
-        where: {
-          name: createChatDto.name,
-        },
-      });
-
-    if (chat) {
-      return chat;
-    }
-
     const data: ChatData = {
       type: createChatDto.type,
       name: createChatDto.name,

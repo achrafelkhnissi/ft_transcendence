@@ -21,6 +21,7 @@ import { Response } from 'express';
 import {
   ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -49,6 +50,7 @@ export class ChatController {
 
   @ApiBody({ type: CreateChatDto })
   @ApiCreatedResponse({ description: 'Chat created' })
+  @ApiConflictResponse({ description: 'Conflict' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Create a chat' })
   @Post()
