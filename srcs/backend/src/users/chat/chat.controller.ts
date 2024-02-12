@@ -37,6 +37,7 @@ import { ConversationDto } from './dto/chat.dto';
 import { ConversationType, MuteDuration } from '@prisma/client';
 import { Gateway } from 'src/gateway/gateway';
 import Api from 'twilio/lib/rest/Api';
+import { MuteDto } from './dto/mute.dto';
 
 @ApiTags('chat')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -418,12 +419,24 @@ export class ChatController {
     return chat;
   }
 
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number' },
+        duration: { enum: ['MINUTE', 'HOUR', 'DAY'] },
+      },
+    },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Mute a user from chat' })
   @Post(':id/mute')
   @Roles(Role.OWNER, Role.ADMIN)
-  async mute(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { userId: string; duration: MuteDuration }, // CreateMuteDto
-  ) {
+  async mute(@Param('id', ParseIntPipe) id: number, @Body() body: MuteDto) {
     const { userId, duration } = body;
 
     const chat = await this.chatService.findOne(+id);
