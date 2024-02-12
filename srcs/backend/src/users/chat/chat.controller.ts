@@ -232,7 +232,7 @@ export class ChatController {
 
     if (chat) {
       this.gateway.server.to(chat.name).emit('action', {
-        action: 'add',
+        action: 'add-admin',
         user: userId,
         data: chat,
       });
@@ -251,7 +251,7 @@ export class ChatController {
 
     if (chat) {
       this.gateway.server.to(chat.name).emit('action', {
-        action: 'remove',
+        action: 'remove-admin',
         user: userId,
         data: chat,
       });
