@@ -163,12 +163,12 @@ const Home = ({ params }: { params: { id: number } }) => {
     };
 
     if (socket) {
-      socket.on('connect', () => {
-        console.log({
-          message: 'from messages Connected to socket server',
-          socketId: socket.id,
-        });
-      });
+    //   socket.on('connect', () => {
+    //     console.log({
+    //       message: 'from messages Connected to socket server',
+    //       socketId: socket.id,
+    //     });
+    //   });
 
       // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
       socket.on('unauthorized', (error) => {
