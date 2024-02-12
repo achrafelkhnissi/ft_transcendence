@@ -15,4 +15,7 @@ export class MuteDto {
     description: 'The identifier of the conversation where the user is muted.',
   })
   conversationId: number;
+
+  @ApiProperty({ description: 'The date when the mute was created.' })
+  createdAt: Date;
 }

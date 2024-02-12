@@ -36,6 +36,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
 import { ConversationType, MuteDuration } from '@prisma/client';
 import { Gateway } from 'src/gateway/gateway';
+import Api from 'twilio/lib/rest/Api';
 
 @ApiTags('chat')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -148,6 +149,7 @@ export class ChatController {
 
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiOperation({ summary: 'Update a chat' })
   @Roles(Role.OWNER)
   @Patch(':id')
@@ -171,6 +173,7 @@ export class ChatController {
 
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiOperation({ summary: 'Remove a chat' })
   @Roles(Role.OWNER)
   @Delete(':id')
@@ -190,8 +193,12 @@ export class ChatController {
 
   @Delete(`:id/remove`)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
-  @ApiBody({ description: 'Used id' })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
   @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiOperation({ summary: 'Remove a user from chat' })
   @Roles(Role.OWNER)
   async removeUser(
@@ -213,7 +220,10 @@ export class ChatController {
   }
 
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
-  @ApiBody({ type: UpdateChatDto })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
   @ApiOkResponse({ type: ConversationDto })
   @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiBadRequestResponse({ description: 'Bad request' })
@@ -237,8 +247,16 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Delete(':id/participants/remove')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Remove a participant from chat' })
+  @Roles(Role.OWNER, Role.ADMIN)
   async removeParticipant(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
@@ -257,8 +275,15 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/admins/add')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Add an admin to chat' })
+  @Roles(Role.OWNER, Role.ADMIN)
   async addAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,

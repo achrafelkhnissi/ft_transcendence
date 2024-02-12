@@ -19,8 +19,9 @@ export const messageSelect = {
 
 export const mutedUserSelect = {
   select: {
-    duration: true,
     user: userSelect,
+    duration: true,
+    createdAt: true,
   },
 };
 
