@@ -24,7 +24,7 @@ export class AchievementsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.achievement.findUnique({
+    return this.prismaService.achievement.findUniqueOrThrow({
       where: {
         id,
       },
@@ -58,7 +58,7 @@ export class AchievementsService {
 
   getAchievementUsers(achievementId: number) {
     return this.prismaService.achievement
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id: achievementId,
         },
@@ -98,7 +98,7 @@ export class AchievementsService {
 
   getUserAchievementsByUsername(username: string) {
     return this.prismaService.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           username,
         },
