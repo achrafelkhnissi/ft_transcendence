@@ -398,7 +398,7 @@ export class ChatService {
         : chat.participants[0]?.id;
 
       if (!newOwner) {
-        this.remove(chatId);
+        return this.remove(chatId);
       }
 
       return this.replaceOwner(chatId, newOwner);
