@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from 'src/users/dto/user.dto';
 import { MessageDto } from 'src/users/chat/message/dto/message.dto';
+import { MuteDto } from './mute.dto';
 
 export class ConversationDto {
   @ApiProperty()
@@ -26,4 +27,10 @@ export class ConversationDto {
 
   @ApiProperty({ type: () => [MessageDto] })
   messages: MessageDto[];
+
+  @ApiProperty({ type: () => [UserDto] })
+  blockedUsers: UserDto[];
+
+  @ApiProperty({ type: () => [MuteDto] })
+  mutedUsers: MuteDto[];
 }

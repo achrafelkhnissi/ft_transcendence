@@ -2,7 +2,12 @@ import { conversationSelect } from './../../prisma/prisma.selects';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket } from 'socket.io';
-import { Conversation, ConversationType, Status } from '@prisma/client';
+import {
+  Conversation,
+  ConversationType,
+  MuteDuration,
+  Status,
+} from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
 import { Role } from 'src/common/enums/role.enum';
@@ -228,66 +233,6 @@ export class ChatService {
       .owner();
   }
 
-  // TODO: Check if the logged in user has permission to remove a user from a chat
-  // removeUser(id: number, userId: number) {
-  //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
-  //   return this.prismaService.conversation.update({
-  //     where: {
-  //       id,
-  //     },
-  //     data: {
-  //       participants: {
-  //         disconnect: {
-  //           userId_conversationId: { userId, conversationId: id },
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
-
-  /* --- Gateway --- */
-  getUserFromSocket(socket: Socket) {
-    // TODO: Test this
-    return socket.handshake.auth.user;
-  }
-
-  addUserToChat(user: any, room: string) {
-    // this.prismaService.conversation.upsert({
-    //   where: {
-    //     name: room,
-    //   },
-    //   update: {
-    //     participants: {
-    //       connect: {
-    //         id: user.id,
-    //       },
-    //     },
-    //   },
-    //   create: {
-    //     name: room,
-    //     participants: {
-    //       connect: {
-    //         id: user.id,
-    //       },
-    //     },
-    //   },
-    // });
-  }
-
-  removeUserFromChat(user: any, room: string) {
-    // TODO: remove user form chat {room} in db
-  }
-
-  getAllMessagesFromChat(room: string) {
-    // TODO: get all messages from chat {room} in db
-  }
-
-  getAllUsersFromChat(room: string) {}
-
-  getAllAdminsFromChat(room: string) {}
-
-  getChatOwner(room: string) {}
-
   getUserFromSession(session: any) {
     const userId = session.passport.user;
 
@@ -448,8 +393,13 @@ export class ChatService {
 
     if (chat.ownerId === userId) {
       const newOwner = chat.admins.length
-        ? chat.admins[0].id
-        : chat.participants[0].id;
+        ? chat.admins[0]?.id
+        : chat.participants[0]?.id;
+
+      // If admins & participants is empty remove chat
+      if (!newOwner) {
+        this.remove(chatId);
+      }
 
       return this.replaceOwner(chatId, newOwner);
     }
@@ -592,7 +542,7 @@ export class ChatService {
       .bannedUsers();
   }
 
-  async mute(chatId: number, userId: number, duration: number) {
+  async mute(chatId: number, userId: number, duration: MuteDuration) {
     const muted = await this.prismaService.mute.create({
       data: {
         userId: userId,
@@ -660,5 +610,35 @@ export class ChatService {
       },
       take: 4,
     });
+  }
+
+  async removeUser(chatId: number, userId: number) {
+    const chat = await this.prismaService.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        admins: true,
+      },
+    });
+
+    if (chat.admins.some((admin) => admin.id === userId)) {
+      return this.prismaService.conversation.update({
+        where: {
+          id: chatId,
+        },
+        data: {
+          admins: {
+            disconnect: {
+              id: userId,
+            },
+          },
+        },
+        select: conversationSelect,
+      });
+    }
+
+    return this.removeParticipant(chatId, userId);
   }
 }

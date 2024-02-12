@@ -34,7 +34,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ConversationDto } from './dto/chat.dto';
-import { ConversationType } from '@prisma/client';
+import { ConversationType, MuteDuration } from '@prisma/client';
 import { Gateway } from 'src/gateway/gateway';
 
 // TODO: ? maybe return ConversationDto for all methods
@@ -92,7 +92,7 @@ export class ChatController {
       this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
       this.gateway.server.to(chat.name).emit('action', {
         action: 'create',
-        user: `user-${user.id}`,
+        user: user.id,
         data: chat,
       });
     }
@@ -152,6 +152,25 @@ export class ChatController {
         user: chat.ownerId,
         data: chat,
       });
+    }
+
+    return chat;
+  }
+
+  @Delete(`:id/remove`)
+  async removeUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('userId', ParseIntPipe) userId: number,
+  ) {
+    const chat = await this.chatService.removeUser(id, userId);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'remove',
+        user: userId,
+        data: chat,
+      });
+      this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
     }
 
     return chat;
@@ -314,7 +333,7 @@ export class ChatController {
   @Post(':id/mute')
   async mute(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: { userId: string; duration: number },
+    @Body() body: { userId: string; duration: MuteDuration }, // CreateMuteDto
   ) {
     const { userId, duration } = body;
 
@@ -323,7 +342,7 @@ export class ChatController {
       throw new ForbiddenException('You cannot mute the owner of the chat');
     }
 
-    const newChat = await this.chatService.mute(+id, +userId, +duration);
+    const newChat = await this.chatService.mute(+id, +userId, duration);
 
     if (newChat) {
       this.gateway.server.to(chat.name).emit('action', {
