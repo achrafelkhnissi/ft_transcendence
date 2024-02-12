@@ -158,6 +158,11 @@ export class ChatController {
   }
 
   @Delete(`:id/remove`)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({ description: 'Used id' })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiOperation({ summary: 'Remove a user from chat' })
+  @Roles(Role.OWNER)
   async removeUser(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
