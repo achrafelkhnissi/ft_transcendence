@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
 import { User } from '../data';
@@ -18,7 +19,7 @@ const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) =>
     >
       <div className="p-2 flex gap-2 self-center">
         <img
-          src={process.env.BACKEND + `/api/users/${receiver.username}/avatar`}
+          src={process.env.BACKEND + `/api/users/${receiver.id}/avatar`}
           alt="receiver"
           width={100}
           height={100}

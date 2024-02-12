@@ -141,19 +141,17 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
                     <ChannelInfo
                       currentUser={currentUser}
-                      addAdmin={addAdmin}
                       channel={conversationsMap[conversationId]}
                       updateConversations={updateConversations}
-                      removeConversation={removeConversation}
                     />
                   </div>
                 )}
               </>
             )}
             {/* Messages */}
-            <div className="w-full h-full overflow-hidden py-6 ">
+            <div className="w-full h-full overflow-hidden py-6">
               <div
-                className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
+                className="flex flex-col gap-2 sm:h-[91%] h-[83%] my-auto mt-12 overflow-y-scroll px-6 py-4"
                 ref={chatContainerRef}
               >
                 {conversationsMap[conversationId].type === 'DM' &&

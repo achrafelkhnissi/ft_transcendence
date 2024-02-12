@@ -14,10 +14,8 @@ import leaveChannel from '@/services/leaveChannel';
 
 interface ChannelInfoProps {
   channel: Conversation;
-  addAdmin: Function;
   currentUser: User | undefined;
   updateConversations: Function;
-  removeConversation: Function;
 }
 
 const newMemberError = {
@@ -29,10 +27,8 @@ const newMemberError = {
 
 const ChannelInfo: React.FC<ChannelInfoProps> = ({
   channel,
-  addAdmin,
   updateConversations,
   currentUser,
-  removeConversation,
 }) => {
   const length = channel.participants.length + channel.admins.length + 1;
   const currentUserRole =
@@ -54,18 +50,18 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
           if (
             channel.participants.every((obj) => obj.id != res.id) &&
             channel.admins.every((obj) => obj.id != res.id) &&
+            channel.bannedUsers.every((user) => user.id != res.id) &&
             channel.owner.id != res.id
           ) {
             addNewMember(res.id, channel.id).then((res) => {
               if (res) {
-                // updateConversations(res);                
+                // updateConversations(res);
               }
             });
             setMemeberError(0);
-          } else if(channel.bannedUsers.some(user => user.id == res.id)) {
+          } else if (channel.bannedUsers.some((user) => user.id == res.id)) {
             setMemeberError(4);
-          }
-           else {
+          } else {
             setMemeberError(1);
           }
         } else {
@@ -82,6 +78,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const handleLeaveChannel = () => {
     leaveChannel(channel.id, currentUser?.id).then((res) => {
       if (res) {
+        console.log('left channel');
         // removeConversation(channel.id);
       }
     });

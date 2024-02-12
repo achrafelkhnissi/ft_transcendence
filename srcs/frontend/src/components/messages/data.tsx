@@ -16,6 +16,12 @@ export interface Message {
   conversationId: number;
 }
 
+export interface Mute {
+  user: User;
+  duration: 'HOUR' | 'DAY' | 'WEEK' ;
+  createdAt: string;
+}
+
 export interface Conversation {
   id: number;
   type: string;
@@ -29,6 +35,7 @@ export interface Conversation {
   messages: Message[];
   image: string;
   bannedUsers: User[];
+  mutedUsers: Mute[];
 }
 
 export type ConversationsMap = {

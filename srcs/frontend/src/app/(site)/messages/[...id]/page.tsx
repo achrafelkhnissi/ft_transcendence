@@ -191,16 +191,17 @@ const Home = ({ params }: { params: { id: number } }) => {
           case 'remove-admin':
           case 'add-admin':
           case 'mute':
-          case 'unmute':
-          {
+          case 'unmute': {
             uppdateConversations(res.data);
             break;
           }
           case 'leave':
           case 'remove':
           case 'ban': {
-            if (res.user == currentUser?.id) removeConversation(res.data.id);
-            else uppdateConversations(res.data);
+            if (res.user == currentUser?.id) {
+              removeConversation(res.data.id);
+              setShowConversation(false);
+            } else uppdateConversations(res.data);
             break;
           }
         }

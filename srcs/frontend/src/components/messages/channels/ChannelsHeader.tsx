@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { Conversation } from '../data';
 import InfoIcon from './InfoIcon';
@@ -42,7 +43,7 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({
       </div>
       <div className="self-center"
       onClick={() => setShowChannelInfo(!showChannelInfo)}>
-        <InfoIcon />
+        <InfoIcon clicked={showChannelInfo} />
       </div>
       <IoIosArrowBack
         className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)]

@@ -42,7 +42,7 @@ const ChannelMessageContainer: React.FC<ChannelMessageContainerProps> = ({
           >
             <p className="mb-4 break-words">{message.content}</p>
             <p
-              className={`absolute bottom-3 text-xs text-white/50
+              className={`absolute bottom-2 text-[0.6rem] text-white/50
     ${isCurrentUser ? 'right-4' : 'left-4'}`}
             >
               {formatChatTimestamp(message.createdAt)}

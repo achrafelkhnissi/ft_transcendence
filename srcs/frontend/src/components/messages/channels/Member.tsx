@@ -100,7 +100,7 @@ const Member: React.FC<MemberProps> = ({
           <p className="self-center text-xs text-white/30">{role}</p>
         </div>
       </div>
-      {role != 'owner' &&  
+      {role != 'owner' &&
         role != 'banned' &&
         (currentUserRole == 'owner' || // owner can modify all roles
           (currentUserRole == 'admin' && role == '')) && ( // admin can modify only members
@@ -133,10 +133,10 @@ const Member: React.FC<MemberProps> = ({
                 else setMuteClicked((prev) => !prev);
               }}
               onMouseEnter={(e) => {
-                setMuteClicked(true);
+                setMuteOnHover(true);
               }}
               onMouseLeave={(e) => {
-                setMuteClicked(false);
+                setMuteOnHover(false);
               }}
             >
               <BiMessageAltX
@@ -147,10 +147,15 @@ const Member: React.FC<MemberProps> = ({
                 <p className="absolute text-[0.6rem] text-white/70 bottom-5 -right-2 bg-white/20 px-[0.2rem] rounded-sm">
                   unmute
                 </p>
+              )}{' '}
+              {muteOnHover && !muted && (
+                <p className="absolute text-[0.6rem] text-white/70 bottom-6 -right-1 bg-white/20 px-[0.2rem] rounded-sm">
+                  mute
+                </p>
               )}
               {muteClicked && !muted && (
                 <div
-                  className="absolute bottom-[1.2rem] text-[0.6rem] w-content flex right-4 flex-col w-14
+                  className="absolute bottom-[1.4rem] text-[0.6rem] w-content flex -right-3 flex-col w-14
               gap-1 text-center "
                 >
                   <p
