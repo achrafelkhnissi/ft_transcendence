@@ -391,8 +391,16 @@ export class ChatController {
     return newChat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: { type: 'object', properties: { userId: { type: 'number' } } },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Unban a user from chat' })
   @Post(':id/unban')
+  @Roles(Role.OWNER, Role.ADMIN)
   async unban(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId') userId: string,
@@ -410,8 +418,8 @@ export class ChatController {
     return chat;
   }
 
-  @Roles(Role.OWNER, Role.ADMIN)
   @Post(':id/mute')
+  @Roles(Role.OWNER, Role.ADMIN)
   async mute(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: { userId: string; duration: MuteDuration }, // CreateMuteDto
