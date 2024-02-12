@@ -142,7 +142,7 @@ model Conversation {
 
 model Mute {
   id             Int      @id @default(autoincrement())
-  duration       Int      @default(13)
+  duration       MuteDuration
   userId         Int
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversationId Int
@@ -226,4 +226,10 @@ enum RequestStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+enum MuteDuration {
+  HOUR
+  DAY
+  WEEK
 }
