@@ -184,6 +184,7 @@ export class ChatService {
       where: {
         id,
       },
+      select: conversationSelect,
     });
   }
 
