@@ -13,6 +13,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { Gateway } from 'src/gateway/gateway';
 import { DAY, HOUR, MINUTE } from 'src/common/constants/time.const';
 import * as fs from 'fs';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatService {
@@ -706,5 +707,46 @@ export class ChatService {
         });
       }
     }, timeLeft);
+  }
+
+  async joinChat(chatId: number, userId: number, password: string) {
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        bannedUsers: true,
+      },
+    });
+
+    if (chat.bannedUsers.some((user) => user.id === userId)) {
+      throw new BadRequestException('You are banned from this chat');
+    }
+
+    if (chat.password) {
+      if (!password) {
+        throw new BadRequestException('Password is required');
+      }
+
+      const isMatch = await bcrypt.compare(password, chat.password);
+      if (!isMatch) {
+        throw new BadRequestException('Invalid password');
+      }
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
   }
 }

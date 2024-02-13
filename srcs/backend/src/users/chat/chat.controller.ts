@@ -234,6 +234,37 @@ export class ChatController implements OnModuleInit {
     return chat;
   }
 
+  @Post(':id/join')
+  @ApiParam({ description: 'Chat id', name: 'id', type: Number })
+  @ApiBody({
+    description: 'Used id',
+    schema: {
+      type: 'object',
+      properties: { password: { type: 'string' } },
+    },
+  })
+  @ApiOkResponse({ type: ConversationDto })
+  @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiOperation({ summary: 'Join a chat' })
+  async joinChat(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('password') password: string,
+    @User() user: UserType,
+  ) {
+    const chat = await this.chatService.joinChat(+id, user.id, password);
+
+    if (chat) {
+      this.gateway.server.to(chat.name).emit('action', {
+        action: 'join',
+        user: user.id,
+        data: chat,
+      });
+      this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
+    }
+
+    return chat;
+  }
+
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
