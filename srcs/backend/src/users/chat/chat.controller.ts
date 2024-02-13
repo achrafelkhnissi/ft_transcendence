@@ -104,13 +104,32 @@ export class ChatController implements OnModuleInit {
     return chat;
   }
 
+  @Get()
   @ApiOperation({
     summary: 'Find all chats',
   })
-  @ApiOkResponse({ type: [ConversationDto] })
-  @Get()
-  find() {
-    return this.chatService.findAll();
+  @ApiOkResponse({
+    description: 'Gets all the chats',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          type: { enum: ['DM', 'PUBLIC', 'PRIVATE', 'PROTECTED'] },
+          name: { type: 'string' },
+          image: { type: 'string' },
+          members: { type: 'number', description: 'Number of members' },
+          joined: {
+            type: 'boolean',
+            description: 'Whether the user has joined the chat',
+          },
+        },
+      },
+    },
+  })
+  find(@User() user: UserType) {
+    return this.chatService.findAll(user.id);
   }
 
   @Get('me')
