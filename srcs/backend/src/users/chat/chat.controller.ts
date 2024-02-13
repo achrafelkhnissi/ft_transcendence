@@ -140,19 +140,17 @@ export class ChatController implements OnModuleInit {
           type: { enum: ['DM', 'PUBLIC', 'PRIVATE', 'PROTECTED'] },
           name: { type: 'string' },
           image: { type: 'string' },
-          _count: {
-            type: 'object',
-            properties: {
-              participants: { type: 'number' },
-              admins: { type: 'number' },
-            },
+          members: { type: 'number', description: 'Number of members' },
+          joined: {
+            type: 'boolean',
+            description: 'Whether the user has joined the chat',
           },
         },
       },
     },
   })
-  getPopularChats() {
-    return this.chatService.getPopularChats();
+  getPopularChats(@User() user: UserType) {
+    return this.chatService.getPopularChats(user.id);
   }
 
   @Get(':id')

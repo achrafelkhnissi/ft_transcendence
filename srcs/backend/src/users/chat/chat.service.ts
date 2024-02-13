@@ -606,33 +606,42 @@ export class ChatService {
     });
   }
 
-  async getPopularChats() {
-    return this.prismaService.conversation.findMany({
-      where: {
-        OR: [
-          { type: ConversationType.PUBLIC },
-          { type: ConversationType.PROTECTED },
-        ],
-      },
-      select: {
-        id: true,
-        type: true,
-        name: true,
-        image: true,
-        _count: {
-          select: {
-            participants: true,
-            admins: true,
+  async getPopularChats(userId: number) {
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            { type: ConversationType.PUBLIC },
+            { type: ConversationType.PROTECTED },
+          ],
+        },
+        select: conversationSelect,
+        orderBy: {
+          participants: {
+            _count: 'desc',
           },
         },
-      },
-      orderBy: {
-        participants: {
-          _count: 'desc',
-        },
-      },
-      take: 4,
-    });
+        take: 4,
+      })
+      .then((chats) => {
+        return chats.map((chat) => {
+          // Check if user is already in chat
+          const isParticipant = chat.participants.some(
+            (participant) => participant.id === userId,
+          );
+          const isOwner = chat.ownerId === userId;
+          const isAdmin = chat.admins.some((admin) => admin.id === userId);
+
+          return {
+            id: chat.id,
+            type: chat.type,
+            name: chat.name,
+            image: chat.image,
+            members: chat.participants.length + chat.admins.length + 1,
+            joined: isOwner || isAdmin || isParticipant,
+          };
+        });
+      });
   }
 
   async removeUser(chatId: number, userId: number) {
