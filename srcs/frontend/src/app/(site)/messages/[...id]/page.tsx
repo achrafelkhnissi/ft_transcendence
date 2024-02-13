@@ -133,12 +133,15 @@ const Home = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     const paramId = Number(params.id);
 
-    console.log('params', typeof params.id);
     if (paramId > 0 && conversations.hasOwnProperty(paramId)) {
       //check if the convo deos not exist
-      console.log('dkhl');
       setSelectedConversationId(paramId);
       setShowConversation(true);
+    }
+    else{
+      console.log('dkhl');
+      setSelectedConversationId(-1);
+      setShowConversation(false);
     }
   }, [conversations, params.id]);
 
