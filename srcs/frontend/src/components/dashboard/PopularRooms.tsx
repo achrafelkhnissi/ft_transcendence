@@ -1,30 +1,30 @@
+'use client';
 import { AiFillFire } from 'react-icons/ai';
 import ChannelCard from './ChannelCard';
+import { useEffect, useState } from 'react';
+import { Conversation } from '../messages/data';
+import getPoularRooms from '@/services/getPopularRooms';
 
+export interface PopularRoomstype {
+  id: number;
+  name: string;
+  type: string;
+  _count: {
+    participants: number;
+    admins: number;
+  };
+}
 const PopularRooms = () => {
-  interface channlesProps {
-    image: string;
-    name: string;
-  }
+  const [channels, setChannels] = useState<PopularRoomstype[]>([]);
 
-  const channels: channlesProps[] = [
-    {
-      image: 'channel1.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel2.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel3.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel4.webp',
-      name: 'name',
-    },
-  ];
+  useEffect(() => {
+    getPoularRooms().then((data) => {
+      console.log('data', data);
+      if (data) {
+        setChannels(data);
+      }
+    });
+  }, []);
 
   return (
     <div className="w-full py-2">
@@ -33,8 +33,8 @@ const PopularRooms = () => {
         <p className="text-white font-semibold"> Popular Rooms Today </p>
       </div>
       <div className="h-full py-6 flex justify-center gap-6 flex-wrap">
-        {channels.map((item, index) => {
-          return <ChannelCard key={index} imageSrc={item.image} />;
+        {channels?.map((item, index) => {
+          return <ChannelCard key={index} channel={item} />;
         })}
       </div>
     </div>

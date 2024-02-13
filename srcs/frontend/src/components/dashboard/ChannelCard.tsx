@@ -1,13 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { PopularRoomstype } from './PopularRooms';
 
 interface ChannelCardPorps {
-  imageSrc: string;
+  channel: PopularRoomstype;
 }
 
-const ChannelCard: React.FC<ChannelCardPorps> = ({ imageSrc }) => {
+const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -18,6 +20,10 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ imageSrc }) => {
     setIsHovered(false);
   };
 
+  const handleJoinChannel = () => {
+    console.log('join channel');
+  };
+  
   return (
     <div
       className="h-[15rem] 
@@ -34,12 +40,11 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ imageSrc }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Image
-        src={`/images/${imageSrc}`}
+      <img
+        src={process.env.BACKEND + `/api/users/chat/${channel.id}/avatar`}
         alt="channel image"
         width={1200}
         height={600}
-        priority
         className={`object-cover 
                     w-full 
                     h-4/5 
@@ -51,9 +56,12 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ imageSrc }) => {
       />
 
       <div className=" w-full flex flex-col justify-center text-center pt-2 text-white text-xs">
-        <p className="font-semibold text-sm">room name</p>
+        <p className="font-semibold text-sm">{channel.name}</p>
         <p className="text-[#9081dc]">
-          online: <span className="text-white ">20</span>
+          members:{' '}
+          <span className="text-white ">
+            {channel._count.participants + channel._count.admins + 1}
+          </span>
         </p>
       </div>
 
@@ -74,6 +82,7 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ imageSrc }) => {
                             shadow-[inset_0_12px_11px_rgba(255,255,255,0.26)]
                             ${!isHovered && 'hidden'}
                             `}
+      onClick={handleJoinChannel}
       >
         Join
       </button>
