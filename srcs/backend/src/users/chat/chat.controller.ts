@@ -11,6 +11,8 @@ import {
   ForbiddenException,
   ParseIntPipe,
   OnModuleInit,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -235,6 +237,7 @@ export class ChatController implements OnModuleInit {
   }
 
   @Post(':id/join')
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -245,6 +248,7 @@ export class ChatController implements OnModuleInit {
   })
   @ApiOkResponse({ type: ConversationDto })
   @ApiNotFoundResponse({ description: 'Chat not found' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Join a chat' })
   async joinChat(
     @Param('id', ParseIntPipe) id: number,
