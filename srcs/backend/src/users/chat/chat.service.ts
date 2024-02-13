@@ -6,18 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Socket } from 'socket.io';
-import {
-  Conversation,
-  ConversationType,
-  MuteDuration,
-  Status,
-} from '@prisma/client';
+import { ConversationType, MuteDuration, Status } from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
 import { Role } from 'src/common/enums/role.enum';
 import { Gateway } from 'src/gateway/gateway';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { DAY, HOUR, MINUTE } from 'src/common/constants/time.const';
 
 @Injectable()
 export class ChatService {
@@ -649,32 +643,31 @@ export class ChatService {
     const currentTime = new Date().getTime();
     const difference = currentTime - time;
     let timeLeft = 0;
-    // const duration = data.duration * 60000;
 
     switch (duration) {
       case MuteDuration.MINUTE:
-        timeLeft = 60000 - difference;
+        timeLeft = MINUTE - difference;
         break;
       case MuteDuration.HOUR:
-        timeLeft = 3600000 - difference;
+        timeLeft = HOUR - difference;
         break;
       case MuteDuration.DAY:
-        timeLeft = 86400000 - difference;
+        timeLeft = DAY - difference;
         break;
     }
 
-    if (timeLeft > 0) {
-      setTimeout(async () => {
-        const chat = await this.unmute(conversationId, userId);
+    timeLeft = timeLeft < 0 ? 0 : timeLeft;
 
-        if (chat) {
-          this.gateway.server.to(chat.name).emit('action', {
-            action: 'unmute',
-            user: userId,
-            data: chat,
-          });
-        }
-      }, timeLeft);
-    }
+    setTimeout(async () => {
+      const chat = await this.unmute(conversationId, userId);
+
+      if (chat) {
+        this.gateway.server.to(chat.name).emit('action', {
+          action: 'unmute',
+          user: userId,
+          data: chat,
+        });
+      }
+    }, timeLeft);
   }
 }
