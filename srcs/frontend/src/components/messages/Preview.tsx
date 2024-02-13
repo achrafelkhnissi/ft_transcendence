@@ -34,15 +34,7 @@ const Preview: React.FC<PreviewProps> = ({
   showConversation,
   updateShowConversation,
 }) => {
-  const [active, setActive] = useState<string>('messages');
-  useEffect(() => {
-    if (
-      selectedConversation > 0 &&
-      conversationsMap[selectedConversation].type != 'DM'
-    ) {
-      setActive('channels');
-    }
-  }, [conversationsMap, selectedConversation]);
+  const [active, setActive] = useState<'messages' | 'channels'>('messages');
 
   return (
     <div

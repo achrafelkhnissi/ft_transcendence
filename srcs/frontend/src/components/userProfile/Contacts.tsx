@@ -77,23 +77,14 @@ const Contacts: React.FC<ContactsProps> = ({
   const createRoom = async () => {
     const payload = {
       type: 'DM',
-      participants: [id],
+      participants: id ? [id] : [],
     };
 
-    // socket?.emit('createRoom', payload, function createdAck(id: string) {
-    //   console.log(`I joined room ${id} successfully!`);
-    //   router.push(`/messages/${+id}`);
-    // });
-
-    const { data } = await axios.post(
-      process.env.BACKEND + '/api/users/chat',
-      payload,
-      { withCredentials: true },
-    );
-    console.log('data', data);
-    if (data.id) {
-      router.push(`/messages/${data.id}`);
-    }
+    createNewConv(payload).then((res) => {
+      if (res) {
+        router.push(`/messages/${res.id}`);
+      }
+    });
   };
 
   return (

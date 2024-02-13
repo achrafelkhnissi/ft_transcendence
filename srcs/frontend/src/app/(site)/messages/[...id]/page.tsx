@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import Preview from '@/components/messages/Preview';
@@ -16,7 +17,7 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
 
-const Home = ({ params }: { params: { id: string } }) => {
+const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
   const [conversationOrder, setConversationOrder] = useState<number[]>([]);
   const [conversations, setConversations] = useState<ConversationsMap>({});
@@ -121,6 +122,12 @@ const Home = ({ params }: { params: { id: string } }) => {
       setConversations(initialConversationsMap);
     };
 
+    if (params.id > 0) {
+      //check if the convo deos not exist
+      setSelectedConversationId(params.id);
+      setShowConversation(true);
+    }
+
     getConversations().then((res) => {
       console.log('res', res);
       initializeConversations(res);
@@ -130,20 +137,6 @@ const Home = ({ params }: { params: { id: string } }) => {
     });
   }, []);
 
-  useEffect(() => {
-    const paramId = Number(params.id);
-
-    if (paramId > 0 && conversations.hasOwnProperty(paramId)) {
-      //check if the convo deos not exist
-      setSelectedConversationId(paramId);
-      setShowConversation(true);
-    }
-    else{
-      console.log('dkhl');
-      setSelectedConversationId(-1);
-      setShowConversation(false);
-    }
-  }, [conversations, params.id]);
 
   // socket
   useEffect(() => {
@@ -193,7 +186,6 @@ const Home = ({ params }: { params: { id: string } }) => {
         console.log('action', res);
         switch (res.action) {
           case 'add':
-          case 'join':
           case 'remove-admin':
           case 'add-admin':
           case 'mute':

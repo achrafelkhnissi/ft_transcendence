@@ -130,6 +130,14 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     setNewMessage('');
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter') {
+      // Prevent the default behavior of the "Enter" key
+      event.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <div
       className={`md:w-4/6 bg-[#25244E] rounded-[3rem] w-full h-full 
@@ -227,6 +235,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   disabled={isMuted}
                   name="message"
                   value={newMessage}
+                  onKeyDown={handleKeyDown}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type a message here..."
                   className={`bg-transparent w-full h-full outline-none px-6

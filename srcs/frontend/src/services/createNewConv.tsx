@@ -4,7 +4,7 @@ interface Props {
   type: string;
   image?: string;
   name?: string;
-  password: string;
+  password?: string;
   participants: number[];
 }
 
