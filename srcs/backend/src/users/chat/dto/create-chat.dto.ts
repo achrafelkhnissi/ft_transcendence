@@ -61,12 +61,12 @@ export class CreateChatDto {
   @MinLength(8, {
     message: 'Password must be at least 8 characters long',
   })
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    {
-      message: 'Password too weak',
-    },
-  )
+  // @Matches(
+  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  //   {
+  //     message: 'Password too weak',
+  //   },
+  // )
   password: string;
 
   @IsOptional()
