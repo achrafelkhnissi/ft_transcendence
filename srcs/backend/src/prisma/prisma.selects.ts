@@ -29,6 +29,7 @@ export const conversationSelect = {
   id: true,
   name: true,
   type: true,
+  image: true,
   updatedAt: true,
   ownerId: true,
   owner: userSelect,

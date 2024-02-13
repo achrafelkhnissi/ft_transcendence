@@ -12,6 +12,7 @@ import { ChatData } from 'src/common/interfaces/chat-data.interface';
 import { Role } from 'src/common/enums/role.enum';
 import { Gateway } from 'src/gateway/gateway';
 import { DAY, HOUR, MINUTE } from 'src/common/constants/time.const';
+import * as fs from 'fs';
 
 @Injectable()
 export class ChatService {
@@ -166,14 +167,26 @@ export class ChatService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     this.logger.log(`Removing chat with id ${id}`);
-    return this.prismaService.conversation.delete({
+    const chat = await this.prismaService.conversation.delete({
       where: {
         id,
       },
       select: conversationSelect,
     });
+
+    const imagePath = chat.image;
+    if (
+      imagePath &&
+      fs.existsSync(imagePath) &&
+      !imagePath.startsWith('uploads/chat-default-images')
+    ) {
+      this.logger.log(`Removing image at path ${imagePath}`);
+      fs.unlinkSync(imagePath);
+    }
+
+    return chat;
   }
 
   findMessages(id: number) {
