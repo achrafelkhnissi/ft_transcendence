@@ -1,60 +1,27 @@
-import ChannelCard from '@/components/dashboard/ChannelCard';
-const Home = () => {
-  interface channlesProps {
-    image: string;
-    name: string;
-  }
+'use client';
 
-  const channels: channlesProps[] = [
-    {
-      image: 'channel1.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel2.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel3.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel4.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel1.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel2.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel3.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel4.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel1.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel2.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel3.webp',
-      name: 'name',
-    },
-    {
-      image: 'channel4.webp',
-      name: 'name',
-    },
-  ];
+import ChannelCard from '@/components/dashboard/ChannelCard';
+import getAllRooms from '@/services/getAllRooms';
+import { useEffect, useState } from 'react';
+export interface PopularRoomstype {
+  id: number;
+  name: string;
+  type: string;
+  members: number;
+  joined: boolean;
+}
+
+const Home = () => {
+  const [channels, setChannels] = useState<PopularRoomstype[]>([]);
+
+  useEffect(() => {
+    getAllRooms().then((data) => {
+      console.log('data', data);
+      if (data) {
+        setChannels(data);
+      }
+    });
+  }, []);
 
   return (
     <div className="w-full py-2">
@@ -64,7 +31,7 @@ const Home = () => {
       <div className="flex gap-1 pl-4">
         <div className="h-full py-6 flex justify-center gap-6 flex-wrap">
           {channels.map((item, index) => {
-            return <ChannelCard key={index} imageSrc={item.image} />;
+            return <ChannelCard key={index} channel={item} />;
           })}
         </div>
       </div>

@@ -27,6 +27,10 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
 
   const handleJoinChannel = () => {
     console.log('join channel');
+    if(channel.joined){
+      router.push(`/messages/${channel.id}`);
+      return;
+    }
     joinChannel(channel.id, null).then((data) => {
       console.log('data', data);
       if (data) {
@@ -72,7 +76,7 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
         <p className="text-[#9081dc]">
           members:{' '}
           <span className="text-white ">
-            {channel._count.participants + channel._count.admins + 1}
+            {channel.members}
           </span>
         </p>
       </div>
@@ -96,7 +100,7 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
                             `}
       onClick={handleJoinChannel}
       >
-        Join
+        { channel.joined? 'chat' : 'Join'}
       </button>
     </div>
   );

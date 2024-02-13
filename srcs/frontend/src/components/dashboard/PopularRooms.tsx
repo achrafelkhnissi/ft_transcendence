@@ -9,10 +9,8 @@ export interface PopularRoomstype {
   id: number;
   name: string;
   type: string;
-  _count: {
-    participants: number;
-    admins: number;
-  };
+  members: number;
+  joined: boolean;
 }
 
 const PopularRooms = () => {

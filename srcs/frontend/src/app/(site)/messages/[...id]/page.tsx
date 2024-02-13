@@ -16,7 +16,7 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
 
-const Home = ({ params }: { params: { id: number } }) => {
+const Home = ({ params }: { params: { id: string } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
   const [conversationOrder, setConversationOrder] = useState<number[]>([]);
   const [conversations, setConversations] = useState<ConversationsMap>({});
@@ -119,10 +119,6 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       setConversationOrder(initialOrder);
       setConversations(initialConversationsMap);
-      if (params.id > 0) {
-        //check if the convo deos not exist
-        setSelectedConversationId(params.id);
-      }
     };
 
     getConversations().then((res) => {
@@ -132,7 +128,19 @@ const Home = ({ params }: { params: { id: number } }) => {
     getCurrentUser().then((res) => {
       setCurrentUser(res);
     });
-  }, [params.id]);
+  }, []);
+
+  useEffect(() => {
+    const paramId = Number(params.id);
+
+    console.log('params', typeof params.id);
+    if (paramId > 0 && conversations.hasOwnProperty(paramId)) {
+      //check if the convo deos not exist
+      console.log('dkhl');
+      setSelectedConversationId(paramId);
+      setShowConversation(true);
+    }
+  }, [conversations, params.id]);
 
   // socket
   useEffect(() => {
