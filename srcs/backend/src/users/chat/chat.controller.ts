@@ -291,6 +291,8 @@ export class ChatController implements OnModuleInit {
     return chat;
   }
 
+  @Post(':id/participants/add')
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -300,7 +302,6 @@ export class ChatController implements OnModuleInit {
   @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Find a chat by id' })
-  @Post(':id/participants/add')
   async addParticipant(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId', ParseIntPipe) userId: number,
@@ -348,6 +349,7 @@ export class ChatController implements OnModuleInit {
   }
 
   @Post(':id/admins/add')
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -402,6 +404,7 @@ export class ChatController implements OnModuleInit {
   }
 
   @Post(':id/leave')
+  @HttpCode(HttpStatus.OK)
   @Roles(Role.OWNER, Role.ADMIN, Role.USER)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiOkResponse({ type: ConversationDto })
@@ -426,6 +429,7 @@ export class ChatController implements OnModuleInit {
   }
 
   @Post(':id/ban')
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -464,6 +468,9 @@ export class ChatController implements OnModuleInit {
     return newChat;
   }
 
+  @Post(':id/unban')
+  @Roles(Role.OWNER, Role.ADMIN)
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -472,8 +479,6 @@ export class ChatController implements OnModuleInit {
   @ApiOkResponse({ type: ConversationDto })
   @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiOperation({ summary: 'Unban a user from chat' })
-  @Post(':id/unban')
-  @Roles(Role.OWNER, Role.ADMIN)
   async unban(
     @Param('id', ParseIntPipe) id: number,
     @Body('userId') userId: string,
@@ -491,6 +496,9 @@ export class ChatController implements OnModuleInit {
     return chat;
   }
 
+  @Post(':id/mute')
+  @Roles(Role.OWNER, Role.ADMIN)
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
@@ -506,8 +514,6 @@ export class ChatController implements OnModuleInit {
   @ApiNotFoundResponse({ description: 'Chat not found' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiOperation({ summary: 'Mute a user from chat' })
-  @Post(':id/mute')
-  @Roles(Role.OWNER, Role.ADMIN)
   async mute(@Param('id', ParseIntPipe) id: number, @Body() body: MuteDto) {
     const { userId, duration } = body;
 
@@ -539,6 +545,7 @@ export class ChatController implements OnModuleInit {
 
   @Post(':id/unmute')
   @Roles(Role.OWNER, Role.ADMIN, Role.USER) // USER for auto-unmute
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ description: 'Chat id', name: 'id', type: Number })
   @ApiBody({
     description: 'Used id',
