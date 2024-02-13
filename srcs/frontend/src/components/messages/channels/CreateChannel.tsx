@@ -223,19 +223,13 @@ const CreateChannel: React.FC<props> = ({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    let img : string | undefined = newChannel.image;
 
     let hashedpass = '';
 
     if (newChannel.name != '') {
       if (newChannel.imageFile) {
-        const img = await uploadChannelImage(newChannel.imageFile);
-        img &&
-          setNewChannel((prev) => {
-            return {
-              ...prev,
-              image: img,
-            };
-          });
+        img = await uploadChannelImage(newChannel.imageFile);
       }
       if (password != '') {
         try {
@@ -245,10 +239,10 @@ const CreateChannel: React.FC<props> = ({
           updateCreateChannelState(false);
         }
       }
-
+      
       createNewConv({
         type: newChannel.type,
-        image: newChannel.image,
+        image: img,
         name: newChannel.name,
         password: hashedpass,
         participants: newChannel.participants,
