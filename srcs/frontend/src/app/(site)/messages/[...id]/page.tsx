@@ -190,6 +190,7 @@ const Home = ({ params }: { params: { id: string } }) => {
         console.log('action', res);
         switch (res.action) {
           case 'add':
+          case 'join':
           case 'remove-admin':
           case 'add-admin':
           case 'mute':

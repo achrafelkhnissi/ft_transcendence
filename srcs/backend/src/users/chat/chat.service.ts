@@ -747,8 +747,7 @@ export class ChatService {
         throw new BadRequestException('Password is required');
       }
 
-      const isMatch = await bcrypt.compare(password, chat.password);
-      if (!isMatch) {
+      if (chat.password !== password) {
         throw new BadRequestException('Invalid password');
       }
     }

@@ -275,12 +275,12 @@ export class ChatController implements OnModuleInit {
     const chat = await this.chatService.joinChat(+id, user.id, password);
 
     if (chat) {
+      this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
       this.gateway.server.to(chat.name).emit('action', {
         action: 'join',
         user: user.id,
         data: chat,
       });
-      this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
     }
 
     return chat;
