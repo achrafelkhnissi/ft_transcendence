@@ -86,9 +86,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
 
   const modifyChannelType = async (newChannelType: string) => {
     let hashedpass = '';
-
+    console.log('newChannelType: ', newChannelType);
     if (newChannelType != 'PROTECTED') {
-      updateChannelType(channel.id, { type: newChannelType }).then((res) => {
+      updateChannelType(channel.id, {
+        type: newChannelType,
+        password: null,
+      }).then((res) => {
         if (res) {
           updateConversations(res);
           setChannelType(newChannelType);
@@ -198,6 +201,8 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                     id="lockSwitch"
                     className="sr-only"
                     onClick={(e) => {
+                      if (channelType == 'PROTECTED')
+                        modifyChannelType('PUBLIC');
                       setChannelType((prev) =>
                         prev === 'PROTECTED' ? 'PUBLIC' : 'PROTECTED',
                       );
