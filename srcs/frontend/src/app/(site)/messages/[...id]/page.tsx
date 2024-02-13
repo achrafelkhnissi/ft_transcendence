@@ -187,7 +187,7 @@ const Home = ({ params }: { params: { id: number } }) => {
           case 'mute':
           case 'unmute':
           case 'unban': {
-            uppdateConversations(res.data);
+            if (res.data.type != 'DM') uppdateConversations(res.data);
             break;
           }
           case 'leave':
