@@ -4,6 +4,10 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { PopularRoomstype } from './PopularRooms';
+import addMember from '@/services/addMember';
+import { join } from 'path';
+import joinChannel from '@/services/joinChannel';
+import { useRouter } from 'next/navigation';
 
 interface ChannelCardPorps {
   channel: PopularRoomstype;
@@ -11,6 +15,7 @@ interface ChannelCardPorps {
 
 const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -22,8 +27,15 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
 
   const handleJoinChannel = () => {
     console.log('join channel');
+    joinChannel(channel.id, null).then((data) => {
+      console.log('data', data);
+      if (data) {
+        console.log('joined');
+        router.push(`/messages/${channel.id}`);
+      }
+    })
   };
-  
+
   return (
     <div
       className="h-[15rem] 

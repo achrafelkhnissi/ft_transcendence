@@ -14,6 +14,7 @@ export interface PopularRoomstype {
     admins: number;
   };
 }
+
 const PopularRooms = () => {
   const [channels, setChannels] = useState<PopularRoomstype[]>([]);
 
