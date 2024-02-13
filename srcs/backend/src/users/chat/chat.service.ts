@@ -766,4 +766,10 @@ export class ChatService {
       select: conversationSelect,
     });
   }
+
+  async findOneByName(name: string) {
+    return this.prismaService.conversation.findUnique({
+      where: { name },
+    });
+  }
 }

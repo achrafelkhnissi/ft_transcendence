@@ -85,23 +85,28 @@ export class ChatController implements OnModuleInit {
       }
     }
 
-    const chat = await this.chatService.create(createChatDto);
-
+    const chat = await this.chatService.findOneByName(createChatDto.name);
     if (chat) {
-      participants.forEach((id) => {
-        const userRoomName = `user-${id}`;
-        this.gateway.server.to(userRoomName).socketsJoin(chat.name);
-      });
-      this.gateway.server.to(`user-${user.id}`).socketsJoin(chat.name);
-      this.gateway.server.to(chat.name).emit('action', {
-        action: 'add',
-        user: user.id,
-        data: chat,
-      });
-      this.gateway.server.to(chat.name).emit('notification', {});
+      return chat;
     }
 
-    return chat;
+    const newChat = await this.chatService.create(createChatDto);
+
+    if (newChat) {
+      participants.forEach((id) => {
+        const userRoomName = `user-${id}`;
+        this.gateway.server.to(userRoomName).socketsJoin(newChat.name);
+      });
+      this.gateway.server.to(`user-${user.id}`).socketsJoin(newChat.name);
+      this.gateway.server.to(newChat.name).emit('action', {
+        action: 'add',
+        user: user.id,
+        data: newChat,
+      });
+      this.gateway.server.to(newChat.name).emit('notification', {});
+    }
+
+    return newChat;
   }
 
   @Get()
