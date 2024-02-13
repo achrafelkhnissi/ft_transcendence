@@ -60,7 +60,31 @@ export class ChatService {
 
   findAll() {
     this.logger.log('Finding all chats');
-    return this.prismaService.conversation.findMany();
+    return this.prismaService.conversation.findMany({
+      where: {
+        OR: [
+          { type: ConversationType.PUBLIC },
+          { type: ConversationType.PROTECTED },
+        ],
+      },
+      select: {
+        id: true,
+        type: true,
+        name: true,
+        image: true,
+        _count: {
+          select: {
+            participants: true,
+            admins: true,
+          },
+        },
+      },
+      orderBy: {
+        participants: {
+          _count: 'desc',
+        },
+      },
+    });
   }
 
   async findAllChatForUser(userId: number) {

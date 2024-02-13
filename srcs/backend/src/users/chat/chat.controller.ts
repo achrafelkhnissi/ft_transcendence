@@ -103,11 +103,18 @@ export class ChatController implements OnModuleInit {
   }
 
   @ApiOperation({
-    summary: 'Find all chats for the logged in user',
+    summary: 'Find all chats',
   })
   @ApiOkResponse({ type: [ConversationDto] })
   @Get()
-  find(@User() user: UserType) {
+  find() {
+    return this.chatService.findAll();
+  }
+
+  @Get('me')
+  @ApiOperation({ summary: 'Find all chats for the logged in user' })
+  @ApiOkResponse({ type: [ConversationDto] })
+  findUserChats(@User() user: UserType) {
     return this.chatService.findAllChatForUser(user.id);
   }
 
