@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const joinChannel = async (
   channelId: number,
-  payload: { password: string } | null,
+  payload: { password: string  } | null,
 ) => {
   try {
     const { data } = await axios.post(

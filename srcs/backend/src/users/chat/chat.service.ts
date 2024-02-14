@@ -747,7 +747,7 @@ export class ChatService {
         throw new BadRequestException('Password is required');
       }
 
-      if (chat.password !== password) {
+      if (!bcrypt.compareSync(password, chat.password)) {
         throw new BadRequestException('Invalid password');
       }
     }
@@ -771,5 +771,10 @@ export class ChatService {
     return this.prismaService.conversation.findUnique({
       where: { name },
     });
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
   }
 }
