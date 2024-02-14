@@ -49,7 +49,7 @@ export class MessageService {
 
   findOne(id: number) {
     this.logger.log(`Finding message with id ${id}`);
-    return this.prismaService.message.findUnique({
+    return this.prismaService.message.findUniqueOrThrow({
       where: {
         id,
       },

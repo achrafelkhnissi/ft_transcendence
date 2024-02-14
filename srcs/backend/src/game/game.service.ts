@@ -20,7 +20,7 @@ export class GameService {
     this.updateGame();
   }
 
-  updateGame(){
+  updateGame() {
     setInterval(async () => {
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
@@ -64,7 +64,6 @@ export class GameService {
     setTimeout(() => match.gameStart(), 3000);
   }
 
-
   readyForGame() {
     setTimeout(() => {
       if (this.getAllUsers().length == 1)
@@ -86,7 +85,9 @@ export class GameService {
   }
 
   removeUserById(userId: number): void {
-    this.playerQueue = this.playerQueue.filter((player) => player.user.id !== userId);
+    this.playerQueue = this.playerQueue.filter(
+      (player) => player.user.id !== userId,
+    );
   }
 
   async saveMatch(data: CreateGameDto) {

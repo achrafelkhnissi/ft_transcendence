@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { Message, User } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
@@ -21,9 +22,9 @@ const ChannelMessageContainer: React.FC<ChannelMessageContainerProps> = ({
       <div className="flex gap-2 ">
         {!isCurrentUser && displayAvatr && (
           <img
-            src={message.sender.avatar}
+            src={process.env.BACKEND + `/api/users/${message.sender.id}/avatar`}
             alt=""
-            className="w-8 h-8 rounded-full"
+            className="w-8 h-8 rounded-full object-fill"
           />
         )}
         <div className="felx flex-col ">
@@ -41,7 +42,7 @@ const ChannelMessageContainer: React.FC<ChannelMessageContainerProps> = ({
           >
             <p className="mb-4 break-words">{message.content}</p>
             <p
-              className={`absolute bottom-3 text-xs text-white/50
+              className={`absolute bottom-2 text-[0.6rem] text-white/50
     ${isCurrentUser ? 'right-4' : 'left-4'}`}
             >
               {formatChatTimestamp(message.createdAt)}

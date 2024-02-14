@@ -1,8 +1,7 @@
 import axios from 'axios';
-const sendFriendRequest = async (friend: string) => {
-  console.log(friend);
+const sendFriendRequest = async (id: number | null) => {
   const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/friends/requests/send?username=${friend}`,
+    process.env.BACKEND + `/api/users/friends/requests/send?id=${id}`,
     { withCredentials: true },
   );
   console.log('here');

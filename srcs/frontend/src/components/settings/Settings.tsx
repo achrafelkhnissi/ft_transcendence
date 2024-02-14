@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { ChangeEvent, useState, useEffect, FormEvent } from 'react';
 import getCurrentUser from '@/services/getCurrentUser';
@@ -15,6 +16,7 @@ import { FaCheck } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
 
 export interface Data {
+  id: number;
   username: string;
   avatar: string;
   phoneNumber: string | null;
@@ -31,6 +33,7 @@ interface Users {
 }
 
 const defaultData: Data = {
+  id: -1,
   username: '',
   avatar: '',
   phoneNumber: null,
@@ -73,14 +76,14 @@ const Settings = () => {
       setData((prev) => {
         return {
           ...prev,
-          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
         };
       });
       setNewData((prev) => {
         return {
           ...prev,
           phoneNumber: '',
-          avatar: process.env.BACKEND + `/api/users/${prev.username}/avatar`,
+          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
         };
       });
     });
@@ -119,17 +122,16 @@ const Settings = () => {
           newAvatar: file,
         };
       });
-    }
-    else {
+    } else {
       setTimeout(() => {
         setFileError(0);
-        setNewData( (prev) => {
+        setNewData((prev) => {
           return {
             ...prev,
             avatar: data.avatar,
             newAvatar: null,
-          }
-        })
+          };
+        });
       }, 3000);
     }
   };
@@ -219,14 +221,13 @@ const Settings = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let username = data.username;
+    let id = data.id;
 
     try {
       if (newData.newAvatar) await uploadAvatar(newData.newAvatar);
 
       if (newData.username != '' && newData.username != data.username) {
-        modifyUser(data.username, { username: newData.username });
-        username = newData.username;
+        modifyUser(id, { username: newData.username });
       }
 
       if (
@@ -234,15 +235,15 @@ const Settings = () => {
         newData.phoneNumber != '' &&
         newData.settings.verified
       ) {
-        modifyUser(username, { phoneNumber: newData.phoneNumber });
-        modifyUser(username, { settings: { update: { verified: false } } });
+        modifyUser(id, { phoneNumber: newData.phoneNumber });
+        modifyUser(id, { settings: { update: { verified: false } } });
       }
 
       if (
         newData.settings.twoFactorEnabled != data.settings.twoFactorEnabled &&
         newData.settings.verified
       ) {
-        modifyUser(username, {
+        modifyUser(id, {
           settings: {
             update: { twoFactorEbabled: newData.settings.twoFactorEnabled },
           },

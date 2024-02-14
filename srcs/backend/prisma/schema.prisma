@@ -40,6 +40,9 @@ model User {
   ownerOfConversations       Conversation[] @relation("Owner")
   adminOfConversations       Conversation[] @relation("Admins")
   participantOfConversations Conversation[] @relation("Participant")
+  bannedFromConversations    Conversation[] @relation("BannedUsers")
+
+  mutes Mute[]
 
   gamesWon Game[] @relation("Winner")
   gamesLost Game[] @relation("Loser")
@@ -57,8 +60,8 @@ model Notification {
   receiverId Int
   receiver   User             @relation("ReceivedNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  friendRequestId Int? @unique
-  // gameInviteId    Int? @unique
+  requestStatus RequestStatus?
+  requestId    Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -130,8 +133,22 @@ model Conversation {
   admins       User[] @relation("Admins")
   participants User[] @relation("Participant")
 
+  bannedUsers User[] @relation("BannedUsers")
+  mutedUsers  Mute[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Mute {
+  id             Int      @id @default(autoincrement())
+  duration       MuteDuration
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Achievement {
@@ -161,10 +178,7 @@ model Game {
 enum Status {
   ONLINE
   OFFLINE
-  IDLE
-  DONOTDISTURB
-  INVISIBLE
-  INGAME
+  PLAYING
 }
 
 enum FriendshipStatus {
@@ -200,8 +214,6 @@ enum NotificationType {
   FRIEND_REQUEST_SENT
   FRIEND_REQUEST_ACCEPTED
   MATCH
-  MESSAGE
-  OTHER
 }
 
 enum Role {
@@ -210,15 +222,14 @@ enum Role {
   PARTICIPANT
 }
 
-enum inviteType {
-  FRIEND
-  CHANNEL
-  GAME
-}
-
-enum inviteStatus {
+enum RequestStatus {
   PENDING
   ACCEPTED
   DECLINED
-  BLOCKED
+}
+
+enum MuteDuration {
+  MINUTE
+  HOUR
+  DAY
 }

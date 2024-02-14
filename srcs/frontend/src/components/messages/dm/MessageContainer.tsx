@@ -23,7 +23,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({
     >
       <p className="mb-4 break-words">{content}</p>
       <p
-        className={`absolute bottom-3 text-xs text-white/50
+        className={`absolute bottom-2 text-[0.6rem] text-white/50
         ${isCurrentUser ? 'right-4' : 'left-4'}`}
       >
         {formatChatTimestamp(date)}

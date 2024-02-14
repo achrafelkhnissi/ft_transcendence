@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 import { NotificationsType } from './Notifications';
 import acceptFriendRequest from '@/services/acceptFriendRequest';
 import deleteNotification from '@/services/deleteNotification';
@@ -9,14 +9,14 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
   const [actionDone, setActionDone] = useState(false);
 
   const handleAccept = () => {
-    acceptFriendRequest(notif.sender.username).then(() => {
+    acceptFriendRequest(notif.sender.id).then(() => {
       deleteNotification(notif.id);
     });
     setActionDone(true);
   };
 
   const handleDecline = () => {
-    declineFirendRequest(notif.sender.username).then(() => {
+    declineFirendRequest(notif.sender.id).then(() => {
       deleteNotification(notif.id);
     });
     setActionDone(true);
@@ -37,11 +37,11 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
         <img
           alt=""
           src={
-            process.env.BACKEND + `/api/users/${notif.sender.username}/avatar`
+            process.env.BACKEND + `/api/users/${notif.sender.id}/avatar`
           }
           width={20}
           height={20}
-          className="w-[2.5rem] h-[2.5rem] rounded-full  self-center"
+          className="w-[2.5rem] h-[2.5rem] rounded-full object-fill self-center"
         />
         <p className="text-center self-center ">
           {notif.sender.username} wants to be friend with you

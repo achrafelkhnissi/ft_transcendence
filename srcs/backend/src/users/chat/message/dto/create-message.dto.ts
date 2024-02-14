@@ -1,10 +1,10 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateMessageDto {
+  @IsOptional()
+  @IsString()
+  room?: string;
+
   @IsString()
   @IsNotEmpty()
   content: string;

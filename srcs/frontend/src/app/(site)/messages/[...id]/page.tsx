@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import Preview from '@/components/messages/Preview';
@@ -9,6 +10,7 @@ import {
   Conversation,
   ConversationsMap,
   User,
+  actionData,
 } from '../../../../components/messages/data';
 import getConversations from '@/services/getConversations';
 import getCurrentUser from '@/services/getCurrentUser';
@@ -21,96 +23,10 @@ const Home = ({ params }: { params: { id: number } }) => {
   const [conversations, setConversations] = useState<ConversationsMap>({});
   const [selectedConversationId, setSelectedConversationId] =
     useState<number>(-1);
-  const [currentUser, setCurrentUser] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<User>();
   const [createChannel, setCreateChannel] = useState<boolean>(false);
   const [showConversation, setShowConversation] = useState<boolean>(false);
   const { socket } = useSocket();
-
-  useEffect(() => {
-    getConversations().then((res) => {
-      initializeConversations(res);
-    });
-    getCurrentUser().then((res) => {
-      setCurrentUser(res.username);
-    });
-  }, []);
-
-  // socket
-  useEffect(() => {
-    if (socket) {
-      socket.on('connect', () => {
-        console.log({
-          message: 'from messages Connected to socket server',
-          socketId: socket.id,
-        });
-      });
-
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-
-        socket.disconnect();
-
-        window.location.href = '/';
-      });
-
-      socket.on('onMessage', (message: Message) => {
-        addMessageToConversation(message);
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.off('connect');
-        socket.off('onMessage');
-      }
-    };
-  }, [socket, conversations]);
-
-  const initializeConversations = (initialConversations: Conversation[]) => {
-    const sortedConversations = initialConversations.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
-
-    const initialOrder = sortedConversations.map((convo) => convo.id);
-    const initialConversationsMap =
-      initialConversations.reduce<ConversationsMap>((acc, convo) => {
-        acc[convo.id] = convo;
-        return acc;
-      }, {});
-
-    setConversationOrder(initialOrder);
-    setConversations(initialConversationsMap);
-    if (params.id > 0) {
-      //check if the convo deos not exist
-      setSelectedConversationId(params.id);
-    }
-  };
-
-  const addMessageToConversation = (newMessage: Message) => {
-    const conversationId = Number(newMessage.conversationId);
-
-    if (conversations.hasOwnProperty(conversationId)) {
-      setConversations((prev) => ({
-        ...prev,
-        [conversationId]: {
-          ...prev[conversationId],
-          messages: [...prev[conversationId].messages, newMessage],
-          updatedAt: new Date().toISOString(),
-        },
-      }));
-      setConversationOrder((prevOrder) => {
-        return [
-          conversationId,
-          ...prevOrder.filter((id) => id != conversationId),
-        ];
-      });
-    } else {
-      // Handle case where the conversation is new or not loaded
-      addConversation(conversationId);
-    }
-  };
 
   const markLastMessageAsRead = (conversationId: number) => {
     setConversations((prevConversations) => {
@@ -143,18 +59,14 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  const addMemberToConversation = (conversationId: number, user: User) => {
-    setConversations((prevConversations) => {
-      const updatedConversations = { ...prevConversations };
-      const conversation = updatedConversations[conversationId];
-
-      if (conversation) {
-        conversation.participants.push(user);
-      }
-
+  const removeConversation = (id: number) => {
+    setConversations((prev) => {
+      const updatedConversations = { ...prev };
+      delete updatedConversations[id];
       return updatedConversations;
     });
-  }
+    setConversationOrder((prev) => prev.filter((convoId) => convoId != id));
+  };
 
   const addAdminToConversation = (conversationId: number, user: User) => {
     setConversations((prevConversations) => {
@@ -167,7 +79,7 @@ const Home = ({ params }: { params: { id: number } }) => {
 
       return updatedConversations;
     });
-  }
+  };
 
   const updateUserStatus = (userId: string, status: string) => {
     setUserStatuses((prevStatuses) => ({
@@ -176,11 +88,141 @@ const Home = ({ params }: { params: { id: number } }) => {
     }));
   };
 
+  const uppdateConversations = (newConversation: Conversation) => {
+    setConversations((prev) => {
+      return {
+        ...prev,
+        [newConversation.id]: newConversation,
+      };
+    });
+    setConversationOrder((prevOrder) => {
+      return [
+        newConversation.id,
+        ...prevOrder.filter((id) => id != newConversation.id),
+      ];
+    });
+  };
+
+  //  initialize conversations
+  useEffect(() => {
+    const initializeConversations = (initialConversations: Conversation[]) => {
+      const sortedConversations = initialConversations.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+
+      const initialOrder = sortedConversations.map((convo) => convo.id);
+      const initialConversationsMap =
+        initialConversations.reduce<ConversationsMap>((acc, convo) => {
+          acc[convo.id] = convo;
+          return acc;
+        }, {});
+
+      setConversationOrder(initialOrder);
+      setConversations(initialConversationsMap);
+    };
+
+    if (params.id > 0) {
+      //check if the convo deos not exist
+      setSelectedConversationId(params.id);
+      setShowConversation(true);
+    }
+
+    getConversations().then((res) => {
+      console.log('res', res);
+      initializeConversations(res);
+    });
+    getCurrentUser().then((res) => {
+      setCurrentUser(res);
+    });
+  }, []);
+
+
+  // socket
+  useEffect(() => {
+    const addMessageToConversation = (newMessage: Message) => {
+      const conversationId = Number(newMessage.conversationId);
+
+      if (
+        conversations.hasOwnProperty(conversationId) &&
+        conversations[conversationId]
+      ) {
+        setConversations((prev) => ({
+          ...prev,
+          [conversationId]: {
+            ...prev[conversationId],
+            messages: [...prev[conversationId].messages, newMessage],
+            updatedAt: new Date().toISOString(),
+          },
+        }));
+        setConversationOrder((prevOrder) => {
+          return [
+            conversationId,
+            ...prevOrder.filter((id) => id != conversationId),
+          ];
+        });
+      } else {
+        // Handle case where the conversation is new or not loaded
+        addConversation(conversationId);
+      }
+    };
+
+    if (socket) {
+      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
+      socket.on('unauthorized', (error) => {
+        console.log('unauthorized: ', error);
+
+        socket.disconnect();
+
+        window.location.href = '/';
+      });
+
+      socket.on('onMessage', (message: Message) => {
+        console.log('message', message);
+        addMessageToConversation(message);
+      });
+
+      socket.on('action', (res: actionData) => {
+        console.log('action', res);
+        switch (res.action) {
+          case 'add':
+          case 'remove-admin':
+          case 'add-admin':
+          case 'mute':
+          case 'unmute':
+          case 'unban': {
+            if (res.data.type != 'DM') uppdateConversations(res.data);
+            break;
+          }
+          case 'leave':
+          case 'remove':
+          case 'ban': {
+            if (res.user == currentUser?.id) {
+              removeConversation(res.data.id);
+              setShowConversation(false);
+            } else {
+              uppdateConversations(res.data);
+            }
+            break;
+          }
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('connect');
+        socket.off('onMessage');
+        socket.off('action');
+      }
+    };
+  }, [socket, conversations, currentUser]);
+
   return (
     <div
       className={` flex px-6 py-4 justify-center h-[90vh] min-w-[300px] min-h-[600px]`}
     >
-      <div className='relative w-full h-full flex gap-6 self-center md:flex-row flex-col'>
+      <div className="relative w-full h-full flex gap-6 self-center md:flex-row flex-col">
         <Preview
           conversationsMap={conversations}
           orderedConversations={conversationOrder}
@@ -201,8 +243,9 @@ const Home = ({ params }: { params: { id: number } }) => {
           currentUser={currentUser}
           showConversation={showConversation}
           updateShowConversation={setShowConversation}
-          addMember={addMemberToConversation}
-          addAdmin={addAdminToConversation}          
+          addAdmin={addAdminToConversation}
+          updateConversations={uppdateConversations}
+          removeConversation={removeConversation}
         />
         {createChannel && (
           <div

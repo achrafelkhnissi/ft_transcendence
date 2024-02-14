@@ -1,15 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get(['/', 'help'])
-  getHelp(): object {
-    return this.appService.getHelp();
-  }
-
+  @ApiOkResponse({ description: 'Return authors' })
+  @ApiOperation({ summary: 'Get authors' })
   @Get('authors')
   getAuthors(): object {
     return this.appService.getAuthors();

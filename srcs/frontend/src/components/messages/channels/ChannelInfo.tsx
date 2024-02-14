@@ -1,44 +1,66 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
+import { ChangeEvent } from 'react';
 import { Conversation, User } from '../data';
 import Member from './Member';
 import getUser from '@/services/getUser';
+import { FaCheck } from 'react-icons/fa';
+import addNewMember from '@/services/addMember';
+import updateChannelType from '@/services/updateChannelType';
+import { hashPassword } from '../hashPass';
+import leaveChannel from '@/services/leaveChannel';
 
 interface ChannelInfoProps {
   channel: Conversation;
-  addMember: Function;
-  addAdmin: Function;
-  currentUser: string;
+  currentUser: User | undefined;
+  updateConversations: Function;
 }
 
 const newMemberError = {
   0: 'valid',
   1: 'user already exist!',
   2: 'invalid user!',
+  4: 'banned user!',
 };
 
 const ChannelInfo: React.FC<ChannelInfoProps> = ({
   channel,
-  addMember,
-  addAdmin,
+  updateConversations,
   currentUser,
 }) => {
   const length = channel.participants.length + channel.admins.length + 1;
+  const currentUserRole =
+    channel.owner.id === currentUser?.id
+      ? 'owner'
+      : channel.admins.some((admin) => admin.id === currentUser?.id)
+        ? 'admin'
+        : '';
   const [newMember, setNewMember] = useState<string>('');
-  const [memberError, setMemeberError] = useState<0 | 1 | 2>(0);
+  const [memberError, setMemeberError] = useState<0 | 1 | 2 | 4>(0);
+  const [channelType, setChannelType] = useState<string>(channel.type);
+  const [password, setPassword] = useState<string>('');
+  const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
 
   const handleNewMemmber = () => {
-    if (newMember != '' && newMember != currentUser) {
+    if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
         if (res) {
           if (
             channel.participants.every((obj) => obj.id != res.id) &&
-            channel.admins.every((obj) => obj != res.id) &&
+            channel.admins.every((obj) => obj.id != res.id) &&
+            channel.bannedUsers.every((user) => user.id != res.id) &&
             channel.owner.id != res.id
           ) {
+            addNewMember(res.id, channel.id).then((res) => {
+              if (res) {
+                // updateConversations(res);
+              }
+            });
             setMemeberError(0);
-            addMember(channel.id, res);
+          } else if (channel.bannedUsers.some((user) => user.id == res.id)) {
+            setMemeberError(4);
           } else {
             setMemeberError(1);
           }
@@ -53,11 +75,71 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     }
   };
 
-  const handleLeaveChannel = () => {};
+  const handleLeaveChannel = () => {
+    leaveChannel(channel.id, currentUser?.id).then((res) => {
+      if (res) {
+        console.log('left channel');
+        // removeConversation(channel.id);
+      }
+    });
+  };
+
+  const modifyChannelType = async (newChannelType: string) => {
+    let hashedpass = '';
+    console.log('newChannelType: ', newChannelType);
+    if (newChannelType != 'PROTECTED') {
+      updateChannelType(channel.id, {
+        type: newChannelType,
+        password: null,
+      }).then((res) => {
+        if (res) {
+          updateConversations(res);
+          setChannelType(newChannelType);
+        }
+      });
+    } else {
+      if (password != '') {
+        try {
+          hashedpass = await hashPassword(password);
+          updateChannelType(channel.id, {
+            type: newChannelType,
+            password: hashedpass,
+          }).then((res) => {
+            if (res) {
+              updateConversations(res);
+              setChannelType(newChannelType);
+            } else {
+              setChannelType(channel.type);
+            }
+            setPassword('');
+          });
+        } catch (error) {
+          console.log('Error hashing password: ', error);
+        }
+      }
+    }
+  };
+
+  const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const pass = e.target.value;
+
+    if (pass === '') {
+      setWeakPassword(false);
+    } else if (passwordRegex.test(pass)) {
+      setWeakPassword(false);
+      setPassword(pass);
+    } else {
+      setWeakPassword(true);
+      setPassword('');
+    }
+  };
+
   return (
     <div
       className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 
-                        flex flex-col gap-4"
+                        flex flex-col gap-4 "
     >
       <h1 className="self-center md:text-[1.5rem] text-xl text-white/90 font-semibold">
         Channel Info
@@ -72,61 +154,113 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
         <p className="self-center md:text-[1.2rem] text-sm">{channel.name}</p>
       </div>
       {/* accessibility */}
-      <div className="flex flex-col ">
-        <h2 className=" text-white mb-3">Accessibility</h2>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2  items-center text-white">
-            <label
-              htmlFor="privateSwitch"
-              className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                channel.type === 'PRIVATE' ? 'bg-blue-500/80' : 'bg-white/5'
-              }`}
-            >
-              <input
-                type="checkbox"
-                id="privateSwitch"
-                className="sr-only"
-                onClick={() => {}}
-              />
-              <div
-                className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
-                  channel.type === 'PRIVATE'
-                    ? 'translate-x-full bg-white'
-                    : 'bg-white/80'
+      {channel.owner.id === currentUser?.id && (
+        <div className="flex flex-col ">
+          <h2 className=" text-white mb-3">Accessibility</h2>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2  items-center text-white">
+              <label
+                htmlFor="privateSwitch"
+                className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
+                  channelType === 'PRIVATE' ? 'bg-blue-500/90' : 'bg-white/5'
                 }`}
-              ></div>
-            </label>
-            <span className="ml-2 text-white/80">Make Channel Private </span>
-          </div>
-          {/* ///lock */}
-          <div className="flex gap-2  items-center text-white">
-            <label
-              htmlFor="lockSwitch"
-              className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
-                channel.type === 'PROTECTED' ? 'bg-blue-500/80' : 'bg-white/5'
-              }`}
-            >
-              <input
-                type="checkbox"
-                id="lockSwitch"
-                className="sr-only"
-                onClick={() => {}}
-              />
+              >
+                <input
+                  type="checkbox"
+                  id="privateSwitch"
+                  className="sr-only"
+                  onClick={(e) => {
+                    modifyChannelType(
+                      channelType === 'PRIVATE' ? 'PUBLIC' : 'PRIVATE',
+                    );
+                  }}
+                />
+                <div
+                  className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
+                    channelType === 'PRIVATE'
+                      ? 'translate-x-full bg-white'
+                      : 'bg-white/80'
+                  }`}
+                ></div>
+              </label>
+              <span className="ml-2 text-white/80"> Private Channel </span>
+            </div>
+            {/* ///lock */}
+            <div className="flex gap-4 flex-col items-center text-white relative">
+              <div className="w-full h-full flex gap-2">
+                <label
+                  htmlFor="lockSwitch"
+                  className={` relative w-10 h-5 bg-gray-300 rounded-full transition-transform duration-300 ease-in-out outline outline-2 outline-blue-400/50 cursor-pointer ${
+                    channelType === 'PROTECTED'
+                      ? 'bg-blue-500/90'
+                      : 'bg-white/5'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    id="lockSwitch"
+                    className="sr-only"
+                    onClick={(e) => {
+                      if (channelType == 'PROTECTED')
+                        modifyChannelType('PUBLIC');
+                      setChannelType((prev) =>
+                        prev === 'PROTECTED' ? 'PUBLIC' : 'PROTECTED',
+                      );
+                    }}
+                  />
+                  <div
+                    className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
+                      channelType === 'PROTECTED'
+                        ? 'translate-x-full bg-white'
+                        : 'bg-white/80'
+                    }`}
+                  ></div>
+                </label>
+                <span className="ml-2 text-white/80">Locked Channel </span>
+              </div>
               <div
-                className={`absolute w-5 h-5  rounded-full transform transition-transform duration-300 ease-in-out cursor-none ${
-                  channel.type === 'PROTECTED'
-                    ? 'translate-x-full bg-white'
-                    : 'bg-white/80'
-                }`}
-              ></div>
-            </label>
-            <span className="ml-2 text-white/80">Lock Channel </span>
+                className={`md:w-[12rem] w-[10rem] relative flex flex-col justify-center self-start 
+              ${channelType != 'PROTECTED' && 'hidden'}`}
+              >
+                <div className="relative w-full flex justify-center self-start  h-10">
+                  <input
+                    type="text"
+                    id="password"
+                    maxLength={13}
+                    placeholder={
+                      channel.type == 'PROTECTED' ? '**********' : 'password'
+                    }
+                    onChange={handlePassword}
+                    className={`w-full h-full rounded-xl border-2 border-blue-500/80 bg-white/5 self-center outline-none px-4
+                  text-white/60 text-md font-normal placeholder:opacity-40 md:text-md text-sm placeholder:text-sm`}
+                  />
+                  <label
+                    htmlFor="password"
+                    className="cursor-pointer  self-center rounded-full w-[1.3rem] h-[1.3rem] bg-white/10 flex justify-center
+                  absolute right-2 "
+                  >
+                    <FaCheck
+                      className="text-blue-500 font-bold self-center w-[0.8rem] h-[0.8rem]"
+                      onClick={() => {
+                        modifyChannelType('PROTECTED');
+                      }}
+                    />
+                  </label>
+                </div>
+                {weakPasswrod && (
+                  <p className="md:text-xs  text-[0.6rem] text-red-600 w-full pl-2  pt-1 ">
+                    Password must be strong: 8+ chars, upper/lowercase, digits,
+                    special chars.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {/* Members */}
       <div className="flex flex-col gap-2 text-sm md:text-[1rem] pb-2">
-        <h3 className="">{length} members</h3>
+        <h3 className="">members ({length})</h3>
         {/* add member */}
         <div className="relative w-full h-10 mb-2">
           <input
@@ -160,8 +294,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             id={channel.owner.id}
             username={channel.owner.username}
             avatar={channel.owner.avatar}
-            role={'Owner'}
+            role={'owner'}
             status={channel.owner.status}
+            updateConversations={updateConversations}
+            channelId={channel.id}
+            muted={true}
+            currentUserRole=""
           />
           {channel.admins.map((admin, index) => {
             return (
@@ -170,27 +308,64 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   id={admin.id}
                   username={admin.username}
                   avatar={admin.avatar}
-                  role={'Admin'}
+                  role={'admin'}
                   status={admin.status}
+                  updateConversations={updateConversations}
+                  channelId={channel.id}
+                  muted={channel.mutedUsers.some(
+                    (obj) => obj.user.id == admin.id,
+                  )}
+                  currentUserRole={currentUserRole}
                 />
               </div>
             );
           })}
           {channel.participants.map((participant, index) => {
             return (
-              <div key={index} className="text-white/80">
+              <div key={index} className="text-white/80 ">
                 <Member
                   id={participant.id}
                   username={participant.username}
                   avatar={participant.avatar}
                   role={''}
                   status={participant.status}
+                  updateConversations={updateConversations}
+                  channelId={channel.id}
+                  muted={channel.mutedUsers.some(
+                    (obj) => obj.user.id == participant.id,
+                  )}
+                  currentUserRole={currentUserRole}
                 />
               </div>
             );
           })}
         </div>
       </div>
+      {/* banned users */}
+      {channel.bannedUsers?.length > 0 && (
+        <div className="flex flex-col gap-2 text-sm md:text-[1rem] pb-2">
+          <h3 className="">banned users ({channel.bannedUsers.length})</h3>
+          <div className="flex gap-2 flex-col overflow-y-auto max-h-[500px] px-2">
+            {channel.bannedUsers.map((banned, index) => {
+              return (
+                <div key={index} className="text-white/80 ">
+                  <Member
+                    id={banned.id}
+                    username={banned.username}
+                    avatar={banned.avatar}
+                    role={'banned'}
+                    status={banned.status}
+                    updateConversations={updateConversations}
+                    channelId={channel.id}
+                    muted={false}
+                    currentUserRole={currentUserRole}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="self-center flex">
         <button
           className="px-4 py-2 bg-red-800 rounded-lg text-white/80 cursor-pointer hover:bg-red-700"

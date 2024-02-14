@@ -8,6 +8,8 @@ import { useSocket } from '@/contexts/socketContext';
 import { ContactsItems, FriendshipStatus } from './types';
 import createNewConv from '@/services/createNewConv';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { Data } from 'phaser';
 
 interface ContactsProps {
   username: string;
@@ -59,12 +61,12 @@ const Contacts: React.FC<ContactsProps> = ({
 
   useEffect(() => {
     if (isClicked == 'send') {
-      sendFriendRequest(username).then((res) => {
+      sendFriendRequest(id).then((res) => {
         setIsClicked('');
         setFriendshipState(res.request.friendshipStatus);
       });
     } else if (isClicked == 'cancel') {
-      cancelFriendRequest(username).then((res) => {
+      cancelFriendRequest(id).then((res) => {
         setIsClicked('');
         setFriendshipState(false);
       });
@@ -72,15 +74,16 @@ const Contacts: React.FC<ContactsProps> = ({
   }, [isClicked, username, friendshipState]);
 
   const router = useRouter();
-  const createRoom = () => {
+  const createRoom = async () => {
     const payload = {
       type: 'DM',
-      participants: [id],
+      participants: id ? [id] : [],
     };
 
-    socket?.emit('createRoom', payload, function createdAck(id: string) {
-      console.log(`I joined room ${id} successfully!`);
-      router.push(`/messages/${+id}`);
+    createNewConv(payload).then((res) => {
+      if (res) {
+        router.push(`/messages/${res.id}`);
+      }
     });
   };
 

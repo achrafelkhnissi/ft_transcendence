@@ -11,6 +11,7 @@ export enum FriendshipStatus {
 }
 
 export interface FriendsProps {
+  id: number;
   username: string;
   avatar: string;
   status: string;
@@ -19,7 +20,6 @@ export interface FriendsProps {
 export interface User {
   id: number | null;
   username: string;
-  // avatar: string;
   url: string;
   stats: {
     exp: number;

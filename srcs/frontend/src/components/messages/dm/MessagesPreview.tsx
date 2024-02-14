@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { UserStatuses, ConversationsMap, User } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
 
@@ -8,7 +9,7 @@ interface MessagesPreviewProps {
   selectedConversation: number;
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
-  currentUser: string;
+  currentUser: User | undefined;
   updateShowConversation: Function;
 }
 
@@ -33,11 +34,13 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
       {orderedConversations.map((id) => {
         if (conversationsMap[id].type === 'DM') {
           const lastMessage =
-            conversationsMap[id].messages[
-              conversationsMap[id].messages.length - 1
-            ];
+            conversationsMap[id].messages.length > 0
+              ? conversationsMap[id].messages[
+                  conversationsMap[id].messages?.length - 1
+                ]
+              : null;
           const friend: User =
-            conversationsMap[id].participants[0].username === currentUser
+            conversationsMap[id].participants[0].id === currentUser?.id
               ? conversationsMap[id].participants[1]
               : conversationsMap[id].participants[0];
 
@@ -51,14 +54,11 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
             >
               <div className="self-center ">
                 <img
-                  src={
-                    process.env.BACKEND +
-                    `/api/users/${friend?.username}/avatar`
-                  }
+                  src={process.env.BACKEND + `/api/users/${friend?.id}/avatar`}
                   alt=""
                   width={100}
                   height={100}
-                  className="w-12 h-12 rounded-full "
+                  className="w-12 h-12 rounded-full object-fill"
                 />
               </div>
               <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">

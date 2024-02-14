@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ConversationsMap, User, UserStatuses } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
 import CreateChannel from './CreateChannel';
@@ -9,7 +10,7 @@ interface ChannelsPreviewProps {
   selectedConversation: number;
   updateSelectedConversation: Function;
   markLastMessageAsRead: Function;
-  currentUser: string;
+  currentUser: User | undefined;
   updateShowConversation: Function;
 }
 
@@ -39,9 +40,11 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
         if (isChannel(conversationsMap[id].type)) {
           const channel = conversationsMap[id];
           const lastMessage =
-            conversationsMap[id].messages[
-              conversationsMap[id].messages.length - 1
-            ];
+            conversationsMap[id].messages.length > 0
+              ? conversationsMap[id].messages[
+                  conversationsMap[id].messages?.length - 1
+                ]
+              : null;
 
           return (
             <div
@@ -59,7 +62,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                   alt=""
                   width={100}
                   height={100}
-                  className="w-12 h-12 rounded-full "
+                  className="w-12 h-12 rounded-full object-fill"
                 />
               </div>
               <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">
@@ -71,12 +74,12 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                   {lastMessage ? ':' : ''} {lastMessage?.content.slice(0, 80)}
                 </p>
               </div>
-              <p className="text-[0.6rem] font-light text-white/60 mt-1 w-10">
+              <p className="text-[0.6rem] font-light text-white/60 mt-1 w-12">
                 {lastMessage ? formatChatTimestamp(lastMessage.createdAt) : ''}
               </p>
               {lastMessage &&
                 !lastMessage.isRead &&
-                lastMessage.sender.username != currentUser &&
+                lastMessage.sender.id != currentUser?.id &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2  top-1/2"></div>
                 )}

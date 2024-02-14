@@ -4,25 +4,28 @@ import Emoji from '../svgAssets/Emoji';
 import GameInvitation from '../svgAssets/GameInvitation';
 import SendMessage from '../svgAssets/SendMessage';
 import MessageContainer from './dm/MessageContainer';
-import { UserStatuses, ConversationsMap, User, Message } from './data';
+import { UserStatuses, ConversationsMap, User, Message, Mute } from './data';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { useSocket } from '@/contexts/socketContext';
 import ConversationHeader from './dm/ConversationHeader';
 import ChannelsHeader from './channels/ChannelsHeader';
 import ChannelMessageContainer from './channels/ChannelMessageContainer';
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack } from 'react-icons/io';
 import ChannelInfo from './channels/ChannelInfo';
-
+import axios from 'axios';
+import checkIfMuted from './tools/chaeckIfMuted';
+import unmuteUser from '@/services/unmuteUser';
 
 interface ViewConversationsProps {
   conversationId: number;
   conversationsMap: ConversationsMap;
   statuses: UserStatuses;
-  currentUser: string;
+  currentUser: User | undefined;
   showConversation: boolean;
   updateShowConversation: Function;
-  addMember: Function;
   addAdmin: Function;
+  updateConversations: Function;
+  removeConversation: Function;
 }
 
 const ViewConversations: React.FC<ViewConversationsProps> = ({
@@ -32,13 +35,15 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   currentUser,
   showConversation,
   updateShowConversation,
-  addMember,
   addAdmin,
+  updateConversations,
+  removeConversation,
 }) => {
   const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>('');
   const [showChannelInfo, setShowChannelInfo] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   const handleEmojiSelect = (
     emojiObject: EmojiClickData,
@@ -62,39 +67,78 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (
+      conversationId >= 0 &&
+      conversationsMap.hasOwnProperty(conversationId) &&
+      conversationsMap[conversationId].type != 'DM'
+    ) {
+      const muteObject = conversationsMap[conversationId]?.mutedUsers?.filter(
+        (mute) => mute.user.id === currentUser?.id,
+      )[0];
+      if (muteObject !== undefined) {
+        let res = checkIfMuted(muteObject);
+        if (res) {
+          setIsMuted(true);
+        } else {
+          unmuteUser(currentUser?.id, conversationId).then((res) => {
+            if (res) {
+              console.log('unmute', res);
+            }
+          });
+          setIsMuted(false);
+        }
+      } else setIsMuted(false);
+    }
+  }, [conversationId, conversationsMap, currentUser?.id]);
+
   let receiver: User = {
     username: '',
     avatar: '',
     status: '',
   };
 
-  if (conversationId >= 0 && conversationsMap[conversationId].type == 'DM') {
+  if (
+    conversationId >= 0 &&
+    conversationsMap.hasOwnProperty(conversationId) &&
+    conversationsMap[conversationId].type == 'DM'
+  ) {
     const [firstParticipant, secondParticipant] =
       conversationsMap[conversationId].participants;
 
     receiver =
-      firstParticipant.username === currentUser
+      firstParticipant.id === currentUser?.id
         ? secondParticipant
         : firstParticipant;
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const onlySpacesRegex = /^\s*$/;
 
     if (!onlySpacesRegex.test(newMessage)) {
-      socket?.emit(
-        'message',
+      const { data } = await axios.post(
+        process.env.BACKEND + '/api/message', // TODO: Change this to /api/users/chat/message
         {
           content: newMessage,
           conversationId: Number(conversationId),
           room: conversationsMap[conversationId].name,
         },
-        () => {
-          console.log('message sent ');
-        },
+        { withCredentials: true },
       );
+      console.log('data', data);
     }
     setNewMessage('');
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter') {
+      // Prevent the default behavior of the "Enter" key
+      event.preventDefault();
+      if (event.shiftKey) setNewMessage((prevMessage) => prevMessage + '\n');
+      else {
+        handleSend();
+      }
+    }
   };
 
   return (
@@ -104,110 +148,118 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         ${showConversation ? '' : 'hidden md:block'}`}
     >
       {/* Header */}
-      {conversationId >= 0 && (
-        <>
-          {conversationsMap[conversationId].type === 'DM' && (
-            <ConversationHeader
-            receiver={receiver} 
-            updateConversations={updateShowConversation}            />
-          )}
-          {conversationsMap[conversationId].type != 'DM' && (
-            <>
-            <ChannelsHeader
-              channel={conversationsMap[conversationId]}
-              updateConversations={updateShowConversation}
-              showChannelInfo = {showChannelInfo} 
-              setShowChannelInfo = {setShowChannelInfo}
+      {conversationId >= 0 &&
+        conversationsMap.hasOwnProperty(conversationId) && (
+          <>
+            {conversationsMap[conversationId].type === 'DM' && (
+              <ConversationHeader
+                receiver={receiver}
+                updateConversations={updateShowConversation}
               />
-              {
-                showChannelInfo && 
-                <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 ">
-                  <ChannelInfo 
-                    currentUser={currentUser}
-                    addMember={addMember}
-                    addAdmin={addAdmin}
-                    channel={conversationsMap[conversationId]}
-                  />
-                </div>
-              }
+            )}
+            {conversationsMap[conversationId].type != 'DM' && (
+              <>
+                <ChannelsHeader
+                  channel={conversationsMap[conversationId]}
+                  updateConversations={updateShowConversation}
+                  showChannelInfo={showChannelInfo}
+                  setShowChannelInfo={setShowChannelInfo}
+                />
+                {showChannelInfo && (
+                  <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
+                    <ChannelInfo
+                      currentUser={currentUser}
+                      channel={conversationsMap[conversationId]}
+                      updateConversations={updateConversations}
+                    />
+                  </div>
+                )}
               </>
-          )}
-          {/* Messages */}
-          <div className="w-full h-full overflow-hidden py-6 ">
-            <div
-              className="flex flex-col gap-2 h-5/6 my-auto mt-12 overflow-y-scroll px-6 py-4 "
-              ref={chatContainerRef}
-            >
-              {conversationsMap[conversationId].type === 'DM' &&
-                conversationsMap[conversationId].messages.map(
-                  (message, index) => {
-                    return (
-                      <MessageContainer
-                        isCurrentUser={currentUser === message.sender.username}
-                        content={message.content}
-                        date={message.createdAt}
-                        key={index}
-                      />
-                    );
-                  },
-                )}
-              {conversationsMap[conversationId].type != 'DM' &&
-                conversationsMap[conversationId].messages.map(
-                  (message, index, array) => {
-                    return (
-                      <ChannelMessageContainer
-                        message={message}
-                        isCurrentUser={currentUser === message.sender.username}
-                        displayAvatr={
-                          array[index + 1]?.sender != message.sender
-                        }
-                        key={index}
-                      />
-                    );
-                  },
-                )}
-            </div>
-          </div>
-          {/* Input */}
-          <div
-            className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
-                            bg-[#59598E4A] flex text-sm"
-          >
-            <div
-              className="self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative"
-              onClick={toggleEmojiPicker}
-            >
-              <Emoji color={'#20204A'} width={'29px'} height={'29px'}  />
-              <div className="absolute bottom-10 left-0 ">
-                {showEmojiPicker && (
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} 
-                  className=''/>
-                )}
+            )}
+            {/* Messages */}
+            <div className="w-full h-full overflow-hidden py-6">
+              <div
+                className="flex flex-col gap-2 sm:h-[91%] h-[83%] my-auto mt-12 overflow-y-scroll px-6 py-4"
+                ref={chatContainerRef}
+              >
+                {conversationsMap[conversationId].type === 'DM' &&
+                  conversationsMap[conversationId].messages.map(
+                    (message, index) => {
+                      return (
+                        <MessageContainer
+                          isCurrentUser={currentUser?.id === message.sender.id}
+                          content={message.content}
+                          date={message.createdAt}
+                          key={index}
+                        />
+                      );
+                    },
+                  )}
+                {conversationsMap[conversationId].type != 'DM' &&
+                  conversationsMap[conversationId].messages.map(
+                    (message, index, array) => {
+                      return (
+                        <ChannelMessageContainer
+                          message={message}
+                          isCurrentUser={currentUser?.id === message.sender.id}
+                          displayAvatr={
+                            array[index + 1]?.sender != message.sender
+                          }
+                          key={index}
+                        />
+                      );
+                    },
+                  )}
               </div>
             </div>
-            <div className="w-full h-full flex py-2">
-              <textarea
-                name="message"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                className="bg-transparent w-full h-full outline-none px-6
-                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm "
-                placeholder="Type a message here..."
-              />
-            </div>
+            {/* Input */}
             <div
-              className="self-center pr-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]"
-              onClick={() => {
-                handleSend();
-              }}
+              className="absolute bottom-3 w-11/12 h-14 rounded-3xl left-1/2 transform -translate-x-1/2
+                            bg-[#59598E4A] flex text-sm"
             >
-              <SendMessage color={'#20204A'} width={'29px'} height={'29px'} />
+              <button
+                className={`self-center pl-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative ${isMuted && 'cursor-not-allowed'} `}
+                onClick={toggleEmojiPicker}
+                disabled={isMuted}
+              >
+                <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
+                <div className="absolute bottom-10 left-0 ">
+                  {showEmojiPicker && (
+                    <EmojiPicker
+                      onEmojiClick={handleEmojiSelect}
+                      className=""
+                    />
+                  )}
+                </div>
+              </button>
+              <div className="w-full h-full flex py-2">
+                <textarea
+                  disabled={isMuted}
+                  name="message"
+                  value={newMessage}
+                  onKeyDown={handleKeyDown}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message here..."
+                  className={`bg-transparent w-full h-full outline-none px-6
+                                placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm 
+                  ${isMuted && 'cursor-not-allowed'} `}
+                />
+              </div>
+              <button
+                className={`self-center pr-[1.3rem] hover:cursor-pointer
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]
+                ${isMuted && 'cursor-not-allowed'} `}
+                onClick={() => {
+                  handleSend();
+                }}
+                disabled={isMuted}
+              >
+                <SendMessage color={'#20204A'} width={'29px'} height={'29px'} />
+              </button>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
     </div>
   );
 };

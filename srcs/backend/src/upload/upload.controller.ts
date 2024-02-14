@@ -8,9 +8,28 @@ import {
   ChannelAvatarUploadInterceptor,
   UserAvatarUploadInterceptor,
 } from './utils/UploadInterceptor';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiForbiddenResponse,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
+
+const imageUploadSchema = {
+  type: 'object',
+  properties: {
+    image: {
+      type: 'string',
+      format: 'binary',
+    },
+  },
+};
 
 @ApiTags('upload')
+@ApiForbiddenResponse({ description: 'Forbidden' })
 @UseGuards(AuthGuard)
 @Controller('upload')
 export class UploadController {
@@ -19,6 +38,11 @@ export class UploadController {
   private readonly logger = new Logger(UploadController.name);
 
   @Post('avatar')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: imageUploadSchema })
+  @ApiCreatedResponse({ description: 'User avatar uploaded' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Upload user avatar' })
   @UserAvatarUploadInterceptor()
   uploadAvatar(
     @UploadedFileValidator() image: Express.Multer.File,
@@ -29,6 +53,11 @@ export class UploadController {
   }
 
   @Post('channel-avatar')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: imageUploadSchema })
+  @ApiCreatedResponse({ description: 'Channel avatar uploaded' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiOperation({ summary: 'Upload channel avatar' })
   @ChannelAvatarUploadInterceptor()
   uploadChannelAvatar(@UploadedFileValidator() image: Express.Multer.File) {
     return this.uploadService.uploadChannelAvatar(image);

@@ -33,11 +33,7 @@ const UserInfo: React.FC<User> = ({
           <div className="w-full relative h-full flex justify-center">
             <div className="absolute left-1/2 transform  -translate-x-1/2 -translate-y-1/2">
               <ProfileAvatar
-                avatar={
-                  username
-                    ? process.env.BACKEND + `/api/users/${username}/avatar`
-                    : ''
-                }
+                avatar= { id? process.env.BACKEND + `/api/users/${id}/avatar` : ''}
                 experiencePoints={stats.exp}
                 level={stats.level}
               />
@@ -57,7 +53,7 @@ const UserInfo: React.FC<User> = ({
               <div className="self-center">
                 <Stats />
               </div>
-              <div className="self-center">
+              <div className="self-center z-10">
                 <Contacts
                   username={username}
                   me={me}

@@ -1,13 +1,12 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { Gateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class NotificationsService {
-  private readonly logger = new Logger(NotificationsService.name);
-
   private readonly infoToSelect = {
     id: true,
     read: true,
@@ -21,22 +20,24 @@ export class NotificationsService {
     },
   };
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly gateway: Gateway,
+  ) {}
 
   async create(createNotificationDto: CreateNotificationDto) {
-    try {
-      const notification = await this.prismaService.notification.create({
-        data: createNotificationDto,
-      });
+    const notification = await this.prismaService.notification.create({
+      data: createNotificationDto,
+      select: this.infoToSelect,
+    });
 
-      return notification;
-    } catch (error) {
-      this.logger.warn(
-        "Couldn't create notification because its already exists in the database",
-      );
+    if (notification) {
+      this.gateway.server
+        .to(`user-${createNotificationDto.receiverId}`)
+        .emit('onNotification', notification);
     }
 
-    return null;
+    return notification;
   }
 
   findByQuery(user: UserType, query: UpdateNotificationDto) {
@@ -54,11 +55,12 @@ export class NotificationsService {
     return this.prismaService.notification.update({
       where: { id },
       data: updateNotificationDto,
+      select: this.infoToSelect,
     });
   }
 
   findOne(id: number) {
-    return this.prismaService.notification.findUnique({
+    return this.prismaService.notification.findUniqueOrThrow({
       where: { id },
       select: this.infoToSelect,
     });

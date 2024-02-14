@@ -1,15 +1,28 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { conversationSelect } from './../../prisma/prisma.selects';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Socket } from 'socket.io';
-import { Conversation, ConversationType, Status } from '@prisma/client';
+import { ConversationType, MuteDuration, Status } from '@prisma/client';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatData } from 'src/common/interfaces/chat-data.interface';
+import { Role } from 'src/common/enums/role.enum';
+import { Gateway } from 'src/gateway/gateway';
+import { DAY, HOUR, MINUTE } from 'src/common/constants/time.const';
+import * as fs from 'fs';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly gateway: Gateway,
+  ) {}
 
   createUniqueRoomName(id1: number, id2: number) {
     const sortedIds = [id1, id2].sort();
@@ -18,18 +31,6 @@ export class ChatService {
 
   async create(createChatDto: CreateChatDto) {
     this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
-
-    const chat: Conversation = await this.prismaService.conversation.findUnique(
-      {
-        where: {
-          name: createChatDto.name,
-        },
-      },
-    );
-
-    if (chat) {
-      return chat;
-    }
 
     const data: ChatData = {
       type: createChatDto.type,
@@ -54,12 +55,46 @@ export class ChatService {
 
     return this.prismaService.conversation.create({
       data,
+      select: conversationSelect,
     });
   }
 
-  findAll() {
+  async findAll(userId: number) {
     this.logger.log('Finding all chats');
-    return this.prismaService.conversation.findMany();
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            { type: ConversationType.PUBLIC },
+            { type: ConversationType.PROTECTED },
+          ],
+        },
+        select: conversationSelect,
+        orderBy: {
+          participants: {
+            _count: 'desc',
+          },
+        },
+      })
+      .then((chats) => {
+        return chats.map((chat) => {
+          // Check if user is already in chat
+          const isParticipant = chat.participants.some(
+            (participant) => participant.id === userId,
+          );
+          const isOwner = chat.ownerId === userId;
+          const isAdmin = chat.admins.some((admin) => admin.id === userId);
+
+          return {
+            id: chat.id,
+            type: chat.type,
+            name: chat.name,
+            image: chat.image,
+            members: chat.participants.length + chat.admins.length + 1,
+            joined: isOwner || isAdmin || isParticipant,
+          };
+        });
+      });
   }
 
   async findAllChatForUser(userId: number) {
@@ -119,33 +154,7 @@ export class ChatService {
             },
           ],
         },
-        select: {
-          id: true,
-          type: true,
-          name: true,
-          updatedAt: true,
-          owner: {
-            select: userInfoSelect,
-          },
-          participants: {
-            select: userInfoSelect,
-          },
-          admins: {
-            select: userInfoSelect,
-          },
-          messages: {
-            select: {
-              id: true,
-              content: true,
-              isRead: true,
-              conversationId: true,
-              createdAt: true,
-              sender: {
-                select: userInfoSelect,
-              },
-            },
-          },
-        },
+        select: conversationSelect,
       })
       .then((chats) => {
         return chats.filter((chat) => {
@@ -172,86 +181,52 @@ export class ChatService {
 
   findOne(id: number) {
     this.logger.log(`Finding chat with id ${id}`);
-    return this.prismaService.conversation.findUnique({
+    return this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id,
       },
-      select: {
-        id: true,
-        type: true,
-        name: true,
-        updatedAt: true,
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        participants: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        admins: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            status: true,
-          },
-        },
-        messages: {
-          select: {
-            id: true,
-            content: true,
-            isRead: true,
-            createdAt: true,
-            sender: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
-            },
-          },
-        },
-      },
+      select: conversationSelect,
     });
   }
 
-  update(id: number, updateChatDto: any) {
-    // TODO: Update any to UpdateChatDto
+  update(id: number, data: { type?: ConversationType; password?: string }) {
     this.logger.log(`Updating chat with id ${id}`);
 
     return this.prismaService.conversation.update({
       where: {
         id,
       },
-      data: updateChatDto,
+      data,
+      select: conversationSelect,
     });
   }
 
-  // TODO: Check if the logged in user has permission to remove a chat
-  remove(id: number) {
+  async remove(id: number) {
     this.logger.log(`Removing chat with id ${id}`);
-    return this.prismaService.conversation.delete({
+    const chat = await this.prismaService.conversation.delete({
       where: {
         id,
       },
+      select: conversationSelect,
     });
+
+    const imagePath = chat.image;
+    if (
+      imagePath &&
+      fs.existsSync(imagePath) &&
+      !imagePath.startsWith('uploads/chat-default-images')
+    ) {
+      this.logger.log(`Removing image at path ${imagePath}`);
+      fs.unlinkSync(imagePath);
+    }
+
+    return chat;
   }
 
-  // TODO: maybe use message service instead?
   findMessages(id: number) {
     this.logger.log(`Finding messages for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -262,7 +237,7 @@ export class ChatService {
   findParticipants(id: number) {
     this.logger.log(`Finding participants for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -273,7 +248,7 @@ export class ChatService {
   findAdmins(id: number) {
     this.logger.log(`Finding admins for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -284,7 +259,7 @@ export class ChatService {
   findOwner(id: number) {
     this.logger.log(`Finding owner for chat with id ${id}`);
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
@@ -292,102 +267,10 @@ export class ChatService {
       .owner();
   }
 
-  addAdmin(id: number, userId: number) {
-    this.logger.log(`Adding admin with id ${userId} to chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          connect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
-
-  // TODO: Check if the logged in user has permission to remove a user from a chat
-  // removeUser(id: number, userId: number) {
-  //   this.logger.log(`Removing user with id ${userId} from chat with id ${id}`);
-  //   return this.prismaService.conversation.update({
-  //     where: {
-  //       id,
-  //     },
-  //     data: {
-  //       participants: {
-  //         disconnect: {
-  //           userId_conversationId: { userId, conversationId: id },
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
-
-  removeAdmin(id: number, userId: number) {
-    this.logger.log(`Removing admin with id ${userId} from chat with id ${id}`);
-    return this.prismaService.conversation.update({
-      where: {
-        id,
-      },
-      data: {
-        admins: {
-          disconnect: {
-            id: userId,
-          },
-        },
-      },
-    });
-  }
-
-  /* --- Gateway --- */
-  getUserFromSocket(socket: Socket) {
-    // TODO: Test this
-    return socket.handshake.auth.user;
-  }
-
-  addUserToChat(user: any, room: string) {
-    // this.prismaService.conversation.upsert({
-    //   where: {
-    //     name: room,
-    //   },
-    //   update: {
-    //     participants: {
-    //       connect: {
-    //         id: user.id,
-    //       },
-    //     },
-    //   },
-    //   create: {
-    //     name: room,
-    //     participants: {
-    //       connect: {
-    //         id: user.id,
-    //       },
-    //     },
-    //   },
-    // });
-  }
-
-  removeUserFromChat(user: any, room: string) {
-    // TODO: remove user form chat {room} in db
-  }
-
-  getAllMessagesFromChat(room: string) {
-    // TODO: get all messages from chat {room} in db
-  }
-
-  getAllUsersFromChat(room: string) {}
-
-  getAllAdminsFromChat(room: string) {}
-
-  getChatOwner(room: string) {}
-
   getUserFromSession(session: any) {
     const userId = session.passport.user;
 
-    return this.prismaService.user.findUnique({
+    return this.prismaService.user.findUniqueOrThrow({
       where: {
         id: userId,
       },
@@ -433,7 +316,7 @@ export class ChatService {
       .then((rooms) => rooms.map((room) => room.name));
   }
 
-  async getUserChats(username: string) {
+  async getUserChats(userId: number) {
     const userInfoSelect = {
       id: true,
       username: true,
@@ -448,50 +331,25 @@ export class ChatService {
             {
               participants: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               admins: {
                 some: {
-                  username,
+                  id: userId,
                 },
               },
             },
             {
               owner: {
-                username,
+                id: userId,
               },
             },
           ],
         },
-        select: {
-          id: true,
-          type: true,
-          name: true,
-          updatedAt: true,
-          owner: {
-            select: userInfoSelect,
-          },
-          participants: {
-            select: userInfoSelect,
-          },
-          admins: {
-            select: userInfoSelect,
-          },
-          messages: {
-            select: {
-              id: true,
-              content: true,
-              isRead: true,
-              createdAt: true,
-              sender: {
-                select: userInfoSelect,
-              },
-            },
-          },
-        },
+        select: conversationSelect,
       })
       .catch((err) => {
         this.logger.error(err.message);
@@ -502,11 +360,11 @@ export class ChatService {
   async getChatNames() {
     return this.prismaService.conversation
       .findMany({
-        // where: {
-        //   type: {
-        //     not: ConversationType.DM,
-        //   },
-        // },
+        where: {
+          type: {
+            not: ConversationType.DM,
+          },
+        },
         select: {
           name: true,
         },
@@ -516,11 +374,407 @@ export class ChatService {
 
   getAvatar(id: number) {
     return this.prismaService.conversation
-      .findUnique({
+      .findUniqueOrThrow({
         where: {
           id,
         },
       })
       .then((chat) => chat.image);
+  }
+
+  async addParticipant(chatId: number, participantId: number) {
+    const conversation =
+      await this.prismaService.conversation.findUniqueOrThrow({
+        where: { id: chatId },
+        include: { bannedUsers: true },
+      });
+
+    if (conversation.bannedUsers.some((user) => user.id === participantId)) {
+      throw new BadRequestException('User is banned from this chat');
+    }
+
+    return this.prismaService.conversation.update({
+      where: { id: chatId },
+      data: {
+        participants: {
+          connect: {
+            id: participantId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async removeParticipant(chatId: number, participantId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          disconnect: {
+            id: participantId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async leaveChat(chatId: number, userId: number) {
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        admins: true,
+      },
+    });
+
+    if (chat.ownerId === userId) {
+      const newOwner = chat.admins.length
+        ? chat.admins[0]?.id
+        : chat.participants[0]?.id;
+
+      if (!newOwner) {
+        return this.remove(chatId);
+      }
+
+      return this.replaceOwner(chatId, newOwner);
+    }
+
+    return this.removeUser(chatId, userId);
+  }
+
+  async replaceOwner(chatId: number, newOwnerId: number) {
+    await this.removeUser(chatId, newOwnerId);
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        ownerId: newOwnerId,
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async addAdmin(chatId: number, adminId: number) {
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+      },
+    });
+
+    let updateData = {
+      admins: {
+        connect: {
+          id: adminId,
+        },
+      },
+    };
+
+    updateData['participants'] = {
+      disconnect: {
+        id: adminId,
+      },
+    };
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: updateData,
+      select: conversationSelect,
+    });
+  }
+
+  async removeAdmin(chatId: number, adminId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        admins: {
+          disconnect: {
+            id: adminId,
+          },
+        },
+        participants: {
+          connect: {
+            id: adminId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async ban(chatId: number, userId: number, role: Role) {
+    let updateData = {
+      bannedUsers: {
+        connect: {
+          id: userId,
+        },
+      },
+    };
+
+    if (role === Role.ADMIN) {
+      updateData['admins'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    } else {
+      updateData['participants'] = {
+        disconnect: {
+          id: userId,
+        },
+      };
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: updateData,
+      select: conversationSelect,
+    });
+  }
+
+  async unban(chatId: number, userId: number) {
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        bannedUsers: {
+          disconnect: {
+            id: userId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async getBannedUsers(chatId: number) {
+    return this.prismaService.conversation
+      .findUniqueOrThrow({
+        where: {
+          id: chatId,
+        },
+      })
+      .bannedUsers();
+  }
+
+  async mute(chatId: number, userId: number, duration: MuteDuration) {
+    const muted = await this.prismaService.mute.create({
+      data: {
+        userId: userId,
+        conversationId: chatId,
+        duration,
+      },
+    });
+
+    if (muted) {
+      return await this.prismaService.conversation.findUniqueOrThrow({
+        where: { id: chatId },
+        select: conversationSelect,
+      });
+    }
+  }
+
+  async unmute(chatId: number, userId: number) {
+    const deleted = await this.prismaService.mute.deleteMany({
+      where: {
+        userId,
+        conversationId: chatId,
+      },
+    });
+
+    if (deleted) {
+      return await this.prismaService.conversation.findUniqueOrThrow({
+        where: { id: chatId },
+        select: conversationSelect,
+      });
+    }
+  }
+
+  async findMuted(chatId: number) {
+    return this.prismaService.mute.findMany({
+      where: {
+        conversationId: chatId,
+      },
+    });
+  }
+
+  async getPopularChats(userId: number) {
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            { type: ConversationType.PUBLIC },
+            { type: ConversationType.PROTECTED },
+          ],
+        },
+        select: conversationSelect,
+        orderBy: {
+          participants: {
+            _count: 'desc',
+          },
+        },
+        take: 4,
+      })
+      .then((chats) => {
+        return chats.map((chat) => {
+          // Check if user is already in chat
+          const isParticipant = chat.participants.some(
+            (participant) => participant.id === userId,
+          );
+          const isOwner = chat.ownerId === userId;
+          const isAdmin = chat.admins.some((admin) => admin.id === userId);
+
+          return {
+            id: chat.id,
+            type: chat.type,
+            name: chat.name,
+            image: chat.image,
+            members: chat.participants.length + chat.admins.length + 1,
+            joined: isOwner || isAdmin || isParticipant,
+          };
+        });
+      });
+  }
+
+  async removeUser(chatId: number, userId: number) {
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        admins: true,
+      },
+    });
+
+    if (chat.admins.some((admin) => admin.id === userId)) {
+      return this.prismaService.conversation.update({
+        where: {
+          id: chatId,
+        },
+        data: {
+          admins: {
+            disconnect: {
+              id: userId,
+            },
+          },
+        },
+        select: conversationSelect,
+      });
+    }
+
+    return this.removeParticipant(chatId, userId);
+  }
+
+  async getMutedUsers() {
+    return this.prismaService.mute.findMany();
+  }
+
+  async setMuteTimeout(mutedUser: {
+    createdAt: Date;
+    userId: number;
+    conversationId: number;
+    duration: MuteDuration;
+  }) {
+    const { userId, conversationId, duration, createdAt } = mutedUser;
+
+    const time = new Date(createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const difference = currentTime - time;
+    let timeLeft = 0;
+
+    switch (duration) {
+      case MuteDuration.MINUTE:
+        timeLeft = MINUTE - difference;
+        break;
+      case MuteDuration.HOUR:
+        timeLeft = HOUR - difference;
+        break;
+      case MuteDuration.DAY:
+        timeLeft = DAY - difference;
+        break;
+    }
+
+    timeLeft = timeLeft < 0 ? 0 : timeLeft;
+
+    setTimeout(async () => {
+      const chat = await this.unmute(conversationId, userId);
+
+      if (chat) {
+        this.gateway.server.to(chat.name).emit('action', {
+          action: 'unmute',
+          user: userId,
+          data: chat,
+        });
+      }
+    }, timeLeft);
+  }
+
+  async joinChat(chatId: number, userId: number, password: string) {
+    const chat = await this.prismaService.conversation.findUniqueOrThrow({
+      where: {
+        id: chatId,
+      },
+      include: {
+        participants: true,
+        bannedUsers: true,
+      },
+    });
+
+    if (chat.bannedUsers.some((user) => user.id === userId)) {
+      throw new BadRequestException('You are banned from this chat');
+    }
+
+    if (chat.password) {
+      if (!password) {
+        throw new BadRequestException('Password is required');
+      }
+
+      if (!bcrypt.compareSync(password, chat.password)) {
+        throw new BadRequestException('Invalid password');
+      }
+    }
+
+    return this.prismaService.conversation.update({
+      where: {
+        id: chatId,
+      },
+      data: {
+        participants: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+      select: conversationSelect,
+    });
+  }
+
+  async findOneByName(name: string) {
+    return this.prismaService.conversation.findUnique({
+      where: { name },
+    });
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
   }
 }

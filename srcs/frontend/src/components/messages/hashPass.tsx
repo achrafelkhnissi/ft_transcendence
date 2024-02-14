@@ -9,6 +9,6 @@ export const hashPassword = async (password: string): Promise<string> => {
     return hashedPassword;
   } catch (error) {
     console.error('Error hashing password:', error);
-    throw error;
+    return '';
   }
 };

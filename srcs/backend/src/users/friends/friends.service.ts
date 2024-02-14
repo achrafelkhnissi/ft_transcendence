@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { FriendshipStatus } from '@prisma/client';
+import { UserNotFoundException } from 'src/common/exceptions/UserNotFound.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -8,9 +9,9 @@ export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
   constructor(private readonly prisma: PrismaService) {}
 
-  async listFriendsByUsername(username: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { username: username },
+  async listFriendsById(userId: number) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
       include: {
         friendRequestsSent: {
           where: {
@@ -46,7 +47,7 @@ export class FriendsService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User <${username}> not found`);
+      throw new NotFoundException(`User with id <${userId}> not found`);
     }
 
     const friends = [
@@ -59,42 +60,36 @@ export class FriendsService {
     return friends;
   }
 
-  async removeFriend(userId: number, friendUsername: string) {
-    this.logger.log(
-      `Removing friend <${friendUsername}> from user <${userId}>`,
-    );
+  async removeFriend(userId: number, friendId: number) {
+    return this.prisma.friendRequest
+      .deleteMany({
+        where: {
+          AND: [
+            {
+              OR: [
+                {
+                  senderId: { equals: userId },
+                  receiverId: { equals: friendId },
+                },
+                {
+                  senderId: { equals: friendId },
+                  receiverId: { equals: userId },
+                },
+              ],
+            },
+            {
+              friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
+            },
+          ],
+        },
+      })
+      .then((friendRequest) => {
+        if (friendRequest.count === 0) {
+          throw new UserNotFoundException(friendId);
+        }
 
-    const friend = await this.prisma.user.findUnique({
-      where: { username: friendUsername },
-    });
-
-    if (!friend) {
-      throw new NotFoundException(`User <${friendUsername}> not found`);
-    }
-
-    const friendRequests = await this.prisma.friendRequest.deleteMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              {
-                senderId: { equals: userId },
-                receiverId: { equals: friend.id },
-              },
-              {
-                senderId: { equals: friend.id },
-                receiverId: { equals: userId },
-              },
-            ],
-          },
-          {
-            friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-          },
-        ],
-      },
-    });
-
-    return { message: 'Friend removed', friendRequests };
+        return friendRequest;
+      });
   }
 
   async listBlockedUsers(userId: number) {
@@ -126,34 +121,22 @@ export class FriendsService {
     return blockedUsers;
   }
 
-  async blockUser(userId: number, friendUsername: string) {
-    this.logger.log(
-      `Attempting to block user '${friendUsername}' for user ID ${userId}`,
-    );
-
-    const friend = await this.prisma.user.findUnique({
-      where: { username: friendUsername },
-    });
-
-    if (!friend) {
-      throw new NotFoundException(`User '${friendUsername}' not found.`);
-    }
-
+  async blockUser(userId: number, friendId: number) {
     return this.prisma.friendRequest.upsert({
       where: {
         senderId_receiverId: {
           senderId: userId,
-          receiverId: friend.id,
+          receiverId: friendId,
         },
       },
       update: {
         senderId: userId,
-        receiverId: friend.id,
+        receiverId: friendId,
         friendshipStatus: FriendshipStatus.BLOCKED,
       },
       create: {
         senderId: userId,
-        receiverId: friend.id,
+        receiverId: friendId,
         friendshipStatus: FriendshipStatus.BLOCKED,
       },
       select: {
@@ -163,14 +146,15 @@ export class FriendsService {
     });
   }
 
-  async unblockUser(userId: number, friendUsername: string) {
-    this.logger.debug(
-      `User ID <${userId}> is unblocking user <${friendUsername}>`,
-    );
+  async unblockUser(userId: number, friendId: number) {
+    this.logger.debug(`User ID <${userId}> is unblocking user <${friendId}>`);
 
     const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
-        receiver: { username: friendUsername },
+        AND: [
+          { senderId: { equals: userId } },
+          { receiverId: { equals: friendId } },
+        ],
       },
     });
 
@@ -178,7 +162,7 @@ export class FriendsService {
       !friendRequest ||
       friendRequest.friendshipStatus !== FriendshipStatus.BLOCKED
     ) {
-      throw new BadRequestException(`User <${friendUsername}> is not blocked`);
+      throw new BadRequestException(`User <${friendId}> is not blocked`);
     }
 
     const request = await this.prisma.friendRequest.delete({
@@ -191,58 +175,5 @@ export class FriendsService {
     });
 
     return { message: 'User unblocked', request };
-  }
-
-  listFriendsById(id: number) {
-    return this.prisma.friendRequest
-      .findMany({
-        where: {
-          AND: [
-            {
-              OR: [
-                {
-                  senderId: { equals: id },
-                },
-                {
-                  receiverId: { equals: id },
-                },
-              ],
-            },
-            {
-              friendshipStatus: { equals: FriendshipStatus.ACCEPTED },
-            },
-          ],
-        },
-        select: {
-          id: true,
-          senderId: true,
-          sender: {
-            select: {
-              id: true,
-              username: true,
-              avatar: true,
-              status: true,
-            },
-          },
-          receiverId: true,
-          receiver: {
-            select: {
-              id: true,
-              username: true,
-              avatar: true,
-              status: true,
-            },
-          },
-        },
-      })
-      .then((friendRequests) => {
-        const friends = friendRequests.map((friendRequest) => {
-          if (friendRequest.senderId === id) {
-            return friendRequest.receiver;
-          }
-          return friendRequest.sender;
-        });
-        return friends;
-      });
   }
 }

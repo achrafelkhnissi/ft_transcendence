@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { NotificationType } from '@prisma/client';
+import { NotificationType, RequestStatus } from '@prisma/client';
 import {
   IsBoolean,
   IsEnum,
@@ -40,5 +40,9 @@ export class CreateNotificationDto {
 
   @IsNumber()
   @IsOptional()
-  friendRequestId?: number;
+  requestId?: number;
+
+  @IsEnum(RequestStatus)
+  @IsOptional()
+  requestStatus?: RequestStatus;
 }

@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { CreateNotificationDto } from './create-notification.dto';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsOptional } from 'class-validator';
@@ -23,7 +23,7 @@ export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  readonly recipientId?: number;
+  readonly receiverId?: number;
 
   @Transform(({ value }) => parseInt(value))
   @IsNumber()

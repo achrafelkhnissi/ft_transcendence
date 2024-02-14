@@ -36,10 +36,11 @@ export class CreateChatDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   @MinLength(6, {
     message: 'Name must be at least 6 characters long',
   })
-  name: string;
+  name?: string;
 
   /**
    * (?=.*[a-z]): The string must contain at least 1 lowercase alphabetical character.
@@ -55,17 +56,17 @@ export class CreateChatDto {
     example: 'Password123!',
   })
   @ValidateIf((o) => o.type === $Enums.ConversationType.PROTECTED)
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Password is required when chat type is protected' })
   @IsString()
   @MinLength(8, {
     message: 'Password must be at least 8 characters long',
   })
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    {
-      message: 'Password too weak',
-    },
-  )
+  // @Matches(
+  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  //   {
+  //     message: 'Password too weak',
+  //   },
+  // )
   password: string;
 
   @IsOptional()
