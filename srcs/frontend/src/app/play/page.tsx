@@ -130,6 +130,10 @@ const PlayPage = () => {
         // <div>
         <div
           className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} `}
+          onClick={() => {
+            setGameisFinished({ gameisFinished: false, youWon: false });
+            setPosition(null);
+          }}
         >
           {(youWon && <YouWon user={currentUser} />) ||
             (!youWon && <YouLose />)}
