@@ -135,7 +135,6 @@ export default class GameScene extends Scene {
     }
 
     if (this.paddle?.y != this.prevY) {
-      console.log('padddle position ', this.paddle?.y);
       this.socket.emit('sendMyPaddlePosition', {
         x: this.paddle?.x,
         y: this.paddle?.y,

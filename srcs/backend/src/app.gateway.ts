@@ -17,6 +17,7 @@ import { ChatService } from 'src/users/chat/chat.service';
 import { MessageService } from 'src/users/chat/message/message.service';
 import { WsAuthenticatedGuard } from './common/guards/ws.guard';
 import { CreateChatDto } from './users/chat/dto/create-chat.dto';
+import { UserType } from './common/interfaces/user.interface';
 
 interface MessagePayload {
   room: string;
@@ -216,4 +217,5 @@ export class AppGateway
     this.gameService.addUser({ id: client.id, socket: client, user })
     this.gameService.readyForGame();
   }
+
 }

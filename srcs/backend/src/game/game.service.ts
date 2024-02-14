@@ -85,8 +85,8 @@ export class GameService {
     }
   }
 
-  removeUserById(userId: string): void {
-    this.playerQueue = this.playerQueue.filter((user) => user.id !== userId);
+  removeUserById(userId: number): void {
+    this.playerQueue = this.playerQueue.filter((player) => player.user.id !== userId);
   }
 
   async saveMatch(data: CreateGameDto) {
