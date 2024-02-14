@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
+import { NotificationsModule } from 'src/users/notifications/notifications.module';
 
 interface Player {
   id: string;
@@ -16,7 +17,10 @@ export class GameService {
   private activeMatches: { [key: string]: Match } = {};
   private playerQueue: Player[] = [];
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly notification: NotificationsModule,
+  ) {
     this.updateGame();
   }
 
