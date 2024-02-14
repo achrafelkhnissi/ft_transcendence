@@ -137,7 +137,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   }, []);
 
-
   // socket
   useEffect(() => {
     const addMessageToConversation = (newMessage: Message) => {
@@ -190,6 +189,7 @@ const Home = ({ params }: { params: { id: number } }) => {
           case 'add-admin':
           case 'mute':
           case 'unmute':
+          case 'join':
           case 'unban': {
             if (res.data.type != 'DM') uppdateConversations(res.data);
             break;
