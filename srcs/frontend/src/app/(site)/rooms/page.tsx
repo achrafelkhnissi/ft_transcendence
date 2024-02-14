@@ -29,7 +29,7 @@ const Home = () => {
         All Rooms
       </p>
       <div className="flex gap-1 pl-4">
-        <div className="h-full py-6 flex justify-center gap-6 flex-wrap">
+        <div className="h-full py-6 flex w-full justify-center gap-6 flex-wrap">
           {channels.map((item, index) => {
             return <ChannelCard key={index} channel={item} />;
           })}

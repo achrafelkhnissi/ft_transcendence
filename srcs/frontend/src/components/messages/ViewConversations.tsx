@@ -134,7 +134,10 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     if (event.key === 'Enter') {
       // Prevent the default behavior of the "Enter" key
       event.preventDefault();
-      handleSend();
+      if (event.shiftKey) setNewMessage((prevMessage) => prevMessage + '\n');
+      else {
+        handleSend();
+      }
     }
   };
 

@@ -102,6 +102,9 @@ const ChannelCard: React.FC<ChannelCardPorps> = ({ channel }) => {
       >
         { channel.joined? 'chat' : 'Join'}
       </button>
+      <div className='w-full h- border-2 absolute'>
+
+      </div>
     </div>
   );
 };
