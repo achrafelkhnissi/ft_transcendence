@@ -1,10 +1,10 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
-import { NotificationsModule } from 'src/users/notifications/notifications.module';
+import { NotificationsService } from 'src/users/notifications/notifications.service';
 
 interface Player {
   id: string;
@@ -19,7 +19,8 @@ export class GameService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly notification: NotificationsModule,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {
     this.updateGame();
   }

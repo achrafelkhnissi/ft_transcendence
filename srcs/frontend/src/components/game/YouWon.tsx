@@ -1,6 +1,7 @@
 import AvatarImage from '../AvatarImage';
 import ProfileAvatar from '../userProfile/ProfileAvatar';
 import { User } from '../userProfile/types';
+import Crown from '../svgAssets/Crown';
 
 interface props {
   user: User;
@@ -11,6 +12,9 @@ const YouWon: React.FC<props> = ({ user }) => {
       className="md:w-[35rem] md:h-[18rem] border-8 border-white/30 self-center bg-[#17194A] rounded-[3.5rem]
       flex flex-col gap-8 justify-center  shadow-lg"
     >
+        <div className="self-center">
+        <Crown />
+        </div>
       <div className="flex flex-col gap-4 self-center">
         <ProfileAvatar
           avatar={process.env.BACKEND + `/api/users/${user.id}/avatar`}

@@ -1,5 +1,11 @@
 import { GameService } from 'src/game/game.service';
-import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Inject,
+  Logger,
+  UnauthorizedException,
+  UseGuards,
+  forwardRef,
+} from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -44,7 +50,7 @@ export class Gateway
   constructor(
     private readonly gatewayService: GatewayService,
     private readonly gameService: GameService,
-  ) {} // private readonly gameService: GameService
+  ) {}
 
   afterInit() {
     this.logger.debug('AppGateway initialized');
