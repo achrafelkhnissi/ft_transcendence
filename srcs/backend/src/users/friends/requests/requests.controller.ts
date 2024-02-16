@@ -77,8 +77,8 @@ export class FriendRequestsController {
     @Query('id', ParseIntPipe) id: number,
     @User() user: UserType,
   ) {
-    const senderId = id;
-    const receiverId = user?.id;
+    const senderId = user?.id;
+    const receiverId = id;
 
     this.logger.log(
       `User <${receiverId}> is accepting a friend request from user <${senderId}>`,
