@@ -13,7 +13,7 @@ export interface Message {
   receiver: User;
   content: string;
   createdAt: string;
-  readdBy: number[];
+  readBy: (number | undefined)[];
   conversationId: number;
 }
 

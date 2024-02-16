@@ -16,6 +16,7 @@ import getConversations from '@/services/getConversations';
 import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
+import markMessageAsRead from '@/services/markMessageAsRead';
 
 const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
@@ -29,20 +30,34 @@ const Home = ({ params }: { params: { id: number } }) => {
   const { socket } = useSocket();
 
   const markLastMessageAsRead = (conversationId: number) => {
-    setConversations((prevConversations) => {
-      const updatedConversations = { ...prevConversations };
-      const conversation = updatedConversations[conversationId];
+    if (
+      conversations[conversationId] &&
+      conversations[conversationId].messages.length > 0
+    ) {
+      const message =
+        conversations[conversationId].messages[
+          conversations[conversationId].messages.length - 1
+        ];
+      markMessageAsRead(message.id).then((res) => {
+        setConversations((prevConversations) => {
+          const updatedConversations = { ...prevConversations };
+          const conversation = updatedConversations[conversationId];
 
-      if (conversation && conversation.messages.length > 0) {
-        const lastMessageIndex = conversation.messages.length - 1;
-        conversation.messages[lastMessageIndex] = {
-          ...conversation.messages[lastMessageIndex],
-          isRead: true, // TODO: Change this to readBy
-        };
-      }
+          if (conversation && conversation.messages.length > 0) {
+            const lastMessageIndex = conversation.messages.length - 1;
+            conversation.messages[lastMessageIndex] = {
+              ...conversation.messages[lastMessageIndex],
+              readBy: [
+                ...conversation.messages[lastMessageIndex].readBy,
+                currentUser?.id,
+              ],
+            };
+          }
 
-      return updatedConversations;
-    });
+          return updatedConversations;
+        });
+      });
+    }
   };
 
   const addConversation = (id: number) => {

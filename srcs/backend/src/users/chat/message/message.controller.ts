@@ -70,8 +70,10 @@ export class MessageController {
   async read(@Param('id', ParseIntPipe) id: number, @User() user: UserType) {
     const message = await this.messageService.findOne(id);
 
+    console.log('id', id);
+
     if (message.senderId === user.id || message.readBy.includes(user.id)) {
-      return;
+      return message;
     }
 
     return this.messageService.update(id, {

@@ -78,7 +78,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                 {lastMessage ? formatChatTimestamp(lastMessage.createdAt) : ''}
               </p>
               {lastMessage &&
-                !lastMessage.isRead && // TODO: Change this to readBy.includes(currentUser.id) ?? or something
+                lastMessage.readBy.every((num) => num != currentUser?.id) && // TODO: Change this to readBy.includes(currentUser.id) ?? or something
                 lastMessage.sender.id != currentUser?.id &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2  top-1/2"></div>

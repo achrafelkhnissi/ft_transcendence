@@ -76,6 +76,10 @@ export class MessageService {
   }
 
   update(id: number, updateMessageDto: UpdateMessageDto) {
+    console.log({
+      id,
+      updateMessageDto,
+    });
     return this.prismaService.message.update({
       where: {
         id,
