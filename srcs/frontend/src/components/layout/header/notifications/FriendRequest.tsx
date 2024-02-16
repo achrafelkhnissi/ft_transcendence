@@ -22,7 +22,7 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
             setActionDone(true);
             setTimeout(() => {
               setActionDone(false);
-            }, 1500);
+            }, 2500);
           }
         });
       }
@@ -38,7 +38,7 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
             setActionDone(true);
             setTimeout(() => {
               setActionDone(false);
-            }, 1500);
+            }, 2500);
           }
         });
       }

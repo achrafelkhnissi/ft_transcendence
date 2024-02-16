@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { GrNotification } from 'react-icons/gr';
@@ -26,7 +28,7 @@ const Notifications = () => {
 
   const deleteNotif = (id: number) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
-  }
+  };
   const handleClick = () => {
     setIsClicked((prev) => !prev);
   };
@@ -86,7 +88,32 @@ const Notifications = () => {
               )}
               {notifications.map((item, index) => {
                 if (item.type == 'FRIEND_REQUEST_SENT')
-                  return <FriendRequest deleteNotif={deleteNotif} notif={item} key={index} />;
+                  return (
+                    <FriendRequest
+                      deleteNotif={deleteNotif}
+                      notif={item}
+                      key={index}
+                    />
+                  );
+                else if (item.type == 'FRIEND_REQUEST_ACCEPTED')
+                  return (
+                    <div
+                      key={index}
+                      className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
+                    `}
+                    >
+                      <img
+                        src={
+                          process.env.BACKEND +
+                          `/api/users/${item.sender.id}/avatar`
+                        }
+                        className="w-[2.5rem] h-[2.5rem] rounded-full object-fill self-center"
+                      />
+                      <p className="text-sm text-white">
+                        {item.sender.username} accepted your friend request
+                      </p>
+                    </div>
+                  );
               })}
             </div>
           </div>
