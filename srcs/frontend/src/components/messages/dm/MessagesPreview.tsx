@@ -71,7 +71,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
                 {lastMessage ? formatChatTimestamp(lastMessage.createdAt) : ''}
               </p>
               {lastMessage &&
-                !lastMessage.isRead &&
+                !lastMessage.isRead && // TODO: Change this to readBy.includes(currentUser.id) ?? or something
                 lastMessage?.sender.username === friend?.username &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2 top-1/2"></div>

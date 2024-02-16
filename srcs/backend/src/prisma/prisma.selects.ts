@@ -11,7 +11,7 @@ export const messageSelect = {
   select: {
     id: true,
     content: true,
-    isRead: true,
+    readBy: true,
     createdAt: true,
     sender: userSelect,
   },

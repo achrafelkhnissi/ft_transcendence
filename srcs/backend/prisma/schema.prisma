@@ -106,7 +106,7 @@ model UserStats {
 
 model Message {
   id             Int          @id @default(autoincrement())
-  isRead         Boolean      @default(false)
+  readBy         Int[]
   content        String
   conversationId Int
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

@@ -37,7 +37,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         const lastMessageIndex = conversation.messages.length - 1;
         conversation.messages[lastMessageIndex] = {
           ...conversation.messages[lastMessageIndex],
-          isRead: true,
+          isRead: true, // TODO: Change this to readBy
         };
       }
 

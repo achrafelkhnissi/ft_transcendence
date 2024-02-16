@@ -9,7 +9,7 @@ export class MessageDto {
   content: string;
 
   @ApiProperty()
-  isRead: boolean;
+  readBy: number[];
 
   @ApiProperty()
   conversationId: number;

@@ -12,7 +12,7 @@ export interface Message {
   receiver: User;
   content: string;
   createdAt: string;
-  isRead: boolean;
+  readdBy: number[];
   conversationId: number;
 }
 

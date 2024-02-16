@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
   ParseIntPipe,
   Post,
   UseGuards,
@@ -9,7 +12,10 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -17,6 +23,7 @@ import { MessageService } from './message.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Gateway } from 'src/gateway/gateway';
+import { UserType } from 'src/common/interfaces/user.interface';
 
 @UseGuards(AuthGuard)
 @ApiTags('message')
@@ -50,5 +57,25 @@ export class MessageController {
       this.gateway.server.to(room).emit('onMessage', msg);
     }
     return msg;
+  }
+
+  @Post(':id/read')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({
+    description: 'The message has been successfully marked as read.',
+  })
+  @ApiNotFoundResponse({ description: 'Message not found.' })
+  @ApiOperation({ summary: 'Mark a message as read.' })
+  async read(@Param('id', ParseIntPipe) id: number, @User() user: UserType) {
+    const message = await this.messageService.findOne(id);
+
+    if (message.senderId === user.id || message.readBy.includes(user.id)) {
+      return;
+    }
+
+    return this.messageService.update(id, {
+      readBy: message.readBy ? [...message.readBy, user.id] : [user.id],
+    });
   }
 }
