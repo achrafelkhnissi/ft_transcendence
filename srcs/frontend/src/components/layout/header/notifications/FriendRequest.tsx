@@ -5,22 +5,44 @@ import deleteNotification from '@/services/deleteNotification';
 import declineFirendRequest from '@/services/declineFriendRequest';
 import { useState } from 'react';
 
-const FriendRequest: React.FC<NotificationsType> = (notif) => {
+interface props {
+  notif: NotificationsType;
+  deleteNotif: Function;
+}
+
+const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
   const [actionDone, setActionDone] = useState(false);
 
   const handleAccept = () => {
-    acceptFriendRequest(notif.sender.id).then(() => {
-      console.log('accepted');
-      deleteNotification(notif.id);
+    acceptFriendRequest(notif.sender.id).then((res) => {
+      if (res) {
+        deleteNotification(notif.id).then((res) => {
+          if (res) {
+            deleteNotif(notif.id);
+            setActionDone(true);
+            setTimeout(() => {
+              setActionDone(false);
+            }, 1500);
+          }
+        });
+      }
     });
-    setActionDone(true);
   };
 
   const handleDecline = () => {
-    declineFirendRequest(notif.sender.id).then(() => {
-      deleteNotification(notif.id);
+    declineFirendRequest(notif.sender.id).then((res) => {
+      if (res) {
+        deleteNotification(notif.id).then((res) => {
+          if (res) {
+            deleteNotif(notif.id);
+            setActionDone(true);
+            setTimeout(() => {
+              setActionDone(false);
+            }, 1500);
+          }
+        });
+      }
     });
-    setActionDone(true);
   };
 
   return (
@@ -33,13 +55,11 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
       </div>
       <div
         className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
-                    ${actionDone && ' opacity-0 '}`}
+          `}
       >
         <img
           alt=""
-          src={
-            process.env.BACKEND + `/api/users/${notif.sender.id}/avatar`
-          }
+          src={process.env.BACKEND + `/api/users/${notif.sender.id}/avatar`}
           width={20}
           height={20}
           className="w-[2.5rem] h-[2.5rem] rounded-full object-fill self-center"

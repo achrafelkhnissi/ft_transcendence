@@ -24,6 +24,9 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState<NotificationsType[]>([]);
   const { socket } = useSocket();
 
+  const deleteNotif = (id: number) => {
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+  }
   const handleClick = () => {
     setIsClicked((prev) => !prev);
   };
@@ -83,7 +86,7 @@ const Notifications = () => {
               )}
               {notifications.map((item, index) => {
                 if (item.type == 'FRIEND_REQUEST_SENT')
-                  return <FriendRequest {...item} key={index} />;
+                  return <FriendRequest deleteNotif={deleteNotif} notif={item} key={index} />;
               })}
             </div>
           </div>
