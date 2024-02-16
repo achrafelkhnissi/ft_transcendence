@@ -98,7 +98,6 @@ export class FriendRequestsService {
     return { message: 'Friend request sent', request };
   }
 
-  // TODO: Test edge cases
   async acceptFriendRequest(receiverId: number, senderId: number) {
     const request = await this.prisma.friendRequest.update({
       where: {
