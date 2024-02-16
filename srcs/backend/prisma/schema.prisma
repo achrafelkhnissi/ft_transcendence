@@ -213,7 +213,7 @@ enum ConversationType {
 enum NotificationType {
   FRIEND_REQUEST_SENT
   FRIEND_REQUEST_ACCEPTED
-  MATCH_INVITE
+  GAME_INVITE
 }
 
 enum Role {

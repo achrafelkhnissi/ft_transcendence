@@ -1,3 +1,4 @@
+import { GAMEHEIGHT } from './../../../game/game.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import { NotificationType, RequestStatus } from '@prisma/client';
 import {
@@ -22,7 +23,7 @@ export class CreateNotificationDto {
     example: [
       NotificationType.FRIEND_REQUEST_ACCEPTED,
       NotificationType.FRIEND_REQUEST_SENT,
-      NotificationType.MATCH,
+      NotificationType.GAME_INVITE,
     ],
   })
   @IsNotEmpty()
