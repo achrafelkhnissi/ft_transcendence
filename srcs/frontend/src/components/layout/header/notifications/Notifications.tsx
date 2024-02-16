@@ -32,16 +32,13 @@ const Notifications = () => {
     getNotifications().then((res) => {
       const notif: NotificationsType[] = res;
       setNotifications(notif);
+      console.log('notif', notif);
     });
 
     if (socket) {
       socket.on('onNotification', (data: NotificationsType) => {
         console.log('new notification', data);
         setNotifications((prev) => [data, ...prev]);
-      });
-
-      socket.on('onMessage', (data) => {
-        console.log('new message', data);
       });
     }
   }, [socket]);

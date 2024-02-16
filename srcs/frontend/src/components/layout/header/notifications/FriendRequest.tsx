@@ -10,6 +10,7 @@ const FriendRequest: React.FC<NotificationsType> = (notif) => {
 
   const handleAccept = () => {
     acceptFriendRequest(notif.sender.id).then(() => {
+      console.log('accepted');
       deleteNotification(notif.id);
     });
     setActionDone(true);
