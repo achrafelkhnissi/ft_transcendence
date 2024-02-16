@@ -59,19 +59,19 @@ const Contacts: React.FC<ContactsProps> = ({
     setFriendshipState(status);
   }, [status]);
 
-  useEffect(() => {
-    if (isClicked == 'send') {
-      sendFriendRequest(id).then((res) => {
-        setIsClicked('');
-        setFriendshipState(res.request.friendshipStatus);
-      });
-    } else if (isClicked == 'cancel') {
-      cancelFriendRequest(id).then((res) => {
-        setIsClicked('');
-        setFriendshipState(false);
-      });
-    }
-  }, [isClicked, username, friendshipState]);
+  // useEffect(() => {
+  //   if (isClicked == 'send') {
+  //     sendFriendRequest(id).then((res) => {
+  //       setIsClicked('');
+  //       setFriendshipState(res.request.friendshipStatus);
+  //     });
+  //   } else if (isClicked == 'cancel') {
+  //     cancelFriendRequest(id).then((res) => {
+  //       setIsClicked('');
+  //       setFriendshipState(false);
+  //     });
+  //   }
+  // }, [isClicked, username, friendshipState]);
 
   const router = useRouter();
   const createRoom = async () => {
@@ -87,14 +87,31 @@ const Contacts: React.FC<ContactsProps> = ({
     });
   };
 
+  const handleSendFriendRequest = () => {
+    sendFriendRequest(id).then((res) => {
+      // setIsClicked('');
+      setFriendshipState(res.request.friendshipStatus);
+    });
+  };
+
+  const handleCancelFriendRequest = () => {
+    cancelFriendRequest(id).then((res) => {
+      // setIsClicked('');
+      setFriendshipState(res.request.friendshipStatus);
+    });
+  };
+
+  const handleRemoveFriend = () => {
+    removeFriend(id).then((res) => {
+      setFriendshipState(false);
+    });
+  };
+
   return (
     <div className="flex justify-center gap-4 px-6">
       {!me && friendshipState == false && (
         <button
-          onClick={() => {
-            setIsClicked('send');
-            console.log('sending');
-          }}
+          onClick={handleSendFriendRequest}
           className={`
           rounded-xl
           bg-[${ContactsItems.sendRequest.color}]
@@ -106,9 +123,7 @@ const Contacts: React.FC<ContactsProps> = ({
       )}
       {!me && friendshipState == FriendshipStatus.PENDING && (
         <button
-          onClick={() => {
-            setIsClicked('cancel');
-          }}
+          onClick={handleCancelFriendRequest}
           className={`
           rounded-xl
           bg-[${ContactsItems.cancelRequest.color}]
@@ -120,7 +135,7 @@ const Contacts: React.FC<ContactsProps> = ({
       )}
       {!me && friendshipState == FriendshipStatus.ACCEPTED && (
         <button
-          disabled
+          onClick={handleRemoveFriend}
           className={`
           rounded-xl
           bg-[${ContactsItems.acceptRequest.color}]
@@ -134,7 +149,6 @@ const Contacts: React.FC<ContactsProps> = ({
       {!me && (
         <button
           onClick={() => {
-            console.log('clicked');
             createRoom();
           }}
           className={`
