@@ -364,7 +364,7 @@ export class UsersService {
             select: {
               id: true,
               content: true,
-              isRead: true,
+              readBy: true,
               createdAt: true,
               sender: {
                 select: userInfoSelect,

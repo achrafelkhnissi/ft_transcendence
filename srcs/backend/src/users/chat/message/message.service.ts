@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -26,7 +25,7 @@ export class MessageService {
       },
       select: {
         id: true,
-        isRead: true,
+        readBy: true,
         content: true,
         createdAt: true,
         conversationId: true,
@@ -77,14 +76,12 @@ export class MessageService {
   }
 
   update(id: number, updateMessageDto: UpdateMessageDto) {
-    this.logger.log(`Updating message with id ${id}`);
-    const { content } = updateMessageDto;
     return this.prismaService.message.update({
       where: {
         id,
       },
       data: {
-        content,
+        ...updateMessageDto,
       },
     });
   }
