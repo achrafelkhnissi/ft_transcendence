@@ -98,25 +98,8 @@ export class FriendRequestsService {
     return { message: 'Friend request sent', request };
   }
 
+  // TODO: Test edge cases
   async acceptFriendRequest(receiverId: number, senderId: number) {
-    const friendRequest = await this.prisma.friendRequest.findUniqueOrThrow({
-      where: {
-        senderId_receiverId: { senderId, receiverId },
-      },
-    });
-
-    if (!friendRequest) {
-      throw new NotFoundException(
-        `Friend request from <${senderId}> to <${receiverId}> not found`,
-      );
-    }
-
-    if (friendRequest.friendshipStatus !== FriendshipStatus.PENDING) {
-      throw new BadRequestException(
-        `Friend request from <${senderId}> to <${receiverId}> is not pending`,
-      );
-    }
-
     const request = await this.prisma.friendRequest.update({
       where: {
         senderId_receiverId: { senderId, receiverId },
@@ -126,15 +109,19 @@ export class FriendRequestsService {
       },
     });
 
-    const notification = await this.notification.create({
-      receiverId,
-      senderId,
+    if (!request) {
+      throw new NotFoundException(
+        `Friend request from <${senderId}> to <${receiverId}> not found`,
+      );
+    }
+
+    await this.notification.create({
+      senderId: receiverId,
+      receiverId: senderId,
       type: NotificationType.FRIEND_REQUEST_ACCEPTED,
       requestId: request.id,
       requestStatus: RequestStatus.ACCEPTED,
     });
-
-    this.logger.log(`Friend request accepted from <${senderId}>`);
 
     return { message: 'Friend request accepted', request };
   }
