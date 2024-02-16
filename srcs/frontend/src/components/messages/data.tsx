@@ -8,11 +8,13 @@ export interface User {
 }
 
 export interface Message {
+  id: number;
   sender: User;
   receiver: User;
   content: string;
   createdAt: string;
   isRead: boolean;
+  readBy: number[];
   conversationId: number;
 }
 
