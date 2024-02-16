@@ -89,21 +89,19 @@ const Contacts: React.FC<ContactsProps> = ({
 
   const handleSendFriendRequest = () => {
     sendFriendRequest(id).then((res) => {
-      // setIsClicked('');
-      setFriendshipState(res.request.friendshipStatus);
+      res && setFriendshipState(res.request.friendshipStatus);
     });
   };
 
   const handleCancelFriendRequest = () => {
     cancelFriendRequest(id).then((res) => {
-      // setIsClicked('');
-      setFriendshipState(res.request.friendshipStatus);
+      res && setFriendshipState(res.request.friendshipStatus);
     });
   };
 
   const handleRemoveFriend = () => {
     removeFriend(id).then((res) => {
-      setFriendshipState(false);
+      res && setFriendshipState(false);
     });
   };
 
