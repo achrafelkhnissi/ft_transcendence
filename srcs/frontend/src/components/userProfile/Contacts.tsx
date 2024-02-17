@@ -63,13 +63,14 @@ const Contacts: React.FC<ContactsProps> = ({
 
   const handleSendFriendRequest = () => {
     sendFriendRequest(id).then((res) => {
-      res && setFriendshipState(res.request.friendshipStatus);
+      res && setFriendshipState(res.friendshipStatus);
     });
   };
 
   const handleCancelFriendRequest = () => {
     cancelFriendRequest(id).then((res) => {
-      res && setFriendshipState(res.request.friendshipStatus);
+      console.log({ res });
+      res && setFriendshipState(false);
     });
   };
 
