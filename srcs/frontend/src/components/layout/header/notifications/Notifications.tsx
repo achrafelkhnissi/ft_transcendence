@@ -9,6 +9,7 @@ import getNotifications from '@/services/getNotification';
 import { useEffect, useState } from 'react';
 import FriendRequest from './FriendRequest';
 import { useSocket } from '@/contexts/socketContext';
+import setNotifAsRead from '@/services/setNotifAsRead';
 
 export interface NotificationsType {
   id: number;
@@ -24,49 +25,59 @@ export interface NotificationsType {
     avatar: string;
   };
   requestId: number;
+  read: boolean;
 }
 
 const Notifications = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [notifications, setNotifications] = useState<NotificationsType[]>([]);
-  const [read, setRead] = useState(true);
   const { socket } = useSocket();
 
   const deleteNotif = (id: number) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   };
   const handleClick = () => {
+    if (!isClicked) {
+      if (notifications.length > 0) {
+        const notifId = notifications[notifications.length - 1].id;
+        setNotifAsRead(notifId).then((res) => {
+          console.log('set notif read', res);
+          if (res) {
+            setNotifications((prev) =>
+              prev.map((item) => {
+                if (item.id == notifId) {
+                  return { ...item, read: true };
+                }
+                return item;
+              }),
+            );
+          }
+        });
+      }
+    }
     setIsClicked((prev) => !prev);
-    setRead(true);
   };
 
   useEffect(() => {
     getNotifications().then((res) => {
       const notif: NotificationsType[] = res;
       setNotifications(notif);
-      console.log('notif', notif);
-      if (notif.length > 0) {
-        setRead(false);
-      }
+ 
     });
 
     if (socket) {
       socket.on('onNotification', (data: NotificationsType) => {
-        console.log('new notification', data);
         setNotifications((prev) => [data, ...prev]);
-        setRead(false);
       });
       socket.on(
         'friend-request-cancelled',
         (data: { senderId: number; receiverId: number; requestId: number }) => {
-          console.log('friend-request-cancelled', data);
           setNotifications((prev) =>
             prev.filter((item) => item.requestId !== data.requestId),
           );
         },
       );
       socket.on('friend-request-accepted', (data) => {
-        console.log('friend-request-accepted', data);
         setNotifications((prev) =>
           prev.filter(
             (item) =>
@@ -79,7 +90,6 @@ const Notifications = () => {
       });
     }
   }, [socket]);
-  console.log('notifications', notifications);
 
   return (
     <div
@@ -100,7 +110,9 @@ const Notifications = () => {
         />
         <div
           className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] ${
-            (notifications.length === 0 || read) && 'hidden'
+            (notifications.length === 0 ||
+              notifications[notifications.length - 1]?.read) &&
+            'hidden'
           }`}
         >
           <span className="animate-ping absolute h-full w-full rounded-full bg-white/95 "></span>
