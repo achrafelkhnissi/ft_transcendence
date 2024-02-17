@@ -206,6 +206,8 @@ export class FriendRequestsService {
       );
     }
 
+    await this.notification.deleteNotification(friendRequest.id);
+
     return this.prisma.friendRequest.delete({
       where: {
         senderId_receiverId: { senderId, receiverId },

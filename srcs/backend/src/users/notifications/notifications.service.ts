@@ -79,4 +79,10 @@ export class NotificationsService {
       select: this.infoToSelect,
     });
   }
+
+  async deleteNotification(requestId: number) {
+    return this.prismaService.notification.deleteMany({
+      where: { requestId },
+    });
+  }
 }
