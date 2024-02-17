@@ -3,13 +3,10 @@ import { useEffect, useState } from 'react';
 import sendFriendRequest from '@/services/sendFriendRequest';
 import removeFriend from '@/services/removeFriend';
 import cancelFriendRequest from '@/services/cancelFriendRequest';
-import { stat } from 'fs';
 import { useSocket } from '@/contexts/socketContext';
 import { ContactsItems, FriendshipStatus } from './types';
 import createNewConv from '@/services/createNewConv';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { Data } from 'phaser';
 
 interface ContactsProps {
   username: string;
@@ -34,44 +31,21 @@ const Contacts: React.FC<ContactsProps> = ({
 
   useEffect(() => {
     if (socket) {
-      // Listen for the 'connect' event
-      console.log(socket);
-
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-        window.location.href = '/';
-      });
-
-      socket.on('connect', () => {
-        console.log({
-          message: 'Connected to socket server from userContact',
-          socketId: socket.id,
-        });
-
-        // You can also log the socket ID
-        console.log('Socket ID:', socket.id);
-      });
+      socket.on('friend-request-declined', data => {
+        setFriendshipState(false);
+      })
+      socket.on('friend-request-accepted', data => {
+        setFriendshipState(FriendshipStatus.ACCEPTED);
+      })
+      socket.on('friend-removed', data => {
+        setFriendshipState(false);
+      })
     }
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     setFriendshipState(status);
   }, [status]);
-
-  // useEffect(() => {
-  //   if (isClicked == 'send') {
-  //     sendFriendRequest(id).then((res) => {
-  //       setIsClicked('');
-  //       setFriendshipState(res.request.friendshipStatus);
-  //     });
-  //   } else if (isClicked == 'cancel') {
-  //     cancelFriendRequest(id).then((res) => {
-  //       setIsClicked('');
-  //       setFriendshipState(false);
-  //     });
-  //   }
-  // }, [isClicked, username, friendshipState]);
 
   const router = useRouter();
   const createRoom = async () => {

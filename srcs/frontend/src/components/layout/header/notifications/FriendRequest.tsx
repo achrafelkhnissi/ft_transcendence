@@ -32,19 +32,16 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
   const handleDecline = () => {
     declineFirendRequest(notif.sender.id).then((res) => {
       if (res) {
-        deleteNotification(notif.id).then((res) => {
-          if (res) {
-            deleteNotif(notif.id);
-            setActionDone(true);
-            setTimeout(() => {
-              setActionDone(false);
-            }, 2500);
-          }
-        });
+        console.log('handleDecline', res);
+        deleteNotif(notif.id);
+        setActionDone(true);
+        setTimeout(() => {
+          setActionDone(false);
+        }, 2500);
       }
     });
   };
-
+console.log('actionon',actionDone);
   return (
     <div className="relative">
       <div
@@ -54,7 +51,7 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
         Friend request accepted successfully!
       </div>
       <div
-        className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
+        className={`bordder text-white/80 w-full h-20sm:text-[0.8rem] text-[0.7rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
           `}
       >
         <img

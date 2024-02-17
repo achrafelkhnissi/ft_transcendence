@@ -77,9 +77,7 @@ export class FriendsController {
     const request = await this.friendsService.removeFriend(user.id, id);
 
     if (request) {
-      this.gateway.server
-        .to(`user-${id}`)
-        .emit('onFriendRequest', { type: 'friend-removed', request });
+      this.gateway.server.to(`user-${id}`).emit('friend-removed', { request });
     }
 
     return request;

@@ -24,6 +24,7 @@ export interface NotificationsType {
 const Notifications = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [notifications, setNotifications] = useState<NotificationsType[]>([]);
+  const [read, setRead] = useState(true);
   const { socket } = useSocket();
 
   const deleteNotif = (id: number) => {
@@ -31,6 +32,7 @@ const Notifications = () => {
   };
   const handleClick = () => {
     setIsClicked((prev) => !prev);
+    setRead(true);
   };
 
   useEffect(() => {
@@ -38,13 +40,30 @@ const Notifications = () => {
       const notif: NotificationsType[] = res;
       setNotifications(notif);
       console.log('notif', notif);
+      if (notif.length > 0) {
+        setRead(false);
+      }
     });
 
     if (socket) {
       socket.on('onNotification', (data: NotificationsType) => {
         console.log('new notification', data);
         setNotifications((prev) => [data, ...prev]);
+        setRead(false);
       });
+      socket.on(
+        'friend-request-cancelled',
+        (data: {
+          senderId: number;
+          receiverId: number;
+          requestId: number;
+        }) => {
+          console.log('friend-request-cancelled', data);
+          setNotifications((prev) =>
+            prev.filter((item) => item.requestId !== data.requestId),
+          );
+        },
+      );
     }
   }, [socket]);
 
@@ -67,14 +86,14 @@ const Notifications = () => {
         />
         <div
           className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] ${
-            notifications.length === 0 && 'hidden'
+            (notifications.length === 0 || read) && 'hidden'
           }`}
         >
           <span className="animate-ping absolute h-full w-full rounded-full bg-white/95 "></span>
           <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
         </div>
         <div
-          className={`absolute max-h-80 w-80 z-10 right-0 bg-white/30  rounded-[0.5rem] ${
+          className={`absolute max-h-80 sm:w-80 w-60 z-50 sm:right-0 -right-6  bg-white/30  rounded-[0.5rem] ${
             !isClicked && 'hidden'
           } mt-1  p-2 overflow-hidden`}
         >
@@ -99,7 +118,8 @@ const Notifications = () => {
                   return (
                     <div
                       key={index}
-                      className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
+                      className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal 
+                      bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
                     `}
                     >
                       <img
@@ -109,8 +129,12 @@ const Notifications = () => {
                         }
                         className="w-[2.5rem] h-[2.5rem] rounded-full object-fill self-center"
                       />
-                      <p className="text-sm text-white">
-                        {item.sender.username} accepted your friend request
+                      <p className="sm:text-sm text-[0.7rem] text-white self-center ">
+                        <span className="font-bold ≈">
+                          {' '}
+                          {item.sender.username}{' '}
+                        </span>
+                        accepted your friend request
                       </p>
                     </div>
                   );
