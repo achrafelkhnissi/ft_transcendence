@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RequestDto } from './dto/request.dto';
+import { Gateway } from 'src/gateway/gateway';
 
 @ApiTags('friend-requests')
 @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -29,7 +30,10 @@ import { RequestDto } from './dto/request.dto';
 export class FriendRequestsController {
   private readonly logger = new Logger(FriendRequestsController.name);
 
-  constructor(private readonly friendRequestsService: FriendRequestsService) {}
+  constructor(
+    private readonly friendRequestsService: FriendRequestsService,
+    private readonly gateway: Gateway,
+  ) {}
 
   @ApiQuery({
     name: 'id',
@@ -165,6 +169,18 @@ export class FriendRequestsController {
       `User <${senderId}> is cancelling a friend request to user <${receiverId}>`,
     );
 
-    return this.friendRequestsService.cancelFriendRequest(senderId, receiverId);
+    const request = await this.friendRequestsService.cancelFriendRequest(
+      senderId,
+      receiverId,
+    );
+
+    if (request) {
+      this.gateway.server.emit('friend-request-cancelled', {
+        senderId,
+        receiverId,
+      });
+    }
+
+    return request;
   }
 }
