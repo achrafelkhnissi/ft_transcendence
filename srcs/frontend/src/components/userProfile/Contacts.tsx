@@ -95,7 +95,8 @@ const Contacts: React.FC<ContactsProps> = ({
 
   const handleCancelFriendRequest = () => {
     cancelFriendRequest(id).then((res) => {
-      res && setFriendshipState(res.friendshipStatus);
+      console.log({ res });
+      res && setFriendshipState(false);
     });
   };
 
