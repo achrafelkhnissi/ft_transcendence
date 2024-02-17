@@ -49,8 +49,21 @@ const Notifications = () => {
       socket.on('onNotification', (data: NotificationsType) => {
         console.log('new notification', data);
         setNotifications((prev) => [data, ...prev]);
-        setRead(true);
+        setRead(false);
       });
+      socket.on(
+        'friend-request-cancelled',
+        (data: {
+          senderId: number;
+          receiverId: number;
+          requestId: number;
+        }) => {
+          console.log('friend-request-cancelled', data);
+          setNotifications((prev) =>
+            prev.filter((item) => item.requestId !== data.requestId),
+          );
+        },
+      );
     }
   }, [socket]);
 

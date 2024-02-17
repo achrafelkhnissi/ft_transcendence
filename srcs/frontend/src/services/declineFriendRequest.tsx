@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-async function declineFirendRequest(id: number | null) {
+async function declineFirendRequest(id: number) {
   try {
     const { data } = await axios.get(
       process.env.BACKEND + `/api/users/friends/requests/decline?id=${id}`,

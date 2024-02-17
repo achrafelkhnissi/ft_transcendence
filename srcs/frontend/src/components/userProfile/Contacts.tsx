@@ -34,26 +34,14 @@ const Contacts: React.FC<ContactsProps> = ({
 
   useEffect(() => {
     if (socket) {
-      // Listen for the 'connect' event
-      console.log(socket);
-
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-        window.location.href = '/';
-      });
-
-      socket.on('connect', () => {
-        console.log({
-          message: 'Connected to socket server from userContact',
-          socketId: socket.id,
-        });
-
-        // You can also log the socket ID
-        console.log('Socket ID:', socket.id);
-      });
+      socket.on('friend-request-declined', data => {
+        setFriendshipState(false);
+      })
+      socket.on('friend-request-accepted', data => {
+        setFriendshipState(FriendshipStatus.ACCEPTED);
+      })
     }
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     setFriendshipState(status);
