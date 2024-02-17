@@ -87,11 +87,19 @@ export class FriendRequestsService {
       return r;
     }
 
+    const friendRequest = await this.prisma.friendRequest.create({
+      data: {
+        senderId,
+        receiverId,
+        friendshipStatus: FriendshipStatus.PENDING,
+      },
+    });
+
     const notification = await this.notification.create({
       receiverId: receiverId,
       senderId: senderId,
       type: NotificationType.FRIEND_REQUEST_SENT,
-      requestId: request.id,
+      requestId: friendRequest.id,
       requestStatus: RequestStatus.PENDING,
     });
 
@@ -105,7 +113,7 @@ export class FriendRequestsService {
       `User <${senderId}> sent a friend request to <${receiverId}>`,
     );
 
-    return request;
+    return friendRequest;
   }
 
   async acceptFriendRequest(receiverId: number, senderId: number) {

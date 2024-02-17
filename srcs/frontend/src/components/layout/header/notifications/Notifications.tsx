@@ -18,6 +18,11 @@ export interface NotificationsType {
     username: string;
     avatar: string;
   };
+  receiver: {
+    id: number;
+    username: string;
+    avatar: string;
+  };
   requestId: number;
 }
 
@@ -53,17 +58,22 @@ const Notifications = () => {
       });
       socket.on(
         'friend-request-cancelled',
-        (data: {
-          senderId: number;
-          receiverId: number;
-          requestId: number;
-        }) => {
+        (data: { senderId: number; receiverId: number; requestId: number }) => {
           console.log('friend-request-cancelled', data);
           setNotifications((prev) =>
             prev.filter((item) => item.requestId !== data.requestId),
           );
         },
       );
+      socket.on('friend-request-accepted', (data) => {
+        console.log('friend-request-accepted', data);
+        setNotifications((prev) =>
+          prev.filter(
+            (item) =>
+              item.requestId !== data.id && item.receiver.id !== data.sender.id,
+          ),
+        );
+      });
     }
   }, [socket]);
 
