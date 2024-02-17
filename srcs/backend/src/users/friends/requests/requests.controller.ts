@@ -9,7 +9,6 @@ import {
 import { FriendRequestsService } from './requests.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
-import { QueryDto } from 'src/users/dto/query.dto';
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
@@ -94,11 +93,13 @@ export class FriendRequestsController {
     );
 
     if (request) {
-      this.gateway.server.emit('friend-request-accepted', {
-        senderId,
-        receiverId,
-        requestId: request.id,
-      });
+      this.gateway.server
+        .to(`user-${senderId}`)
+        .emit('friend-request-accepted', {
+          senderId,
+          receiverId,
+          requestId: request.id,
+        });
     }
 
     return request;
@@ -133,11 +134,13 @@ export class FriendRequestsController {
     );
 
     if (request) {
-      this.gateway.server.emit('friend-request-declined', {
-        senderId,
-        receiverId,
-        requestId: request.id,
-      });
+      this.gateway.server
+        .to(`user-${senderId}`)
+        .emit('friend-request-declined', {
+          senderId,
+          receiverId,
+          requestId: request.id,
+        });
     }
   }
 
@@ -196,11 +199,13 @@ export class FriendRequestsController {
     );
 
     if (request) {
-      this.gateway.server.emit('friend-request-cancelled', {
-        senderId,
-        receiverId,
-        requestId: request.id,
-      });
+      this.gateway.server
+        .to(`user-${receiverId}`)
+        .emit('friend-request-cancelled', {
+          senderId,
+          receiverId,
+          requestId: request.id,
+        });
     }
 
     return request;
