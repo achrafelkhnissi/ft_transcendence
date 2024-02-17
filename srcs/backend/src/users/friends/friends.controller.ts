@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserFriendResponseDto } from './dto/user-friend-response.dto';
+import { Gateway } from 'src/gateway/gateway';
 
 @ApiTags('friends')
 @UseGuards(AuthGuard)
@@ -28,7 +29,10 @@ import { UserFriendResponseDto } from './dto/user-friend-response.dto';
 export class FriendsController {
   private readonly logger = new Logger(FriendsController.name);
 
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(
+    private readonly friendsService: FriendsService,
+    private readonly gateway: Gateway,
+  ) {}
 
   @ApiQuery({
     name: 'id',
@@ -70,7 +74,15 @@ export class FriendsController {
     @Query('id', new ParseIntPipe()) id: number,
     @User() user: UserType,
   ) {
-    return this.friendsService.removeFriend(user.id, id);
+    const request = await this.friendsService.removeFriend(user.id, id);
+
+    if (request) {
+      this.gateway.server
+        .to(`user-${id}`)
+        .emit('onFriendRequest', { type: 'friend-removed', request });
+    }
+
+    return request;
   }
 
   @Get('blocked')
