@@ -126,11 +126,6 @@ export class FriendRequestsService {
   }
 
   async declineFriendRequest(receiverId: number, senderId: number) {
-    this.logger.log(
-      `Rejecting friend request from <${senderId}> to <${receiverId}>`,
-    );
-
-    // TODO: Test if this is needed
     const friendRequest = await this.prisma.friendRequest.findUniqueOrThrow({
       where: {
         senderId_receiverId: { senderId, receiverId },
@@ -193,7 +188,6 @@ export class FriendRequestsService {
   }
 
   async cancelFriendRequest(senderId: number, receiverId: number) {
-    // TODO: Test if this is needed
     const friendRequest = await this.prisma.friendRequest.findUniqueOrThrow({
       where: {
         senderId_receiverId: { senderId, receiverId },
