@@ -31,15 +31,16 @@ const Contacts: React.FC<ContactsProps> = ({
 
   useEffect(() => {
     if (socket) {
-      socket.on('friend-request-declined', data => {
+      socket.on('friend-request-declined', (data) => {
         setFriendshipState(false);
-      })
-      socket.on('friend-request-accepted', data => {
+      });
+      socket.on('friend-request-accepted', (data) => {
+        console.log('friend-request-accepted', data);
         setFriendshipState(FriendshipStatus.ACCEPTED);
-      })
-      socket.on('friend-removed', data => {
+      });
+      socket.on('friend-removed', (data) => {
         setFriendshipState(false);
-      })
+      });
     }
   }, [socket]);
 

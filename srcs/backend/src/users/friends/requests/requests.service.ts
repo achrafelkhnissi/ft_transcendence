@@ -69,17 +69,10 @@ export class FriendRequestsService {
 
     if (request) {
       const r = await this.acceptFriendRequest(senderId, receiverId);
-      await this.notification.deleteNotification(r.id);
-      await this.notification.create({
-        receiverId: senderId,
-        senderId: receiverId,
-        type: NotificationType.FRIEND_REQUEST_ACCEPTED,
-        requestId: r.id,
-        requestStatus: RequestStatus.ACCEPTED,
-      });
 
       this.gateway.server
         .to(`user-${senderId}`)
+        .to(`user-${receiverId}`)
         .emit('friend-request-accepted', {
           senderId: receiverId,
           receiverId: senderId,
@@ -133,6 +126,8 @@ export class FriendRequestsService {
         `Friend request from <${senderId}> to <${receiverId}> not found`,
       );
     }
+
+    this.notification.deleteNotification(request.id);
 
     await this.notification.create({
       senderId: receiverId,

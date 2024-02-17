@@ -70,13 +70,16 @@ const Notifications = () => {
         setNotifications((prev) =>
           prev.filter(
             (item) =>
-              item.requestId !== data.requestId &&
-              item.receiver.id !== data.senderId,
+              !(
+                item.type == 'FRIEND_REQUEST_SENT' &&
+                item.requestId == data.requestId
+              ),
           ),
         );
       });
     }
   }, [socket]);
+  console.log('notifications', notifications);
 
   return (
     <div

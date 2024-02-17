@@ -95,6 +95,7 @@ export class FriendRequestsController {
     if (request) {
       this.gateway.server
         .to(`user-${senderId}`)
+        .to(`user-${receiverId}`)
         .emit('friend-request-accepted', {
           senderId,
           receiverId,
