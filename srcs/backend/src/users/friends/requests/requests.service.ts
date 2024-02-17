@@ -130,6 +130,7 @@ export class FriendRequestsService {
       `Rejecting friend request from <${senderId}> to <${receiverId}>`,
     );
 
+    // TODO: Test if this is needed
     const friendRequest = await this.prisma.friendRequest.findUniqueOrThrow({
       where: {
         senderId_receiverId: { senderId, receiverId },
@@ -148,13 +149,11 @@ export class FriendRequestsService {
       );
     }
 
-    const request = await this.prisma.friendRequest.delete({
+    return this.prisma.friendRequest.delete({
       where: {
         senderId_receiverId: { senderId, receiverId },
       },
     });
-
-    return { message: 'Friend request rejected', request };
   }
 
   async listSentFriendRequests(userId: number) {

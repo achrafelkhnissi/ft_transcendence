@@ -114,10 +114,18 @@ export class FriendRequestsController {
       `User <${senderId}> is declining a friend request from user <${receiverId}>`,
     );
 
-    return this.friendRequestsService.declineFriendRequest(
+    const request = await this.friendRequestsService.declineFriendRequest(
       receiverId,
       senderId,
     );
+
+    if (request) {
+      this.gateway.server.emit('friend-request-declined', {
+        senderId,
+        receiverId,
+        requestId: request.id,
+      });
+    }
   }
 
   @ApiOkResponse({
