@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import getUser from '@/services/getUser';
 import { User, defaultInfos } from '@/components/userProfile/types';
 import { useRouter } from 'next/navigation';
+import { useSocket } from '@/contexts/socketContext';
 
 const Home = ({ params }: { params: { name: string } }) => {
   const abortController = new AbortController();

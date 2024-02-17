@@ -139,6 +139,8 @@ export class FriendRequestsController {
         requestId: request.id,
       });
     }
+
+    return request;
   }
 
   @ApiOkResponse({

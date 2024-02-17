@@ -32,11 +32,12 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
   const handleDecline = () => {
     declineFirendRequest(notif.sender.id).then((res) => {
       if (res) {
-            deleteNotif(notif.requestId);
-            setActionDone(true);
-            setTimeout(() => {
-              setActionDone(false);
-            }, 2500);
+        console.log('handleDecline', res);
+        deleteNotif(notif.id);
+        setActionDone(true);
+        setTimeout(() => {
+          setActionDone(false);
+        }, 2500);
       }
     });
   };

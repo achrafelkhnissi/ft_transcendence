@@ -3,13 +3,10 @@ import { useEffect, useState } from 'react';
 import sendFriendRequest from '@/services/sendFriendRequest';
 import removeFriend from '@/services/removeFriend';
 import cancelFriendRequest from '@/services/cancelFriendRequest';
-import { stat } from 'fs';
 import { useSocket } from '@/contexts/socketContext';
 import { ContactsItems, FriendshipStatus } from './types';
 import createNewConv from '@/services/createNewConv';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { Data } from 'phaser';
 
 interface ContactsProps {
   username: string;

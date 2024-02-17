@@ -6,6 +6,8 @@ async function declineFirendRequest(id: number) {
       process.env.BACKEND + `/api/users/friends/requests/decline?id=${id}`,
       { withCredentials: true },
     );
+
+    console.log('declineFirendRequest', data);
     return data;
   } catch (e) {
     console.log('error declining friend request ', e);
