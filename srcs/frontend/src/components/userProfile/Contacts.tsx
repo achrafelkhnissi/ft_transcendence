@@ -59,20 +59,6 @@ const Contacts: React.FC<ContactsProps> = ({
     setFriendshipState(status);
   }, [status]);
 
-  // useEffect(() => {
-  //   if (isClicked == 'send') {
-  //     sendFriendRequest(id).then((res) => {
-  //       setIsClicked('');
-  //       setFriendshipState(res.request.friendshipStatus);
-  //     });
-  //   } else if (isClicked == 'cancel') {
-  //     cancelFriendRequest(id).then((res) => {
-  //       setIsClicked('');
-  //       setFriendshipState(false);
-  //     });
-  //   }
-  // }, [isClicked, username, friendshipState]);
-
   const router = useRouter();
   const createRoom = async () => {
     const payload = {
