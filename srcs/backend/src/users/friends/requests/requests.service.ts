@@ -69,6 +69,7 @@ export class FriendRequestsService {
 
     if (request) {
       const r = await this.acceptFriendRequest(senderId, receiverId);
+      await this.notification.deleteNotification(r.id);
       await this.notification.create({
         receiverId: senderId,
         senderId: receiverId,
@@ -84,6 +85,7 @@ export class FriendRequestsService {
           receiverId: senderId,
           requestId: r.id,
         });
+
       return r;
     }
 

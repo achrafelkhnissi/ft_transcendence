@@ -70,7 +70,8 @@ const Notifications = () => {
         setNotifications((prev) =>
           prev.filter(
             (item) =>
-              item.requestId !== data.id && item.receiver.id !== data.sender.id,
+              item.requestId !== data.requestId &&
+              item.receiver.id !== data.senderId,
           ),
         );
       });
