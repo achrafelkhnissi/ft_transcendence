@@ -18,6 +18,14 @@ export class NotificationsService {
         avatar: true,
       },
     },
+    receiver: {
+      select: {
+        id: true,
+        username: true,
+        avatar: true,
+      },
+    },
+    requestId: true,
   };
 
   constructor(

@@ -11,6 +11,7 @@ import {
 } from '@prisma/client';
 import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Gateway } from 'src/gateway/gateway';
 
 @Injectable()
 export class FriendRequestsService {
@@ -19,6 +20,7 @@ export class FriendRequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notification: NotificationsService,
+    private readonly gateway: Gateway,
   ) {}
 
   private async isFriends(
@@ -59,23 +61,31 @@ export class FriendRequestsService {
       );
     }
 
-    const request = await this.prisma.friendRequest.upsert({
+    const request = await this.prisma.friendRequest.findUnique({
       where: {
-        senderId_receiverId: { senderId, receiverId: receiverId },
-      },
-      update: {
-        friendshipStatus: FriendshipStatus.PENDING,
-      },
-      create: {
-        senderId: senderId,
-        receiverId: receiverId,
-        friendshipStatus: FriendshipStatus.PENDING,
+        senderId_receiverId: { senderId: receiverId, receiverId: senderId },
       },
     });
 
-    console.log({
-      request,
-    });
+    if (request) {
+      const r = await this.acceptFriendRequest(receiverId, senderId);
+      await this.notification.create({
+        receiverId: senderId,
+        senderId: receiverId,
+        type: NotificationType.FRIEND_REQUEST_ACCEPTED,
+        requestId: r.id,
+        requestStatus: RequestStatus.ACCEPTED,
+      });
+
+      this.gateway.server
+        .to(`user-${senderId}`)
+        .emit('friend-request-accepted', {
+          senderId: receiverId,
+          receiverId: senderId,
+          requestId: r.id,
+        });
+      return r;
+    }
 
     const notification = await this.notification.create({
       receiverId: receiverId,
