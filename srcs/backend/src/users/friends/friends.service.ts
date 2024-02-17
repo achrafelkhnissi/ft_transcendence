@@ -61,7 +61,7 @@ export class FriendsService {
   }
 
   async removeFriend(userId: number, friendId: number) {
-    return this.prisma.friendRequest
+    const request = await this.prisma.friendRequest
       .deleteMany({
         where: {
           AND: [
@@ -90,6 +90,23 @@ export class FriendsService {
 
         return friendRequest;
       });
+
+    await this.prisma.notification.deleteMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: friendId,
+          },
+          {
+            senderId: friendId,
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+
+    return request;
   }
 
   async listBlockedUsers(userId: number) {

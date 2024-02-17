@@ -41,7 +41,7 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
       }
     });
   };
-
+console.log('actionon',actionDone);
   return (
     <div className="relative">
       <div

@@ -18,6 +18,7 @@ export class NotificationsService {
         avatar: true,
       },
     },
+    requestId: true,
   };
 
   constructor(
