@@ -178,6 +178,7 @@ export class FriendRequestsController {
       this.gateway.server.emit('friend-request-cancelled', {
         senderId,
         receiverId,
+        requestId: request.id,
       });
     }
 

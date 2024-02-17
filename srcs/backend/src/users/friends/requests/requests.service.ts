@@ -213,12 +213,10 @@ export class FriendRequestsService {
       );
     }
 
-    const request = await this.prisma.friendRequest.delete({
+    return this.prisma.friendRequest.delete({
       where: {
         senderId_receiverId: { senderId, receiverId },
       },
     });
-
-    return { message: 'Friend request cancelled', request };
   }
 }
