@@ -95,7 +95,7 @@ export class FriendRequestsService {
       `User <${senderId}> sent a friend request to <${receiverId}>`,
     );
 
-    return { message: 'Friend request sent', request };
+    return request;
   }
 
   async acceptFriendRequest(receiverId: number, senderId: number) {
@@ -122,7 +122,7 @@ export class FriendRequestsService {
       requestStatus: RequestStatus.ACCEPTED,
     });
 
-    return { message: 'Friend request accepted', request };
+    return request;
   }
 
   async declineFriendRequest(receiverId: number, senderId: number) {

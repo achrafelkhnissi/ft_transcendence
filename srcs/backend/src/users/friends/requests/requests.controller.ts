@@ -88,7 +88,20 @@ export class FriendRequestsController {
       `User <${receiverId}> is accepting a friend request from user <${senderId}>`,
     );
 
-    return this.friendRequestsService.acceptFriendRequest(receiverId, senderId);
+    const request = await this.friendRequestsService.acceptFriendRequest(
+      receiverId,
+      senderId,
+    );
+
+    if (request) {
+      this.gateway.server.emit('friend-request-accepted', {
+        senderId,
+        receiverId,
+        requestId: request.id,
+      });
+    }
+
+    return request;
   }
 
   @ApiQuery({
