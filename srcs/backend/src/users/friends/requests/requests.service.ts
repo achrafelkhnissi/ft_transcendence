@@ -68,7 +68,7 @@ export class FriendRequestsService {
     });
 
     if (request) {
-      const r = await this.acceptFriendRequest(receiverId, senderId);
+      const r = await this.acceptFriendRequest(senderId, receiverId);
       await this.notification.create({
         receiverId: senderId,
         senderId: receiverId,
