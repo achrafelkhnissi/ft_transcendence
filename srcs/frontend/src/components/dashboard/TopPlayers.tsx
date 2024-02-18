@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { FaCrown } from 'react-icons/fa';
 import getRankings from '@/services/getRankings';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface User {
   id: number;
@@ -57,18 +59,20 @@ const TopPlayers = () => {
                   >
                     <td className=" flex h-full gap-3 justify-center px-2 py-[0.6rem] text-white/30 text-center">
                       <p className="self-center">#{index + 1}</p>
-                      <img
-                        src={
-                          process.env.BACKEND + `/api/users/${item.id}/avatar`
-                        }
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 
+                      <Link href={`/profile/${item.username}`}>
+                        <img
+                          src={
+                            process.env.BACKEND + `/api/users/${item.id}/avatar`
+                          }
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 
                                         self-center
                                         rounded-full
                                         object-fill"
-                      />
+                        />
+                      </Link>
                     </td>
                     <td className="px-2 py-[0.6rem] text-center">
                       {item.username}
