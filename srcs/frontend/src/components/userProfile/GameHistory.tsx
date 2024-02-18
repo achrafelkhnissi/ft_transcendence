@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image';
 import Card from './Card';
 import { RiChatHistoryFill } from 'react-icons/ri';
@@ -16,7 +17,7 @@ const GameHistory: React.FC<HistroyProps> = ({history, userId}) => {
     header="game history"
     icon={<RiChatHistoryFill className="text-[#6C61A4] w-5 h-5" />}
     >
-      <div className="flex gap-1 flex-col p-4  h-full  max-h-[680px] w-full">
+      <div className="flex gap-1 flex-col-reverse justify-end p-4  h-full min-h-[480px] max-h-[680px] w-full">
         {history.map((item, index) => {
       const oponenent = item.winner.id == userId ? item.loser : item.winner;
           return (
@@ -29,7 +30,7 @@ const GameHistory: React.FC<HistroyProps> = ({history, userId}) => {
                   ${!(index % 2) && 'bg-[#1C1C43]'}`}
             >
               <div className="flex gap-4 text-white text-sm">
-                <Image
+                <img
                   src={process.env.BACKEND + `/api/users/${oponenent.id}/avatar`}
                   alt=""
                   width={40}
