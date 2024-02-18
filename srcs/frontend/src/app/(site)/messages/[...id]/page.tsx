@@ -85,6 +85,28 @@ const Home = ({ params }: { params: { id: number } }) => {
     setConversationOrder((prev) => prev.filter((convoId) => convoId != id));
   };
 
+  const getConversationIdByName = (name: string) => {
+    const conversationId = Object.keys(conversations).find(
+      (key) => conversations[Number(key)].name === name,
+    );
+    return conversationId ? Number(conversationId) : -1;
+  };
+
+  const removeConversationByName = (name: string) => {
+    const conversationId = getConversationIdByName(name);
+
+    setConversations((prev) => {
+      const updatedConversations = { ...prev };
+      if (conversationId) {
+        delete updatedConversations[Number(conversationId)];
+      }
+      return updatedConversations;
+    });
+    setConversationOrder((prev) =>
+      prev.filter((convoId) => convoId != Number(conversationId)),
+    );
+  };
+
   const addAdminToConversation = (conversationId: number, user: User) => {
     setConversations((prevConversations) => {
       const updatedConversations = { ...prevConversations };
@@ -240,6 +262,11 @@ const Home = ({ params }: { params: { id: number } }) => {
           }
         }
       });
+      socket.on('blocked', (res) => {
+        console.log('blocked', res);
+        removeConversationByName(res.roomName);
+        console.log('tmshat', conversations);
+      });
     }
 
     return () => {
@@ -247,6 +274,8 @@ const Home = ({ params }: { params: { id: number } }) => {
         socket.off('connect');
         socket.off('onMessage');
         socket.off('action');
+        socket.off('status');
+        socket.off('blocked');
       }
     };
   }, [socket, conversations, currentUser]);
