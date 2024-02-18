@@ -131,22 +131,20 @@ export class FriendsService {
   }
 
   async blockUser(userId: number, friendId: number) {
-    const existingFriendship = await this.prisma.friendRequest.findFirstOrThrow(
-      {
-        where: {
-          OR: [
-            {
-              senderId: userId,
-              receiverId: friendId,
-            },
-            {
-              senderId: friendId,
-              receiverId: userId,
-            },
-          ],
-        },
+    const existingFriendship = await this.prisma.friendRequest.findFirst({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+            receiverId: friendId,
+          },
+          {
+            senderId: friendId,
+            receiverId: userId,
+          },
+        ],
       },
-    );
+    });
 
     if (existingFriendship) {
       return this.prisma.friendRequest.update({
