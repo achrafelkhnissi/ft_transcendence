@@ -225,6 +225,7 @@ export class UsersService {
     return {
       ...user,
       friends: await this.friendsService.listFriendsById(user.id),
+      games: await this.getGames(user.id),
       blockedUsers,
     };
   }
@@ -418,5 +419,36 @@ export class UsersService {
         },
       })
       .then((users) => users.map((user) => user.username));
+  }
+
+  async getGames(userId: number) {
+    return this.prisma.game.findMany({
+      where: {
+        OR: [
+          {
+            winnerId: userId,
+          },
+          {
+            loserId: userId,
+          },
+        ],
+      },
+      select: {
+        id: true,
+        winner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        loser: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        score: true,
+      },
+    });
   }
 }
