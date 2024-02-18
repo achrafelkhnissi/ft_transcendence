@@ -57,7 +57,12 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        status: true,
+      },
+    });
   }
 
   async findById(id: number, userId?: number) {

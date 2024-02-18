@@ -145,7 +145,9 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
     <div
       className={`md:w-4/6 bg-[#25244E] rounded-[3rem] w-full h-full 
         shadow-[0_10px_20px_15px_rgba(0,0,0,0.2)] relative text-white 
-        ${showConversation ? '' : 'hidden md:block'}`}
+        ${showConversation ? '' : 'hidden md:block'}
+        ${showChannelInfo && 'container-blur'}`}
+        onClick={() => {setShowChannelInfo(false)}}
     >
       {/* Header */}
       {conversationId >= 0 &&
@@ -155,6 +157,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
               <ConversationHeader
                 receiver={receiver}
                 updateConversations={updateShowConversation}
+                statuses={statuses}
               />
             )}
             {conversationsMap[conversationId].type != 'DM' && (
@@ -166,11 +169,13 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   setShowChannelInfo={setShowChannelInfo}
                 />
                 {showChannelInfo && (
-                  <div className="absolute w-[90%] max-h-[85%] top-[4.5rem] left-6 z-20 overflow-y-auto rounded-lg">
+                  <div className="absolute w-[90%] max-h-[85%] left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2  z-20 overflow-y-auto rounded-lg "
+                  onClick={(e) => {e.stopPropagation()}}>
                     <ChannelInfo
                       currentUser={currentUser}
                       channel={conversationsMap[conversationId]}
                       updateConversations={updateConversations}
+                      statuses={statuses}
                     />
                   </div>
                 )}
