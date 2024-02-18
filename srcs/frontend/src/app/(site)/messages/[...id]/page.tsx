@@ -17,6 +17,8 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
 import markMessageAsRead from '@/services/markMessageAsRead';
+import getAllUsers from '@/services/getAllUsers';
+import getAllUsersStatus from '@/services/getAllUsersStatus';
 
 const Home = ({ params }: { params: { id: number } }) => {
   const [userStatuses, setUserStatuses] = useState<UserStatuses>({});
@@ -96,7 +98,7 @@ const Home = ({ params }: { params: { id: number } }) => {
     });
   };
 
-  const updateUserStatus = (userId: string, status: string) => {
+  const updateUserStatus = (userId: number, status: string) => {
     setUserStatuses((prevStatuses) => ({
       ...prevStatuses,
       [userId]: status,
@@ -144,8 +146,20 @@ const Home = ({ params }: { params: { id: number } }) => {
     }
 
     getConversations().then((res) => {
-      console.log('res', res);
       initializeConversations(res);
+    });
+    getAllUsersStatus().then((res) => {
+      if (res) {
+        const userStatuses: User[] = res;
+        const userStatusesMap: UserStatuses = userStatuses.reduce<UserStatuses>(
+          (acc, user) => {
+            user.id && (acc[user.id] = user.status);
+            return acc;
+          },
+          {},
+        );
+        setUserStatuses(userStatusesMap);
+      }
     });
     getCurrentUser().then((res) => {
       setCurrentUser(res);
@@ -194,6 +208,10 @@ const Home = ({ params }: { params: { id: number } }) => {
       socket.on('onMessage', (message: Message) => {
         console.log('message', message);
         addMessageToConversation(message);
+      });
+
+      socket.on('status', (status: { userId: number; status: string }) => {
+        updateUserStatus(status.userId, status.status);
       });
 
       socket.on('action', (res: actionData) => {

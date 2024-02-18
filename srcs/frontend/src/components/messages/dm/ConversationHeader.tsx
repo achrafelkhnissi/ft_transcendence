@@ -1,15 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
-import { User } from '../data';
+import { User, UserStatuses } from '../data';
 import { IoIosArrowBack } from "react-icons/io";
 
  interface props {
     receiver: User;
     updateConversations: Function;
+    statuses: UserStatuses;
  }
 
-const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) => {
+const ConversationHeader: React.FC<props> = ({receiver, updateConversations, statuses}) => {
   return (
     <div
       className="absolute w-full h-16 top-0 rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
@@ -28,7 +29,7 @@ const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) =>
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
           <p className="font-light text-xs text-white/30 ">
-            {receiver.status.toLocaleLowerCase()}
+            {receiver?.id && statuses[receiver?.id].toLocaleLowerCase()}
           </p>
         </div>
       </div>

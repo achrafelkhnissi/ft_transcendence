@@ -68,6 +68,12 @@ export class UsersController {
     throw new NotFoundException('User not found');
   }
 
+  // TODO: Add swagger documentation
+  @Get('all')
+  findAll() {
+    return this.usersService.findAll();
+  }
+
   @Patch(':id')
   @ApiParam({
     name: 'id',

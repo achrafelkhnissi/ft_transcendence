@@ -52,7 +52,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
               onClick={() => handleClick(id)}
               key={id}
             >
-              <div className="self-center ">
+              <div className="self-center relative">
                 <img
                   src={process.env.BACKEND + `/api/users/${friend?.id}/avatar`}
                   alt=""
@@ -60,6 +60,15 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
                   height={100}
                   className="w-12 h-12 rounded-full object-fill"
                 />
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    friend?.id && statuses[friend?.id] == 'ONLINE'
+                      ? 'bg-green-500'
+                      : friend?.id && statuses[friend?.id] == 'PLAYING'
+                        ? 'bg-yellow-500'
+                        : 'bg-red-500'
+                  } absolute bottom-1 right-0 `}
+                ></div>
               </div>
               <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">
                 <h6 className="font-normal text-sm">{friend?.username}</h6>
@@ -71,7 +80,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
                 {lastMessage ? formatChatTimestamp(lastMessage.createdAt) : ''}
               </p>
               {lastMessage &&
-                lastMessage.readBy.every(num => num != currentUser?.id) && 
+                lastMessage.readBy.every((num) => num != currentUser?.id) &&
                 lastMessage?.sender.username === friend?.username &&
                 selectedConversation != id && (
                   <div className="absolute w-[0.45rem] h-[0.45rem] rounded-full bg-[#6257FE] -left-2 top-1/2"></div>
