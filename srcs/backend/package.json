@@ -54,7 +54,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.0",
-    "twilio": "^3.40.0"
+    "twilio": "^4.22.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
