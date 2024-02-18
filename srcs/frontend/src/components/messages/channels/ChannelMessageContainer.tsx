@@ -2,6 +2,7 @@
 import React from 'react';
 import { Message, User } from '../data';
 import formatChatTimestamp from '../tools/formatTime';
+import Link from 'next/link';
 
 interface ChannelMessageContainerProps {
   message: Message;
@@ -21,11 +22,15 @@ const ChannelMessageContainer: React.FC<ChannelMessageContainerProps> = ({
     >
       <div className="flex gap-2 ">
         {!isCurrentUser && displayAvatr && (
-          <img
-            src={process.env.BACKEND + `/api/users/${message.sender.id}/avatar`}
-            alt=""
-            className="w-8 h-8 rounded-full object-fill"
-          />
+          <Link href={`/profile/${message.sender.username}`}>
+            <img
+              src={
+                process.env.BACKEND + `/api/users/${message.sender.id}/avatar`
+              }
+              alt=""
+              className="w-8 h-8 rounded-full object-fill"
+            />
+          </Link>
         )}
         <div className="felx flex-col ">
           {!isCurrentUser && (
