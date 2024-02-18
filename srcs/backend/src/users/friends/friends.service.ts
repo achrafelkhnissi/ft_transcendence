@@ -131,28 +131,49 @@ export class FriendsService {
   }
 
   async blockUser(userId: number, friendId: number) {
-    return this.prisma.friendRequest.upsert({
-      where: {
-        senderId_receiverId: {
-          senderId: userId,
-          receiverId: friendId,
+    const existingFriendship = await this.prisma.friendRequest.findFirstOrThrow(
+      {
+        where: {
+          OR: [
+            {
+              senderId: userId,
+              receiverId: friendId,
+            },
+            {
+              senderId: friendId,
+              receiverId: userId,
+            },
+          ],
         },
       },
-      update: {
-        senderId: userId,
-        receiverId: friendId,
-        friendshipStatus: FriendshipStatus.BLOCKED,
-      },
-      create: {
-        senderId: userId,
-        receiverId: friendId,
-        friendshipStatus: FriendshipStatus.BLOCKED,
-      },
-      select: {
-        id: true,
-        friendshipStatus: true,
-      },
-    });
+    );
+
+    if (existingFriendship) {
+      return this.prisma.friendRequest.update({
+        where: { id: existingFriendship.id },
+        data: {
+          senderId: userId,
+          receiverId: friendId,
+          friendshipStatus: FriendshipStatus.BLOCKED,
+        },
+        select: {
+          id: true,
+          friendshipStatus: true,
+        },
+      });
+    } else {
+      return this.prisma.friendRequest.create({
+        data: {
+          senderId: userId,
+          receiverId: friendId,
+          friendshipStatus: FriendshipStatus.BLOCKED,
+        },
+        select: {
+          id: true,
+          friendshipStatus: true,
+        },
+      });
+    }
   }
 
   async unblockUser(userId: number, friendId: number) {
