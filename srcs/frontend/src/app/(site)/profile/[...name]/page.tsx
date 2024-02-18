@@ -48,7 +48,7 @@ console.log('user', user)
         <div className="min-[880px]:row-span-2 ">
           <GameHistory history={user.games} userId={user.id}/>
         </div>
-        <Friends friends={user.friends} />
+        <Friends friends={user.friends} blockedUsers={user.blockedUsers}/>
         <Achievements />
       </div>
     </div>

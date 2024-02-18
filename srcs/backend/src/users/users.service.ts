@@ -178,11 +178,9 @@ export class UsersService {
         },
       })
       .then((friendRequests) => {
-        return friendRequests
-          .map((req) =>
-            username === req.receiver.username ? req.receiver : req.sender,
-          )
-          .filter((user) => user.username !== username);
+        return friendRequests.map((req) =>
+          username === req.receiver.username ? req.sender : req.receiver,
+        );
       });
 
     const user = await this.prisma.user.findUniqueOrThrow({
