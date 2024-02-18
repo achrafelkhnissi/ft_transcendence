@@ -9,16 +9,22 @@ interface props {
   receiver: User;
   updateConversations: Function;
   statuses: UserStatuses;
+  removeConversation: Function;
+  conversationId: number;
 }
 
 const ConversationHeader: React.FC<props> = ({
   receiver,
   updateConversations,
   statuses,
+  removeConversation,
+  conversationId,
 }) => {
   const handleBlockUser = () => {
     blockUser(receiver.id).then((res) => {
-      console.log('block user ', res);
+      if (res) {
+        removeConversation(conversationId);
+      }
     });
   };
 
