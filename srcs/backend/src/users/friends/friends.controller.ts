@@ -114,7 +114,19 @@ export class FriendsController {
   ) {
     this.logger.log(`User <${user?.id}> is blocking user <${id}>`);
 
-    return this.friendsService.blockUser(user.id, id);
+    const request = await this.friendsService.blockUser(user.id, id);
+
+    if (request) {
+      const ids = [user.id, id].sort((a, b) => a - b);
+      const roomName = `Room-${ids[0]}-${ids[1]}`;
+      this.gateway.server.to(`user-${id}`).emit('blocked', {
+        senderId: user.id,
+        receiverId: id,
+        roomName,
+      });
+    }
+
+    return request;
   }
 
   @ApiQuery({
