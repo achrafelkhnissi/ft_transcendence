@@ -37,7 +37,14 @@ const PlayPage = () => {
     isFriend: false,
     friends: [],
   });
+  const [opponent, setOpponenet] = useState({
+    id: 0,
+    username: '',
+  });
 
+  const [left , setLeft] = useState<null | number>(null);
+  const [right , setRight] = useState<null | number>(null);
+  
   const handlePlayClick = async () => {
     setIsWaiting(true);
 
@@ -50,14 +57,27 @@ const PlayPage = () => {
   };
 
   useEffect(() => {
+    getCurrentUser().then((res) => setCurrentUser(res)); //protect get current user
+
     const handleOpponentFound = (opponentInfo: {
-      playerPosition: string;
-      id: string;
+      playerPosition: string,
+      opponentId : number,
+      username: string,
     }) => {
       console.log('Opponent found:', opponentInfo);
+      setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
       setPosition(opponentInfo.playerPosition);
+      if (position === 'leftPaddle'){
+        setLeft(currentUser.id);
+        setRight(opponent.id);
+      }
+      else if (position == 'rightPaddle'){
+        setLeft(opponent.id);
+        setRight(currentUser.id);        
+      }
       setIsWaiting(false);
     };
+
     socket?.on('opponentFound', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
@@ -67,7 +87,6 @@ const PlayPage = () => {
 
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
-      getCurrentUser().then((res) => setCurrentUser(res));
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
     });
 
@@ -81,7 +100,7 @@ const PlayPage = () => {
   }, [socket]);
 
   return (
-    <div className={`w-full h-full relative`}>
+    <div className={`flex justify-center w-full h-full relative`}>
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
@@ -136,14 +155,29 @@ const PlayPage = () => {
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||
-            (!youWon && <YouLose />)}
-          {/* </div> */}
+            (!youWon && <YouLose user={currentUser}/>)}
         </div>
       )}
 
-      <div className="flex justify-center h-full">
-        {!isWaiting && position && <Game position={position} color={bgColor} />}
-      </div>
+        {!isWaiting && position && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
+        <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
+        <img
+          src={process.env.BACKEND + `/api/users/${left}/avatar`}
+          alt="player"
+          width={10}
+          height={10}
+          className="w-10 h-10 rounded-full self-center"
+        />
+          <img
+          src={process.env.BACKEND + `/api/users/${right}/avatar`}
+          alt="opponenet"
+          width={10}
+          height={10}
+          className="w-10 h-10 rounded-full self-center"
+        />
+        </div>
+         <Game position={position} color={bgColor} />
+      </div>)}
     </div>
   );
 };

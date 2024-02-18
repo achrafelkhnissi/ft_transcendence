@@ -76,14 +76,16 @@ export class GameService {
     }, 10000);
     if (this.getAllUsers().length >= 2) {
       const client1 = this.removeUser();
+      const client2 = this.removeUser();
       client1.socket.emit('opponentFound', {
         playerPosition: 'leftPaddle',
-        id: client1.id,
+        opponentId : client2.user.id,
+        username: client2.user.username,
       });
-      const client2 = this.removeUser();
       client2.socket.emit('opponentFound', {
         playerPosition: 'rightPaddle',
-        id: client2.id,
+        opponentId : client1.user.id,
+        username: client1.user.username,
       });
       this.createMatch(client1, client2);
     }
