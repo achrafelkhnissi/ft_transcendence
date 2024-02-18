@@ -157,6 +157,8 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                 receiver={receiver}
                 updateConversations={updateShowConversation}
                 statuses={statuses}
+                removeConversation={removeConversation}
+                conversationId={conversationId}
               />
             )}
             {conversationsMap[conversationId].type != 'DM' && (
