@@ -34,7 +34,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         }
       });
     }
-console.log('user', user)
+    console.log('user', user);
     return () => abortController.abort();
   }, [params.name]);
 
@@ -46,9 +46,12 @@ console.log('user', user)
       max-[880px]:grid-rows-3  min-[880px]:grid-cols-2"
       >
         <div className="min-[880px]:row-span-2 ">
-          <GameHistory history={user.games} userId={user.id}/>
+          <GameHistory history={user.games} userId={user.id} />
         </div>
-        <Friends friends={user.friends} blockedUsers={user.blockedUsers}/>
+        <Friends
+          friends={user.friends}
+          blockedUsers={user.blockedUsers ?? []}
+        />
         <Achievements />
       </div>
     </div>

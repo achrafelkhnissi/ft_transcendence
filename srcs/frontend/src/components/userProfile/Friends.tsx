@@ -4,13 +4,13 @@ import FriendAvatar from '../FriendAvatar';
 import Card from './Card';
 import { MdEmojiPeople } from 'react-icons/md';
 import { FriendsProps } from './types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BlockUser from '../svgAssets/BlockUser';
 import unblockUser from '@/services/unblockUser';
 
 interface FriendsComponentProps {
   friends: FriendsProps[];
-  blockedUsers?: FriendsProps[];
+  blockedUsers: FriendsProps[];
 }
 
 const Friends: React.FC<FriendsComponentProps> = ({
@@ -18,7 +18,11 @@ const Friends: React.FC<FriendsComponentProps> = ({
   blockedUsers,
 }) => {
   const [showBlocked, setShowBlocked] = useState(false);
-  const [blockedUsersList, setBlockedUsersList] = useState<FriendsProps[]>(blockedUsers? blockedUsers : []);
+  const [blockedUsersList, setBlockedUsersList] = useState<FriendsProps[]>([]);
+
+  useEffect(() => {
+    setBlockedUsersList(blockedUsers);
+  }, [blockedUsers]);
 
   const handleUnBlock = (id: number) => {
     console.log('unblock', id);
