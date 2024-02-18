@@ -2,126 +2,23 @@ import Image from 'next/image';
 import Card from './Card';
 import { RiChatHistoryFill } from 'react-icons/ri';
 import { AiFillCloseCircle, AiFillCheckCircle } from 'react-icons/ai';
+import { GameHistoryProps } from './types';
+import { use } from 'matter';
 
-interface User {
-  username: string;
-  avatar: string;
+interface HistroyProps {
+  history: GameHistoryProps[];
+  userId: number | null;
 }
 
-interface GameHistoryProps {
-  oponenent: User;
-  openenentScore: number;
-  userScroe: number;
-}
-
-const arr: GameHistoryProps[] = [
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 3,
-    userScroe: 2,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 2,
-    userScroe: 3,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 1,
-    userScroe: 4,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 0,
-    userScroe: 5,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 3,
-    userScroe: 2,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 2,
-    userScroe: 3,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 1,
-    userScroe: 4,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 0,
-    userScroe: 5,
-  },
-
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 3,
-    userScroe: 2,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 2,
-    userScroe: 3,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 1,
-    userScroe: 4,
-  },
-  {
-    oponenent: {
-      username: 'ael-khni',
-      avatar: '/images/ael-khni.jpeg',
-    },
-    openenentScore: 0,
-    userScroe: 5,
-  },
-];
-
-const GameHistory = () => {
+const GameHistory: React.FC<HistroyProps> = ({history, userId}) => {
   return (
     <Card
-      header="game history"
-      icon={<RiChatHistoryFill className="text-[#6C61A4] w-5 h-5" />}
+    header="game history"
+    icon={<RiChatHistoryFill className="text-[#6C61A4] w-5 h-5" />}
     >
       <div className="flex gap-1 flex-col p-4  h-full  max-h-[680px] w-full">
-        {arr.map((item, index) => {
+        {history.map((item, index) => {
+      const oponenent = item.winner.id == userId ? item.loser : item.winner;
           return (
             <div
               key={index}
@@ -133,7 +30,7 @@ const GameHistory = () => {
             >
               <div className="flex gap-4 text-white text-sm">
                 <Image
-                  src={item.oponenent.avatar}
+                  src={process.env.BACKEND + `/api/users/${oponenent.id}/avatar`}
                   alt=""
                   width={40}
                   height={40}
@@ -142,16 +39,16 @@ const GameHistory = () => {
                                       self-center
                                       rounded-full"
                 />
-                <p className="self-center">{item.oponenent.username}</p>
+                <p className="self-center">{oponenent.username}</p>
               </div>
               <div className="text-white self-center text-sm">
-                {item.userScroe} / {item.openenentScore}
+                {item.score}
               </div>
               <div
                 className={`self-center text-sm font-semibold center 
-                                ${item.openenentScore > item.userScroe ? 'text-red-400' : ' text-green-400 '}`}
+                                ${item.loser.id == userId ? 'text-red-400' : ' text-green-400 '}`}
               >
-                {item.openenentScore > item.userScroe ? (
+                {item.loser.id == userId? (
                   <AiFillCloseCircle />
                 ) : (
                   <AiFillCheckCircle />
