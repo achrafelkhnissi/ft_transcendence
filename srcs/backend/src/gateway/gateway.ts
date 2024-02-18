@@ -114,7 +114,7 @@ export class Gateway
   @SubscribeMessage('joinQueue')
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
-    this.gameService.addUser({ id: client.id, socket: client, user });
+    this.gameService.addUser({socket: client, user});
     this.gameService.readyForGame();
   }
 }

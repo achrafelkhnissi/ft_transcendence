@@ -12,6 +12,8 @@ import {
   SPEED,
 } from './game.constants';
 
+enum players { Player1, Player2}
+
 export class Match {
   private engine: Matter.Engine;
   private world: Matter.World;
@@ -23,6 +25,7 @@ export class Match {
   public score: { player1: number; player2: number };
   public isFinished: boolean;
   public removeIt: boolean;
+
 
   constructor(
     public player1: Socket,
@@ -80,6 +83,7 @@ export class Match {
     player1.on('disconnect', () => {
       this.score.player1 = 0;
       this.score.player2 = 1;
+      this.setWinner(players.Player2);
       this.endGame();
       console.log('player1 Disconnect');
     });
@@ -87,6 +91,7 @@ export class Match {
     player2.on('disconnect', () => {
       this.score.player1 = 1;
       this.score.player2 = 0;
+      this.setWinner(players.Player1);
       this.endGame();
       console.log('player2 Disconnect');
     });
@@ -115,6 +120,7 @@ export class Match {
   }
 
   public gameStart() {
+    console.log('game start');
     Events.on(this.engine, 'collisionStart', (event) => {
       const pair = event.pairs[0];
       const object = pair.bodyA === this.ball ? pair.bodyB : pair.bodyA;
@@ -133,10 +139,10 @@ export class Match {
       }
 
       if (this.score.player1 == 5) {
-        this.setWinner(1);
+        this.setWinner(players.Player1);
         this.endGame();
       } else if (this.score.player2 == 5) {
-        this.setWinner(2);
+        this.setWinner(players.Player2);
         this.endGame();
       }
 
@@ -192,10 +198,10 @@ export class Match {
   }
 
   private setWinner(player: Number) {
-    if (player === 1) {
+    if (player === players.Player1) {
       this.player1.emit('Game is finished', { youWon: true });
       this.player2.emit('Game is finished', { youWon: false });
-    } else {
+    } else if (player === players.Player2) {
       this.player1.emit('Game is finished', { youWon: false });
       this.player2.emit('Game is finished', { youWon: true });
     }

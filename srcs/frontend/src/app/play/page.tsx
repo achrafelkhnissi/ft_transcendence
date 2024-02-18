@@ -67,18 +67,18 @@ const PlayPage = () => {
       console.log('Opponent found:', opponentInfo);
       setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
       setPosition(opponentInfo.playerPosition);
-      if (position === 'leftPaddle'){
-        setLeft(currentUser.id);
-        setRight(opponent.id);
-      }
-      else if (position == 'rightPaddle'){
-        setLeft(opponent.id);
-        setRight(currentUser.id);        
-      }
+      // if (position === 'leftPaddle'){
+      //   setLeft(currentUser.id);
+      //   setRight(opponent.id);
+      // }
+      // else if (position == 'rightPaddle'){
+      //   setLeft(opponent.id);
+      //   setRight(currentUser.id);        
+      // }
       setIsWaiting(false);
     };
 
-    socket?.on('opponentFound', handleOpponentFound);
+    socket?.on('start game', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
       console.log('nta wahid');
@@ -161,20 +161,20 @@ const PlayPage = () => {
 
         {!isWaiting && position && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
         <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
-        <img
-          src={process.env.BACKEND + `/api/users/${left}/avatar`}
+        {/* <img
+          src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
           alt="player"
           width={10}
           height={10}
           className="w-10 h-10 rounded-full self-center"
         />
           <img
-          src={process.env.BACKEND + `/api/users/${right}/avatar`}
+          src={process.env.BACKEND + `/api/users/${opponent.id}/avatar`}
           alt="opponenet"
           width={10}
           height={10}
           className="w-10 h-10 rounded-full self-center"
-        />
+        /> */}
         </div>
          <Game position={position} color={bgColor} />
       </div>)}
