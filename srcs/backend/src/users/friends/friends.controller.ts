@@ -118,7 +118,7 @@ export class FriendsController {
 
     if (request) {
       const ids = [user.id, id].sort((a, b) => a - b);
-      const roomName = `Room-${ids[0]}-${ids[1]}`;
+      const roomName = `Room${ids[0]}-${ids[1]}`;
       this.gateway.server.to(`user-${id}`).emit('blocked', {
         senderId: user.id,
         receiverId: id,
