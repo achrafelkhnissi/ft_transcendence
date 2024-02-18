@@ -18,23 +18,23 @@ const Home = ({ params }: { params: { name: string } }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (params.name == 'me') {
-      getCurrentUser().then((res) => {
+    getCurrentUser().then((res) => {
+      if (params.name == 'me' || res.username == params.name) {
         const userData: User = res;
         userData.me = true;
         setUser(userData);
-      });
-    } else {
-      getUser(params.name).then((res) => {
-        if (res) {
-          const userData: User = res;
-          (userData.me = false), setUser(userData);
-        } else {
-          router.push('/404');
-        }
-      });
-    }
-console.log('user', user)
+      } else {
+        getUser(params.name).then((res) => {
+          if (res) {
+            const userData: User = res;
+            (userData.me = false), setUser(userData);
+          } else {
+            router.push('/404');
+          }
+        });
+      }
+    });
+    console.log('user', user);
     return () => abortController.abort();
   }, [params.name]);
 
@@ -46,9 +46,13 @@ console.log('user', user)
       max-[880px]:grid-rows-3  min-[880px]:grid-cols-2"
       >
         <div className="min-[880px]:row-span-2 ">
-          <GameHistory history={user.games} userId={user.id}/>
+          <GameHistory history={user.games} userId={user.id} />
         </div>
-        <Friends friends={user.friends} />
+        <Friends
+          friends={user.friends}
+          blockedUsers={user.blockedUsers ?? []}
+          me={user.me}
+        />
         <Achievements />
       </div>
     </div>

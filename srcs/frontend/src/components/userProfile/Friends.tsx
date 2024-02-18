@@ -4,19 +4,36 @@ import FriendAvatar from '../FriendAvatar';
 import Card from './Card';
 import { MdEmojiPeople } from 'react-icons/md';
 import { FriendsProps } from './types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BlockUser from '../svgAssets/BlockUser';
+import unblockUser from '@/services/unblockUser';
 
 interface FriendsComponentProps {
   friends: FriendsProps[];
-  blockedUsers?: FriendsProps[];
+  blockedUsers: FriendsProps[];
+  me: boolean;
 }
 
 const Friends: React.FC<FriendsComponentProps> = ({
   friends,
   blockedUsers,
+  me,
 }) => {
   const [showBlocked, setShowBlocked] = useState(false);
+  const [blockedUsersList, setBlockedUsersList] = useState<FriendsProps[]>([]);
+
+  useEffect(() => {
+    setBlockedUsersList(blockedUsers);
+  }, [blockedUsers]);
+
+  const handleUnBlock = (id: number) => {
+    console.log('unblock', id);
+    unblockUser(id).then((res) => {
+      if (res) {
+        setBlockedUsersList((prev) => prev.filter((item) => item.id !== id));
+      }
+    });
+  };
 
   return (
     <Card
@@ -42,8 +59,16 @@ const Friends: React.FC<FriendsComponentProps> = ({
             />
           ))}
         {showBlocked &&
-          blockedUsers?.map((item, index) => (
-            <div key={index} className="border-2">
+          me &&
+          blockedUsersList?.map((item, index) => (
+            <div key={index} className="relative bg-white/10 rounded-2xl p-2">
+              <div
+                className="text-red-600 absolute top-0 right-1 font-extrabold z-10 cursor-pointer
+                "
+                onClick={() => handleUnBlock(item.id)}
+              >
+                x
+              </div>
               <FriendAvatar
                 key={index}
                 name={item.username}
@@ -51,15 +76,17 @@ const Friends: React.FC<FriendsComponentProps> = ({
               />
             </div>
           ))}
-        <p
-          className="text-white/80 text-xs absolute -top-3 right-2 font-semibold cursor-pointer px-2 py-1
+        {me && (
+          <p
+            className="text-white/80 text-xs absolute -top-3 right-2 font-semibold cursor-pointer px-2 py-1
           rounded-lg bg-white/10"
-          onClick={() => {
-            setShowBlocked((prev) => !prev);
-          }}
-        >
-          {showBlocked ? 'friends' : 'blocked users'}
-        </p>
+            onClick={() => {
+              setShowBlocked((prev) => !prev);
+            }}
+          >
+            {showBlocked ? 'friends' : 'blocked users'}
+          </p>
+        )}
       </div>
     </Card>
   );
