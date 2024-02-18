@@ -73,14 +73,21 @@ export class Gateway
     // Keep track of the number of sockets connected to the user's room
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount + 1);
+    if (roomCount === 0) {
+      this.logger.debug(`Client ${user.username} connected`);
+      await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
+    }
 
-    this.server.to(client.id).emit('status', { status: Status.ONLINE });
-    await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
     const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
-
-    rooms.forEach((room) => client.join(room));
-
-    this.logger.debug(`Client ${user.username} connected`);
+    rooms.forEach(async (room) => {
+      client.join(room);
+      if (roomCount === 0) {
+        this.server.to(room).emit('status', {
+          userId: user.id,
+          status: Status.ONLINE,
+        });
+      }
+    });
 
     return `connected`;
   }
@@ -101,12 +108,21 @@ export class Gateway
     // and we can set the user's status to offline
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount - 1);
-    if (roomCount - 1 === 0) {
-      this.server.to(userRoomName).emit('status', { status: Status.OFFLINE });
+    if (roomCount - 1 <= 0) {
+      this.logger.debug(`Client ${user.username} disconnected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.OFFLINE);
     }
 
-    this.logger.debug(`Client ${user.username} disconnected`);
+    const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
+    rooms.forEach(async (room) => {
+      client.leave(room);
+      if (roomCount - 1 <= 0) {
+        this.server.to(room).emit('status', {
+          userId: user.id,
+          status: Status.OFFLINE,
+        });
+      }
+    });
 
     return `disconnected`;
   }
