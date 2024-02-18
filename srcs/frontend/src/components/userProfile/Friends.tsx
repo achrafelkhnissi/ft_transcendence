@@ -11,11 +11,13 @@ import unblockUser from '@/services/unblockUser';
 interface FriendsComponentProps {
   friends: FriendsProps[];
   blockedUsers: FriendsProps[];
+  me: boolean;
 }
 
 const Friends: React.FC<FriendsComponentProps> = ({
   friends,
   blockedUsers,
+  me,
 }) => {
   const [showBlocked, setShowBlocked] = useState(false);
   const [blockedUsersList, setBlockedUsersList] = useState<FriendsProps[]>([]);
@@ -57,6 +59,7 @@ const Friends: React.FC<FriendsComponentProps> = ({
             />
           ))}
         {showBlocked &&
+          me &&
           blockedUsersList?.map((item, index) => (
             <div key={index} className="relative bg-white/10 rounded-2xl p-2">
               <div
@@ -73,15 +76,17 @@ const Friends: React.FC<FriendsComponentProps> = ({
               />
             </div>
           ))}
-        <p
-          className="text-white/80 text-xs absolute -top-3 right-2 font-semibold cursor-pointer px-2 py-1
+        {me && (
+          <p
+            className="text-white/80 text-xs absolute -top-3 right-2 font-semibold cursor-pointer px-2 py-1
           rounded-lg bg-white/10"
-          onClick={() => {
-            setShowBlocked((prev) => !prev);
-          }}
-        >
-          {showBlocked ? 'friends' : 'blocked users'}
-        </p>
+            onClick={() => {
+              setShowBlocked((prev) => !prev);
+            }}
+          >
+            {showBlocked ? 'friends' : 'blocked users'}
+          </p>
+        )}
       </div>
     </Card>
   );

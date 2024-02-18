@@ -18,22 +18,22 @@ const Home = ({ params }: { params: { name: string } }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (params.name == 'me') {
-      getCurrentUser().then((res) => {
+    getCurrentUser().then((res) => {
+      if (params.name == 'me' || res.username == params.name) {
         const userData: User = res;
         userData.me = true;
         setUser(userData);
-      });
-    } else {
-      getUser(params.name).then((res) => {
-        if (res) {
-          const userData: User = res;
-          (userData.me = false), setUser(userData);
-        } else {
-          router.push('/404');
-        }
-      });
-    }
+      } else {
+        getUser(params.name).then((res) => {
+          if (res) {
+            const userData: User = res;
+            (userData.me = false), setUser(userData);
+          } else {
+            router.push('/404');
+          }
+        });
+      }
+    });
     console.log('user', user);
     return () => abortController.abort();
   }, [params.name]);
@@ -51,6 +51,7 @@ const Home = ({ params }: { params: { name: string } }) => {
         <Friends
           friends={user.friends}
           blockedUsers={user.blockedUsers ?? []}
+          me={user.me}
         />
         <Achievements />
       </div>
