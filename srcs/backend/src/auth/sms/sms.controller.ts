@@ -21,9 +21,10 @@ import {
 @ApiForbiddenResponse({ description: 'Forbidden' })
 @Controller('sms')
 export class SmsController {
-  constructor(private readonly smsService: SmsService,
-    private readonly achievementsService: AchievementsService
-    ) {}
+  constructor(
+    private readonly smsService: SmsService,
+    private readonly achievementsService: AchievementsService,
+  ) {}
 
   @ApiBody({ type: PhoneNumberDto })
   @ApiCreatedResponse({ description: 'Initiate phone number verification' })
@@ -45,7 +46,7 @@ export class SmsController {
   @ApiCreatedResponse({ description: 'Confirm phone number verification' })
   @ApiOperation({ summary: 'Confirm phone number verification' })
   @Post('confirm')
-  confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
+  async confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
     const { code, phoneNumber } = body;
 
     // return this.smsService.confirmPhoneNumberVerification(
@@ -53,6 +54,15 @@ export class SmsController {
     //   phoneNumber ?? user?.phoneNumber,
     //   code,
     // );
+
+    // if (result.status !== 'error') {
+    //   await this.achievementsService.create({
+    //     userId: user.id,
+    //     name: 'Verified',
+    //     description: 'User has verified their phone number',
+    //     image: 'verified.png',
+    //   });
+    // }
 
     return {
       code,
