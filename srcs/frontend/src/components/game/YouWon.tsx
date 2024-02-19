@@ -1,7 +1,8 @@
 import AvatarImage from '../AvatarImage';
 import ProfileAvatar from '../userProfile/ProfileAvatar';
 import { User } from '../userProfile/types';
-import Crown from '../svgAssets/Crown';
+import { FaCrown } from "react-icons/fa";
+
 
 interface props {
   user: User;
@@ -9,13 +10,11 @@ interface props {
 const YouWon: React.FC<props> = ({ user }) => {
   return (
     <div
-      className="md:w-[35rem] md:h-[18rem] border-8 border-white/30 self-center bg-[#17194A] rounded-[3.5rem]
-      flex flex-col gap-8 justify-center  shadow-lg"
+      className="md:w-[30rem] md:h-[20rem] border-8 border-white/30 self-center bg-[#17194A] rounded-[3.5rem]
+      flex flex-col gap-8 justify-center  shadow-lg py-px"
     >
-        <div className="self-center">
-        <Crown />
-        </div>
       <div className="flex flex-col gap-4 self-center">
+          <FaCrown className="text-[#E89B05] w-12 h-12 self-center drop-shadow-[0_0px_9px_rgba(232,155,5,0.6)]"/>
         <ProfileAvatar
           avatar={process.env.BACKEND + `/api/users/${user.id}/avatar`}
           experiencePoints={user.stats.exp}

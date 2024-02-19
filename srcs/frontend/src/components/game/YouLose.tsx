@@ -1,17 +1,36 @@
+import AvatarImage from '../AvatarImage';
+import ProfileAvatar from '../userProfile/ProfileAvatar';
+import { User } from '../userProfile/types';
+import { BiCloudLightning } from "react-icons/bi";
 
-const YouLose = () => {
-    return (
-      <div
-        className="md:w-[35rem] md:h-[18rem] border-8 border-white/40 self-center bg-[#17194A] rounded-[3.5rem]
-      flex flex-col gap-8 justify-center  shadow-lg"
-      >
-        <div className="flex flex-col gap-4 self-center">
-          <h1 className="text-2xl text-gold font-bold self-center">
-            You lose
-          </h1>
-        </div>
+
+interface props {
+  user: User;
+}
+const YouLose: React.FC<props> = ({ user }) => {
+  return (
+    <div
+      className="md:w-[30rem] md:h-[20rem] border-8 border-white/30 self-center bg-[#17194A] rounded-[3.5rem]
+      flex flex-col gap-8 justify-center  shadow-lg py-px"
+    >
+      <div className="flex flex-col gap-4 self-center">
+          <BiCloudLightning className=" w-14 h-14 self-center text-white drop-shadow-[0_0px_9px_rgba(255,255,255)]"/>
+        <ProfileAvatar
+          avatar={process.env.BACKEND + `/api/users/${user.id}/avatar`}
+          experiencePoints={user.stats.exp}
+          level={user.stats.level}
+        />
+        <h1 className="text-sm text-white self-center">Oops!</h1>
+        <h1 className="text-2xl text-white self-center">
+          You
+          <span className="text-white font-bold drop-shadow-[0_0px_9px_rgba(255,255,255,0.6)]">
+            {' '}
+            Lost{' '}
+          </span>
+        </h1>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default YouLose;
