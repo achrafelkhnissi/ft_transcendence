@@ -35,6 +35,7 @@ const PlayPage = () => {
     },
     me: false,
     isFriend: false,
+    games: [],
     friends: [],
   });
   const [opponent, setOpponenet] = useState({
@@ -42,9 +43,9 @@ const PlayPage = () => {
     username: '',
   });
 
-  const [left , setLeft] = useState<null | number>(null);
-  const [right , setRight] = useState<null | number>(null);
-  
+  const [left, setLeft] = useState<null | number>(null);
+  const [right, setRight] = useState<null | number>(null);
+
   const handlePlayClick = async () => {
     setIsWaiting(true);
 
@@ -57,39 +58,41 @@ const PlayPage = () => {
   };
 
   useEffect(() => {
-    
     const handleOpponentFound = (opponentInfo: {
-      playerPosition: string,
-      opponentId : number,
-      username: string,
+      playerPosition: string;
+      opponentId: number;
+      username: string;
     }) => {
       console.log('Opponent found:', opponentInfo);
-      setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
+      setOpponenet({
+        id: opponentInfo.opponentId,
+        username: opponentInfo.username,
+      });
       setPosition(opponentInfo.playerPosition);
       // if (position === 'leftPaddle'){
-        //   setLeft(currentUser.id);
-        //   setRight(opponent.id);
-        // }
-        // else if (position == 'rightPaddle'){
-          //   setLeft(opponent.id);
-      //   setRight(currentUser.id);        
+      //   setLeft(currentUser.id);
+      //   setRight(opponent.id);
+      // }
+      // else if (position == 'rightPaddle'){
+      //   setLeft(opponent.id);
+      //   setRight(currentUser.id);
       // }
       setIsWaiting(false);
     };
-    
+
     socket?.on('start game', handleOpponentFound);
-    
+
     socket?.on('nta wahid', () => {
       console.log('nta wahid');
       setPlayerNotFound(true);
     });
-    
+
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
       getCurrentUser().then((res) => setCurrentUser(res)); //protect get current user
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
     });
-    
+
     return () => {
       if (socket) {
         socket.off('Game is finished', () => {});
@@ -155,13 +158,14 @@ const PlayPage = () => {
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||
-            (!youWon && <YouLose user={currentUser}/>)}
+            (!youWon && <YouLose user={currentUser} />)}
         </div>
       )}
 
-        {!isWaiting && position && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
-        <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
-        {/* <img
+      {!isWaiting && position && (
+        <div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
+          <div className="flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16">
+            {/* <img
           src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
           alt="player"
           width={10}
@@ -175,9 +179,10 @@ const PlayPage = () => {
           height={10}
           className="w-10 h-10 rounded-full self-center"
         /> */}
+          </div>
+          <Game position={position} color={bgColor} />
         </div>
-         <Game position={position} color={bgColor} />
-      </div>)}
+      )}
     </div>
   );
 };
