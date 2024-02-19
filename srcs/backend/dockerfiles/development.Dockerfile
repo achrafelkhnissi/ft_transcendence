@@ -3,26 +3,20 @@
 #
 FROM node:20-alpine as dev
 
-# Set to dev environment
+LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
+
 ENV NODE_ENV development
 
-# Create app folder
-WORKDIR /app
-
-# Set permissions for node user to /app directory
-RUN chown -R node:node /app
-
-# Copy source code into app folder
-COPY --chown=node:node . .
-
-# Install dependencies
-RUN npm install
-
-# Expose port 3000
-EXPOSE 3000
-
-# Set Docker as a non-root user
 USER node
 
-# Run the app
+WORKDIR /app
+
+RUN chown -R node:node /app
+
+COPY --chown=node:node . .
+
+RUN npm install
+
+EXPOSE 3000 5555
+
 CMD ["npm", "run", "start:dev"]
