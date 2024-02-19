@@ -46,7 +46,7 @@ const ConversationHeader: React.FC<props> = ({
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
           <p className="font-light text-xs text-white/30 ">
-            {receiver?.id && statuses[receiver?.id].toLocaleLowerCase()}
+            {receiver?.id && statuses[receiver?.id]?.toLocaleLowerCase()}
           </p>
         </div>
       </div>
