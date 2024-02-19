@@ -6,7 +6,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "dev": "HOST=${DOMAIN_NAME} next dev -p ${NEXT_PORT}",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${NEXT_PORT}",
     "lint": "next lint"
   },
   "dependencies": {
