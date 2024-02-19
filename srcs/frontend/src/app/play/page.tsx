@@ -34,6 +34,7 @@ const PlayPage = () => {
       losses: 0,
     },
     me: false,
+    games: [],
     isFriend: false,
     friends: [],
   });
@@ -133,6 +134,7 @@ const PlayPage = () => {
           onClick={() => {
             setGameisFinished({ gameisFinished: false, youWon: false });
             setPosition(null);
+            window.location.reload();
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||

@@ -5,8 +5,8 @@ import { LuSearch } from 'react-icons/lu';
 import { CiSearch } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import getAllUsers from '@/services/getAllUsers';
 import { User } from '@/components/messages/data';
+import getUsersAll from '@/services/getUsersAll';
 
 const SearchInput = () => {
   const router = useRouter();
@@ -17,24 +17,18 @@ const SearchInput = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    getAllUsers().then((data: User[]) => {
+    getUsersAll().then((data: User[]) => {
       if (data) {
         setAllUsers(data);
+        console.log(data);
       }
     });
   }, []);
 
-  const onSearch = () => {
-    setInput(''); // clear input
-    const encodedQuery = encodeURIComponent(searchQuery);
-    router.push(`/search?query=${encodedQuery}`);
-    console.log('searching for', searchQuery);
-  };
-
   const searchUsers = (query: string) => {
     setSearchResultsUsers(
       allUsers.filter((user) =>
-        user.username.toLowerCase().includes(query.toLowerCase()),
+        user?.username?.toLowerCase().includes(query.toLowerCase()),
       ),
     );
   };
@@ -67,22 +61,26 @@ const SearchInput = () => {
       {showSearchResults && (
         <div
           className="w-full max-h-80 min-h-12 absolute  transform 
-      left-1/2 -translate-x-1/2 mt-2 shadow-lg bg-white/20 rounded-xl border border-white/20 flex flex-col overflow-y-auto p-2 z-10 "
+      left-1/2 -translate-x-1/2 mt-2 shadow-lg bg-white/20 rounded-xl border border-white/20 
+      flex flex-col gap-1 overflow-y-auto p-2 z-10 "
         >
           {searchResultsUsers.map((user) => (
             <div
               key={user.id}
-              className="px-2 py-1 w-full text-white/80 hover:bg-white/20 hover:text-white"
+              className="px-2 py-1 w-full text-white/80 bg-[#28285a]/80 rounded-lg
+               hover:bg-[#28285a]/70 hover:text-white cursor-pointer"
               onClick={() => {
                 router.push(`/profile/${user.username}`);
               }}
             >
-              <img
-                src={process.env.BACKEND + `/api/users/${user.id}/avatar`}
-                alt="avatar"
-                className="w-8 h-8 rounded-full inline-block mr-2"
-              />
-              <p>{user.username}</p>
+              <div className='flex '>
+                <img
+                  src={process.env.BACKEND + `/api/users/${user?.id}/avatar`}
+                  alt=""
+                  className="w-8 h-8 rounded-full inline-block mr-2 object-fill"
+                />
+                <p className='self-center text-sm'>{user.username}</p>
+              </div>
             </div>
           ))}
         </div>
