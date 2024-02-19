@@ -1,11 +1,52 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
 
 @Injectable()
-export class AchievementsService {
+export class AchievementsService implements OnModuleInit {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async onModuleInit() {
+    const achievements = await this.findAll();
+
+    if (achievements.length === 0) {
+      const defaultAchievements: CreateAchievementDto[] = [
+        {
+          name: 'Verified',
+          description: 'Verify your phone number',
+          image: 'verified.png',
+        },
+        {
+          name: 'First Game',
+          description: 'Play your first game',
+          image: 'first-game.png',
+        },
+        {
+          name: 'First Win',
+          description: 'Win your first game',
+          image: 'first-win.png',
+        },
+        {
+          name: '5 Games',
+          description: 'Play 10 games',
+          image: '5-games.png',
+        },
+        {
+          name: '5 Wins',
+          description: 'Win 10 games',
+          image: '5-wins.png',
+        },
+        {
+          name: `Social`,
+          description: `Connect with a friend`,
+          image: `social.png`,
+        },
+      ];
+
+      await this.createMany(defaultAchievements);
+    }
+  }
 
   create(createAchievementDto: CreateAchievementDto) {
     return this.prismaService.achievement.create({
@@ -66,10 +107,16 @@ export class AchievementsService {
       .users();
   }
 
-  giveAchievementToUser(achievementId: number, userId: number) {
+  async giveAchievementToUser(userId: number, achievementName: string) {
+    const achievement = await this.findAchievementByName(achievementName);
+
+    if (!achievement) {
+      throw new NotFoundException('Achievement not found');
+    }
+
     return this.prismaService.achievement.update({
       where: {
-        id: achievementId,
+        id: achievement.id,
       },
       data: {
         users: {

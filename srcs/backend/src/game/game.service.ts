@@ -1,3 +1,4 @@
+import { AchievementsService } from './../users/achievements/achievements.service';
 import { PrismaService } from './../prisma/prisma.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
@@ -22,6 +23,7 @@ export class GameService {
     private readonly prismaService: PrismaService,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    private readonly achievementsService: AchievementsService,
   ) {
     this.updateGame();
   }

@@ -56,12 +56,7 @@ export class SmsController {
     // );
 
     // if (result.status !== 'error') {
-    //   await this.achievementsService.create({
-    //     userId: user.id,
-    //     name: 'Verified',
-    //     description: 'User has verified their phone number',
-    //     image: 'verified.png',
-    //   });
+    //   await this.achievementsService.giveAchievementToUser(user.id, 'Verified');
     // }
 
     return {
