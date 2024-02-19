@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import getCurrentUser from '../services/getCurrentUser';
 import Image from 'next/image';
-import getAvatar from '@/services/getAvatar';
 
 const AvatarImage = () => {
   // const [avatar, setAvatar] = useState<null | string>(null);
@@ -14,7 +13,13 @@ const AvatarImage = () => {
 
   if (src != '')
     return (
-      <img src={src} alt="user" width={40} height={40} className="rounded-lg object-fill" />
+      <img
+        src={src}
+        alt="user"
+        width={40}
+        height={40}
+        className="rounded-lg object-fill"
+      />
     );
 };
 
