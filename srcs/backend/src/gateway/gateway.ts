@@ -67,6 +67,8 @@ export class Gateway
 
     const userRoomName = `user-${user.id}`;
 
+    console.log(`${user.username} connected`);
+
     // Join the user's room to keep track of all the user's sockets
     client.join(userRoomName);
 
@@ -96,6 +98,9 @@ export class Gateway
 
     const userRoomName = `user-${user.id}`;
 
+    console.log(`${user.username} disconnected`);
+
+
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
     // and we can set the user's status to offline
@@ -114,7 +119,8 @@ export class Gateway
   @SubscribeMessage('joinQueue')
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
+    console.log(`User ${user.username} joined the queue!`);
     this.gameService.addUser({socket: client, user});
     this.gameService.readyForGame();
-  }
+  } 
 }

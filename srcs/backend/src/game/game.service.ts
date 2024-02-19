@@ -34,8 +34,8 @@ export class GameService {
           const id1: number = parseInt(key.split('-')[0]);
           const id2: number = parseInt(key.split('-')[1]);
           this.currentGamers = this.currentGamers.filter(
-            (player) => player.user.id !== id1 && player.user.id !== id2,
-          );
+            (player) => {return player.user.id !== id1 && player.user.id !== id2},
+            );
           await this.saveMatch({
             winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
             loserId: match.score.player1 < match.score.player2 ? id1 : id2,
@@ -55,11 +55,17 @@ export class GameService {
   }
 
   addUser(user: Player): void {
+    // console.log("user id ",user.user.id);
+    // console.log("online gamers ", this.currentGamers.length);
+    // console.log("Queue Size ", this.playerQueue.length);
+    // console.log(this.playerQueue.find((player) => player.user.id === user.user.id));
     if (
-      !this.playerQueue.find((player) => player.user.id === user.user.id) ||
-      this.currentGamers.find((player) => player.user.id === user.user.id)
-    )
+      !(this.playerQueue.find((player) => {player.user.id === user.user.id})) &&
+      !(this.currentGamers.find((player) => {player.user.id === user.user.id}))
+    ){
       this.playerQueue.push(user);
+      console.log('player added to thr queue');
+    }
   }
 
   removeUser(): Player | undefined {
@@ -71,6 +77,7 @@ export class GameService {
   }
 
   createMatch(player1: Player, player2: Player): void {
+    console.log("match creat");
     const matchKey = `${player1.user.id}-${player2.user.id}`;
     const match = new Match(player1.socket, player2.socket);
     this.activeMatches[matchKey] = match;
@@ -80,11 +87,14 @@ export class GameService {
   }
 
   readyForGame() {
-    setTimeout(() => {
-      if (this.getAllUsers().length == 1)
-        this.removeUser().socket.emit('nta wahid');
-    }, 10000);
-    if (this.getAllUsers().length >= 2) {
+    // setTimeout(() => {
+    //   if (this.getAllUsers().length == 1)
+    //     this.removeUser().socket.emit('nta wahid');
+    // }, 10000);
+    let size =this.getAllUsers().length;
+    console.log('queue size ',size)
+    if (size >= 2) {
+      console.log('readyForGame');
       const client1 = this.removeUser();
       const client2 = this.removeUser();
       client1.socket.emit('start game', {
@@ -97,6 +107,7 @@ export class GameService {
         opponentId: client1.user.id,
         username: client1.user.username,
       });
+      console.log('event sent');
       this.createMatch(client1, client2);
     } //remove the user if he is offline
   }

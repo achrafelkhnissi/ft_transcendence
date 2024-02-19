@@ -13,11 +13,14 @@ import YouLose from '@/components/game/YouLose';
 import { User } from '@/components/userProfile/types';
 import getCurrentUser from '@/services/getCurrentUser';
 
+
+const DEFAUL_TCOLOR : string = '#000000';
+
 const PlayPage = () => {
   const { socket } = useSocket();
   const [position, setPosition] = useState<null | string>(null);
   const [isWaiting, setIsWaiting] = useState(false);
-  const [bgColor, setBgColor] = useState<string>('#000000');
+  const [bgColor, setBgColor] = useState<string>(DEFAUL_TCOLOR);
   const [playerNotFound, setPlayerNotFound] = useState(false);
   const [{ gameisFinished, youWon }, setGameisFinished] = useState({
     gameisFinished: false,
@@ -42,18 +45,19 @@ const PlayPage = () => {
     username: '',
   });
 
-  const [left , setLeft] = useState<null | number>(null);
-  const [right , setRight] = useState<null | number>(null);
+  // const [left , setLeft] = useState<null | number>(null);
+  // const [right , setRight] = useState<null | number>(null);
   
-  const handlePlayClick = async () => {
+  const handlePlayClick = () => {
     setIsWaiting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    socket?.emit('joinQueue', () => {
-      console.log('joinQueue');
-      console.log(socket);
-    });
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log('play clicked')
+    if (socket)
+    {
+      console.log('houuunaa ', socket.id);
+      socket?.emit('joinQueue');
+    }
   };
 
   useEffect(() => {
@@ -63,7 +67,7 @@ const PlayPage = () => {
       opponentId : number,
       username: string,
     }) => {
-      console.log('Opponent found:', opponentInfo);
+      console.log('start game', opponentInfo);
       setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
       setPosition(opponentInfo.playerPosition);
       // if (position === 'leftPaddle'){
@@ -93,7 +97,7 @@ const PlayPage = () => {
     return () => {
       if (socket) {
         socket.off('Game is finished', () => {});
-        socket.off('opponentFound', handleOpponentFound);
+        socket.off('start game', handleOpponentFound);
         socket?.off('nta wahid', () => console.log('nta wahid'));
       }
     };
@@ -152,6 +156,8 @@ const PlayPage = () => {
           onClick={() => {
             setGameisFinished({ gameisFinished: false, youWon: false });
             setPosition(null);
+            setBgColor(DEFAUL_TCOLOR);
+            // setPlayerNotFound(true);
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||

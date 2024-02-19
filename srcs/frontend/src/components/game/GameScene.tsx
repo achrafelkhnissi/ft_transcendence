@@ -77,7 +77,6 @@ export default class GameScene extends Scene {
     this.ball = ball;
 
     this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
-      console.log('updateOpponentPaddle');
       const { x, y } = data;
       this.opponentPaddle?.setX(x);
       this.opponentPaddle?.setY(y);

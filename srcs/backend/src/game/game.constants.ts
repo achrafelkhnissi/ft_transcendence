@@ -9,4 +9,4 @@ export const PADDLE2_POSITION = {
 };
 export const BALLRADIUS: number = 10;
 export const BALLPOSITION = { x: GAMEWIDTH / 2, y: GAMEHEIGHT / 2 };
-export const SPEED: number = 5;
+export const SPEED: number = 10;
