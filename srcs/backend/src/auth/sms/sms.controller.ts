@@ -1,3 +1,4 @@
+import { AchievementsService } from './../../users/achievements/achievements.service';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { SmsService } from './sms.service';
 import { User } from 'src/common/decorators/user.decorator';
@@ -20,7 +21,9 @@ import {
 @ApiForbiddenResponse({ description: 'Forbidden' })
 @Controller('sms')
 export class SmsController {
-  constructor(private readonly smsService: SmsService) {}
+  constructor(private readonly smsService: SmsService,
+    private readonly achievementsService: AchievementsService
+    ) {}
 
   @ApiBody({ type: PhoneNumberDto })
   @ApiCreatedResponse({ description: 'Initiate phone number verification' })
