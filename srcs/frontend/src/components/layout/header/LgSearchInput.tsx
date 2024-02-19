@@ -3,12 +3,25 @@
 import { LuSearch } from 'react-icons/lu';
 import { CiSearch } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import getAllUsers from '@/services/getAllUsers';
 
 const SearchInput = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [input, setInput] = useState('');
+  const [searchResultsUsers, setSearchResultsUsers] = useState([]);
+  const [searchResultsRooms, setSearchResultsRooms] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    getAllUsers().then((data) => {
+      if (data) {
+        setAllUsers(data);
+      }
+    });
+  }, []);
 
   const onSearch = () => {
     setInput(''); // clear input
@@ -18,7 +31,7 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative lg:w-[400px] w-[250px] py-[0.1rem z-10 px-2 ">
+    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative lg:w-[400px] w-[250px] py-[0.1rem z-10 px-2">
       <input
         type="text"
         value={input}
@@ -27,6 +40,9 @@ const SearchInput = () => {
         onChange={(event) => {
           setSearchQuery(event.target.value);
           setInput(event.target.value);
+        }}
+        onClick={() => {
+          setShowSearchResults((prev) => !prev);
         }}
       />
       <button className="absolute top-0 bottom-0 right-2" onClick={onSearch}>
@@ -39,6 +55,12 @@ const SearchInput = () => {
           }}
         />
       </button>
+      {showSearchResults && (
+        <div
+          className="w-full max-h-80 min-h-12 absolute  transform 
+      left-1/2 -translate-x-1/2 mt-2 shadow-lg bg-white/20 rounded-xl border border-white/20 "
+        ></div>
+      )}
     </div>
   );
 };
