@@ -57,8 +57,7 @@ const PlayPage = () => {
   };
 
   useEffect(() => {
-    getCurrentUser().then((res) => setCurrentUser(res)); //protect get current user
-
+    
     const handleOpponentFound = (opponentInfo: {
       playerPosition: string,
       opponentId : number,
@@ -68,28 +67,29 @@ const PlayPage = () => {
       setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
       setPosition(opponentInfo.playerPosition);
       // if (position === 'leftPaddle'){
-      //   setLeft(currentUser.id);
-      //   setRight(opponent.id);
-      // }
-      // else if (position == 'rightPaddle'){
-      //   setLeft(opponent.id);
+        //   setLeft(currentUser.id);
+        //   setRight(opponent.id);
+        // }
+        // else if (position == 'rightPaddle'){
+          //   setLeft(opponent.id);
       //   setRight(currentUser.id);        
       // }
       setIsWaiting(false);
     };
-
+    
     socket?.on('start game', handleOpponentFound);
-
+    
     socket?.on('nta wahid', () => {
       console.log('nta wahid');
       setPlayerNotFound(true);
     });
-
+    
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
+      getCurrentUser().then((res) => setCurrentUser(res)); //protect get current user
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
     });
-
+    
     return () => {
       if (socket) {
         socket.off('Game is finished', () => {});
