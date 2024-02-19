@@ -23,7 +23,8 @@ services:
   backend:
     build:
       context: ./backend/
-      dockerfile: dockerfiles/${NODE_ENV}.Dockerfile
+      dockerfile: Dockerfile
+      # dockerfile: dockerfiles/${NODE_ENV}.Dockerfile
     container_name: backend
     restart: always
     # env_file: .env
