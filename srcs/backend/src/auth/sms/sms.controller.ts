@@ -6,6 +6,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 import { PhoneNumberDto } from './dto/phone-number.dto';
 import { ConfirmationCodeDto } from './dto/confirmation-code.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Achievements } from 'src/common/enums/achievements.enum';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -56,7 +57,7 @@ export class SmsController {
     // );
 
     // if (result.status !== 'error') {
-    //   await this.achievementsService.giveAchievementToUser(user.id, 'Verified');
+    //   await this.achievementsService.giveAchievementToUser(user.id, Achievements.VERIFIED);
     // }
 
     return {

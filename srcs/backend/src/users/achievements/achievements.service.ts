@@ -2,6 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
+import { Achievements } from 'src/common/enums/achievements.enum';
 
 @Injectable()
 export class AchievementsService implements OnModuleInit {
@@ -13,32 +14,32 @@ export class AchievementsService implements OnModuleInit {
     if (achievements.length === 0) {
       const defaultAchievements: CreateAchievementDto[] = [
         {
-          name: 'Verified',
+          name: Achievements.VERIFIED,
           description: 'Verify your phone number',
           image: 'verified.png',
         },
         {
-          name: 'First Game',
+          name: Achievements.FIRST_GAME,
           description: 'Play your first game',
           image: 'first-game.png',
         },
         {
-          name: 'First Win',
+          name: Achievements.FIRST_WIN,
           description: 'Win your first game',
           image: 'first-win.png',
         },
         {
-          name: '5 Games',
+          name: Achievements.FIVE_GAMES,
           description: 'Play 10 games',
           image: '5-games.png',
         },
         {
-          name: '5 Wins',
+          name: Achievements.FIVE_WINS,
           description: 'Win 10 games',
           image: '5-wins.png',
         },
         {
-          name: `Social`,
+          name: Achievements.SOCIAL,
           description: `Connect with a friend`,
           image: `social.png`,
         },
@@ -173,19 +174,19 @@ export class AchievementsService implements OnModuleInit {
     });
 
     if (userStats.wins + userStats.losses + 1 == 1) {
-      await this.giveAchievementToUser(userId, 'First Game');
+      await this.giveAchievementToUser(userId, Achievements.FIRST_GAME);
     }
 
     if (userStats.wins + 1 == 1) {
-      await this.giveAchievementToUser(userId, 'First Win');
+      await this.giveAchievementToUser(userId, Achievements.FIRST_WIN);
     }
 
     if (userStats.wins + 1 == 5) {
-      await this.giveAchievementToUser(userId, 'Five Wins');
+      await this.giveAchievementToUser(userId, Achievements.FIVE_WINS);
     }
 
     if (userStats.wins + 1 + userStats.losses == 5) {
-      await this.giveAchievementToUser(userId, 'Five Games');
+      await this.giveAchievementToUser(userId, Achievements.FIVE_GAMES);
     }
 
     return userStats;
