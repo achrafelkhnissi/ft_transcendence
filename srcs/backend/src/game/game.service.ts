@@ -135,18 +135,16 @@ export class GameService {
   }
 
   async saveMatch(data: CreateGameDto) {
-    const winnerExp: number = await this.prismaService.userStats
-      .findUnique({
-        where: {
-          userId: data.winnerId,
-        },
-        select: {
-          exp: true,
-        },
-      })
-      .then((res) => res.exp);
+    const winnerStats =
+      await this.achievementsService.giveAchievementsToUserAfterGame(
+        data.winnerId,
+      );
 
-    let newExp = winnerExp + 30;
+    await this.achievementsService.giveAchievementsToUserAfterGame(
+      data.loserId,
+    );
+
+    let newExp = winnerStats.exp + 30;
     let levelIncrement = 0;
 
     if (newExp >= 100) {

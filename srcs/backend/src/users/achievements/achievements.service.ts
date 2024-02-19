@@ -158,4 +158,36 @@ export class AchievementsService implements OnModuleInit {
         },
       });
   }
+
+  async giveAchievementsToUserAfterGame(userId: number) {
+    const userStats = await this.prismaService.userStats.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        exp: true,
+        wins: true,
+        level: true,
+        losses: true,
+      },
+    });
+
+    if (userStats.wins + userStats.losses + 1 == 1) {
+      await this.giveAchievementToUser(userId, 'First Game');
+    }
+
+    if (userStats.wins + 1 == 1) {
+      await this.giveAchievementToUser(userId, 'First Win');
+    }
+
+    if (userStats.wins + 1 == 5) {
+      await this.giveAchievementToUser(userId, 'Five Wins');
+    }
+
+    if (userStats.wins + 1 + userStats.losses == 5) {
+      await this.giveAchievementToUser(userId, 'Five Games');
+    }
+
+    return userStats;
+  }
 }
