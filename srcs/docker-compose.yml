@@ -23,7 +23,7 @@ services:
   backend:
     build:
       context: ./backend/
-      dockerfile: Dockerfile # dockerfiles/${NODE_ENV}.Dockerfile
+      dockerfile: dockerfiles/${NODE_ENV}.Dockerfile
     container_name: backend
     restart: always
     # env_file: .env
@@ -44,7 +44,8 @@ services:
       - "5555:5555"
     volumes:
       - ./backend:/app # for hot reloading
-      # - node_modules:/app/node_modules # for faster builds
+      # - /app/node_modules # for faster builds
+      # - /app/dist
     networks:
       - database_net
       - frontend_net
@@ -62,6 +63,7 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
+      # target: dev # used with command: npm run dev
     container_name: frontend
     restart: always
     ports:
@@ -72,6 +74,8 @@ services:
       - DOMAIN_NAME=${DOMAIN_NAME}
     volumes:
       - ./frontend:/app # for hot reloading
+      # - /app/node_modules # for faster builds
+      # - /app/.next
     networks:
       - frontend_net
     depends_on:
