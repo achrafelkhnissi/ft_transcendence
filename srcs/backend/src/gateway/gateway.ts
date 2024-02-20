@@ -138,5 +138,12 @@ export class Gateway
     console.log(`User ${user.username} joined the queue!`);
     this.gameService.addUser({socket: client, user});
     this.gameService.readyForGame();
-  } 
+  }
+  
+  @SubscribeMessage('invite')
+  InviteToGame(client: Socket, payload: { inviterId: number }): void {
+    const user = client.request.user;
+    // const inviterSocketId = 
+    
+  }
 }

@@ -1,4 +1,5 @@
 // import "./globals.css";
+"use client"
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Sidebar from '../../components/layout/sidebar/Sidebar';
@@ -8,13 +9,14 @@ import { useEffect, useState } from 'react';
 import InvitePopup from '@/components/game/InvitePopUp';
 import { User } from '@/components/userProfile/types';
 import getCurrentUser from '@/services/getCurrentUser';
+import { useRouter } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'PongTime',
-  description: 'PongTime ',
-};
+// export const metadata: Metadata = {
+//   title: 'PongTime',
+//   description: 'PongTime ',
+// };
 
 export default function RootLayout({
   children,
@@ -22,7 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const { socket } = useSocket();
-  const [showPopup, setShowPopup] = useState(false);
+  const router = useRouter();
+  const [showPopup, setShowPopup] = useState(true);
   const [currentUser, setCurrentUser] = useState<User>({
     id: null,
     username: '',
@@ -47,6 +50,11 @@ export default function RootLayout({
     setShowPopup(false);
   };
 
+  const acceptInvitation = () =>{
+    closePopup();
+    router.push('/play');
+  };
+
   useEffect(() => {
     getCurrentUser().then((res) => {
       if (res){
@@ -58,6 +66,9 @@ export default function RootLayout({
       openPopup();
     });
 
+    return () => {
+      socket?.off('invite', openPopup);
+    };
   }, [socket]);
 
   return (
@@ -72,9 +83,9 @@ export default function RootLayout({
         </div>
       </div>
       {showPopup && (
-        <InvitePopup accept={closePopup} refuse={closePopup}>
+        <InvitePopup accept={acceptInvitation} refuse={closePopup} >
           <p>
-            Hey ${currentUser.username}, [Challenger] has challenged you to a thrilling game
+            Hey {currentUser.username}, [Challenger] has challenged you to a thrilling game
             of ping pong. Are you up for the challenge? Accept and let the games
             begin!
           </p>
