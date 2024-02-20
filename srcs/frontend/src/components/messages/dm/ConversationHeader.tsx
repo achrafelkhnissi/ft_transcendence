@@ -4,6 +4,7 @@ import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
 import { User, UserStatuses } from '../data';
 import { IoIosArrowBack } from 'react-icons/io';
+import { useSocket } from '@/contexts/socketContext';
 
 interface props {
   receiver: User;
@@ -20,6 +21,9 @@ const ConversationHeader: React.FC<props> = ({
   removeConversation,
   conversationId,
 }) => {
+
+  const {socket} = useSocket();
+
   const handleBlockUser = () => {
     blockUser(receiver.id).then((res) => {
       if (res) {
@@ -27,6 +31,12 @@ const ConversationHeader: React.FC<props> = ({
       }
     });
   };
+
+  const handleGameInvitation = () => {
+    if (socket){
+      socket.emit('invite', receiver.id);
+    }
+  }
 
   return (
     <div
@@ -54,6 +64,7 @@ const ConversationHeader: React.FC<props> = ({
         <div
           className="self-center hover:cursor-pointer
                 drop-shadow-[0_4px_8px_rgba(255,255,255,0.21)]"
+          onClick={handleGameInvitation}
         >
           <GameInvitation color={'#59598E'} width={'29px'} height={'29px'} />
         </div>
