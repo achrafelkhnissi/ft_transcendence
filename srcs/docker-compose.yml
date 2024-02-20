@@ -24,7 +24,15 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
-      # dockerfile: dockerfiles/${NODE_ENV}.Dockerfile
+      # target: dev
+    # command: npm run start:dev
+    # command:
+    #   - sh
+    #   - -c
+    #   - |
+    #     npm install
+    #     npm run prisma
+    #     npm run start:dev
     container_name: backend
     restart: always
     # env_file: .env
@@ -32,7 +40,6 @@ services:
       - NODE_ENV=${NODE_ENV}
       - NEST_PORT=${NEST_PORT}
       - FRONTEND=${FRONTEND}
-      - DATABASE_URL=${DATABASE_URL}
       - FT_CLIENT_ID=${FT_CLIENT_ID}
       - FT_CLIENT_SECRET=${FT_CLIENT_SECRET}
       - FT_REDIRECT_URI=${FT_REDIRECT_URI}
@@ -40,25 +47,22 @@ services:
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
       - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
+      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
     ports:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
     volumes:
       - ./backend:/app # for hot reloading
-      # - /app/node_modules # for faster builds
-      # - /app/dist
+      - ./backend/node_modules:/app/node_modules # for faster builds
+      - ./backend/dist:/app/dist
     networks:
       - database_net
       - frontend_net
     depends_on:
       - db
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run prisma
-        npm run start:dev
 
   frontend:
     build:
