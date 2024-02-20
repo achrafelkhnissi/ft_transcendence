@@ -1,9 +1,12 @@
 'use client';
-import { useState, useContext, useEffect, SetStateAction, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
+
 import { useSocket } from '../../contexts/socketContext';
 import Game from '../../components/game/Game';
-import PongTable from '@/components/svgAssets/PongTable';
-import Image from 'next/image';
 import CostumizeGame from '@/components/game/CostumizeGame';
 import { RxExit } from 'react-icons/rx';
 import Link from 'next/link';
@@ -14,8 +17,7 @@ import { User } from '@/components/userProfile/types';
 import getCurrentUser from '@/services/getCurrentUser';
 import { useRouter } from 'next/navigation';
 
-
-const DEFAUL_TCOLOR : string = '#000000';
+const DEFAUL_TCOLOR: string = '#000000';
 
 const PlayPage = () => {
   const { socket } = useSocket();
@@ -41,25 +43,29 @@ const PlayPage = () => {
     isFriend: false,
     friends: [],
   });
+
+  useEffect(() => {
+    getCurrentUser().then((res) => {
+      if (res){
+        console.log(res);
+        setCurrentUser(res);
+      }
+    }); //protect get current user
+  }, [gameisFinished]);
+
   const [GameInfo, setgameInfo] = useState({
-    position : '',
+    position: '',
     OpponentId: 0,
     OpponentUsername: '',
   });
 
   // const [left , setLeft] = useState<null | number>(null);
   // const [right , setRight] = useState<null | number>(null);
-  
+
   const handlePlayClick = () => {
     setIsWaiting(true);
-
     // await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log('play clicked')
-    if (socket)
-    {
-      console.log('houuunaa ', socket.id);
-      socket?.emit('joinQueue');
-    }
+    socket?.emit('joinQueue');
   };
 
   const handleOpponentFound = useCallback(
@@ -76,43 +82,21 @@ const PlayPage = () => {
       });
       setIsWaiting(false);
     },
-    [] // Empty dependency array means no external dependencies for memoization
+    [], // Empty dependency array means no external dependencies for memoization
   );
   useEffect(() => {
-    
-    // const handleOpponentFound = (opponentInfo: {
-    //   playerPosition: string,
-    //   opponentId : number,
-    //   username: string,
-    // }) => {
-    //   console.log('start game', opponentInfo);
-    //   setgameInfo({position: opponentInfo.playerPosition ,OpponenetId : opponentInfo.opponentId , OpponenetUsername : opponentInfo.username})
-    //   // setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
-    //   // setPosition(opponentInfo.playerPosition);
-    //   // if (position === 'leftPaddle'){
-    //     //   setLeft(currentUser.id);
-    //     //   setRight(opponent.id);
-    //     // }
-    //     // else if (position == 'rightPaddle'){
-    //       //   setLeft(opponent.id);
-    //   //   setRight(currentUser.id);        
-    //   // }
-    //   setIsWaiting(false);
-    // };
-    
     socket?.on('start game', handleOpponentFound);
-    
+
     socket?.on('nta wahid', () => {
       console.log('nta wahid');
       setPlayerNotFound(true);
     });
-    
+
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
-      getCurrentUser().then((res) => setCurrentUser(res)); //protect get current user
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
     });
-    
+
     return () => {
       if (socket) {
         socket.off('Game is finished', () => {});
@@ -127,7 +111,7 @@ const PlayPage = () => {
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
-      {(GameInfo.OpponentId === 0) && (
+      {GameInfo.OpponentId === 0 && (
         <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
           <div className="text-center p-4 flex justify-center">
             <CostumizeGame setBgColor={setBgColor} />
@@ -171,33 +155,55 @@ const PlayPage = () => {
         <div
           className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} `}
           onClick={() => {
-            router.push("/dashboard");
+            router.push('/dashboard');
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||
-            (!youWon && <YouLose user={currentUser}/>)}
+            (!youWon && <YouLose user={currentUser} />)}
         </div>
       )}
 
-        {!isWaiting && (GameInfo.OpponentId !== 0) && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
-        {/* <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'> */}
-        {/* <img
-          src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
-          alt="player"
-          width={10}
-          height={10}
-          className="w-10 h-10 rounded-full self-center"
-        />
+      {!isWaiting && GameInfo.OpponentId !== 0 && (
+        <div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
+          {GameInfo.position == "leftPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
           <img
-          src={process.env.BACKEND + `/api/users/${opponent.id}/avatar`}
-          alt="opponenet"
-          width={10}
-          height={10}
-          className="w-10 h-10 rounded-full self-center"
-        /> */}
-        {/* </div> */}
-         <Game position={GameInfo.position} color={bgColor} />
-      </div>)}
+            src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
+            alt="player"
+            width={10}
+            height={10}
+            className="w-10 h-10 rounded-full self-center"
+          />
+          <img
+            src={
+              process.env.BACKEND + `/api/users/${GameInfo.OpponentId}/avatar`
+            }
+            alt="opponenet"
+            width={10}
+            height={10}
+            className="w-10 h-10 rounded-full self-center"
+          />
+          </div>)}
+          {GameInfo.position == "rightPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
+            <img
+              src={
+                process.env.BACKEND + `/api/users/${GameInfo.OpponentId}/avatar`
+              }
+              alt="opponenet"
+              width={10}
+              height={10}
+              className="w-10 h-10 rounded-full self-center"
+            />
+          <img
+            src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
+            alt="player"
+            width={10}
+            height={10}
+            className="w-10 h-10 rounded-full self-center"
+          />
+          </div>)}
+          <Game position={GameInfo.position} color={bgColor} />
+        </div>
+      )}
     </div>
   );
 };

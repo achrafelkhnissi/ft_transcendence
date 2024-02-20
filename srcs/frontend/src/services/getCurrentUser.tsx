@@ -1,11 +1,17 @@
 import axios from 'axios';
 
 async function getCurrentUser() {
-  const { data } = await axios.get(process.env.BACKEND + `/api/users/me`, {
-    withCredentials: true,
-  });
+  try {
+    const { data } = await axios.get(process.env.BACKEND + `/api/users/me`, {
+      withCredentials: true,
+    });
+  
+    return data;
 
-  return data;
+  } catch (e){
+    console.log('error getting user ', e);
+    return null;
+  }
 }
 
 export default getCurrentUser;
