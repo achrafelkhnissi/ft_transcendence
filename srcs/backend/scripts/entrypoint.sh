@@ -7,11 +7,16 @@ do
   sleep 2
 done
 
-npm run prisma:migrate
-npm run prisma:generate
-npm run prisma:seed
-npm run prisma:studio
+
+# Check if node_env is production
+if [ "$NODE_ENV" = "production" ]; then
+  echo "Running in production mode"
+  npx prisma migrate deploy --name init
+else
+  echo "Running in development mode"
+  npx prisma db push
+fi
+
+npx prisma studio --port 5555 &
 
 exec "$@"
-
-
