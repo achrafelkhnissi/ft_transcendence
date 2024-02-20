@@ -1,5 +1,5 @@
 'use client';
-import { useState, useContext, useEffect, SetStateAction } from 'react';
+import { useState, useContext, useEffect, SetStateAction, useCallback } from 'react';
 import { useSocket } from '../../contexts/socketContext';
 import Game from '../../components/game/Game';
 import PongTable from '@/components/svgAssets/PongTable';
@@ -12,13 +12,14 @@ import YouWon from '@/components/game/YouWon';
 import YouLose from '@/components/game/YouLose';
 import { User } from '@/components/userProfile/types';
 import getCurrentUser from '@/services/getCurrentUser';
+import { useRouter } from 'next/navigation';
 
 
 const DEFAUL_TCOLOR : string = '#000000';
 
 const PlayPage = () => {
   const { socket } = useSocket();
-  const [position, setPosition] = useState<null | string>(null);
+  const router = useRouter();
   const [isWaiting, setIsWaiting] = useState(false);
   const [bgColor, setBgColor] = useState<string>(DEFAUL_TCOLOR);
   const [playerNotFound, setPlayerNotFound] = useState(false);
@@ -40,9 +41,10 @@ const PlayPage = () => {
     isFriend: false,
     friends: [],
   });
-  const [opponent, setOpponenet] = useState({
-    id: 0,
-    username: '',
+  const [GameInfo, setgameInfo] = useState({
+    position : '',
+    OpponentId: 0,
+    OpponentUsername: '',
   });
 
   // const [left , setLeft] = useState<null | number>(null);
@@ -60,26 +62,43 @@ const PlayPage = () => {
     }
   };
 
-  useEffect(() => {
-    
-    const handleOpponentFound = (opponentInfo: {
-      playerPosition: string,
-      opponentId : number,
-      username: string,
+  const handleOpponentFound = useCallback(
+    (opponentInfo: {
+      playerPosition: string;
+      opponentId: number;
+      username: string;
     }) => {
       console.log('start game', opponentInfo);
-      setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
-      setPosition(opponentInfo.playerPosition);
-      // if (position === 'leftPaddle'){
-        //   setLeft(currentUser.id);
-        //   setRight(opponent.id);
-        // }
-        // else if (position == 'rightPaddle'){
-          //   setLeft(opponent.id);
-      //   setRight(currentUser.id);        
-      // }
+      setgameInfo({
+        position: opponentInfo.playerPosition,
+        OpponentId: opponentInfo.opponentId,
+        OpponentUsername: opponentInfo.username,
+      });
       setIsWaiting(false);
-    };
+    },
+    [] // Empty dependency array means no external dependencies for memoization
+  );
+  useEffect(() => {
+    
+    // const handleOpponentFound = (opponentInfo: {
+    //   playerPosition: string,
+    //   opponentId : number,
+    //   username: string,
+    // }) => {
+    //   console.log('start game', opponentInfo);
+    //   setgameInfo({position: opponentInfo.playerPosition ,OpponenetId : opponentInfo.opponentId , OpponenetUsername : opponentInfo.username})
+    //   // setOpponenet({id : opponentInfo.opponentId , username : opponentInfo.username})
+    //   // setPosition(opponentInfo.playerPosition);
+    //   // if (position === 'leftPaddle'){
+    //     //   setLeft(currentUser.id);
+    //     //   setRight(opponent.id);
+    //     // }
+    //     // else if (position == 'rightPaddle'){
+    //       //   setLeft(opponent.id);
+    //   //   setRight(currentUser.id);        
+    //   // }
+    //   setIsWaiting(false);
+    // };
     
     socket?.on('start game', handleOpponentFound);
     
@@ -101,14 +120,14 @@ const PlayPage = () => {
         socket?.off('nta wahid', () => console.log('nta wahid'));
       }
     };
-  }, [socket]);
+  }, [socket, handleOpponentFound]);
 
   return (
     <div className={`flex justify-center w-full h-full relative`}>
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
-      {!position && (
+      {(GameInfo.OpponentId === 0) && (
         <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
           <div className="text-center p-4 flex justify-center">
             <CostumizeGame setBgColor={setBgColor} />
@@ -139,8 +158,7 @@ const PlayPage = () => {
             <div
               className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} `}
               onClick={() => {
-                setPlayerNotFound(false);
-                setIsWaiting(false);
+                window.location.reload();
               }}
             >
               <PlayerNotFound />
@@ -150,14 +168,10 @@ const PlayPage = () => {
       )}
 
       {gameisFinished && (
-        // <div>
         <div
           className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} `}
           onClick={() => {
-            setGameisFinished({ gameisFinished: false, youWon: false });
-            setPosition(null);
-            setBgColor(DEFAUL_TCOLOR);
-            // setPlayerNotFound(true);
+            router.push("/dashboard");
           }}
         >
           {(youWon && <YouWon user={currentUser} />) ||
@@ -165,8 +179,8 @@ const PlayPage = () => {
         </div>
       )}
 
-        {!isWaiting && position && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
-        <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
+        {!isWaiting && (GameInfo.OpponentId !== 0) && (<div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
+        {/* <div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'> */}
         {/* <img
           src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
           alt="player"
@@ -181,8 +195,8 @@ const PlayPage = () => {
           height={10}
           className="w-10 h-10 rounded-full self-center"
         /> */}
-        </div>
-         <Game position={position} color={bgColor} />
+        {/* </div> */}
+         <Game position={GameInfo.position} color={bgColor} />
       </div>)}
     </div>
   );
