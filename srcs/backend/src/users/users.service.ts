@@ -57,7 +57,13 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        status: true,
+      },
+    });
   }
 
   async findById(id: number, userId?: number) {
@@ -140,45 +146,42 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    const blockedUsers = await this.prisma.friendRequest
-      .findMany({
-        where: {
-          OR: [
-            {
-              sender: {
-                username,
-              },
-            },
-            {
-              receiver: {
-                username,
-              },
-            },
-          ],
-          friendshipStatus: 'BLOCKED',
-        },
-        select: {
-          receiver: {
-            select: {
-              id: true,
-              username: true,
+    const blockedUsers = await this.prisma.friendRequest.findMany({
+      where: {
+        OR: [
+          {
+            sender: {
+              username,
             },
           },
-          sender: {
-            select: {
-              id: true,
-              username: true,
+          {
+            receiver: {
+              username,
             },
           },
+        ],
+        friendshipStatus: 'BLOCKED',
+      },
+      select: {
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+          },
         },
-      })
-      .then((friendRequests) => {
-        return friendRequests
-          .map((req) =>
-            username === req.receiver.username ? req.receiver : req.sender,
-          )
-          .filter((user) => user.username !== username);
-      });
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+    // .then((friendRequests) => {
+    //   return friendRequests.map((req) =>
+    //     username === req.receiver.username ? req.sender : req.receiver,
+    //   );
+    // });
 
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { username },
@@ -220,6 +223,7 @@ export class UsersService {
     return {
       ...user,
       friends: await this.friendsService.listFriendsById(user.id),
+      games: await this.getGames(user.id),
       blockedUsers,
     };
   }
@@ -413,5 +417,36 @@ export class UsersService {
         },
       })
       .then((users) => users.map((user) => user.username));
+  }
+
+  async getGames(userId: number) {
+    return this.prisma.game.findMany({
+      where: {
+        OR: [
+          {
+            winnerId: userId,
+          },
+          {
+            loserId: userId,
+          },
+        ],
+      },
+      select: {
+        id: true,
+        winner: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        loser: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        score: true,
+      },
+    });
   }
 }

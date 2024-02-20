@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
 import { ChangeEvent } from 'react';
-import { Conversation, User } from '../data';
+import { Conversation, User, UserStatuses } from '../data';
 import Member from './Member';
 import getUser from '@/services/getUser';
 import { FaCheck } from 'react-icons/fa';
@@ -16,6 +16,7 @@ interface ChannelInfoProps {
   channel: Conversation;
   currentUser: User | undefined;
   updateConversations: Function;
+  statuses: UserStatuses;
 }
 
 const newMemberError = {
@@ -29,6 +30,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   channel,
   updateConversations,
   currentUser,
+  statuses,
 }) => {
   const length = channel.participants.length + channel.admins.length + 1;
   const currentUserRole =
@@ -86,7 +88,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
 
   const modifyChannelType = async (newChannelType: string) => {
     let hashedpass = '';
-    console.log('newChannelType: ', newChannelType);
     if (newChannelType != 'PROTECTED') {
       updateChannelType(channel.id, {
         type: newChannelType,
@@ -136,6 +137,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     }
   };
 
+  console.log('statuses', statuses);
   return (
     <div
       className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 
@@ -226,6 +228,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   <input
                     type="text"
                     id="password"
+                    value={password}
                     maxLength={13}
                     placeholder={
                       channel.type == 'PROTECTED' ? '**********' : 'password'
@@ -291,11 +294,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
         </div>
         <div className="flex gap-2 flex-col overflow-y-auto max-h-[500px] px-2">
           <Member
+            currentUserId={currentUser?.id}
             id={channel.owner.id}
             username={channel.owner.username}
             avatar={channel.owner.avatar}
             role={'owner'}
-            status={channel.owner.status}
+            status={channel.owner?.id ? statuses[channel.owner?.id] : ''}
             updateConversations={updateConversations}
             channelId={channel.id}
             muted={true}
@@ -305,11 +309,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             return (
               <div key={index} className="text-white/80">
                 <Member
+                  currentUserId={currentUser?.id}
                   id={admin.id}
                   username={admin.username}
                   avatar={admin.avatar}
                   role={'admin'}
-                  status={admin.status}
+                  status={admin.id ? statuses[admin.id] : ''}
                   updateConversations={updateConversations}
                   channelId={channel.id}
                   muted={channel.mutedUsers.some(
@@ -324,11 +329,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             return (
               <div key={index} className="text-white/80 ">
                 <Member
+                  currentUserId={currentUser?.id}
                   id={participant.id}
                   username={participant.username}
                   avatar={participant.avatar}
                   role={''}
-                  status={participant.status}
+                  status={participant?.id ? statuses[participant?.id] : ''}
                   updateConversations={updateConversations}
                   channelId={channel.id}
                   muted={channel.mutedUsers.some(
@@ -350,11 +356,12 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
               return (
                 <div key={index} className="text-white/80 ">
                   <Member
+                    currentUserId={currentUser?.id}
                     id={banned.id}
                     username={banned.username}
                     avatar={banned.avatar}
                     role={'banned'}
-                    status={banned.status}
+                    status={banned?.id ? statuses[banned?.id] : ''}
                     updateConversations={updateConversations}
                     channelId={channel.id}
                     muted={false}

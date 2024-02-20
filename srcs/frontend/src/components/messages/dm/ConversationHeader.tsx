@@ -1,15 +1,33 @@
 /* eslint-disable @next/next/no-img-element */
+import blockUser from '@/services/blockUser';
 import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
-import { User } from '../data';
-import { IoIosArrowBack } from "react-icons/io";
+import { User, UserStatuses } from '../data';
+import { IoIosArrowBack } from 'react-icons/io';
 
- interface props {
-    receiver: User;
-    updateConversations: Function;
- }
+interface props {
+  receiver: User;
+  updateConversations: Function;
+  statuses: UserStatuses;
+  removeConversation: Function;
+  conversationId: number;
+}
 
-const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) => {
+const ConversationHeader: React.FC<props> = ({
+  receiver,
+  updateConversations,
+  statuses,
+  removeConversation,
+  conversationId,
+}) => {
+  const handleBlockUser = () => {
+    blockUser(receiver.id).then((res) => {
+      if (res) {
+        removeConversation(conversationId);
+      }
+    });
+  };
+
   return (
     <div
       className="absolute w-full h-16 top-0 rounded-t-[3rem] border-b-4 border-b-[#4b4b79c6]
@@ -28,7 +46,7 @@ const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) =>
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
           <p className="font-light text-xs text-white/30 ">
-            {receiver.status.toLocaleLowerCase()}
+            {receiver?.id && statuses[receiver?.id]?.toLocaleLowerCase()}
           </p>
         </div>
       </div>
@@ -43,16 +61,19 @@ const ConversationHeader: React.FC<props> = ({receiver, updateConversations}) =>
         <div
           className="self-center hover:cursor-pointer 
                 "
+          onClick={handleBlockUser}
         >
           <BlockUser color={'#59598E'} width={'29px'} height={'29px'} />
         </div>
       </div>
-      <IoIosArrowBack className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer 
-      hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)] md:hidden" 
-      onClick={ () => {
-        updateConversations(false);
-      }}/>
-    </div> 
+      <IoIosArrowBack
+        className="absolute left-2 text-[#6C61A4] w-6 h-6 bottom-4 cursor-pointer 
+      hover:drop-shadow-[0_0px_8px_rgba(255,255,255,0.9)] md:hidden"
+        onClick={() => {
+          updateConversations(false);
+        }}
+      />
+    </div>
   );
 };
 

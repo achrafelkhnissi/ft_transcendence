@@ -40,6 +40,7 @@ const PlayPage = () => {
       losses: 0,
     },
     me: false,
+    games: [],
     isFriend: false,
     friends: [],
   });

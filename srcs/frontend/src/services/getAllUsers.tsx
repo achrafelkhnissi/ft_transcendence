@@ -1,12 +1,17 @@
 import axios from 'axios';
 
 async function getAllUsers() {
-  const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/usernames`,
-    { withCredentials: true },
-  );
+  try {
+    const { data } = await axios.get(
+      process.env.BACKEND + `/api/users/usernames`,
+      { withCredentials: true },
+    );
 
-  return data;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }
 
 export default getAllUsers;

@@ -10,54 +10,46 @@ export class FriendsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listFriendsById(userId: number) {
-    const user = await this.prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-      include: {
-        friendRequestsSent: {
-          where: {
-            friendshipStatus: FriendshipStatus.ACCEPTED,
+    return this.prisma.friendRequest
+      .findMany({
+        where: {
+          OR: [
+            {
+              senderId: userId,
+              friendshipStatus: FriendshipStatus.ACCEPTED,
+            },
+            {
+              receiverId: userId,
+              friendshipStatus: FriendshipStatus.ACCEPTED,
+            },
+          ],
+        },
+        select: {
+          sender: {
+            select: {
+              id: true,
+              username: true,
+              avatar: true,
+              status: true,
+            },
           },
-          include: {
-            receiver: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
+          receiver: {
+            select: {
+              id: true,
+              username: true,
+              avatar: true,
+              status: true,
             },
           },
         },
-        friendRequestsReceived: {
-          where: {
-            friendshipStatus: FriendshipStatus.ACCEPTED,
-          },
-          include: {
-            sender: {
-              select: {
-                id: true,
-                username: true,
-                avatar: true,
-                status: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with id <${userId}> not found`);
-    }
-
-    const friends = [
-      ...user.friendRequestsSent.map((friendRequest) => friendRequest.receiver),
-      ...user.friendRequestsReceived.map(
-        (friendRequest) => friendRequest.sender,
-      ),
-    ];
-
-    return friends;
+      })
+      .then((requests) => {
+        return requests.map((request) => {
+          return request.sender.id === userId
+            ? request.receiver
+            : request.sender;
+        });
+      });
   }
 
   async removeFriend(userId: number, friendId: number) {
@@ -139,28 +131,47 @@ export class FriendsService {
   }
 
   async blockUser(userId: number, friendId: number) {
-    return this.prisma.friendRequest.upsert({
+    const existingFriendship = await this.prisma.friendRequest.findFirst({
       where: {
-        senderId_receiverId: {
-          senderId: userId,
-          receiverId: friendId,
-        },
-      },
-      update: {
-        senderId: userId,
-        receiverId: friendId,
-        friendshipStatus: FriendshipStatus.BLOCKED,
-      },
-      create: {
-        senderId: userId,
-        receiverId: friendId,
-        friendshipStatus: FriendshipStatus.BLOCKED,
-      },
-      select: {
-        id: true,
-        friendshipStatus: true,
+        OR: [
+          {
+            senderId: userId,
+            receiverId: friendId,
+          },
+          {
+            senderId: friendId,
+            receiverId: userId,
+          },
+        ],
       },
     });
+
+    if (existingFriendship) {
+      return this.prisma.friendRequest.update({
+        where: { id: existingFriendship.id },
+        data: {
+          senderId: userId,
+          receiverId: friendId,
+          friendshipStatus: FriendshipStatus.BLOCKED,
+        },
+        select: {
+          id: true,
+          friendshipStatus: true,
+        },
+      });
+    } else {
+      return this.prisma.friendRequest.create({
+        data: {
+          senderId: userId,
+          receiverId: friendId,
+          friendshipStatus: FriendshipStatus.BLOCKED,
+        },
+        select: {
+          id: true,
+          friendshipStatus: true,
+        },
+      });
+    }
   }
 
   async unblockUser(userId: number, friendId: number) {

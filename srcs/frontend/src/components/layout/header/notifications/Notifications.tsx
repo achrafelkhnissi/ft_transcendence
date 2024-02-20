@@ -67,7 +67,7 @@ const Notifications = () => {
 
     if (socket) {
       socket.on('onNotification', (data: NotificationsType) => {
-        setNotifications((prev) => [data, ...prev]);
+        setNotifications((prev) => [...prev, data]);
       });
       socket.on(
         'friend-request-cancelled',
@@ -119,12 +119,12 @@ const Notifications = () => {
           <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
         </div>
         <div
-          className={`absolute max-h-80 sm:w-80 w-60 z-50 sm:right-0 -right-6  bg-white/30  rounded-[0.5rem] ${
+          className={`absolute max-h-[22rem] sm:w-80 w-60 z-50 sm:right-0 -right-6  bg-white/30  rounded-[0.5rem] ${
             !isClicked && 'hidden'
-          } mt-1  p-2 overflow-hidden`}
+          } mt-1  p-2 overflow-y-auto`}
         >
-          <div className="w-full overflow-y-auto scroll-smooth h-full">
-            <div className="flex gap-1 flex-col">
+          <div className="w-full max-h-80 overflow-y-auto scroll-smooth ">
+            <div className="flex gap-1 flex-col-reverse justify-center ">
               {notifications.length === 0 && (
                 <p className="text-sm text-center text-white">
                   {' '}
@@ -144,7 +144,7 @@ const Notifications = () => {
                   return (
                     <div
                       key={index}
-                      className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal 
+                      className={`bordder text-white/80 w-full h-20 text-[0.8rem] px-2 font-normal
                       bg-[#3A386A]  flex justify-between rounded-2xl gap-2 transition-all ease-in duration-300
                     `}
                     >

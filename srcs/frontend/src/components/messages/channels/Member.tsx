@@ -12,11 +12,13 @@ import unbanUser from '@/services/unbanUser';
 import removeAdmin from '@/services/removeAdmin';
 import unmuteUser from '@/services/unmuteUser';
 import muteUser from '@/services/muteUser';
+import Link from 'next/link';
 
 interface MemberProps {
   id: number | undefined;
   channelId: number;
   username: string;
+  currentUserId: number | undefined;
   avatar: string;
   role: string;
   status: string;
@@ -34,6 +36,7 @@ const Member: React.FC<MemberProps> = ({
   id,
   channelId,
   updateConversations,
+  currentUserId,
   currentUserRole,
 }) => {
   const [muteOnHover, setMuteOnHover] = useState<boolean>(false);
@@ -104,13 +107,21 @@ const Member: React.FC<MemberProps> = ({
   return (
     <div className="w-full h-14 bg-white/10  rounded-2xl flex justify-between px-4 relative">
       <div className="self-center flex justify-center gap-2 md:text-sm text-xs ">
-        <img
-          src={process.env.BACKEND + `/api/users/${id}/avatar`}
-          alt=""
-          className="w-10 h-10 rounded-full self-center object-cover"
-        />
+        <div className="relative self-center ">
+          <Link href={`/profile/${currentUserId == id ? 'me' :username}`}>
+          <img
+            src={process.env.BACKEND + `/api/users/${id}/avatar`}
+            alt=""
+            className="w-10 h-10 rounded-full self-center object-cover"
+          />
+          </Link>
+          <div
+            className={`absolute w-2 h-2 rounded-full bottom-0 right-0
+          ${status == 'ONLINE' ? 'bg-green-500' : status == 'PLAYING' ? 'bg-yellow-500' : 'bg-red-500'}`}
+          ></div>
+        </div>
         <div>
-          <p className="self-center">{username}</p>
+          <p className="self-center">{currentUserId == id ? 'You' : username}</p>
           <p className="self-center text-xs text-white/30">{role}</p>
         </div>
       </div>
