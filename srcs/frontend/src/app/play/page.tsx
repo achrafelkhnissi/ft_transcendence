@@ -51,7 +51,7 @@ const PlayPage = () => {
         console.log(res);
         setCurrentUser(res);
       }
-    }); //protect get current user
+    });
   }, [gameisFinished]);
 
   const [GameInfo, setgameInfo] = useState({
@@ -59,9 +59,6 @@ const PlayPage = () => {
     OpponentId: 0,
     OpponentUsername: '',
   });
-
-  // const [left , setLeft] = useState<null | number>(null);
-  // const [right , setRight] = useState<null | number>(null);
 
   const handlePlayClick = () => {
     setIsWaiting(true);
@@ -133,8 +130,6 @@ const PlayPage = () => {
                             md:text-2xl
                             shadow-[inset_0_12px_11px_rgba(255,255,255,0.26)]
                             ${isWaiting ? 'opacity-50 cursor-not-allowed' : ''}
-                            {isWaiting ? 'Finding Opponent...' : 'Play'}
-
       `}
           >
             Play
@@ -166,7 +161,7 @@ const PlayPage = () => {
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
         <div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
-          {GameInfo.position == "leftPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
+          {GameInfo.position == "leftPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] gap-x-16'>
           <img
             src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
             alt="player"
@@ -184,7 +179,7 @@ const PlayPage = () => {
             className="w-10 h-10 rounded-full self-center"
           />
           </div>)}
-          {GameInfo.position == "rightPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] border-2 gap-x-16'>
+          {GameInfo.position == "rightPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] gap-x-16'>
             <img
               src={
                 process.env.BACKEND + `/api/users/${GameInfo.OpponentId}/avatar`
