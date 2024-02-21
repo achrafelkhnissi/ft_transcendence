@@ -23,53 +23,58 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { socket } = useSocket();
-  const router = useRouter();
-  const [showPopup, setShowPopup] = useState(true);
-  const [currentUser, setCurrentUser] = useState<User>({
-    id: null,
-    username: '',
-    url: '',
-    stats: {
-      exp: 0,
-      level: 0,
-      wins: 0,
-      losses: 0,
-    },
-    me: false,
-    games: [],
-    isFriend: false,
-    friends: [],
-  });
+  // const { socket } = useSocket();
+  // const router = useRouter();
+  // // const [showPopup, setShowPopup] = useState(false);
+  // const [inviter, setInviter] = useState({userId : 0, username: ''});
+  // const [currentUser, setCurrentUser] = useState<User>({
+  //   id: null,
+  //   username: '',
+  //   url: '',
+  //   stats: {
+  //     exp: 0,
+  //     level: 0,
+  //     wins: 0,
+  //     losses: 0,
+  //   },
+  //   me: false,
+  //   games: [],
+  //   isFriend: false,
+  //   friends: [],
+  // });
 
-  const openPopup = () => {
-    setShowPopup(true);
-  };
+  // const openPopup = () => {
+  //   setShowPopup(true);
+  // };
 
-  const closePopup = () => {
-    setShowPopup(false);
-  };
+  // const closePopup = () => {
+  //   setShowPopup(false);
+  // };
 
-  const acceptInvitation = () =>{
-    closePopup();
-    router.push('/play');
-  };
+  // const acceptInvitation = () =>{
+  //   closePopup();
+  //   router.push('/play');
+  // };
 
-  useEffect(() => {
-    getCurrentUser().then((res) => {
-      if (res){
-        console.log(res);
-        setCurrentUser(res);
-      }
-    });
-    socket?.on('invite', () => {
-      openPopup();
-    });
+  // useEffect(() => {
+  //   getCurrentUser().then((res) => {
+  //     if (res){
+  //       console.log(res);
+  //       setCurrentUser(res);
+  //     }
+  //   });
+  //   if (socket)
+  //   console.log(socket)
+  //   socket?.on('game-invite', (data) => {
+  //     setInviter({userId : data.userId, username: data.username})
+  //     console.log('game-invite');
+  //     openPopup();
+  //   });
 
-    return () => {
-      socket?.off('invite', openPopup);
-    };
-  }, [socket]);
+  //   return () => {
+  //     socket?.off('game-invite');
+  //   };
+  // }, [socket]);
 
   return (
     <SocketProvider>
@@ -82,15 +87,8 @@ export default function RootLayout({
           <div className="max-w-[1500px] w-full mx-auto">{children}</div>
         </div>
       </div>
-      {showPopup && (
-        <InvitePopup accept={acceptInvitation} refuse={closePopup} >
-          <p>
-            Hey {currentUser.username}, [Challenger] has challenged you to a thrilling game
-            of ping pong. Are you up for the challenge? Accept and let the games
-            begin!
-          </p>
-        </InvitePopup>
-      )}
+        <InvitePopup/>
+
     </SocketProvider>
   );
 }

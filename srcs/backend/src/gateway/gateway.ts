@@ -140,10 +140,44 @@ export class Gateway
     this.gameService.readyForGame();
   }
   
-  @SubscribeMessage('invite')
+  @SubscribeMessage('game-invite')
   InviteToGame(client: Socket, payload: { inviterId: number }): void {
     const user = client.request.user;
-    // const inviterSocketId = 
-    
+    const gameRoom = this.gameService.createGameRoomName(payload.inviterId, user.id);  
+    this.server.to(`user-${payload.inviterId}`).emit('game-invite', {room: gameRoom, userId:user.id, username: user.username});
+    console.log(gameRoom)
+    // this.gameService.inviteGame()
   }
+
+  @SubscribeMessage('inviteResponse')
+  InviteResponce(client: Socket, payload: {response: boolean, gameRoom : string, inviter : number}){
+    const user = client.request.user;
+    console.log('sent response to ', payload.inviter)
+    this.server.to(`user-${payload.inviter}`).emit('inviteResponse', {response: payload.response, room: payload.gameRoom});
+    // if (payload.response){
+    //   const sockets = this.server.sockets.adapter.rooms.get(
+    //     payload.gameRoom
+    //   );
+    //   sockets.forEach((socketId) => {
+    //     this.gateway.server.sockets.sockets
+    //       .get(socketId)
+    //       .join(blockedUsersRoomName);
+    //   });
+    // }
+
+  }
+
+  @SubscribeMessage('joinRoom')
+  JoingameRoom(client: Socket, gameRoom : string){
+    const user = client.request.user;
+    client.join(gameRoom);
+      const sockets = this.server.sockets.adapter.rooms.get(
+        gameRoom
+      );
+      sockets?.forEach((socketId) => {
+        this.server.sockets.sockets
+          .get(socketId)
+      });
+  }
+
 }

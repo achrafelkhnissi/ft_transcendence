@@ -34,7 +34,8 @@ const ConversationHeader: React.FC<props> = ({
 
   const handleGameInvitation = () => {
     if (socket){
-      socket.emit('invite', receiver.id);
+      console.log('emit invite');
+      socket.emit('game-invite', {inviterId: receiver.id});
     }
   }
 

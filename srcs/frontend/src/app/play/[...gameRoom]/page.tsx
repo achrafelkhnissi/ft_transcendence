@@ -5,8 +5,8 @@ import {
   useCallback,
 } from 'react';
 
-import { useSocket } from '../../contexts/socketContext';
-import Game from '../../components/game/Game';
+import { useSocket } from '../../../contexts/socketContext';
+import Game from '../../../components/game/Game';
 import CostumizeGame from '@/components/game/CostumizeGame';
 import { RxExit } from 'react-icons/rx';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 
 const DEFAUL_TCOLOR: string = '#000000';
 
-const PlayPage = () => {
+const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   const { socket } = useSocket();
   const router = useRouter();
   const [isWaiting, setIsWaiting] = useState(false);
@@ -63,6 +63,12 @@ const PlayPage = () => {
   const handlePlayClick = () => {
     setIsWaiting(true);
     // await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (params)
+      {
+        console.log('hanaaa froooom');
+        socket?.emit('joinRoom',params.gameRoom);
+      }
+    else
     socket?.emit('joinQueue');
   };
 

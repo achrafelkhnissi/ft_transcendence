@@ -2,6 +2,7 @@ import { $Enums, UserSettings } from '@prisma/client';
 import { FriendRequest } from '@prisma/client';
 
 export interface UserType {
+  userId: any;
   id: number;
   username?: string;
   email: string;

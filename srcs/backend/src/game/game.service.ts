@@ -119,7 +119,6 @@ export class GameService {
   }
 
   inviteGame(inviter: Player, invited: Player) {
-    invited.socket.emit('invite', inviter);
     invited.socket.once('inviteResponse', (response) => {
       if (
         response === true &&
@@ -139,6 +138,9 @@ export class GameService {
           username: inviter.user.username,
         });
         this.createMatch(inviter, invited);
+      }
+      else if (!response){
+        invited.socket.emit('invitation refused');
       }
     });
   }
@@ -222,5 +224,10 @@ export class GameService {
         score: true,
       },
     });
+  }
+
+  createGameRoomName(playerId1: number, playerId2:number) {
+    const sortedIds = [playerId1, playerId2].sort();
+    return `room-${sortedIds[0]}-${sortedIds[1]}`;
   }
 }
