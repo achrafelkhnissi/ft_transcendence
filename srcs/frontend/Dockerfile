@@ -1,26 +1,46 @@
-#
-# 🧑‍💻 Development
-#
-FROM node:21-alpine as dev
 
-ARG BACKEND
-ENV BACKEND $BACKEND
+FROM node:20
+# TODO: try node:21 then node:21-alpine
+
+ENV NODE_ENV development
 
 WORKDIR /app
 
-RUN apk add --no-cache curl
-
 RUN chown -R node:node /app
+
+USER node
 
 COPY --chown=node:node . .
 
 EXPOSE 3000
 
-USER node
+CMD ["npm", "run", "dev"]
 
-# TODO: To be tested
-ENTRYPOINT [ "sh", "-c", "scripts/wait-backend.sh $BACKEND", "--" ]
-CMD [ "npm", "run", "start:dev" ]
+#
+# 🧑‍💻 Development
+#
+# FROM node:21-alpine as dev
+
+# ARG BACKEND
+# ENV BACKEND $BACKEND
+
+# WORKDIR /app
+
+# RUN apk add --no-cache curl
+
+# RUN chown -R node:node /app
+
+# COPY --chown=node:node . .
+
+# EXPOSE 3000
+
+# USER node
+
+# # TODO: To be tested
+# ENTRYPOINT [ "sh", "-c", "scripts/wait-backend.sh $BACKEND", "--" ]
+# CMD [ "npm", "run", "start:dev" ]
+
+# ---
 
 # FROM node:20 AS dev
 

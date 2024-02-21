@@ -15,23 +15,31 @@ RUN apk update && apk upgrade && \
 
 COPY --chown=node:node . .
 
-RUN npm ci && npm cache clean --force
+# RUN npm ci && npm cache clean --force
+# RUN npm install
 
 EXPOSE 3000 5555
 
-USER node
+# USER node
 
-FROM base as dev
+# ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+# CMD [ "npm", "run", "start:dev" ]
 
-ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
-CMD [ "npm", "run", "start:dev" ]
+# ---
 
-FROM base as prod
+# FROM base as dev
 
-RUN npm run build
+# ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+# CMD [ "npm", "run", "start:dev" ]
 
-ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
-CMD [ "npm", "run", "start:prod" ]
+# FROM base as prod
+
+# RUN npm run build
+
+# ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+# CMD [ "npm", "run", "start:prod" ]
+
+# ---
 
 # # 🏡 Production Build
 # #
