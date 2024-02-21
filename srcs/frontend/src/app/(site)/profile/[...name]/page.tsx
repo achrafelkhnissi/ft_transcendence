@@ -17,7 +17,6 @@ import {
 import { useRouter } from 'next/navigation';
 
 const Home = ({ params }: { params: { name: string } }) => {
-  const abortController = new AbortController();
   const [user, setUser] = useState<User>(defaultInfos);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const router = useRouter();
@@ -50,8 +49,6 @@ const Home = ({ params }: { params: { name: string } }) => {
         });
       }
     });
-    console.log('user', user);
-    return () => abortController.abort();
   }, [params.name]);
 
   return (
