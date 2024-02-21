@@ -24,18 +24,9 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
-      # target: dev
-    # command: npm run start:dev
-    # command:
-    #   - sh
-    #   - -c
-    #   - |
-    #     npm install
-    #     npm run prisma
-    #     npm run start:dev
+      target: dev
     container_name: backend
     restart: always
-    # env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
       - NEST_PORT=${NEST_PORT}
@@ -56,8 +47,6 @@ services:
       - "5555:5555"
     volumes:
       - ./backend:/app # for hot reloading
-      - ./backend/node_modules:/app/node_modules # for faster builds
-      - ./backend/dist:/app/dist
     networks:
       - database_net
       - frontend_net

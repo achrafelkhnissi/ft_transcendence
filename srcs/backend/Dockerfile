@@ -1,7 +1,8 @@
 #
 # 🧑‍💻 Development
 #
-FROM node:21-alpine as dev
+# FROM node:21-alpine as dev
+FROM node:21-alpine as base
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
@@ -11,20 +12,29 @@ ENV NODE_ENV ${NODE_ENV:-development}
 WORKDIR /app
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache postgresql-client
-
-RUN chown -R node:node /app
+    apk add --no-cache postgresql-client && \
+    rm -rf /var/cache/apk/* && \
+    chown -R node:node /app
 
 COPY --chown=node:node . .
 
-RUN npm install
+RUN npm ci && npm cache clean --force
 
 EXPOSE 3000 5555
 
 USER node
 
+FROM base as dev
+
 ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
-CMD [ "npm" , "run", "start:dev" ]
+CMD [ "npm", "run", "start:dev" ]
+
+FROM base as prod
+
+RUN npm run build
+
+ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+CMD [ "npm", "run", "start:prod" ]
 
 # # 🏡 Production Build
 # #

@@ -7,6 +7,7 @@ do
   sleep 2
 done
 
+>&2 echo "Postgres is up - continuing..."
 
 # Check if node_env is production
 if [ "$NODE_ENV" = "production" ]; then
