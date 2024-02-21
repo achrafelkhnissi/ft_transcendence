@@ -2,8 +2,6 @@
 FROM node:21-alpine
 # TODO: try node:21 then node:21-alpine
 
-ENV NODE_ENV development
-
 WORKDIR /app
 
 RUN chown -R node:node /app
