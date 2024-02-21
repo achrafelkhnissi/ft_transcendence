@@ -12,7 +12,7 @@ done
 # Check if node_env is production
 if [ "$NODE_ENV" = "production" ]; then
   echo "Running in production mode"
-  npx prisma migrate deploy --name init
+  npx prisma migrate deploy
 else
   echo "Running in development mode"
   npx prisma db push
