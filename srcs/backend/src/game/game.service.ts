@@ -15,6 +15,7 @@ interface Player {
 @Injectable()
 export class GameService {
   private activeMatches: { [key: string]: Match } = {};
+  public activeRoom: { [key: string]: Player[] } = {};
   private playerQueue: Player[] = [];
   private currentGamers: Player[] = [];
 
@@ -119,9 +120,7 @@ export class GameService {
   }
 
   inviteGame(inviter: Player, invited: Player) {
-    invited.socket.once('inviteResponse', (response) => {
       if (
-        response === true &&
         !this.currentGamers.find(
           (player) => player.user.id === invited.user.id,
         ) &&
@@ -139,10 +138,10 @@ export class GameService {
         });
         this.createMatch(inviter, invited);
       }
-      else if (!response){
-        invited.socket.emit('invitation refused');
-      }
-    });
+    //   else if (!response){
+    //     invited.socket.emit('invitation refused');
+    //   }
+    // });
   }
 
   async saveMatch(data: CreateGameDto) {
