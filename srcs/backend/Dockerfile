@@ -6,9 +6,6 @@ FROM node:21-alpine as base
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
-ARG NODE_ENV
-ENV NODE_ENV ${NODE_ENV:-development}
-
 WORKDIR /app
 
 RUN apk update && apk upgrade && \
