@@ -25,7 +25,6 @@ import { User } from 'src/common/decorators/user.decorator';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Gateway } from 'src/gateway/gateway';
 import { UserType } from 'src/common/interfaces/user.interface';
-import { block } from 'sharp';
 
 @UseGuards(AuthGuard)
 @ApiTags('message')
