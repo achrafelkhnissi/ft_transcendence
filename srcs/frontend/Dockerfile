@@ -1,22 +1,26 @@
 #
 # 🧑‍💻 Development
 #
-FROM node:20
-# change 20 to 21
+FROM node:21-alpine as dev
 
-ENV NODE_ENV development
+ARG BACKEND
+ENV BACKEND $BACKEND
 
 WORKDIR /app
 
-RUN chown -R node:node /app
+RUN apk add --no-cache curl
 
-USER node
+RUN chown -R node:node /app
 
 COPY --chown=node:node . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+USER node
+
+# TODO: To be tested
+ENTRYPOINT [ "sh", "-c", "scripts/wait-backend.sh $BACKEND", "--" ]
+CMD [ "npm", "run", "start:dev" ]
 
 # FROM node:20 AS dev
 
