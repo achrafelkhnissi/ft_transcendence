@@ -1,10 +1,8 @@
 #!/usr/bin/env sh
 
 set -e # Exit immediately if a command exits with a non-zero status.
-set -x # Print commands and their arguments as they are executed.
 
-# Install npm packages
-npm install
+# export PATH="/app/node_modules/.bin:$PATH"
 
 # Wait for postgres to be ready
 until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER
@@ -15,7 +13,7 @@ done
 
 >&2 echo "Postgres is up - continuing..."
 
-# Check if node_env is production
+# TODO: Why does prisma is not installed? even after running `RUN npm install` in Dockerfile
 if [ "$NODE_ENV" = "production" ]; then
   echo "Running in production mode"
   npx prisma migrate deploy
