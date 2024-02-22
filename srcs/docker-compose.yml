@@ -19,18 +19,10 @@ services:
     networks:
       - database_net
 
-  # TODO: Make the backend installs its dependencies and then run the frontend
   backend:
     build:
       context: ./backend/
       dockerfile: Dockerfile
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run prisma
-        npm run start:dev
     container_name: backend
     restart: always
     environment:
@@ -52,7 +44,7 @@ services:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
     volumes:
-      - ./backend:/app # for hot reloading
+      - ./backend:/app
     networks:
       - database_net
       - frontend_net
@@ -82,7 +74,8 @@ services:
       - -c
       - |
         npm install
-        npm run dev
+        # npm run dev
+        npm run build && npm run start
 
 volumes:
   db-data:
