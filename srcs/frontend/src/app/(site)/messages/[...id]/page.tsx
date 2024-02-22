@@ -224,7 +224,7 @@ const Home = ({ params }: { params: { id: number } }) => {
 
         socket.disconnect();
 
-        window.location.href = '/';
+        // window.location.href = '/';
       });
 
       socket.on('onMessage', (message: Message) => {

@@ -37,7 +37,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
       newSocket.disconnect();
 
-      window.location.href = '/';
+      // window.location.href = '/';
     });
 
     newSocket.on('connect', async () => {
