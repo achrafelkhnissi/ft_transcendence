@@ -1,6 +1,5 @@
 
-FROM node:21-alpine
-# TODO: try node:21 then node:21-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
