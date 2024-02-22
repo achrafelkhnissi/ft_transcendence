@@ -184,7 +184,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       }
     });
     getCurrentUser().then((res) => {
-      setCurrentUser(res);
+      if (res) setCurrentUser(res);
     });
   }, []);
 

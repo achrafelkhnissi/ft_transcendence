@@ -7,8 +7,11 @@ async function getUsersAll() {
     });
 
     return data;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    if (error.response?.request?.status === 401) {
+      console.log('Error getting all users', error);
+      return null;
+    }
     return null;
   }
 }

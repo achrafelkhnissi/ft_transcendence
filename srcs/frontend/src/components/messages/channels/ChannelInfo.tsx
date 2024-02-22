@@ -137,7 +137,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     }
   };
 
-  console.log('statuses', statuses);
   return (
     <div
       className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 
