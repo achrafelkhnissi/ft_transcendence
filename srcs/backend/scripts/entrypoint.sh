@@ -2,7 +2,7 @@
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
-# export PATH="/app/node_modules/.bin:$PATH"
+export PATH="/app/node_modules/.bin:$PATH"
 
 # Wait for postgres to be ready
 until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER
@@ -18,6 +18,7 @@ if [ "$NODE_ENV" = "production" ]; then
   echo "Running in production mode"
   npx prisma migrate deploy
 else
+  ls -la
   echo "Running in development mode"
   npx prisma db push # --no-install # --skip-generate
 fi

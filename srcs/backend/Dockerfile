@@ -1,8 +1,7 @@
 #
 # 🧑‍💻 Development
 #
-# FROM node:21-alpine as dev
-FROM node:21-alpine as base
+FROM node:20-alpine as base
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
@@ -11,19 +10,22 @@ WORKDIR /app
 RUN apk update && apk upgrade && \
     apk add --no-cache postgresql-client && \
     rm -rf /var/cache/apk/* && \
+    npm install -g npm@latest && \
     chown -R node:node /app
+
+COPY --chown=node:node package*.json ./
+
+RUN npm install
+# RUN npm install && npm install -g prisma
 
 COPY --chown=node:node . .
 
-# RUN npm ci && npm cache clean --force
-# RUN npm install
-
 EXPOSE 3000 5555
 
-# USER node
+USER node
 
-# ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
-# CMD [ "npm", "run", "start:dev" ]
+ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+CMD [ "npm", "run", "start:dev" ]
 
 # ---
 
