@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const instance = axios.create({
@@ -16,7 +15,7 @@ instance.interceptors.response.use(
       console.log('Unauthorized access, redirecting to login page...');
       window.location.href = '/';
     }
-    return null;
+    return {data: null};
   }
 );
 

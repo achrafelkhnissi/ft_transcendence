@@ -37,7 +37,7 @@ const ConversationHeader: React.FC<props> = ({
     >
       <div className="p-2 flex gap-2 self-center">
         <img
-          src={process.env.BACKEND + `/api/users/${receiver.id}/avatar`}
+          src={receiver?.id ? process.env.BACKEND + `/api/users/${receiver.id}/avatar`: ''}
           alt="receiver"
           width={100}
           height={100}

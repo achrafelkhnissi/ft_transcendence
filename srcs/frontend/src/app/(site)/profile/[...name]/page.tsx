@@ -15,6 +15,7 @@ import {
   defaultInfos,
 } from '@/components/userProfile/types';
 import { useRouter } from 'next/navigation';
+import { resolve } from 'path';
 
 const Home = ({ params }: { params: { name: string } }) => {
   const [user, setUser] = useState<User>(defaultInfos);
@@ -41,9 +42,8 @@ const Home = ({ params }: { params: { name: string } }) => {
         } else {
           getUser(params.name).then((res) => {
             if (res) {
-              const { data } = res;
-              if (data.isFriend == 'BLOCKED') router.push('/404');
-              const userData: User = data;
+              if (res.isFriend == 'BLOCKED') router.push('/404');
+              const userData: User = res;
               (userData.me = false), setUser(userData);
             } else {
               router.push('/404');

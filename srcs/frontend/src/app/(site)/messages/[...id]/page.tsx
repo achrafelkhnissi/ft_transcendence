@@ -238,6 +238,7 @@ const Home = ({ params }: { params: { id: number } }) => {
           case 'unmute':
           case 'join':
           case 'unban': {
+            console.log('muted ', res.data);
             if (res.data.type != 'DM') uppdateConversations(res.data);
             break;
           }

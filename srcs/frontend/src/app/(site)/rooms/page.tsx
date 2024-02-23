@@ -16,10 +16,8 @@ const Home = () => {
 
   useEffect(() => {
     getAllRooms().then((res) => {
-      console.log('data', res.data);
       if (res) {
-        const { data } = res;
-        setChannels(data);
+        setChannels(res);
       }
     });
   }, []);
