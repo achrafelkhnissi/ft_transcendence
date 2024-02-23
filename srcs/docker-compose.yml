@@ -28,7 +28,7 @@ services:
       args:
         - NODE_ENV=${NODE_ENV}
       target: dev
-    command: "npm run start:prod"
+    command: "npm run start:prod" # remove this when NODE_ENV=development
     container_name: backend
     restart: always
     environment:
