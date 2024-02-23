@@ -24,30 +24,33 @@ const Home = ({ params }: { params: { name: string } }) => {
   useEffect(() => {
     getCurrentUser().then((res) => {
       if (!res) router.push('/dashboard');
-      const { data } = res;
-      setCurrentUserId(data.id);
-      if (params.name == 'me' || data.username == params.name) {
-        const userData: User = data;
-        userData.me = true;
-        setUser(userData);
-      } else if (
-        data.blockedUsers.some(
-          (user: BlockedProps) =>
-            user.sender.username == params.name ||
-            user.receiver.username == params.name,
-        )
-      ) {
-        router.push('/404');
-      } else {
-        getUser(params.name).then((res) => {
-          if (res) {
-            if (data.isFriend == 'BLOCKED') router.push('/404');
-            const userData: User = data;
-            (userData.me = false), setUser(userData);
-          } else {
-            router.push('/404');
-          }
-        });
+      else {
+        const { data } = res;
+        setCurrentUserId(data.id);
+        if (params.name == 'me' || data.username == params.name) {
+          const userData: User = data;
+          userData.me = true;
+          setUser(userData);
+        } else if (
+          data.blockedUsers.some(
+            (user: BlockedProps) =>
+              user.sender.username == params.name ||
+              user.receiver.username == params.name,
+          )
+        ) {
+          router.push('/404');
+        } else {
+          getUser(params.name).then((res) => {
+            if (res) {
+              const { data } = res;
+              if (data.isFriend == 'BLOCKED') router.push('/404');
+              const userData: User = data;
+              (userData.me = false), setUser(userData);
+            } else {
+              router.push('/404');
+            }
+          });
+        }
       }
     });
   }, [params.name]);

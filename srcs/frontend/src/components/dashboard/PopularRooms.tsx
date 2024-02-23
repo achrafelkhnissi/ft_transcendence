@@ -18,7 +18,6 @@ const PopularRooms = () => {
 
   useEffect(() => {
     getPoularRooms().then((res) => {
-      console.log('data', res.data);
       if (res) {
         const { data } = res;
         setChannels(data);

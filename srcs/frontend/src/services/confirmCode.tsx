@@ -11,7 +11,9 @@ const confirmCode = async (code: string, phoneNumber: string | null) => {
     code,
     phoneNumber,
   });
-  if (response.data.status === 'error') {
+  if (!response) 
+    return 0;
+  if (response?.data.status === 'error') {
     toast.error('Wrong verification code. Please check and try again.');
     return 0;
   } else {

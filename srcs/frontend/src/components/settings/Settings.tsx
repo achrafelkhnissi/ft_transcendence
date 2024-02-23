@@ -70,29 +70,31 @@ const Settings = () => {
 
   useEffect(() => {
     getCurrentUser().then((res) => {
-      const ret: Data = res.data;
-      setData(ret);
-      setNewData(ret);
-      setData((prev) => {
-        return {
-          ...prev,
-          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
-        };
-      });
-      setNewData((prev) => {
-        return {
-          ...prev,
-          phoneNumber: '',
-          avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
-        };
-      });
+      if (res) {
+        const ret: Data = res.data;
+        setData(ret);
+        setNewData(ret);
+        setData((prev) => {
+          return {
+            ...prev,
+            avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
+          };
+        });
+        setNewData((prev) => {
+          return {
+            ...prev,
+            phoneNumber: '',
+            avatar: process.env.BACKEND + `/api/users/${prev.id}/avatar`,
+          };
+        });
+      }
     });
 
     getAllUsers().then((res) => {
       res && setUsers(res.data);
     });
 
-    getAllNumberss().then((res) =>  res && setNumbers(res.data));
+    getAllNumberss().then((res) => res && setNumbers(res.data));
   }, []);
 
   const isValidFile = (file: File) => {
