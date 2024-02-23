@@ -64,6 +64,11 @@ services:
     build:
       context: ./frontend/
       dockerfile: Dockerfile
+      args:
+        - BACKEND=${BACKEND}
+        - PORT=${NEXT_PORT}
+        - HOSTNAME=${DOMAIN_NAME}
+      # target: dev
     container_name: frontend
     restart: always
     ports:
@@ -74,10 +79,10 @@ services:
       - DOMAIN_NAME=${DOMAIN_NAME}
     networks:
       - frontend_net
-    # depends_on:
-    #   - backend
     # volumes:
     #   - ./frontend:/app # for hot reloading
+    # depends_on:
+    #   - backend
 
 volumes:
   db-data:

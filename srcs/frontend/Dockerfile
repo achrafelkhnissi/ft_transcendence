@@ -1,84 +1,61 @@
-
-FROM node:20-alpine
-
-WORKDIR /app
-
-RUN chown -R node:node /app
-
-USER node
-
-COPY --chown=node:node . .
-
-RUN npm install
-
-EXPOSE 3000
-
-CMD ["npm", "run", "dev"]
-
 #
 # 🧑‍💻 Development
 #
-# FROM node:21-alpine as dev
+FROM node:20-alpine as dev
 
-# ARG BACKEND
-# ENV BACKEND $BACKEND
+LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
-# WORKDIR /app
+RUN apk add --no-cache libc6-compat
 
-# RUN apk add --no-cache curl
+WORKDIR /app
 
-# RUN chown -R node:node /app
+COPY package*.json ./
 
-# COPY --chown=node:node . .
+RUN npm install --verbose
 
-# EXPOSE 3000
+# 
+# ⚙️ Build
+#
+FROM node:20 AS build
 
-# USER node
+ENV NODE_ENV production
 
-# # TODO: To be tested
-# ENTRYPOINT [ "sh", "-c", "scripts/wait-backend.sh $BACKEND", "--" ]
-# CMD [ "npm", "run", "start:dev" ]
+WORKDIR /app
 
-# ---
+COPY --from=dev /app/node_modules ./node_modules
+COPY . .
 
-# FROM node:20 AS dev
+RUN npm run build
 
-# ARG NODE_ENV
-# ENV NODE_ENV development
+#
+# 🚀 Production
+#
+FROM node:20-alpine AS prod
 
-# WORKDIR /app
+ARG BACKEND
+ARG PORT
+ARG HOSTNAME
+ENV BACKEND $BACKEND
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV HOSTNAME $HOSTNAME
+ENV PORT ${PORT:-1337}
 
-# RUN chown -R node:node /app
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-# COPY  --chown=node:node . .
+WORKDIR /app
 
-# USER node
+COPY --from=build /app/public ./public
 
-# RUN npm install
+RUN mkdir .next
+RUN chown -R nextjs:nodejs /app/.next
 
-# # Stage 2: Build
-# FROM node:20 AS build
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# ARG BACKEND
-# ENV BACKEND $BACKEND
+USER nextjs
 
-# WORKDIR /app
+EXPOSE 1337
 
-# COPY --from=dev /app/node_modules ./node_modules
-# COPY src ./src
-# COPY public ./public
-# COPY package.json next.config.js tsconfig.json ./
-
-# RUN npm run build
-
-# # Stage 3: Production
-# FROM node:20-alpine AS prod
-
-# WORKDIR /app
-
-# COPY --from=build /app/.next ./.next
-# COPY --from=build /app/node_modules ./node_modules
-# COPY --from=build /app/package.json ./package.json
-# COPY --from=build /app/public ./public
-
-# CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]
