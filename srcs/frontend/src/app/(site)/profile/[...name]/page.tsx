@@ -24,13 +24,14 @@ const Home = ({ params }: { params: { name: string } }) => {
   useEffect(() => {
     getCurrentUser().then((res) => {
       if (!res) router.push('/dashboard');
-      setCurrentUserId(res.id);
-      if (params.name == 'me' || res.username == params.name) {
-        const userData: User = res;
+      const { data } = res;
+      setCurrentUserId(data.id);
+      if (params.name == 'me' || data.username == params.name) {
+        const userData: User = data;
         userData.me = true;
         setUser(userData);
       } else if (
-        res.blockedUsers.some(
+        data.blockedUsers.some(
           (user: BlockedProps) =>
             user.sender.username == params.name ||
             user.receiver.username == params.name,
@@ -40,8 +41,8 @@ const Home = ({ params }: { params: { name: string } }) => {
       } else {
         getUser(params.name).then((res) => {
           if (res) {
-            if (res.isFriend == 'BLOCKED') router.push('/404');
-            const userData: User = res;
+            if (data.isFriend == 'BLOCKED') router.push('/404');
+            const userData: User = data;
             (userData.me = false), setUser(userData);
           } else {
             router.push('/404');

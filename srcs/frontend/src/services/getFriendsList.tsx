@@ -1,12 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getFriendsList(id: number) {
-  const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/friends?id=${id}`,
-    { withCredentials: true },
-  );
-
-  return data;
+  const response = axiosInstance.get(`/api/users/friends?id=${id}`);
+  return response;
 }
 
 export default getFriendsList;

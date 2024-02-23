@@ -1,12 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getAllNumberss() {
-  const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/phoneNumbers`,
-    { withCredentials: true },
-  );
-
-  return data;
+  const response = axiosInstance.get(`/api/users/phoneNumbers`);
+  return response;
 }
 
 export default getAllNumberss;

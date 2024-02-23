@@ -1,17 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getAllRooms() {
-    try{
-        const { data } = await axios.get(process.env.BACKEND + `/api/users/chat`, {
-          withCredentials: true,
-        });
-        return data;
-    }
-    catch (error) {
-        console.log('error getting all rooms', error);
-        return null;
-    }
-
+  const response = axiosInstance.get(`/api/users/chat`);
+  return response;
 }
 
 export default getAllRooms;

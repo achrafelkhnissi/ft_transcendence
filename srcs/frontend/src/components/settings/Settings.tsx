@@ -70,7 +70,7 @@ const Settings = () => {
 
   useEffect(() => {
     getCurrentUser().then((res) => {
-      const ret: Data = res;
+      const ret: Data = res.data;
       setData(ret);
       setNewData(ret);
       setData((prev) => {
@@ -89,10 +89,10 @@ const Settings = () => {
     });
 
     getAllUsers().then((res) => {
-      setUsers(res);
+      res && setUsers(res.data);
     });
 
-    getAllNumberss().then((res) => setNumbers(res));
+    getAllNumberss().then((res) =>  res && setNumbers(res.data));
   }, []);
 
   const isValidFile = (file: File) => {

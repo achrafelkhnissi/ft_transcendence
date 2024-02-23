@@ -1,29 +1,13 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getConversations(id?: number) {
-  try {
-    if (!id) {
-      const { data } = await axios.get(
-        process.env.BACKEND + `/api/users/chat/me`,
-        {
-          withCredentials: true,
-        },
-      );
-      return data;
-    } else {
-      const { data } = await axios.get(
-        process.env.BACKEND + `/api/users/chat/${id}`,
-        {
-          withCredentials: true,
-        },
-      );
-      console.log({ data });
-      return data;
-    }
-  } catch (error) {
-    console.log('error getting conversations of the user', error);
-    return null;
+  let response;
+  if (!id) {
+    response = axiosInstance.get(`/api/users/chat/me`);
+  } else {
+    response = axiosInstance.get(`/api/users/chat/${id}`);
   }
+  return response;
 }
 
 export default getConversations;

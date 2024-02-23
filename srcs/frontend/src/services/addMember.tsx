@@ -1,17 +1,11 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 const addMember = async (userId: number, channelId: number) => {
-  try {
-    const { data } = await axios.post(
-      `${process.env.BACKEND}/api/users/chat/${channelId}/participants/add`,
-      { userId: userId },
-      { withCredentials: true },
-    );
-    return data;
-  } catch (error) {
-    console.log('Error adding member:', error);
-    return null;
-  }
+  const response = axiosInstance.post(
+    `${process.env.BACKEND}/api/users/chat/${channelId}/participants/add`,
+    { userId: userId },
+  );
+  return response;
 };
 
 export default addMember;

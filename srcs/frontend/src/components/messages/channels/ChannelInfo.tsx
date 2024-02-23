@@ -49,19 +49,20 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
         if (res) {
+          const {data} = res;
           if (
-            channel.participants.every((obj) => obj.id != res.id) &&
-            channel.admins.every((obj) => obj.id != res.id) &&
-            channel.bannedUsers.every((user) => user.id != res.id) &&
-            channel.owner.id != res.id
+            channel.participants.every((obj) => obj.id != data.id) &&
+            channel.admins.every((obj) => obj.id != data.id) &&
+            channel.bannedUsers.every((user) => user.id != data.id) &&
+            channel.owner.id != data.id
           ) {
-            addNewMember(res.id, channel.id).then((res) => {
+            addNewMember(data.id, channel.id).then((res) => {
               if (res) {
                 // updateConversations(res);
               }
             });
             setMemeberError(0);
-          } else if (channel.bannedUsers.some((user) => user.id == res.id)) {
+          } else if (channel.bannedUsers.some((user) => user.id == data.id)) {
             setMemeberError(4);
           } else {
             setMemeberError(1);

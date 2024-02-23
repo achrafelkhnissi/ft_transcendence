@@ -1,24 +1,14 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
-const kickUser = async (
-  userId: number | undefined,
-  channelId: number,
-) => {
+const kickUser = async (userId: number | undefined, channelId: number) => {
   const requestBody = {
     userId: userId,
   };
 
-  try {
-    const { data } = await axios.delete(
-      process.env.BACKEND +
-        `/api/users/chat/${channelId}/remove`,
-      { data: requestBody, withCredentials: true },
-    );
-    return data;
-  } catch (error) {
-    console.log('Error kicking user: ', error);
-    return null;
-  }
+  const response =  axiosInstance.delete(`/api/users/chat/${channelId}/remove`, {
+    data: requestBody,
+  });
+  return response;
 };
 
 export default kickUser;

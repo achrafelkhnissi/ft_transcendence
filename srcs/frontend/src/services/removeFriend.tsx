@@ -1,16 +1,8 @@
-import axios from 'axios';
+import axiosInstance from 'axios';
 
 const removeFriend = async (id: number | null) => {
-  try{
-    await axios.get(process.env.BACKEND + `/api/users/friends/remove?id=${id}`, {
-      withCredentials: true,
-    });
-    return true;
-  }
-  catch (e) {
-    console.log('error removing friend ',e);
-    return false;
-  }
+  const response = axiosInstance.get(`/api/users/friends/remove?id=${id}`);
+  return response;
 };
 
 export default removeFriend;

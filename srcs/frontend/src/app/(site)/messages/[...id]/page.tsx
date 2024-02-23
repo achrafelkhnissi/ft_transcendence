@@ -67,7 +67,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       setConversations((prev) => {
         return {
           ...prev,
-          [id]: res,
+          [id]: res.data,
         };
       });
       setConversationOrder((prev) => {
@@ -145,7 +145,7 @@ const Home = ({ params }: { params: { id: number } }) => {
   //  initialize conversations
   useEffect(() => {
     const initializeConversations = (initialConversations: Conversation[]) => {
-      const sortedConversations = initialConversations.sort(
+      const sortedConversations = initialConversations?.sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       );
@@ -168,11 +168,11 @@ const Home = ({ params }: { params: { id: number } }) => {
     }
 
     getConversations().then((res) => {
-      initializeConversations(res);
+      res && initializeConversations(res.data);
     });
     getAllUsersStatus().then((res) => {
       if (res) {
-        const userStatuses: User[] = res;
+        const userStatuses: User[] = res.data;
         const userStatusesMap: UserStatuses = userStatuses.reduce<UserStatuses>(
           (acc, user) => {
             user.id && (acc[user.id] = user.status);
@@ -184,7 +184,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       }
     });
     getCurrentUser().then((res) => {
-      if (res) setCurrentUser(res);
+      if (res) setCurrentUser(res.data);
     });
   }, []);
 

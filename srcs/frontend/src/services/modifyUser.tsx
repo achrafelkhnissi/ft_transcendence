@@ -1,9 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 const modifyUser = (id: number, data: any) => {
-  axios.patch(process.env.BACKEND + `/api/users/${id}`, data, {
-    withCredentials: true,
-  });
+  const response = axiosInstance.patch(`/api/users/${id}`, data);
+  return response;
 };
 
 export default modifyUser;

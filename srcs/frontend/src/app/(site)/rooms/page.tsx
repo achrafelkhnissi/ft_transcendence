@@ -15,9 +15,10 @@ const Home = () => {
   const [channels, setChannels] = useState<PopularRoomstype[]>([]);
 
   useEffect(() => {
-    getAllRooms().then((data) => {
-      console.log('data', data);
-      if (data) {
+    getAllRooms().then((res) => {
+      console.log('data', res.data);
+      if (res) {
+        const { data } = res;
         setChannels(data);
       }
     });

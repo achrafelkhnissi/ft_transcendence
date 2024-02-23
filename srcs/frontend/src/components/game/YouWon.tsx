@@ -13,7 +13,7 @@ const YouWon: React.FC<props> = ({ user }) => {
       flex flex-col gap-8 justify-center  shadow-lg"
     >
         <div className="self-center">
-        <Crown />
+        <Crown color={''} width={''} height={''} />
         </div>
       <div className="flex flex-col gap-4 self-center">
         <ProfileAvatar

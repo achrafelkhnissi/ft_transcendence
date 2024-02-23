@@ -1,16 +1,8 @@
-import axios from "axios";
+import axiosInstance from './axios';
 
 const markMessageAsRead = async (messageId: number) => {
-    console.log('marking message as read', messageId)
-    try{
-        const {data} = await axios.post(process.env.BACKEND + `/api/message/${messageId}/read`, 
-        {}, {withCredentials: true});
-        return data;
-    }
-    catch(e){
-        console.log('error marking message as read', e);
-        return null;
-    }
-}
+  const response = axiosInstance.post(`/api/message/${messageId}/read`, {});
+  return response;
+};
 
-export default markMessageAsRead
+export default markMessageAsRead;

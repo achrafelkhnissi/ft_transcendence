@@ -85,7 +85,10 @@ const CreateChannel: React.FC<props> = ({
 
   useEffect(() => {
     getAllChannelNames().then((res) => {
-      if (res) setChannelNames(res);
+      if (res) {
+        const data: string[] = res.data;
+        setChannelNames(data);
+      }
     });
   }, []);
 
@@ -167,13 +170,14 @@ const CreateChannel: React.FC<props> = ({
     if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
         if (res) {
-          if (newChannel.participants.every((id) => id != res.id)) {
+          const user : User = res.data;
+          if (newChannel.participants.every((id) => id != user.id)) {
             setMemeberError(0);
             setNewChannel((prev) => {
               return {
                 ...prev,
-                participants: [...prev.participants, res.id],
-                participantsInfos: [...prev.participantsInfos, res],
+                participants: [...prev.participants, user.id? user.id : 0],
+                participantsInfos: [...prev.participantsInfos, user],
               };
             });
           } else {
@@ -223,13 +227,16 @@ const CreateChannel: React.FC<props> = ({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let img : string | undefined = newChannel.image;
+    let img: string | undefined = newChannel.image;
 
     let hashedpass = '';
 
     if (newChannel.name != '') {
       if (newChannel.imageFile) {
-        img = await uploadChannelImage(newChannel.imageFile);
+        const res = await uploadChannelImage(newChannel.imageFile);
+        if (res) {
+          img = res.data;
+        }
       }
       if (password != '') {
         try {
@@ -239,7 +246,7 @@ const CreateChannel: React.FC<props> = ({
           updateCreateChannelState(false);
         }
       }
-      
+
       createNewConv({
         type: newChannel.type,
         image: img,

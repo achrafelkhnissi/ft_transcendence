@@ -1,15 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getAllChannelNames() {
-  try {
-    const { data } = await axios.get(
-      process.env.BACKEND + `/api/users/chat/names`,
-      { withCredentials: true },
-    );
-    return data;
-  } catch {
-    return null;
-  }
+  const response = axiosInstance.get(`/api/users/chat/names`);
+  return response;
 }
 
 export default getAllChannelNames;
