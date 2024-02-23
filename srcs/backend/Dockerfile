@@ -5,8 +5,8 @@ FROM node:20-alpine as dev
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
-ARG NODE_ENV
-ENV NODE_ENV ${NODE_ENV:-development}
+# ARG NODE_ENV
+# ENV NODE_ENV ${NODE_ENV:-development}
 
 WORKDIR /app
 
@@ -14,13 +14,14 @@ RUN apk update && apk upgrade && \
     apk add --no-cache postgresql-client && \
     rm -rf /var/cache/apk/* && \
     npm install -g npm@10.4.0 && \
+    # npm install -g @nestjs/cli # Needed in prod to run `nest build` and compose target: dev
     chown -R node:node /app
 
 USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install
+RUN npm install && npm cache clean --force
 
 COPY --chown=node:node . .
 
