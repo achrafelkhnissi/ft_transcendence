@@ -2,8 +2,6 @@
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
-export PATH="/app/node_modules/.bin:$PATH"
-
 until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER
 do
   echo "$(date) - waiting for database $POSTGRES_HOST:$POSTGRES_PORT..."
@@ -17,7 +15,6 @@ if [ "$NODE_ENV" = "production" ]; then
   npx prisma generate
   npm run build
 else
-  ls -la
   echo "Running in development mode"
   npx prisma db push
 fi
