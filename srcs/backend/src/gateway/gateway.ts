@@ -107,7 +107,6 @@ export class Gateway
 
     console.log(`${user.username} disconnected`);
 
-
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
     // and we can set the user's status to offline
@@ -136,49 +135,57 @@ export class Gateway
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
     console.log(`User ${user.username} joined the queue!`);
-    this.gameService.addUser({socket: client,user: user});//mybe this was the unhandled error
+    this.gameService.addUser({ socket: client, user: user }); //mybe this was the unhandled error
     this.gameService.readyForGame();
   }
-  
+
   @SubscribeMessage('game-invite')
   InviteToGame(client: Socket, payload: { inviterId: number }): void {
     const user = client.request.user;
-    const gameRoom = this.gameService.createGameRoomName(payload.inviterId, user.id);  
-    this.server.to(`user-${payload.inviterId}`).emit('game-invite', {room: gameRoom, userId:user.id, username: user.username});
-    console.log(gameRoom)
+    const gameRoom = this.gameService.createGameRoomName(
+      payload.inviterId,
+      user.id,
+    );
+    this.server
+      .to(`user-${payload.inviterId}`)
+      .emit('game-invite', {
+        room: gameRoom,
+        userId: user.id,
+        username: user.username,
+      });
+    console.log(gameRoom);
     // this.gameService.inviteGame()
   }
 
   @SubscribeMessage('inviteResponse')
-  InviteResponce(client: Socket, payload: {response: boolean, gameRoom : string, inviter : number}){
+  InviteResponce(
+    client: Socket,
+    payload: { response: boolean; gameRoom: string; inviter: number },
+  ) {
     const user = client.request.user;
-    console.log('sent response to ', payload.inviter)
-    this.server.to(`user-${payload.inviter}`).emit('inviteResponse', {response: payload.response, room: payload.gameRoom});
-    // if (payload.response){
-    //   const sockets = this.server.sockets.adapter.rooms.get(
-    //     payload.gameRoom
-    //   );
-    //   sockets.forEach((socketId) => {
-    //     this.gateway.server.sockets.sockets
-    //       .get(socketId)
-    //       .join(blockedUsersRoomName);
-    //   });
-    // }
-
+    console.log('sent response to ', payload.inviter);
+    this.server
+      .to(`user-${payload.inviter}`)
+      .emit('inviteResponse', {
+        response: payload.response,
+        room: payload.gameRoom,
+      });
   }
 
   @SubscribeMessage('joinRoom')
-  JoingameRoom(client: Socket, gameRoom : string){
+  JoingameRoom(client: Socket, gameRoom: string) {
     const user = client.request.user;
-  if (!this.gameService.activeRoom[gameRoom]) {
-    this.gameService.activeRoom[gameRoom] = [];
-  }
-  this.gameService.activeRoom[gameRoom].push({ socket: client, user: user });
+    if (!this.gameService.activeRoom[gameRoom]) {
+      this.gameService.activeRoom[gameRoom] = [];
+    }
+    this.gameService.activeRoom[gameRoom].push({ socket: client, user: user });
 
-  if (this.gameService.activeRoom[gameRoom].length === 2) {
-    const [player1, player2] = this.gameService.activeRoom[gameRoom];
-    this.gameService.inviteGame(player1, player2);
+    if (this.gameService.activeRoom[gameRoom].length === 2) {
+      const [player1, player2] = this.gameService.activeRoom[gameRoom];
+      this.gameService.activeRoom[gameRoom] = this.gameService.activeRoom[
+        gameRoom
+      ].filter((player) => player !== player1 && player !== player2);
+      this.gameService.inviteGame(player1, player2);
+    }
   }
-  }
-
 }

@@ -61,9 +61,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   });
 
   const handlePlayClick = () => {
+    console.log("play clicked");
     setIsWaiting(true);
     // await new Promise((resolve) => setTimeout(resolve, 3000));
-    if (params)
+    if (params.gameRoom !== "0")
       {
         console.log('hanaaa froooom');
         socket?.emit('joinRoom',params.gameRoom);
