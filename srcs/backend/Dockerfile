@@ -21,7 +21,7 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install && npm cache clean --force
+RUN npm install
 
 COPY --chown=node:node . .
 
