@@ -1,8 +1,8 @@
 import axiosInstance from './axios';
 
 async function acceptFirendRequest(id: number) {
-  const response = await axiosInstance.get(`/api/users/friends/requests/accept?id=${id}`);
-  return response;
+  const {data} = await axiosInstance.get(`/api/users/friends/requests/accept?id=${id}`);
+  return data;
 }
 
 export default acceptFirendRequest;

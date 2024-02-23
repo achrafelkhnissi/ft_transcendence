@@ -1,10 +1,10 @@
 import axiosInstance from './axios';
 
 async function deleteNotification(notificationId: number) {
-  const response = axiosInstance.delete(
-    process.env.BACKEND + `/api/users/notifications/${notificationId}`,
+  const {data} =  await axiosInstance.delete(
+     `/api/users/notifications/${notificationId}`,
   );
-  return response;
+  return data;
 }
 
 export default deleteNotification;

@@ -1,8 +1,8 @@
 import axiosInstance from './axios';
 
 async function getAllNumberss() {
-  const response = axiosInstance.get(`/api/users/phoneNumbers`);
-  return response;
+  const {data} = await axiosInstance.get(`/api/users/phoneNumbers`);
+  return data;
 }
 
 export default getAllNumberss;

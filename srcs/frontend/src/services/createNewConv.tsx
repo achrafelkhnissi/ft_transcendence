@@ -9,8 +9,8 @@ interface Props {
 }
 
 const createNewConv = async (convo: Props) => {
-  const response = axiosInstance.post('/api/users/chat', convo);
-  return response;
+  const {data} =  await axiosInstance.post('/api/users/chat', convo);
+  return data;
 };
 
 export default createNewConv;

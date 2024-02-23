@@ -8,12 +8,12 @@ const uploadAvatar = async (newAvatar: File | null) => {
 
   formData.append('image', newAvatar);
 
-  const response = axiosInstance.post('/api/upload/avatar', formData, {
+  const {data} = await axiosInstance.post('/api/upload/avatar', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
-  return response;
+  return data;
 };
 
 export default uploadAvatar;

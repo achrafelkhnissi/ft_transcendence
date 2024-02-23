@@ -47,7 +47,7 @@ const Game = (props: any) => {
         setGame(PhaserGame);
         return () => {
           if (PhaserGame){
-            console.log('game distroyed');
+            console.log('game destroyed');
             PhaserGame.destroy(true);
           }
         };

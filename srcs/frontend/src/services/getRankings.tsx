@@ -1,8 +1,8 @@
 import axiosInstance from './axios';
 
 async function getRankings() {
-  const response = axiosInstance.get(`/api/users/ranking`);
-  return response;
+  const {data} =  await axiosInstance.get(`/api/users/ranking`);
+  return data;
 }
 
 export default getRankings;

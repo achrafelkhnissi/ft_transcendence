@@ -1,10 +1,10 @@
 import axiosInstance from './axios';
 
 async function declineFirendRequest(id: number) {
-  const response = axiosInstance.get(
-    process.env.BACKEND + `/api/users/friends/requests/decline?id=${id}`,
+  const {data} = await axiosInstance.get(
+  `/api/users/friends/requests/decline?id=${id}`,
   );
-  return response;
+  return data;
 }
 
 export default declineFirendRequest;

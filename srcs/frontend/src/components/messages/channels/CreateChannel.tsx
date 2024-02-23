@@ -170,7 +170,7 @@ const CreateChannel: React.FC<props> = ({
     if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
         if (res) {
-          const user : User = res.data;
+          const user : User = res;
           if (newChannel.participants.every((id) => id != user.id)) {
             setMemeberError(0);
             setNewChannel((prev) => {

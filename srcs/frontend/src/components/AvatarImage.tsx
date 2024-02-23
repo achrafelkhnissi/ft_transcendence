@@ -6,7 +6,7 @@ const AvatarImage = () => {
   const [src, setSrc] = useState<string>('');
   useEffect(() => {
     getCurrentUser().then((res) => {
-      if (res) setSrc(process.env.BACKEND + `/api/users/${res.data.id}/avatar`);
+      if (res) setSrc(process.env.BACKEND + `/api/users/${res.id}/avatar`);
     });
   }, []);
 

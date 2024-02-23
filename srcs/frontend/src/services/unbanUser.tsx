@@ -1,10 +1,10 @@
 import axiosInstance from './axios';
 
 const unbanUser = async (userId: number | undefined, channelId: number) => {
-  const response = axiosInstance.post(`/api/users/chat/${channelId}/unban`, {
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/unban`, {
     userId: userId,
   });
-  return response;
+  return data;
 };
 
 export default unbanUser;

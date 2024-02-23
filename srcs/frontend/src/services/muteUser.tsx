@@ -5,11 +5,11 @@ const muteUser = async (
   channelId: number,
   muteDuration: string,
 ) => {
-  const response = axiosInstance.post(`/api/users/chat/${channelId}/mute`, {
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/mute`, {
     userId: userId,
     duration: muteDuration,
   });
-  return response;
+  return data;
 };
 
 export default muteUser;

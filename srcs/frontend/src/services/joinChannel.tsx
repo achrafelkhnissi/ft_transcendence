@@ -4,8 +4,8 @@ const joinChannel = async (
   channelId: number,
   payload: { password: string } | null,
 ) => {
-  const response = axiosInstance.post(`/api/users/chat/${channelId}/join`, payload);
-  return response;
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/join`, payload);
+  return data;
 };
 
 export default joinChannel;

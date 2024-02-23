@@ -5,10 +5,10 @@ const kickUser = async (userId: number | undefined, channelId: number) => {
     userId: userId,
   };
 
-  const response =  axiosInstance.delete(`/api/users/chat/${channelId}/remove`, {
+  const {data} = await axiosInstance.delete(`/api/users/chat/${channelId}/remove`, {
     data: requestBody,
   });
-  return response;
+  return data;
 };
 
 export default kickUser;

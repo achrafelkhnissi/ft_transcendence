@@ -1,13 +1,13 @@
 import axiosInstance from './axios';
 
 async function getConversations(id?: number) {
-  let response;
   if (!id) {
-    response = axiosInstance.get(`/api/users/chat/me`);
+    const {data} = await axiosInstance.get(`/api/users/chat/me`);
+    return data;
   } else {
-    response = axiosInstance.get(`/api/users/chat/${id}`);
+    const {data} = await axiosInstance.get(`/api/users/chat/${id}`);
+    return data;
   }
-  return response;
 }
 
 export default getConversations;

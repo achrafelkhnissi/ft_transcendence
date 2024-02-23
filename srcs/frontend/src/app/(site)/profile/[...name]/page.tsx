@@ -25,14 +25,13 @@ const Home = ({ params }: { params: { name: string } }) => {
     getCurrentUser().then((res) => {
       if (!res) router.push('/dashboard');
       else {
-        const { data } = res;
-        setCurrentUserId(data.id);
-        if (params.name == 'me' || data.username == params.name) {
-          const userData: User = data;
+        setCurrentUserId(res.id);
+        if (params.name == 'me' || res.username == params.name) {
+          const userData: User = res;
           userData.me = true;
           setUser(userData);
         } else if (
-          data.blockedUsers.some(
+          res.blockedUsers.some(
             (user: BlockedProps) =>
               user.sender.username == params.name ||
               user.receiver.username == params.name,

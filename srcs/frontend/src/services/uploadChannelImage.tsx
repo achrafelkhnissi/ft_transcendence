@@ -9,12 +9,12 @@ const uploadChannelImage = async (newImage: File | null) => {
 
     formData.append('image', newImage);
 
-    const response = axiosInstance.post('/api/upload/channel-avatar', formData, {
+    const {data} =  await axiosInstance.post('/api/upload/channel-avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response;
+    return data;
 };
 
 export default uploadChannelImage;

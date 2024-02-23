@@ -1,8 +1,8 @@
 import axiosInstance from './axios';
 
 async function getNotifications() {
-  const response = axiosInstance.get(`/api/users/notifications`);
-  return response;
+  const {data} = await axiosInstance.get(`/api/users/notifications`);
+  return data;
 }
 
 export default getNotifications;

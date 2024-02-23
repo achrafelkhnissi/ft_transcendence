@@ -41,23 +41,24 @@ const Home = ({ params }: { params: { id: number } }) => {
           conversations[conversationId].messages.length - 1
         ];
       markMessageAsRead(message.id).then((res) => {
-        setConversations((prevConversations) => {
-          const updatedConversations = { ...prevConversations };
-          const conversation = updatedConversations[conversationId];
+        if (res)
+          setConversations((prevConversations) => {
+            const updatedConversations = { ...prevConversations };
+            const conversation = updatedConversations[conversationId];
 
-          if (conversation && conversation.messages.length > 0) {
-            const lastMessageIndex = conversation.messages.length - 1;
-            conversation.messages[lastMessageIndex] = {
-              ...conversation.messages[lastMessageIndex],
-              readBy: [
-                ...conversation.messages[lastMessageIndex].readBy,
-                currentUser?.id,
-              ],
-            };
-          }
+            if (conversation && conversation.messages.length > 0) {
+              const lastMessageIndex = conversation.messages.length - 1;
+              conversation.messages[lastMessageIndex] = {
+                ...conversation.messages[lastMessageIndex],
+                readBy: [
+                  ...conversation.messages[lastMessageIndex].readBy,
+                  currentUser?.id,
+                ],
+              };
+            }
 
-          return updatedConversations;
-        });
+            return updatedConversations;
+          });
       });
     }
   };
@@ -67,7 +68,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       setConversations((prev) => {
         return {
           ...prev,
-          [id]: res.data,
+          [id]: res,
         };
       });
       setConversationOrder((prev) => {
@@ -168,11 +169,11 @@ const Home = ({ params }: { params: { id: number } }) => {
     }
 
     getConversations().then((res) => {
-      res && initializeConversations(res.data);
+      res && initializeConversations(res);
     });
     getAllUsersStatus().then((res) => {
       if (res) {
-        const userStatuses: User[] = res.data;
+        const userStatuses: User[] = res;
         const userStatusesMap: UserStatuses = userStatuses.reduce<UserStatuses>(
           (acc, user) => {
             user.id && (acc[user.id] = user.status);
@@ -184,7 +185,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       }
     });
     getCurrentUser().then((res) => {
-      if (res) setCurrentUser(res.data);
+      if (res) setCurrentUser(res);
     });
   }, []);
 
@@ -218,15 +219,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     };
 
     if (socket) {
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-
-        socket.disconnect();
-
-        // window.location.href = '/';
-      });
-
       socket.on('onMessage', (message: Message) => {
         console.log('message', message);
         addMessageToConversation(message);

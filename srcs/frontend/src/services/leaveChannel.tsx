@@ -1,9 +1,9 @@
 import axiosInstance from './axios';
 
 const leaveChannel = async (channelId: number, userId: number | undefined) => {
-  const response = axiosInstance.post(`/api/users/chat/${channelId}/leave`, {
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/leave`, {
     userId: userId,
   });
-  return response;
+  return data;
 };
 export default leaveChannel;

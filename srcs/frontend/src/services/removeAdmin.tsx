@@ -5,10 +5,10 @@ const removeAdmin = async (userId: number | undefined, channelId: number) => {
     userId: userId,
   };
 
-  const response = axiosInstance.delete(`/api/users/chat/${channelId}/admins/remove`, {
+  const {data} = await axiosInstance.delete(`/api/users/chat/${channelId}/admins/remove`, {
     data: requestBody,
   });
-  return response;
+  return data;
 };
 
 export default removeAdmin;

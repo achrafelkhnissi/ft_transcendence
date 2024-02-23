@@ -1,11 +1,11 @@
 import axiosInstance from './axios';
 
 const addMember = async (userId: number, channelId: number) => {
-  const response = axiosInstance.post(
+  const {data} = await axiosInstance.post(
     `${process.env.BACKEND}/api/users/chat/${channelId}/participants/add`,
     { userId: userId },
   );
-  return response;
+  return data;
 };
 
 export default addMember;

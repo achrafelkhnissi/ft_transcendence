@@ -1,8 +1,8 @@
 import axiosInstance from './axios';
 
 const markMessageAsRead = async (messageId: number) => {
-  const response = axiosInstance.post(`/api/message/${messageId}/read`, {});
-  return response;
+  const {data} = await axiosInstance.post(`/api/message/${messageId}/read`, {});
+  return data;
 };
 
 export default markMessageAsRead;
