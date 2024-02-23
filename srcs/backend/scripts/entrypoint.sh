@@ -12,6 +12,7 @@ done
 
 if [ "$NODE_ENV" = "production" ]; then
   echo "Running in production mode"
+  npx prisma migrate dev --name init
   npx prisma generate
   npm run build
 else
