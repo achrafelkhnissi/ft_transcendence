@@ -5,6 +5,7 @@ import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { NotificationsService } from 'src/users/notifications/notifications.service';
+import { Gateway } from 'src/gateway/gateway';
 
 interface Player {
   // id: string;

@@ -188,4 +188,22 @@ export class Gateway
       this.gameService.inviteGame(player1, player2);
     }
   }
+
+  @SubscribeMessage('in game')
+  async onInGame(client: Socket) {
+    const user = client.request.user;
+    const userRoomName = `user-${user.id}`;
+
+    const roomCount = this.roomCounts.get(userRoomName) || 0;
+    const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
+    rooms.forEach(async (room) => {
+      client.join(room);
+      if (roomCount === 0) {
+        this.server.to(room).emit('playing', {
+          userId: user.id,
+          status: Status.PLAYING
+        });
+      }
+    });
+  }
 }
