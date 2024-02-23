@@ -5,6 +5,8 @@ FROM node:20-alpine as dev
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
+ENV NODE_ENV development
+
 WORKDIR /app
 
 RUN apk update && apk upgrade && \
