@@ -63,8 +63,7 @@ ENV NODE_ENV production
 
 COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
-
-RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
+COPY --chown=node:node --from=build /app/uploads uploads
 
 USER node
 
