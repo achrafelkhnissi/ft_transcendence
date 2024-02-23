@@ -1,5 +1,8 @@
 version: "3.8"
 
+# Note:
+# - Uncomment the volumes and volumes in the backend and frontend services for hot reloading
+
 services:
   db:
     image: postgres:16-alpine
@@ -11,7 +14,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      # - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -23,6 +25,10 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV}
+      target: dev
+    command: "npm run start:prod"
     container_name: backend
     restart: always
     environment:
@@ -43,13 +49,13 @@ services:
     ports:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
-    volumes:
-      - ./backend:/app
     networks:
       - database_net
       - frontend_net
     depends_on:
       - db
+    # volumes:
+    #   - ./backend:/app
 
   frontend:
     build:
@@ -63,19 +69,12 @@ services:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
       - DOMAIN_NAME=${DOMAIN_NAME}
-    volumes:
-      - ./frontend:/app # for hot reloading
     networks:
       - frontend_net
-    depends_on:
-      - backend
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        # npm run dev
-        npm run build && npm run start
+    # depends_on:
+    #   - backend
+    # volumes:
+    #   - ./frontend:/app # for hot reloading
 
 volumes:
   db-data:
