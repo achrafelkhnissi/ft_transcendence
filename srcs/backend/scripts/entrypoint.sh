@@ -17,6 +17,7 @@ if [ "$NODE_ENV" = "production" ]; then
   npm run build
 else
   echo "Running in development mode"
+  npm install # For hot reloading to work
   npx prisma db push
 fi
 
