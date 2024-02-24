@@ -25,6 +25,9 @@ services:
     build:
       context: ./backend/
       dockerfile: Dockerfile
+      args:
+        - POSTGRES_HOST=${POSTGRES_HOST}
+        - POSTGRES_PORT=${POSTGRES_PORT}
     #   target: dev # Used with command to run dev environment
     # command: npm run start:dev
     container_name: backend

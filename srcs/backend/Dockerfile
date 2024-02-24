@@ -17,7 +17,7 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install --verbose 
+RUN npm install --verbose prisma @nestjs/cli 
 
 COPY --chown=node:node . .
 
@@ -50,17 +50,27 @@ USER node
 #
 FROM node:20-alpine as prod
 
-WORKDIR /app
+ARG POSTGRES_HOST
+ARG POSTGRES_PORT
+ENV POSTGRES_HOST $POSTGRES_HOST
+ENV POSTGRES_PORT $POSTGRES_PORT
+ENV NODE_ENV production
 
 # Add glibc compatibility for alpine
 RUN apk add --no-cache libc6-compat
 
-ENV NODE_ENV production
+WORKDIR /app
 
 COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
 COPY --chown=node:node --from=build /app/uploads uploads
+COPY --chown=node:node --from=build /app/prisma prisma
 
 USER node
 
-CMD until nc -z db 5432; do echo "Waiting for database connection..."; sleep 2; done && node dist/main.js
+CMD until nc -z $POSTGRES_HOST $POSTGRES_PORT; \
+  do echo "Waiting for database connection..."; \
+  sleep 2; \
+  done && \ 
+  npx prisma db push && \
+  node dist/main.js
