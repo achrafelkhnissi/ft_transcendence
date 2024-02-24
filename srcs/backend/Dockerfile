@@ -9,17 +9,15 @@ ENV NODE_ENV development
 
 WORKDIR /app
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache postgresql-client && \
+RUN apk add --no-cache postgresql-client && \
     rm -rf /var/cache/apk/* && \
-    npm install -g npm@10.4.0 && \
     chown -R node:node /app
 
 USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install
+RUN npm install --verbose 
 
 COPY --chown=node:node . .
 
@@ -34,8 +32,6 @@ CMD [ "npm", "run", "start:dev" ]
 FROM node:20-alpine as build
 
 WORKDIR /app
-RUN apk add --no-cache libc6-compat && \
-    npm install -g npm@10.4.0
 
 ENV NODE_ENV production
 
@@ -45,7 +41,7 @@ COPY --chown=node:node . .
 RUN npx prisma generate
 RUN npm run build
 
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --verbose
 
 USER node
 
@@ -67,4 +63,4 @@ COPY --chown=node:node --from=build /app/uploads uploads
 
 USER node
 
-CMD [ "node", "dist/main.js" ]
+CMD until nc -z db 5432; do echo "Waiting for database connection..."; sleep 2; done && node dist/main.js
