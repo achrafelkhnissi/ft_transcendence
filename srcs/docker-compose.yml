@@ -26,6 +26,9 @@ services:
       context: ./backend/
       dockerfile: Dockerfile
     #   target: dev # Used with command to run dev environment
+    #   args:
+    #     - NODE_ENV=${NODE_ENV}
+    # command: npm run start:prod
     container_name: backend
     restart: always
     environment:
@@ -53,12 +56,6 @@ services:
       - db
     # volumes:
     #   - ./backend:/app
-    # command:
-    #   - /bin/sh
-    #   - -c
-    #   - |
-    #     npm install
-    #     npm run start:dev
 
   frontend:
     build:
