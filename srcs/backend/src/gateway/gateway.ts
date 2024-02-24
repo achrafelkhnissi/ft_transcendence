@@ -64,6 +64,8 @@ export class Gateway
       this.logger.error('Unauthorized');
       return 'unauthorized';
     }
+    //remove from the game
+    this.gameService.removeUserById(user.id);
 
     const userRoomName = `user-${user.id}`;
 
@@ -134,9 +136,8 @@ export class Gateway
   @SubscribeMessage('joinQueue')
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
-    console.log(`User ${user.username} joined the queue!`);
-    this.gameService.addUser({ socket: client, user: user }); //mybe this was the unhandled error
-    // this.gameService.readyForGame();
+    this.gameService.addUser({ socket: client, id: user.id });
+    this.gameService.readyForGame();
   }
 
   @SubscribeMessage('game-invite')
@@ -179,7 +180,7 @@ export class Gateway
     if (!this.gameService.activeRoom[gameRoom]) {
       this.gameService.activeRoom[gameRoom] = [];
     }
-    this.gameService.activeRoom[gameRoom].push({ socket: client, user: user });
+    this.gameService.activeRoom[gameRoom].push({socket: client, id: user.id});
 
     if (this.gameService.activeRoom[gameRoom].length === 2) {
       const [player1, player2] = this.gameService.activeRoom[gameRoom];

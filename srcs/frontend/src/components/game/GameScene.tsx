@@ -87,12 +87,12 @@ export default class GameScene extends Scene {
       this.ball.setY(data.y);
     });
 
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30, 30, '0', {
+    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',
     });
-    this.scoreText2 = this.add.text(this.CANVAS_WIDTH / 2 + 30, 30, '0', {
+    this.scoreText2 = this.add.text(3 * this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',

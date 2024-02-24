@@ -1,9 +1,5 @@
 'use client';
-import {
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useSocket } from '../../../contexts/socketContext';
 import Game from '../../../components/game/Game';
@@ -47,7 +43,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
   useEffect(() => {
     getCurrentUser().then((res) => {
-      if (res){
+      if (res) {
         console.log(res);
         setCurrentUser(res);
       }
@@ -57,19 +53,18 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   const [GameInfo, setgameInfo] = useState({
     position: '',
     OpponentId: 0,
-    OpponentUsername: '',
   });
 
   const handlePlayClick = () => {
-    console.log("play clicked");
+    console.log('play clicked');
     setIsWaiting(true);
     // await new Promise((resolve) => setTimeout(resolve, 3000));
-    if (params.gameRoom !== "0")
-      {
-        console.log('hanaaa froooom');
-        socket?.emit('joinRoom',params.gameRoom);
-      }
-    else{
+    console.log('params ', params);
+    console.log('params.gameRoom ', params.gameRoom);
+    if (params.gameRoom[0] !== '0') {
+      console.log('hanaaa froooom');
+      socket?.emit('joinRoom', params.gameRoom);
+    } else {
       socket?.emit('joinQueue');
       console.log('join Queue');
     }
@@ -85,7 +80,6 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       setgameInfo({
         position: opponentInfo.playerPosition,
         OpponentId: opponentInfo.opponentId,
-        OpponentUsername: opponentInfo.username,
       });
       setIsWaiting(false);
     },
@@ -99,6 +93,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       setPlayerNotFound(true);
     });
 
+    socket?.on('already in the game', ()=>{
+      setIsWaiting(false);
+    })
+
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
@@ -109,6 +107,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
         socket.off('Game is finished', () => {});
         socket.off('start game', handleOpponentFound);
         socket?.off('nta wahid', () => console.log('nta wahid'));
+        socket?.off('already in the game');
       }
     };
   }, [socket, handleOpponentFound]);
@@ -169,45 +168,57 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       )}
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
-        <div className="self-center bg-[#17194A] rounded-t-[2rem] shadow-2xl">
-          {GameInfo.position == "leftPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] gap-x-16'>
-          <img
-            src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
-            alt="player"
-            width={10}
-            height={10}
-            className="w-10 h-10 rounded-full self-center"
-          />
-          <img
-            src={
-              process.env.BACKEND + `/api/users/${GameInfo.OpponentId}/avatar`
-            }
-            alt="opponenet"
-            width={10}
-            height={10}
-            className="w-10 h-10 rounded-full self-center"
-          />
-          </div>)}
-          {GameInfo.position == "rightPaddle" && (<div className='flex justify-center h-20 rounded-t-[2rem] gap-x-16'>
-            <img
-              src={
-                process.env.BACKEND + `/api/users/${GameInfo.OpponentId}/avatar`
-              }
-              alt="opponenet"
-              width={10}
-              height={10}
-              className="w-10 h-10 rounded-full self-center"
-            />
-          <img
-            src={process.env.BACKEND + `/api/users/${currentUser.id}/avatar`}
-            alt="player"
-            width={10}
-            height={10}
-            className="w-10 h-10 rounded-full self-center"
-          />
-          </div>)}
+        <>
+          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 bg-[#17194A]">
+            {GameInfo.position == 'leftPaddle' && (
+              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
+                <img
+                  src={
+                    process.env.BACKEND + `/api/users/${currentUser.id}/avatar`
+                  }
+                  alt="player"
+                  width={10}
+                  height={10}
+                  className="w-20 h-20 rounded-full self-center"
+                />
+                <img
+                  src={
+                    process.env.BACKEND +
+                    `/api/users/${GameInfo.OpponentId}/avatar`
+                  }
+                  alt="opponent"
+                  width={10}
+                  height={10}
+                  className="w-20 h-20 rounded-full self-center"
+                />
+              </div>
+            )}
+            {GameInfo.position == 'rightPaddle' && (
+              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
+                <img
+                  src={
+                    process.env.BACKEND +
+                    `/api/users/${GameInfo.OpponentId}/avatar`
+                  }
+                  alt="opponent"
+                  width={10}
+                  height={10}
+                  className="w-20 h-20 rounded-full self-center"
+                />
+                <img
+                  src={
+                    process.env.BACKEND + `/api/users/${currentUser.id}/avatar`
+                  }
+                  alt="player"
+                  width={10}
+                  height={10}
+                  className="w-20 h-20 rounded-full self-center"
+                />
+              </div>
+            )}
+          </div>
           <Game position={GameInfo.position} color={bgColor} />
-        </div>
+        </>
       )}
     </div>
   );
