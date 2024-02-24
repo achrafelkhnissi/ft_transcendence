@@ -41,7 +41,7 @@ const ConversationHeader: React.FC<props> = ({
           alt="receiver"
           width={100}
           height={100}
-          className="w-10 h-10 rounded-full self-center"
+          className="w-10 h-10 rounded-full self-center object-cover"
         />
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
