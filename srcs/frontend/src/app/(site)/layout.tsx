@@ -6,6 +6,7 @@ import Sidebar from '../../components/layout/sidebar/Sidebar';
 import Header from '../../components/layout/header/Header';
 import { SocketProvider, useSocket } from '@/contexts/socketContext';
 import InvitePopup from '@/components/game/InvitePopUp';
+import { ToastContainer} from 'react-toastify';
 
 
 const inter = Inter({ subsets: ['latin'] });
@@ -33,7 +34,7 @@ export default function RootLayout({
         </div>
       </div>
         <InvitePopup/>
-
+        <ToastContainer/>
     </SocketProvider>
   );
 }

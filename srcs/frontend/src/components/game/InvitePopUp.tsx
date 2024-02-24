@@ -2,6 +2,11 @@ import { useSocket } from '@/contexts/socketContext';
 import getCurrentUser from '@/services/getCurrentUser';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+// Importing toastify module
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+ 
+// Import toastify css file
 
 const InvitePopup = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -15,7 +20,7 @@ const InvitePopup = () => {
 
   const refuseInvitation = () => {
     setShowPopup(false);
-    socket?.emit('inviteResponse', false);
+    socket?.emit('inviteResponse',  {response: false, gameRoom: inviter.room, inviter: inviter.userId});
   };
 
   const acceptInvitation = () => {
@@ -46,14 +51,20 @@ const InvitePopup = () => {
       if (data.response){
         router.push(`/play/${data.room}`);
       }
-    })//toaster if refused
+      else {
+        toast.info("Invitation refused");
+        console.log('invitation refused');
+      }
+    })
 
     socket?.on('invited not available',()=>{
+      toast.error("invited not available");
       console.log('invited not available');
     })
 
     return () => {
       socket?.off('game-invite');
+      socket?.off('invited not available');
     };
   }, [socket]);
 

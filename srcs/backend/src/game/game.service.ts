@@ -41,6 +41,7 @@ export class GameService {
             loserId: match.score.player1 < match.score.player2 ? id1 : id2,
             score: `${match.score.player1} - ${match.score.player2}`,
           });
+          match.isFinished = false;
           matchesToRemove.push(key);
         }
       }
