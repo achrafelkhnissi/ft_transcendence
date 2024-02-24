@@ -54,10 +54,7 @@ export class GameService {
   addUser(user: Player): void {
     const userId = user.id;
 
-    if (
-      !this.playerQueue.find((player) => player.id === userId) &&
-      !this.onlineGamers.find((player) => player.id === userId)
-    ) {
+    if (this.PlayerisAvailable(userId)) {
       this.playerQueue.push(user);
       console.log('Player added to the queue');
     } else {
@@ -221,5 +218,14 @@ export class GameService {
   createGameRoomName(playerId1: number, playerId2: number) {
     const sortedIds = [playerId1, playerId2].sort();
     return `room-${sortedIds[0]}-${sortedIds[1]}`;
+  }
+
+  PlayerisAvailable(playerId: number){
+    if (
+      !this.playerQueue.find((player) => player.id === playerId) &&
+      !this.onlineGamers.find((player) => player.id === playerId)
+    ) 
+      return true;
+    return false
   }
 }

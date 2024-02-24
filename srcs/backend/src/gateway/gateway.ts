@@ -143,6 +143,10 @@ export class Gateway
   @SubscribeMessage('game-invite')
   InviteToGame(client: Socket, payload: { inviterId: number }): void {
     const user = client.request.user;
+    if (!this.gameService.PlayerisAvailable(payload.inviterId)){
+      client.emit('invited not available');
+      return ;
+    }
     const gameRoom = this.gameService.createGameRoomName(
       payload.inviterId,
       user.id,

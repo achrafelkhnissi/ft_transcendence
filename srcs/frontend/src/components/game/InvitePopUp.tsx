@@ -48,6 +48,10 @@ const InvitePopup = () => {
       }
     })//toaster if refused
 
+    socket?.on('invited not available',()=>{
+      console.log('invited not available');
+    })
+
     return () => {
       socket?.off('game-invite');
     };
