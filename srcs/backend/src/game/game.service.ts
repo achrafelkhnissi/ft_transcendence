@@ -18,7 +18,7 @@ export class GameService {
   private activeMatches: { [key: string]: Match } = {};
   public activeRoom: { [key: string]: Player[] } = {};
   private playerQueue: Player[] = [];
-  // private currentGamers = new Array<Player>();
+  private currentGamers = new Array<Player>();
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -29,46 +29,49 @@ export class GameService {
   }
 
   updateGame() {
-    setInterval( async () => {
+    setInterval(  () => {
+      const matchesToRemove = [];
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
+        // console.log('match is finished ',match.isFinished);
         if (match.isFinished) {
+          console.log('save match');
           const id1: number = parseInt(key.split('-')[0]);
           const id2: number = parseInt(key.split('-')[1]);
-          // this.currentGamers = this.currentGamers.filter(
-          //   (player) => {return player.user.id !== id1 && player.user.id !== id2},
-          //   );
+          this.currentGamers = this.currentGamers.filter(
+            (player) => {return player.user.id !== id1 && player.user.id !== id2},
+            );
           //   console.log("after delete", this.currentGamers);
-          await this.saveMatch({
-            winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
-            loserId: match.score.player1 < match.score.player2 ? id1 : id2,
-            score: `${match.score.player1} - ${match.score.player2}`,
-          });
-          match.removeIt = true;
+          // await this.saveMatch({
+          //   winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
+          //   loserId: match.score.player1 < match.score.player2 ? id1 : id2,
+          //   score: `${match.score.player1} - ${match.score.player2}`,
+          // });
+          matchesToRemove.push(key);
         }
       }
-      const toRemoveEntries = Object.entries(this.activeMatches).filter(
-        ([key, gameInstance]) => gameInstance.removeIt,
-      );
 
-      toRemoveEntries.forEach(([key]) => {
-        delete this.activeMatches[key];
-      });
+    matchesToRemove.forEach(key => {
+      delete this.activeMatches[key];
+    });
+    this.readyForGame();
     }, 100);
   }
 
   addUser(user: Player): void {
     // console.log("user id ",user.user.id);
-    // console.log("online gamers ", this.currentGamers.length);
-    // console.log("Queue Size ", this.playerQueue.length);
+    console.log("online gamers ", this.currentGamers);
+    console.log("Queue Size ", this.playerQueue);
     // console.log(this.playerQueue.find((player) => player.user.id === user.user.id));
-    // if (
-    //   !(this.playerQueue.find((player) => {player.user.id === user.user.id})) &&
-    //   !(this.currentGamers.find((player) => {player.user.id === user.user.id}))
-    // ){
+    if (
+      !(this.playerQueue.find((player) => {player.user.id === user.user.id})) &&
+      !(this.currentGamers.find((player) => {player.user.id === user.user.id}))
+    ){
       this.playerQueue.push(user);
       console.log('player added to thr queue');
-    // }
+    }
+    else 
+      console.log('already in the queue');
   }
 
   removeUser(): Player | undefined {
@@ -84,8 +87,8 @@ export class GameService {
     const matchKey = `${player1.user.id}-${player2.user.id}`;
     const match = new Match(player1.socket, player2.socket);
     this.activeMatches[matchKey] = match;
-    // this.currentGamers.push(player1);
-    // this.currentGamers.push(player2);
+    this.currentGamers.push(player1);
+    this.currentGamers.push(player2);
     setTimeout(() => match.gameStart(), 5000);
   }
 
@@ -95,7 +98,7 @@ export class GameService {
     //     this.removeUser().socket.emit('nta wahid');
     // }, 10000);
     let size =this.getAllUsers().length;
-    console.log('queue size ',size)
+    // console.log('queue size ',size)
     if (size >= 2) {
       console.log('readyForGame');
       const client1 = this.removeUser();
@@ -124,12 +127,12 @@ export class GameService {
   inviteGame(inviter: Player, invited: Player) {
     console.log('gameroom start')
     // console.log(this.currentGamers);
-    // if (
-    //   !this.currentGamers.find(
-    //     (player) => player.user.id === invited.user.id,
-    //     ) &&
-    //     !this.currentGamers.find((player) => player.user.id === inviter.user.id)
-    //     ) {
+    if (
+      !this.currentGamers.find(
+        (player) => player.user.id === invited.user.id,
+        ) &&
+        !this.currentGamers.find((player) => player.user.id === inviter.user.id)
+        ) {
         console.log('gameroom start')
         inviter.socket.emit('start game', {
           playerPosition: 'leftPaddle',
@@ -142,7 +145,7 @@ export class GameService {
           username: inviter.user.username,
         });
         this.createMatch(inviter, invited);
-      // }
+      }
     //   else if (!response){
     //     invited.socket.emit('invitation refused');
     //   }

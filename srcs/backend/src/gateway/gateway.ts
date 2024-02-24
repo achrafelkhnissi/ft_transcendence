@@ -136,7 +136,7 @@ export class Gateway
     const user = client.request.user;
     console.log(`User ${user.username} joined the queue!`);
     this.gameService.addUser({ socket: client, user: user }); //mybe this was the unhandled error
-    this.gameService.readyForGame();
+    // this.gameService.readyForGame();
   }
 
   @SubscribeMessage('game-invite')
@@ -175,6 +175,7 @@ export class Gateway
   @SubscribeMessage('joinRoom')
   JoingameRoom(client: Socket, gameRoom: string) {
     const user = client.request.user;
+    console.log('joinroom');
     if (!this.gameService.activeRoom[gameRoom]) {
       this.gameService.activeRoom[gameRoom] = [];
     }

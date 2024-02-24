@@ -69,8 +69,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
         console.log('hanaaa froooom');
         socket?.emit('joinRoom',params.gameRoom);
       }
-    else
-    socket?.emit('joinQueue');
+    else{
+      socket?.emit('joinQueue');
+      console.log('join Queue');
+    }
   };
 
   const handleOpponentFound = useCallback(
