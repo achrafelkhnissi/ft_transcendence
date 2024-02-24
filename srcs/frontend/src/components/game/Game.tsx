@@ -54,13 +54,11 @@ const Game = (props: any) => {
   }, [socket]);
 
   return (
-    <>
       <div
-        className="max-w-[1000px] max-h-[500px] self-center"
+        className="max-w-[1000px] max-h-[500px] self-center border-0"
         id="game-container"
         key="game-container"
       ></div>
-    </>
   );
 };
 

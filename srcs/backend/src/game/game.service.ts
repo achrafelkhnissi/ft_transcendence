@@ -83,10 +83,10 @@ export class GameService {
   }
 
   readyForGame() {
-    // setTimeout(() => {
-    //   if (this.getAllUsers().length == 1)
-    //     this.removeUser().socket.emit('nta wahid');
-    // }, 10000);
+    setTimeout(() => {
+      if (this.getAllUsers().length == 1)
+        this.removeUser().socket.emit('nta wahid');
+    }, 10000);
     let size = this.playerQueue.length;
     console.log(size);
     if (size >= 2) {
@@ -96,16 +96,14 @@ export class GameService {
       client1.socket.emit('start game', {
         playerPosition: 'leftPaddle',
         opponentId: client2.id,
-        // username: client2.user.username,
       });
       client2.socket.emit('start game', {
         playerPosition: 'rightPaddle',
         opponentId: client1.id,
-        // username: client1.user.username,
       });
       console.log('event sent');
       this.createMatch(client1, client2);
-    } //remove the user if he is offline
+    }
   }
 
   removeUserById(userId: number): void {
@@ -120,17 +118,14 @@ export class GameService {
 
   inviteGame(inviter: Player, invited: Player) {
     console.log('gameroom start');
-    // console.log(this.currentGamers);
     console.log('gameroom start');
     inviter.socket.emit('start game', {
       playerPosition: 'leftPaddle',
       opponentId: invited.id,
-      // username: invited.user.username,
     });
     invited.socket.emit('start game', {
       playerPosition: 'rightPaddle',
       opponentId: inviter.id,
-      // username: inviter.user.username,
     });
     this.createMatch(inviter, invited);
   }

@@ -113,7 +113,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   }, [socket, handleOpponentFound]);
 
   return (
-    <div className={`flex justify-center w-full h-full relative`}>
+    <div className={`flex justify-center w-full h-full relative border-0`}>
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
@@ -169,7 +169,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
         <>
-          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 bg-[#17194A]">
+          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 ">
             {GameInfo.position == 'leftPaddle' && (
               <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
                 <img
