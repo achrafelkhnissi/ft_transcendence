@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { useEffect, useState } from 'react';
 import { CiSearch } from 'react-icons/ci';
 import MessagesPreview from './dm/MessagesPreview';
-import { UserStatuses, ConversationsMap, User } from './data';
+import { UserStatuses, ConversationsMap, User, Conversation } from './data';
 import getConversations from '@/services/getConversations';
 import ChannelsPreview from './channels/ChannelsPreview';
 import { IoMdAdd } from 'react-icons/io';
@@ -21,6 +22,10 @@ interface PreviewProps {
   updateShowConversation: Function;
 }
 
+interface ChannelesNamesMap {
+  [key: string]: Conversation;
+}
+
 const Preview: React.FC<PreviewProps> = ({
   conversationsMap,
   orderedConversations,
@@ -35,7 +40,39 @@ const Preview: React.FC<PreviewProps> = ({
   updateShowConversation,
 }) => {
   const [active, setActive] = useState<'messages' | 'channels'>('messages');
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [showResult, setShowResult] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<Conversation[]>([]);
+  const [channelsNamesMap, setChannelsNamesMap] = useState<ChannelesNamesMap>(
+    {},
+  );
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+    if (e.target.value.length > 0) {
+      const results = orderedConversations
+        .map((id) => conversationsMap[id])
+        .filter((conversation) => {
+          if (conversation.type != 'DM') {
+            return conversation.name
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          } else {
+            const channelName =
+              conversation.participants[0].id == currentUser?.id
+                ? conversation.participants[1].username
+                : conversation.participants[0].username;
+            return channelName
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          }
+        });
+
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  };
   return (
     <div
       className={`relative md:w-2/5  bg-[#25244E] rounded-[3rem] w-full h-full 
@@ -74,9 +111,8 @@ const Preview: React.FC<PreviewProps> = ({
           </div>
         </div>
         {/* search bar */}
-        <div className="max-w-[350px] m-auto w-full">
-          <form
-            action=""
+        <div className="max-w-[350px] m-auto w-full relative">
+          <div
             className="w-full h-[2.6rem]  bg-[#101038] rounded-2xl 
                                 shadow-[inset_0_4px_11px_0px_rgba(0,0,0,0.36)]
                                 p-2
@@ -94,10 +130,57 @@ const Preview: React.FC<PreviewProps> = ({
             <input
               type="text"
               className=" bg-transparent h-full w-full placeholder:text-[#453e76] placeholder:text-sm 
-                                            outline-none text-[#524a89] text-sm font-light "
+                                            outline-none text-[#524a89] text-sm font-light cursor-pointer
+                                            "
               placeholder="Search"
+              onChange={handleInputChange}
+              value={searchInput}
+              onClick={() => setShowResult((prev) => !prev)}
             />
-          </form>
+            {showResult && (
+              <div
+                className="absolute w-full max-h-[200px] min-h-10 -bottom-11 left-1/2 transform -translate-x-1/2
+            rounded-lg  bg-white/10
+            flex flex-col gap-1 overflow-y-auto p-2 z-10  shadow-lg"
+              >
+                {searchResults.length > 0 &&
+                  searchResults.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      className="px-2 py-1 w-full text-white/80 bg-[#28285a]/80 rounded-lg
+                hover:bg-[#28285a]/70 hover:text-white cursor-pointer"
+                      onClick={() => {
+                        updateSelectedConversation(conversation.id);
+                        setActive(
+                          conversation.type === 'DM' ? 'messages' : 'channels',
+                        );
+                      }}
+                    >
+                      <div className="flex ">
+                        <img
+                          src={
+                            conversation.type != 'DM'
+                              ? process.env.BACKEND +
+                                `/api/users/chat/${conversation?.id}/avatar`
+                              : conversation.participants[1]?.id ==
+                                  currentUser?.id
+                                ? process.env.BACKEND +
+                                  `/api/users/${conversation.participants[0]?.id}/avatar`
+                                : process.env.BACKEND +
+                                  `/api/users/${conversation.participants[1]?.id}/avatar`
+                          }
+                          alt=""
+                          className="w-8 h-8 rounded-full inline-block mr-2 object-fill"
+                        />
+                        <p className="self-center text-sm">
+                          {conversation.name}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {active === 'messages' && (

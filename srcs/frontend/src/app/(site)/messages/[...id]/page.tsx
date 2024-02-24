@@ -229,7 +229,6 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
 
       socket.on('action', (res: actionData) => {
-        console.log('action', res);
         switch (res.action) {
           case 'add':
           case 'remove-admin':
@@ -255,9 +254,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         }
       });
       socket.on('blocked', (res) => {
-        console.log('blocked', res);
         removeConversationByName(res.roomName);
-        console.log('tmshat', conversations);
       });
     }
 
