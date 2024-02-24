@@ -1,17 +1,10 @@
-import axios from "axios";
+import axiosInstance from './axios';
 
-const unbanUser = async (userId: number | undefined , channelId : number) => {
-    try {
-        const { data } = await axios.post(
-          `${process.env.BACKEND}/api/users/chat/${channelId}/unban`,
-          { userId: userId },
-          { withCredentials: true },
-        );
-        return data;
-      } catch (error) {
-        console.log('Error unbanning member:', error);
-        return null;
-      }
-}
+const unbanUser = async (userId: number | undefined, channelId: number) => {
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/unban`, {
+    userId: userId,
+  });
+  return data;
+};
 
 export default unbanUser;

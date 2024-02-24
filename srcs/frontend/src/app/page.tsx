@@ -27,7 +27,7 @@ export default function Home() {
             lg:text-9xl 
             font-extrabold  
             text-center text-7xl 
-            ${pixelifySans.className}`}
+            ${pixelifySans.className ? pixelifySans.className : ''}`}
         >
           <span className="text-white text-2xl">It&rsquo;s </span>
           PongTime

@@ -69,19 +69,15 @@ export class RolesGuard implements CanActivate {
 
     let isAllowed = false;
 
-    try {
-      isAllowed = await this.prisma.conversation
-        .findFirstOrThrow({
-          where: {
-            id: channelId,
-            OR: conditions,
-          },
-        })
-        .then((channel) => (channel ? true : false));
+    isAllowed = await this.prisma.conversation
+      .findFirst({
+        where: {
+          id: channelId,
+          OR: conditions,
+        },
+      })
+      .then((channel) => (channel ? true : false));
 
-      return isAllowed;
-    } catch (e) {
-      throw new NotFoundException('Channel not found');
-    }
+    return isAllowed;
   }
 }

@@ -29,15 +29,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   useEffect(() => {
     const newSocket = io(`${process.env.BACKEND}`, {
       withCredentials: true,
-    }); // Replace with your server URL
-
-    // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-    newSocket.on('unauthorized', (error) => {
-      console.log('unauthorized: ', error);
-
-      newSocket.disconnect();
-
-      window.location.href = '/';
     });
 
     newSocket.on('connect', async () => {

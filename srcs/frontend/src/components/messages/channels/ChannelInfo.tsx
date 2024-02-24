@@ -81,7 +81,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     leaveChannel(channel.id, currentUser?.id).then((res) => {
       if (res) {
         console.log('left channel');
-        // removeConversation(channel.id);
       }
     });
   };
@@ -137,7 +136,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     }
   };
 
-  console.log('statuses', statuses);
   return (
     <div
       className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 

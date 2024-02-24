@@ -397,7 +397,6 @@ export class ChatController implements OnModuleInit {
         user: userId,
         data: chat,
       });
-      this.gateway.server.to(`user-${userId}`).socketsLeave(chat.name);
     }
 
     return chat;

@@ -71,7 +71,7 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
                 ></div>
               </div>
               <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">
-                <h6 className="font-normal text-sm">{friend?.username}</h6>
+                <h6 className="font-normal text-sm ">{friend?.username}</h6>
                 <p className="text-white/70 text-xs font-light break-words">
                   {lastMessage?.content.slice(0, 80)}
                 </p>

@@ -1,16 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getUsersAll() {
-  try {
-    const { data } = await axios.get(process.env.BACKEND + `/api/users/all`, {
-      withCredentials: true,
-    });
-
-    return data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  const {data} = await axiosInstance.get(process.env.BACKEND + `/api/users/all`);
+  return data;
 }
 
 export default getUsersAll;

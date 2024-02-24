@@ -17,7 +17,7 @@ const Verify = () => {
       confirmCode(code, null).then((res) => {
         if (res) router.push('/dashboard');
         else {
-          // router.push(process.env.BACKEND + '/api/auth/logout')
+          router.push(process.env.BACKEND + '/api/auth/logout')
           e.target.value = '';
         }
       });
@@ -26,13 +26,13 @@ const Verify = () => {
 
   return (
     <div className="flex justify-center  h-full">
-      <ToastContainer position="top-right" autoClose={5000} />
+      <ToastContainer position="top-right" autoClose={3000} />
       <form className="self-center h-4/5 text-center flex flex-col justify-center gap-6">
         <p className="text-[1.6rem] text-center text-blue-400/80 -mt-2">
           Athenticate You Account
         </p>
         <input
-          type="text"
+          type="number"
           id="0"
           maxLength={6}
           onChange={(e) => handleInput(e)}

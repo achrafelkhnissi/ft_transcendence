@@ -1,15 +1,13 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 import { toast } from 'react-toastify';
 
 const verifyNumber = async (num?: string) => {
   try {
-    const response = await axios.post(
+    const {data} = await axiosInstance.post(
       process.env.BACKEND + '/api/sms/verify',
       { phoneNumber: num },
-      { withCredentials: true },
     );
-
-    if (response.data.status === 'error') {
+    if (data.status === 'error') {
       toast.error('Verification failed. Please try again.');
       return 0;
     } else {

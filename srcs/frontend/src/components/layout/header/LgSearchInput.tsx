@@ -20,7 +20,6 @@ const SearchInput = () => {
     getUsersAll().then((data: User[]) => {
       if (data) {
         setAllUsers(data);
-        console.log(data);
       }
     });
   }, []);
