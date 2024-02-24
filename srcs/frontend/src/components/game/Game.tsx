@@ -15,7 +15,7 @@ const Game = (props: any) => {
   useEffect(() => {
     async function initPhaser() {
       const Phaser = await import('phaser');
-      // const { default: Preloader } = await import('./Preloader');
+      const { default: Preloader } = await import('./Preloader');
       const { default: GameScene } = await import('./GameScene');
       console.log('game color', props.color);
       if (socket) {
@@ -39,7 +39,10 @@ const Game = (props: any) => {
             mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: new GameScene({ key: 'gamescene' }, socket, playerPosition),
+          scene:[
+            Preloader,
+            new GameScene({ key: 'gamescene' }, socket, playerPosition),
+          ] 
         });
         setGame(PhaserGame);
         return () => {

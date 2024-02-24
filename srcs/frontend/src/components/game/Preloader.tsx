@@ -5,7 +5,7 @@ export default class Preloader extends Scene {
         super('preloader');
     }
     preload(){
-        // this.load.image('background', '../assets/background.png')
+        this.load.image('background', './assets/background.png')
     }
     create() {
         // Additional setup after assets have been loaded
