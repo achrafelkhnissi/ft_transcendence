@@ -12,9 +12,10 @@ done
 
 if [ "$NODE_ENV" = "production" ]; then
   echo "Running in production mode"
+  ls -la 
   npx prisma migrate dev --name init
   npx prisma generate
-  npm run build
+  npx nest build
 else
   echo "Running in development mode"
   npm install # For hot reloading to work
