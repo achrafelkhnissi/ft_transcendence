@@ -28,7 +28,7 @@ const Stats: React.FC<StatsProps> = ({
             <p className="self-center text-[#6C61A4] font-semibold ">
               Wins
             </p>
-            <p className="self-center font-semibold">{w}%</p>
+            <p className="self-center font-semibold">{Math.round(w)}%</p>
           </div>
           <div
             className="text-white flex flex-col gap-1 px-4 text-sm"
@@ -36,7 +36,7 @@ const Stats: React.FC<StatsProps> = ({
             <p className="self-center text-[#6C61A4] font-semibold ">
               Loss
             </p>
-            <p className="self-center font-semibold">{l}%</p>
+            <p className="self-center font-semibold">{Math.round(l)}%</p>
           </div>
     </div>
   );

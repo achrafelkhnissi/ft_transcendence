@@ -1,4 +1,3 @@
-// import "./globals.css";
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Sidebar from '../../components/layout/sidebar/Sidebar';
@@ -17,6 +16,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+    
   return (
     <SocketProvider>
       <div className="flex flex-row w-full h-full overflow-hidden">

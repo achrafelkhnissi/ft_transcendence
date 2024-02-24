@@ -17,7 +17,6 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
 import markMessageAsRead from '@/services/markMessageAsRead';
-import getAllUsers from '@/services/getAllUsers';
 import getAllUsersStatus from '@/services/getAllUsersStatus';
 
 const Home = ({ params }: { params: { id: number } }) => {
