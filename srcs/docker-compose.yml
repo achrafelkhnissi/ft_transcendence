@@ -65,11 +65,6 @@ services:
       args:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
-        - HOSTNAME=${DOMAIN_NAME}
-        - NODE_ENV=${NODE_ENV}
-        - BACKEND_HOST=${BACKEND_HOST:-backend}
-        - NEST_PORT=${NEST_PORT:-3000}
-        - NEXT_PUBLIC_BACKEND=${NEXT_PUBLIC_BACKEND}
       # target: dev
     container_name: frontend
     restart: always
@@ -83,8 +78,8 @@ services:
       - frontend_net
     # volumes:
     #   - ./frontend:/app # for hot reloading
-    # depends_on:
-    #   - backend
+    depends_on:
+      - backend
 
 volumes:
   db-data:
