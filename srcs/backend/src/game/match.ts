@@ -53,8 +53,8 @@ export class Match {
     );
 
     this.ball = Bodies.circle(BALLPOSITION.x, BALLPOSITION.y, BALLRADIUS, {
-      friction: 1,
-      restitution: 0.1,
+      friction: 0.01,
+      restitution: 0.9,
     });
 
     Body.setVelocity(this.ball, {
