@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
 import { ChangeEvent } from 'react';
 import { Conversation, User, UserStatuses } from '../data';
@@ -45,6 +45,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const [password, setPassword] = useState<string>('');
   const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
 
+
   const handleNewMemmber = () => {
     if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
@@ -81,7 +82,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     leaveChannel(channel.id, currentUser?.id).then((res) => {
       if (res) {
         console.log('left channel');
-        // removeConversation(channel.id);
       }
     });
   };
@@ -137,10 +137,9 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
     }
   };
 
-  console.log('statuses', statuses);
   return (
     <div
-      className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4 
+      className="w-full h-full  rounded-lg bg-[#101038] shadow-2xl p-4
                         flex flex-col gap-4 "
     >
       <h1 className="self-center md:text-[1.5rem] text-xl text-white/90 font-semibold">

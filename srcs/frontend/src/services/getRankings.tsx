@@ -1,10 +1,7 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getRankings() {
-  const { data } = await axios.get(process.env.BACKEND + `/api/users/ranking`, {
-    withCredentials: true,
-  });
-
+  const {data} =  await axiosInstance.get(`/api/users/ranking`);
   return data;
 }
 

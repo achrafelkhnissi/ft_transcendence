@@ -17,6 +17,17 @@ export interface FriendsProps {
   status: string;
 }
 
+export interface BlockedProps {
+  sender: {
+    id: number;
+    username: string;
+  };
+  receiver: {
+    id: number;
+    username: string;
+  };
+}
+
 export interface GameHistoryProps {
   id: number;
   winner: {
@@ -44,7 +55,7 @@ export interface User {
   isFriend: false | FriendshipStatus;
   friends: FriendsProps[];
   games: GameHistoryProps[];
-  blockedUsers? : FriendsProps[];
+  blockedUsers? : BlockedProps[];
 }
 
 export const defaultInfos: User = {

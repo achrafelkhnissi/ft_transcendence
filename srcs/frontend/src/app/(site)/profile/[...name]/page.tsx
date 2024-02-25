@@ -8,34 +8,50 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import getUser from '@/services/getUser';
-import { User, defaultInfos } from '@/components/userProfile/types';
+import {
+  BlockedProps,
+  FriendsProps,
+  User,
+  defaultInfos,
+} from '@/components/userProfile/types';
 import { useRouter } from 'next/navigation';
-import { useSocket } from '@/contexts/socketContext';
+import { resolve } from 'path';
 
 const Home = ({ params }: { params: { name: string } }) => {
-  const abortController = new AbortController();
   const [user, setUser] = useState<User>(defaultInfos);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     getCurrentUser().then((res) => {
-      if (params.name == 'me' || res.username == params.name) {
-        const userData: User = res;
-        userData.me = true;
-        setUser(userData);
-      } else {
-        getUser(params.name).then((res) => {
-          if (res) {
-            const userData: User = res;
-            (userData.me = false), setUser(userData);
-          } else {
-            router.push('/404');
-          }
-        });
+      if (!res) router.push('/dashboard');
+      else {
+        setCurrentUserId(res.id);
+        if (params.name == 'me' || res.username == params.name) {
+          const userData: User = res;
+          userData.me = true;
+          setUser(userData);
+        } else if (
+          res.blockedUsers.some(
+            (user: BlockedProps) =>
+              user.sender.username == params.name ||
+              user.receiver.username == params.name,
+          )
+        ) {
+          router.push('/404');
+        } else {
+          getUser(params.name).then((res) => {
+            if (res) {
+              if (res.isFriend == 'BLOCKED') router.push('/404');
+              const userData: User = res;
+              (userData.me = false), setUser(userData);
+            } else {
+              router.push('/404');
+            }
+          });
+        }
       }
     });
-    console.log('user', user);
-    return () => abortController.abort();
   }, [params.name]);
 
   return (
@@ -52,6 +68,7 @@ const Home = ({ params }: { params: { name: string } }) => {
           friends={user.friends}
           blockedUsers={user.blockedUsers ?? []}
           me={user.me}
+          currentUserId={currentUserId}
         />
         <Achievements />
       </div>

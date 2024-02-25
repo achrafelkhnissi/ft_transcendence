@@ -7,7 +7,7 @@ import { useSocket } from '../../contexts/socketContext';
 const Game = (props: any) => {
   const { socket } = useSocket();
   const playerPosition = props.position;
-  const RESOLUTION = { width: 1000, height: 500 };
+  const RESOLUTION = { width: 1428, height: 700 };
   const TARGET_FPS = 60;
 
   const [game, setGame] = useState<GameType>();
@@ -15,7 +15,7 @@ const Game = (props: any) => {
   useEffect(() => {
     async function initPhaser() {
       const Phaser = await import('phaser');
-      const { default: Preloader } = await import('./Preloader');
+      // const { default: Preloader } = await import('./Preloader');
       const { default: GameScene } = await import('./GameScene');
       console.log('game color', props.color);
       if (socket) {
@@ -36,18 +36,15 @@ const Game = (props: any) => {
             smoothStep: true,
           },
           scale: {
-            mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
+            mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [
-            Preloader,
-            new GameScene({ key: 'gamescene' }, socket, playerPosition),
-          ],
+          scene: new GameScene({ key: 'gamescene' }, socket, playerPosition)
         });
         setGame(PhaserGame);
         return () => {
           if (PhaserGame){
-            console.log('game distroyed');
+            console.log('game destroyed');
             PhaserGame.destroy(true);
           }
         };
@@ -57,13 +54,11 @@ const Game = (props: any) => {
   }, [socket]);
 
   return (
-    <>
       <div
-        className="max-w-[1000px] max-h-[500px] self-center"
+        className="max-w-[1428px] max-h-[700px] self-center border-0"
         id="game-container"
         key="game-container"
       ></div>
-    </>
   );
 };
 

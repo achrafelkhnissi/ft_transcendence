@@ -1,17 +1,10 @@
-import axios from "axios";
+import axiosInstance from './axios';
 
-const unmuteUser = async (userId: number | undefined , channelId: number) => {
-    try {
-        const { data } = await axios.post(
-          `${process.env.BACKEND}/api/users/chat/${channelId}/unmute`,
-          { userId: userId },
-          { withCredentials: true },
-        );
-        return data;
-      } catch (error) {
-        console.log('Error muting member:', error);
-        return null;
-      }
-}
+const unmuteUser = async (userId: number | undefined, channelId: number) => {
+  const {data} = await axiosInstance.post(`/api/users/chat/${channelId}/unmute`, {
+    userId: userId,
+  });
+  return data;
+};
 
 export default unmuteUser;

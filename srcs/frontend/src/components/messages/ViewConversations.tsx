@@ -44,6 +44,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
   const [showChannelInfo, setShowChannelInfo] = useState<boolean>(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const infoRef = useRef(null);
 
   const handleEmojiSelect = (
     emojiObject: EmojiClickData,
@@ -83,7 +84,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         } else {
           unmuteUser(currentUser?.id, conversationId).then((res) => {
             if (res) {
-              console.log('unmute', res);
+              //
             }
           });
           setIsMuted(false);
@@ -91,6 +92,24 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
       } else setIsMuted(false);
     }
   }, [conversationId, conversationsMap, currentUser?.id]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        infoRef.current &&
+        !(infoRef.current as any).contains(event.target as Node)
+      ) {
+        console.log('clicked outside');
+        setShowChannelInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   let receiver: User = {
     username: '',
@@ -125,7 +144,6 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         },
         { withCredentials: true },
       );
-      console.log('data', data);
     }
     setNewMessage('');
   };
@@ -170,7 +188,11 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   setShowChannelInfo={setShowChannelInfo}
                 />
                 {showChannelInfo && (
-                  <div className="absolute w-[90%] max-h-[85%] top-[2.5rem] right-10  z-20 overflow-y-auto rounded-lg ">
+                  <div
+                    ref={infoRef}
+                    className="absolute w-[90%] max-h-[85%] left-1/2 top-1/2 transform 
+                    -translate-x-1/2 -translate-y-1/2 z-20 overflow-y-auto rounded-lg "
+                  >
                     <ChannelInfo
                       currentUser={currentUser}
                       channel={conversationsMap[conversationId]}

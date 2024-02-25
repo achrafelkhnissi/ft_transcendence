@@ -24,15 +24,12 @@ export class Match {
   private loop: string | number | NodeJS.Timeout;
   public score: { player1: number; player2: number };
   public isFinished: boolean;
-  public removeIt: boolean;
-
 
   constructor(
     public player1: Socket,
     public player2: Socket,
   ) {
     this.isFinished = false;
-    this.removeIt = false;
     this.score = { player1: 0, player2: 0 };
     this.engine = Engine.create();
     this.world = this.engine.world;
@@ -56,8 +53,8 @@ export class Match {
     );
 
     this.ball = Bodies.circle(BALLPOSITION.x, BALLPOSITION.y, BALLRADIUS, {
-      friction: 1,
-      restitution: 0.1,
+      friction: 0.01,
+      restitution: 0.9,
     });
 
     Body.setVelocity(this.ball, {

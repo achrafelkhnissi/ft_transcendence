@@ -62,7 +62,7 @@ const ChannelsPreview: React.FC<ChannelsPreviewProps> = ({
                   alt=""
                   width={100}
                   height={100}
-                  className="w-12 h-12 rounded-full object-fill"
+                  className="md:w-12 md:h-12 w-10 h-10 rounded-full object-cover"
                 />
               </div>
               <div className="flex flex-col self-center w-4/6 gap-[0.1rem] justify-start">

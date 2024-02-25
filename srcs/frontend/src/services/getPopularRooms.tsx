@@ -1,16 +1,8 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 const getPoularRooms = async () => {
-  try {
-    const { data } = await axios.get(
-      process.env.BACKEND + '/api/users/chat/popular',
-      { withCredentials: true },
-    );
-    return data;
-  } catch (error) {
-    console.log('error getting popular rooms', error);
-    return null;
-  }
+  const {data} = await axiosInstance.get('/api/users/chat/popular');
+  return data;
 };
 
 export default getPoularRooms;

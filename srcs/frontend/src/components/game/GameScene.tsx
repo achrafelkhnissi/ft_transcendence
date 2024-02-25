@@ -20,6 +20,8 @@ export default class GameScene extends Scene {
   private scoreText1!: Phaser.GameObjects.Text;
   private scoreText2!: Phaser.GameObjects.Text;
 
+  public background!: Phaser.GameObjects.Image;
+
   private prevY = 0;
 
   constructor(
@@ -43,9 +45,10 @@ export default class GameScene extends Scene {
     middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
     middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
     middleLine.strokePath();
+
     const left = this.add.rectangle(
       PADDLE_WIDTH / 2 + 10,
-      this.CANVAS_HEIGHT / 2,
+      this.CANVAS_HEIGHT / 2, 
       PADDLE_WIDTH,
       PADDLE_HEIGHT,
       0xffffff,
@@ -75,25 +78,25 @@ export default class GameScene extends Scene {
       this.opponentPaddle = left;
     }
     this.ball = ball;
+    console.log('ball :',this.ball);
 
     this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
-      console.log('updateOpponentPaddle');
       const { x, y } = data;
       this.opponentPaddle?.setX(x);
       this.opponentPaddle?.setY(y);
     });
 
     this.socket.on('updateBallState', (data) => {
-      this.ball.setX(data.x);
-      this.ball.setY(data.y);
+      this.ball?.setX(data.x);
+      this.ball?.setY(data.y);
     });
 
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30, 30, '0', {
+    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',
     });
-    this.scoreText2 = this.add.text(this.CANVAS_WIDTH / 2 + 30, 30, '0', {
+    this.scoreText2 = this.add.text(3 * this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',

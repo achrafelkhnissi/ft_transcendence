@@ -60,6 +60,7 @@ export class UsersService {
     return this.prisma.user.findMany({
       select: {
         id: true,
+        username: true,
         status: true,
       },
     });
@@ -145,43 +146,42 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    const blockedUsers = await this.prisma.friendRequest
-      .findMany({
-        where: {
-          OR: [
-            {
-              sender: {
-                username,
-              },
-            },
-            {
-              receiver: {
-                username,
-              },
-            },
-          ],
-          friendshipStatus: 'BLOCKED',
-        },
-        select: {
-          receiver: {
-            select: {
-              id: true,
-              username: true,
+    const blockedUsers = await this.prisma.friendRequest.findMany({
+      where: {
+        OR: [
+          {
+            sender: {
+              username,
             },
           },
-          sender: {
-            select: {
-              id: true,
-              username: true,
+          {
+            receiver: {
+              username,
             },
           },
+        ],
+        friendshipStatus: 'BLOCKED',
+      },
+      select: {
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+          },
         },
-      })
-      .then((friendRequests) => {
-        return friendRequests.map((req) =>
-          username === req.receiver.username ? req.sender : req.receiver,
-        );
-      });
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+    // .then((friendRequests) => {
+    //   return friendRequests.map((req) =>
+    //     username === req.receiver.username ? req.sender : req.receiver,
+    //   );
+    // });
 
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { username },

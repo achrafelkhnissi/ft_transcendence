@@ -3,24 +3,26 @@
 import FriendAvatar from '../FriendAvatar';
 import Card from './Card';
 import { MdEmojiPeople } from 'react-icons/md';
-import { FriendsProps } from './types';
+import { BlockedProps, FriendsProps } from './types';
 import { useEffect, useState } from 'react';
 import BlockUser from '../svgAssets/BlockUser';
 import unblockUser from '@/services/unblockUser';
 
 interface FriendsComponentProps {
   friends: FriendsProps[];
-  blockedUsers: FriendsProps[];
+  blockedUsers: BlockedProps[];
   me: boolean;
+  currentUserId: number | null;
 }
 
 const Friends: React.FC<FriendsComponentProps> = ({
   friends,
   blockedUsers,
   me,
+  currentUserId,
 }) => {
   const [showBlocked, setShowBlocked] = useState(false);
-  const [blockedUsersList, setBlockedUsersList] = useState<FriendsProps[]>([]);
+  const [blockedUsersList, setBlockedUsersList] = useState<BlockedProps[]>([]);
 
   useEffect(() => {
     setBlockedUsersList(blockedUsers);
@@ -30,7 +32,9 @@ const Friends: React.FC<FriendsComponentProps> = ({
     console.log('unblock', id);
     unblockUser(id).then((res) => {
       if (res) {
-        setBlockedUsersList((prev) => prev.filter((item) => item.id !== id));
+        setBlockedUsersList((prev) =>
+          prev.filter((item) => item.receiver.id !== id),
+        );
       }
     });
   };
@@ -60,22 +64,31 @@ const Friends: React.FC<FriendsComponentProps> = ({
           ))}
         {showBlocked &&
           me &&
-          blockedUsersList?.map((item, index) => (
-            <div key={index} className="relative bg-white/10 rounded-2xl p-2">
-              <div
-                className="text-red-600 absolute top-0 right-1 font-extrabold z-10 cursor-pointer
-                "
-                onClick={() => handleUnBlock(item.id)}
-              >
-                x
-              </div>
-              <FriendAvatar
-                key={index}
-                name={item.username}
-                avatar={process.env.BACKEND + `/api/users/${item.id}/avatar`}
-              />
-            </div>
-          ))}
+          blockedUsersList?.map(
+            (item, index) =>
+              currentUserId == item.sender.id && (
+                <div
+                  key={index}
+                  className="relative bg-white/10 rounded-2xl p-2"
+                >
+                  <div
+                    className="text-red-600 absolute top-0 right-1 font-extrabold z-10 cursor-pointer
+                  "
+                    onClick={() => handleUnBlock(item.receiver.id)}
+                  >
+                    x
+                  </div>
+                  <FriendAvatar
+                    key={index}
+                    name={item.receiver.username}
+                    avatar={
+                      process.env.BACKEND +
+                      `/api/users/${item.receiver.id}/avatar`
+                    }
+                  />
+                </div>
+              ),
+          )}
         {me && (
           <p
             className="text-white/80 text-xs absolute -top-3 right-2 font-semibold cursor-pointer px-2 py-1

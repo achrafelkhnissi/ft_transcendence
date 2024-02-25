@@ -1,13 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from 'react';
 import getCurrentUser from '../services/getCurrentUser';
-import Image from 'next/image';
 
 const AvatarImage = () => {
-  // const [avatar, setAvatar] = useState<null | string>(null);
   const [src, setSrc] = useState<string>('');
   useEffect(() => {
     getCurrentUser().then((res) => {
-      setSrc(process.env.BACKEND + `/api/users/${res.id}/avatar`);
+      if (res) setSrc(process.env.BACKEND + `/api/users/${res.id}/avatar`);
     });
   }, []);
 

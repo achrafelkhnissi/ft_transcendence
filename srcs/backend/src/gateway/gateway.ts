@@ -64,8 +64,12 @@ export class Gateway
       this.logger.error('Unauthorized');
       return 'unauthorized';
     }
+    //remove from the game
+    this.gameService.removeUserById(user.id);
 
     const userRoomName = `user-${user.id}`;
+
+    console.log(`${user.username} connected`);
 
     // Join the user's room to keep track of all the user's sockets
     client.join(userRoomName);
@@ -103,6 +107,8 @@ export class Gateway
 
     const userRoomName = `user-${user.id}`;
 
+    console.log(`${user.username} disconnected`);
+
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
     // and we can set the user's status to offline
@@ -130,7 +136,80 @@ export class Gateway
   @SubscribeMessage('joinQueue')
   joinGameQueue(client: Socket): void {
     const user = client.request.user;
-    this.gameService.addUser({socket: client, user});
+    this.gameService.addUser({ socket: client, id: user.id });
     this.gameService.readyForGame();
+  }
+
+  @SubscribeMessage('game-invite')
+  InviteToGame(client: Socket, payload: { inviterId: number }): void {
+    const user = client.request.user;
+    if (!this.gameService.PlayerisAvailable(payload.inviterId)){
+      client.emit('invited not available');
+      return ;
+    }
+    const gameRoom = this.gameService.createGameRoomName(
+      payload.inviterId,
+      user.id,
+    );
+    this.server
+      .to(`user-${payload.inviterId}`)
+      .emit('game-invite', {
+        room: gameRoom,
+        userId: user.id,
+        username: user.username,
+      });
+    console.log(gameRoom);
+    // this.gameService.inviteGame()
+  }
+
+  @SubscribeMessage('inviteResponse')
+  InviteResponce(
+    client: Socket,
+    payload: { response: boolean; gameRoom: string; inviter: number },
+  ) {
+    const user = client.request.user;
+    console.log('sent response to ', payload.inviter);
+    this.server
+      .to(`user-${payload.inviter}`)
+      .emit('inviteResponse', {
+        response: payload.response,
+        room: payload.gameRoom,
+      });
+  }
+
+  @SubscribeMessage('joinRoom')
+  JoingameRoom(client: Socket, gameRoom: string) {
+    const user = client.request.user;
+    console.log('joinroom');
+    if (!this.gameService.activeRoom[gameRoom]) {
+      this.gameService.activeRoom[gameRoom] = [];
+    }
+    this.gameService.activeRoom[gameRoom].push({socket: client, id: user.id});
+
+    if (this.gameService.activeRoom[gameRoom].length === 2) {
+      const [player1, player2] = this.gameService.activeRoom[gameRoom];
+      this.gameService.activeRoom[gameRoom] = this.gameService.activeRoom[
+        gameRoom
+      ].filter((player) => player !== player1 && player !== player2);
+      this.gameService.inviteGame(player1, player2);
+    }
+  }
+
+  @SubscribeMessage('in game')
+  async onInGame(client: Socket) {
+    const user = client.request.user;
+    const userRoomName = `user-${user.id}`;
+
+    const roomCount = this.roomCounts.get(userRoomName) || 0;
+    const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
+    rooms.forEach(async (room) => {
+      client.join(room);
+      if (roomCount === 0) {
+        this.server.to(room).emit('playing', {
+          userId: user.id,
+          status: Status.PLAYING
+        });
+      }
+    });
   }
 }

@@ -22,8 +22,10 @@ const TopPlayers = () => {
 
   useEffect(() => {
     getRankings().then((res) => {
-      const data: User[] = res;
-      setRanking(data);
+      if (res){
+        const data: User[] = res;
+        setRanking(data);
+      }
     });
   }, []);
 

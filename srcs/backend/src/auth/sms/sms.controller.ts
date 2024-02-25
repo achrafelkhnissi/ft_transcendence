@@ -34,9 +34,9 @@ export class SmsController {
   verify(@User() user: UserType, @Body() body: PhoneNumberDto) {
     const { phoneNumber } = body;
 
-    // return this.smsService.initiatePhoneNumberVerification(
-    //   phoneNumber ?? user?.phoneNumber,
-    // );
+    return this.smsService.initiatePhoneNumberVerification(
+      phoneNumber ?? user?.phoneNumber,
+    );
 
     return {
       phoneNumber: phoneNumber ?? user?.phoneNumber,
@@ -50,11 +50,11 @@ export class SmsController {
   async confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
     const { code, phoneNumber } = body;
 
-    // return this.smsService.confirmPhoneNumberVerification(
-    //   user.id,
-    //   phoneNumber ?? user?.phoneNumber,
-    //   code,
-    // );
+    return this.smsService.confirmPhoneNumberVerification(
+      user.id,
+      phoneNumber ?? user?.phoneNumber,
+      code,
+    );
 
     // if (result.status !== 'error') {
     //   await this.achievementsService.giveAchievementToUser(user.id, Achievements.VERIFIED);
