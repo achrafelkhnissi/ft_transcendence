@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -13,11 +13,12 @@ interface Player {
 }
 
 @Injectable()
-export class GameService {
+export class GameService implements OnModuleDestroy {
   private activeMatches: { [key: string]: Match } = {};
   public activeRoom: { [key: string]: Player[] } = {};
   private playerQueue: Player[] = [];
   private onlineGamers: Player[] = [];
+  updateGameInterval: NodeJS.Timeout;
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -26,9 +27,13 @@ export class GameService {
   ) {
     this.updateGame();
   }
+  onModuleDestroy() {
+    console.log('clearing interval');
+   clearInterval(this.updateGameInterval);
+  }
 
   updateGame() {
-    setInterval(async () => {
+    this.updateGameInterval = setInterval(async () => {
       const matchesToRemove = [];
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
