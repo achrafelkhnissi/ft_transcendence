@@ -27,15 +27,22 @@
     "phaser3spectorjs": "^0.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+<<<<<<<<< Temporary merge branch 1
+    "react-icons": "^5.0.1",
+    "react-toastify": "^10.0.4",
+    "socket.io-client": "^4.7.4",
+    "utf-8-validate": "^6.0.3"
+=========
     "react-icons": "^4.11.0",
     "react-toastify": "^10.0.4",
     "socket.io-client": "^4.7.2",
-    "tailwind-merge": "^2.2.1",
     "utf-8-validate": "^5.0.10"
+>>>>>>>>> Temporary merge branch 2
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "20.11.19",
     "@types/react": "18.2.57",
     "@types/react-dom": "18.2.19",

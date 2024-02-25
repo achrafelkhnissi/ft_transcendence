@@ -68,8 +68,20 @@ export class UsersController {
     throw new NotFoundException('User not found');
   }
 
-  // TODO: Add swagger documentation
   @Get('all')
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          username: { type: 'string' },
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'Get all users' })
   findAll() {
     return this.usersService.findAll();
   }

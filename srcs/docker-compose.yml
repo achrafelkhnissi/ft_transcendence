@@ -1,5 +1,8 @@
 version: "3.8"
 
+# Note:
+# - Uncomment the volumes and volumes in the backend and frontend services for hot reloading
+
 services:
   db:
     image: postgres:16-alpine
@@ -11,7 +14,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      # - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -19,18 +21,13 @@ services:
     networks:
       - database_net
 
-  # TODO: Make the backend installs its dependencies and then run the frontend
   backend:
     build:
       context: ./backend/
-      dockerfile: Dockerfile
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run prisma
-        npm run start:dev
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
+      args:
+        - POSTGRES_HOST=${POSTGRES_HOST}
+        - POSTGRES_PORT=${POSTGRES_PORT}
     container_name: backend
     restart: always
     environment:
@@ -51,18 +48,22 @@ services:
     ports:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
-    volumes:
-      - ./backend:/app # for hot reloading
     networks:
       - database_net
       - frontend_net
     depends_on:
       - db
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:
       context: ./frontend/
-      dockerfile: Dockerfile
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
+      args:
+        - BACKEND=${BACKEND}
+        - PORT=${NEXT_PORT}
+        - BACKEND_SERVICE=backend:$NEST_PORT
     container_name: frontend
     restart: always
     ports:
@@ -71,18 +72,12 @@ services:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
       - DOMAIN_NAME=${DOMAIN_NAME}
-    volumes:
-      - ./frontend:/app # for hot reloading
-    networks:
-      - frontend_net
     depends_on:
       - backend
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run dev
+    networks:
+      - frontend_net
+    volumes:
+      - ./frontend:/app
 
 volumes:
   db-data:

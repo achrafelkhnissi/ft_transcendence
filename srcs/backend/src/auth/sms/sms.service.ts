@@ -78,7 +78,19 @@ export class SmsService {
       };
     }
 
-    return await this.updatePhoneNumberVerificationStatus(userId);
+    const ret = await this.updatePhoneNumberVerificationStatus(userId);
+
+    if (!ret) {
+      return {
+        status: 'error',
+        message: 'Unable to verify phone number',
+      };
+    }
+
+    return {
+      status: 'success',
+      message: 'Phone number verified',
+    };
   }
 
   async updatePhoneNumberVerificationStatus(userId: number) {

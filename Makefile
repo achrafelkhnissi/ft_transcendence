@@ -58,7 +58,7 @@ $(NAME):
 	$(call print_credit)
 	$(call copy_env)
 
-	docker-compose -f srcs/docker-compose.yml up --force-recreate --build -d
+	docker-compose -f srcs/docker-compose.yml up --force-recreate --build
 
 	@printf "$(PROJECT) $(SUCCESS): build completed\n"
 
