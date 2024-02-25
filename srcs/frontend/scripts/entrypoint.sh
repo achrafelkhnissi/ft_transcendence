@@ -15,7 +15,7 @@ fi
 # until curl --output /dev/null --silent --head --fail "http://$host/authors"; do
 until curl --output /dev/null --silent --head --fail "$BACKEND_SERVICE/api"; do
   >&2 echo "NestJS application is unavailable on $BACKEND_SERVICE - sleeping.."
-  sleep 1
+  sleep 5
 done
 
 >&2 echo "Backend is up - executing command $cmd"
