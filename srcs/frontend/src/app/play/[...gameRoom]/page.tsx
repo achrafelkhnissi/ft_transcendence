@@ -119,9 +119,9 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       </Link>
       {GameInfo.OpponentId === 0 && (
         <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
-          {/* <div className="text-center p-4 flex justify-center">
+          <div className="text-center p-4 flex justify-center">
             <CostumizeGame setBgColor={setBgColor} />
-          </div> */}
+          </div>
           <button
             onClick={handlePlayClick}
             disabled={isWaiting}

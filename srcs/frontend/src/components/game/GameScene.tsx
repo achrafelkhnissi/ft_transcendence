@@ -40,18 +40,15 @@ export default class GameScene extends Scene {
     this.CANVAS_WIDTH = this.sys.canvas.width;
 
     this.cursors = this.input.keyboard?.createCursorKeys();
-    // const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
-    // middleLine.beginPath();
-    // middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
-    // middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
-    // middleLine.strokePath();
-    this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
-    this.background.displayWidth = this.CANVAS_WIDTH;
-    this.background.displayHeight = this.CANVAS_HEIGHT;
+    const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
+    middleLine.beginPath();
+    middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
+    middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
+    middleLine.strokePath();
 
     const left = this.add.rectangle(
       PADDLE_WIDTH / 2 + 10,
-      this.CANVAS_HEIGHT / 2,
+      this.CANVAS_HEIGHT / 2, 
       PADDLE_WIDTH,
       PADDLE_HEIGHT,
       0xffffff,
@@ -81,6 +78,7 @@ export default class GameScene extends Scene {
       this.opponentPaddle = left;
     }
     this.ball = ball;
+    console.log('ball :',this.ball);
 
     this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
       const { x, y } = data;
@@ -89,8 +87,8 @@ export default class GameScene extends Scene {
     });
 
     this.socket.on('updateBallState', (data) => {
-      this.ball.setX(data.x);
-      this.ball.setY(data.y);
+      this.ball?.setX(data.x);
+      this.ball?.setY(data.y);
     });
 
     this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 4, 30, '0', {

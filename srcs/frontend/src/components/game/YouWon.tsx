@@ -4,6 +4,7 @@ import { User } from '../userProfile/types';
 import { FaCrown } from "react-icons/fa";
 
 
+
 interface props {
   user: User;
 }
@@ -14,7 +15,6 @@ const YouWon: React.FC<props> = ({ user }) => {
       flex flex-col gap-8 justify-center  shadow-lg py-px"
     >
         <div className="self-center">
-        <Crown color={''} width={''} height={''} />
         </div>
       <div className="flex flex-col gap-4 self-center">
           <FaCrown className="text-[#E89B05] w-12 h-12 self-center drop-shadow-[0_0px_9px_rgba(232,155,5,0.6)]"/>

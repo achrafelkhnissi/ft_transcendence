@@ -8,9 +8,6 @@ export default class Preloader extends Scene {
         this.load.image('background', './assets/background.png')
     }
     create() {
-        // Additional setup after assets have been loaded
-
-        // Proceed to the main game scene or menu scene
         this.scene.start('gamescene');
     }
 };
