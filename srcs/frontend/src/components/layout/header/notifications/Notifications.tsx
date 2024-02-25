@@ -38,7 +38,7 @@ const Notifications = () => {
   };
   const handleClick = () => {
     if (!isClicked) {
-      if (notifications.length > 0) {
+      if (notifications?.length > 0) {
         const notifId = notifications[notifications.length - 1].id;
         setNotifAsRead(notifId).then((res) => {
           console.log('set notif read', res);
@@ -60,9 +60,10 @@ const Notifications = () => {
 
   useEffect(() => {
     getNotifications().then((res) => {
-      const notif: NotificationsType[] = res;
-      setNotifications(notif);
- 
+      if (res) {
+        const notif: NotificationsType[] = res;
+        setNotifications(notif);
+      }
     });
 
     if (socket) {
@@ -110,8 +111,8 @@ const Notifications = () => {
         />
         <div
           className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] ${
-            (notifications.length === 0 ||
-              notifications[notifications.length - 1]?.read) &&
+            (notifications?.length === 0 ||
+              notifications[notifications?.length - 1]?.read) &&
             'hidden'
           }`}
         >
@@ -125,13 +126,13 @@ const Notifications = () => {
         >
           <div className="w-full max-h-80 overflow-y-auto scroll-smooth ">
             <div className="flex gap-1 flex-col-reverse justify-center ">
-              {notifications.length === 0 && (
+              {notifications?.length === 0 && (
                 <p className="text-sm text-center text-white">
                   {' '}
                   find some firends{' '}
                 </p>
               )}
-              {notifications.map((item, index) => {
+              {notifications?.map((item, index) => {
                 if (item.type == 'FRIEND_REQUEST_SENT')
                   return (
                     <FriendRequest

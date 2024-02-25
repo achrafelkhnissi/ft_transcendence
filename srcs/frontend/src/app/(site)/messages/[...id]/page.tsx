@@ -17,7 +17,6 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useSocket } from '@/contexts/socketContext';
 import CreateChannel from '@/components/messages/channels/CreateChannel';
 import markMessageAsRead from '@/services/markMessageAsRead';
-import getAllUsers from '@/services/getAllUsers';
 import getAllUsersStatus from '@/services/getAllUsersStatus';
 
 const Home = ({ params }: { params: { id: number } }) => {
@@ -41,23 +40,24 @@ const Home = ({ params }: { params: { id: number } }) => {
           conversations[conversationId].messages.length - 1
         ];
       markMessageAsRead(message.id).then((res) => {
-        setConversations((prevConversations) => {
-          const updatedConversations = { ...prevConversations };
-          const conversation = updatedConversations[conversationId];
+        if (res)
+          setConversations((prevConversations) => {
+            const updatedConversations = { ...prevConversations };
+            const conversation = updatedConversations[conversationId];
 
-          if (conversation && conversation.messages.length > 0) {
-            const lastMessageIndex = conversation.messages.length - 1;
-            conversation.messages[lastMessageIndex] = {
-              ...conversation.messages[lastMessageIndex],
-              readBy: [
-                ...conversation.messages[lastMessageIndex].readBy,
-                currentUser?.id,
-              ],
-            };
-          }
+            if (conversation && conversation.messages.length > 0) {
+              const lastMessageIndex = conversation.messages.length - 1;
+              conversation.messages[lastMessageIndex] = {
+                ...conversation.messages[lastMessageIndex],
+                readBy: [
+                  ...conversation.messages[lastMessageIndex].readBy,
+                  currentUser?.id,
+                ],
+              };
+            }
 
-          return updatedConversations;
-        });
+            return updatedConversations;
+          });
       });
     }
   };
@@ -145,7 +145,7 @@ const Home = ({ params }: { params: { id: number } }) => {
   //  initialize conversations
   useEffect(() => {
     const initializeConversations = (initialConversations: Conversation[]) => {
-      const sortedConversations = initialConversations.sort(
+      const sortedConversations = initialConversations?.sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       );
@@ -168,7 +168,7 @@ const Home = ({ params }: { params: { id: number } }) => {
     }
 
     getConversations().then((res) => {
-      initializeConversations(res);
+      res && initializeConversations(res);
     });
     getAllUsersStatus().then((res) => {
       if (res) {
@@ -184,7 +184,7 @@ const Home = ({ params }: { params: { id: number } }) => {
       }
     });
     getCurrentUser().then((res) => {
-      setCurrentUser(res);
+      if (res) setCurrentUser(res);
     });
   }, []);
 
@@ -218,15 +218,6 @@ const Home = ({ params }: { params: { id: number } }) => {
     };
 
     if (socket) {
-      // TODO: Check for a better way to handle unauthorized socket and/or unauthorized access to any page
-      socket.on('unauthorized', (error) => {
-        console.log('unauthorized: ', error);
-
-        socket.disconnect();
-
-        window.location.href = '/';
-      });
-
       socket.on('onMessage', (message: Message) => {
         console.log('message', message);
         addMessageToConversation(message);
@@ -237,7 +228,6 @@ const Home = ({ params }: { params: { id: number } }) => {
       });
 
       socket.on('action', (res: actionData) => {
-        console.log('action', res);
         switch (res.action) {
           case 'add':
           case 'remove-admin':
@@ -263,9 +253,7 @@ const Home = ({ params }: { params: { id: number } }) => {
         }
       });
       socket.on('blocked', (res) => {
-        console.log('blocked', res);
         removeConversationByName(res.roomName);
-        console.log('tmshat', conversations);
       });
     }
 

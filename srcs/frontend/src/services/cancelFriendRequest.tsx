@@ -1,16 +1,10 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 const cancelFriendRequest = async (id: number | null) => {
-  try {
-    const { data } = await axios.get(
-      process.env.BACKEND + `/api/users/friends/requests/cancel?id=${id}`,
-      { withCredentials: true },
-    );
-    return data;
-  } catch (e) {
-    console.log('error canceling friend request ', e);
-    return null;
-  }
+  const {data} = await axiosInstance.get(
+ `/api/users/friends/requests/cancel?id=${id}`,
+  );
+  return data;
 };
 
 export default cancelFriendRequest;

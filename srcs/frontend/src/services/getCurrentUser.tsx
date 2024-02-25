@@ -1,10 +1,7 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getCurrentUser() {
-  const { data } = await axios.get(process.env.BACKEND + `/api/users/me`, {
-    withCredentials: true,
-  });
-
+  const { data } = await axiosInstance.get(`/api/users/me`);
   return data;
 }
 

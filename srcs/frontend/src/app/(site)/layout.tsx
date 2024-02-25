@@ -1,25 +1,28 @@
 // import "./globals.css";
+"use client"
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Sidebar from '../../components/layout/sidebar/Sidebar';
 import Header from '../../components/layout/header/Header';
-import { SocketProvider } from '@/contexts/socketContext';
+import { SocketProvider, useSocket } from '@/contexts/socketContext';
+import InvitePopup from '@/components/game/InvitePopUp';
+import { ToastContainer} from 'react-toastify';
+
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'PongTime',
-  description: 'PongTime ',
-};
+// export const metadata: Metadata = {
+//   title: 'PongTime',
+//   description: 'PongTime ',
+// };
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
   return (
-    // <html lang="en">
-    // <body className={inter.className}>
     <SocketProvider>
       <div className="flex flex-row w-full h-full overflow-hidden">
         <div>
@@ -30,8 +33,8 @@ export default function RootLayout({
           <div className="max-w-[1500px] w-full mx-auto">{children}</div>
         </div>
       </div>
+        <InvitePopup/>
+        <ToastContainer/>
     </SocketProvider>
-    // </body>
-    // </html>
   );
 }

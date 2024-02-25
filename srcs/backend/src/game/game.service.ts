@@ -6,18 +6,19 @@ import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { NotificationsService } from 'src/users/notifications/notifications.service';
+import { Gateway } from 'src/gateway/gateway';
 
 interface Player {
-  // id: string;
   socket: Socket;
-  user: UserType;
+  id: number;
 }
 
 @Injectable()
 export class GameService {
   private activeMatches: { [key: string]: Match } = {};
+  public activeRoom: { [key: string]: Player[] } = {};
   private playerQueue: Player[] = [];
-  private currentGamers: Player[] = [];
+  private onlineGamers: Player[] = [];
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -30,38 +31,39 @@ export class GameService {
 
   updateGame() {
     setInterval(async () => {
+      const matchesToRemove = [];
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
         if (match.isFinished) {
+          console.log('save match');
           const id1: number = parseInt(key.split('-')[0]);
           const id2: number = parseInt(key.split('-')[1]);
-          this.currentGamers = this.currentGamers.filter(
-            (player) => player.user.id !== id1 && player.user.id !== id2,
-          );
           await this.saveMatch({
             winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
             loserId: match.score.player1 < match.score.player2 ? id1 : id2,
             score: `${match.score.player1} - ${match.score.player2}`,
           });
-          match.removeIt = true;
+          match.isFinished = false;
+          matchesToRemove.push(key);
         }
       }
-      const toRemoveEntries = Object.entries(this.activeMatches).filter(
-        ([key, gameInstance]) => gameInstance.removeIt,
-      );
 
-      toRemoveEntries.forEach(([key]) => {
+      matchesToRemove.forEach((key) => {
         delete this.activeMatches[key];
       });
     }, 100);
   }
 
   addUser(user: Player): void {
-    if (
-      !this.playerQueue.find((player) => player.user.id === user.user.id) ||
-      this.currentGamers.find((player) => player.user.id === user.user.id)
-    )
+    const userId = user.id;
+
+    if (this.PlayerisAvailable(userId)) {
       this.playerQueue.push(user);
+      console.log('Player added to the queue');
+    } else {
+      console.log('Player is already in the queue');
+      user.socket.emit('already in the game');
+    }
   }
 
   removeUser(): Player | undefined {
@@ -73,12 +75,13 @@ export class GameService {
   }
 
   createMatch(player1: Player, player2: Player): void {
-    const matchKey = `${player1.user.id}-${player2.user.id}`;
+    console.log('match creat');
+    const matchKey = `${player1.id}-${player2.id}`;
     const match = new Match(player1.socket, player2.socket);
     this.activeMatches[matchKey] = match;
-    this.currentGamers.push(player1);
-    this.currentGamers.push(player2);
     setTimeout(() => match.gameStart(), 5000);
+    this.onlineGamers.push(player1);
+    this.onlineGamers.push(player2);
   }
 
   readyForGame() {
@@ -86,52 +89,47 @@ export class GameService {
       if (this.getAllUsers().length == 1)
         this.removeUser().socket.emit('nta wahid');
     }, 10000);
-    if (this.getAllUsers().length >= 2) {
+    let size = this.playerQueue.length;
+    console.log(size);
+    if (size >= 2) {
+      console.log('readyForGame');
       const client1 = this.removeUser();
       const client2 = this.removeUser();
       client1.socket.emit('start game', {
         playerPosition: 'leftPaddle',
-        opponentId: client2.user.id,
-        username: client2.user.username,
+        opponentId: client2.id,
       });
       client2.socket.emit('start game', {
         playerPosition: 'rightPaddle',
-        opponentId: client1.user.id,
-        username: client1.user.username,
+        opponentId: client1.id,
       });
+      console.log('event sent');
       this.createMatch(client1, client2);
-    } //remove the user if he is offline
+    }
   }
 
   removeUserById(userId: number): void {
+    console.log('player removed by id from the queue');
     this.playerQueue = this.playerQueue.filter(
-      (player) => player.user.id !== userId,
+      (player) => player.id !== userId,
+    );
+    this.onlineGamers = this.playerQueue.filter(
+      (player) => player.id !== userId,
     );
   }
 
   inviteGame(inviter: Player, invited: Player) {
-    invited.socket.emit('invite', inviter);
-    invited.socket.once('inviteResponse', (response) => {
-      if (
-        response === true &&
-        !this.currentGamers.find(
-          (player) => player.user.id === invited.user.id,
-        ) &&
-        !this.currentGamers.find((player) => player.user.id === inviter.user.id)
-      ) {
-        inviter.socket.emit('start game', {
-          playerPosition: 'leftPaddle',
-          opponentId: invited.user.id,
-          username: invited.user.username,
-        });
-        invited.socket.emit('start game', {
-          playerPosition: 'rightPaddle',
-          opponentId: inviter.user.id,
-          username: inviter.user.username,
-        });
-        this.createMatch(inviter, invited);
-      }
+    console.log('gameroom start');
+    console.log('gameroom start');
+    inviter.socket.emit('start game', {
+      playerPosition: 'leftPaddle',
+      opponentId: invited.id,
     });
+    invited.socket.emit('start game', {
+      playerPosition: 'rightPaddle',
+      opponentId: inviter.id,
+    });
+    this.createMatch(inviter, invited);
   }
 
   async saveMatch(data: CreateGameDto) {
@@ -211,5 +209,19 @@ export class GameService {
         score: true,
       },
     });
+  }
+
+  createGameRoomName(playerId1: number, playerId2: number) {
+    const sortedIds = [playerId1, playerId2].sort();
+    return `room-${sortedIds[0]}-${sortedIds[1]}`;
+  }
+
+  PlayerisAvailable(playerId: number){
+    if (
+      !this.playerQueue.find((player) => player.id === playerId) &&
+      !this.onlineGamers.find((player) => player.id === playerId)
+    ) 
+      return true;
+    return false
   }
 }

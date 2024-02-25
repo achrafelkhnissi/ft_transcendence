@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 interface Props {
   type: string;
@@ -8,21 +8,9 @@ interface Props {
   participants: number[];
 }
 
-const API_URL = process.env.BACKEND + '/api/users/chat';
-
 const createNewConv = async (convo: Props) => {
-  try {
-    const { data } = await axios.post(API_URL, convo, {
-      withCredentials: true,
-    });
-    console.log({
-      data,
-    });
-    return data;
-  } catch (error) {
-    console.error('Error creating new conversation:', error);
-    return null;
-  }
+  const {data} =  await axiosInstance.post('/api/users/chat', convo);
+  return data;
 };
 
 export default createNewConv;

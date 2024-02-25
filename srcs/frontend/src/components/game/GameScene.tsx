@@ -20,6 +20,8 @@ export default class GameScene extends Scene {
   private scoreText1!: Phaser.GameObjects.Text;
   private scoreText2!: Phaser.GameObjects.Text;
 
+  public background!: Phaser.GameObjects.Image;
+
   private prevY = 0;
 
   constructor(
@@ -38,11 +40,15 @@ export default class GameScene extends Scene {
     this.CANVAS_WIDTH = this.sys.canvas.width;
 
     this.cursors = this.input.keyboard?.createCursorKeys();
-    const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
-    middleLine.beginPath();
-    middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
-    middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
-    middleLine.strokePath();
+    // const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
+    // middleLine.beginPath();
+    // middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
+    // middleLine.lineTo(this.CANVAS_WIDTH/2, this.CANVAS_HEIGHT);
+    // middleLine.strokePath();
+    this.background = this.add.image(0, 0, 'background').setOrigin(0, 0);
+    this.background.displayWidth = this.CANVAS_WIDTH;
+    this.background.displayHeight = this.CANVAS_HEIGHT;
+
     const left = this.add.rectangle(
       PADDLE_WIDTH / 2 + 10,
       this.CANVAS_HEIGHT / 2,
@@ -77,7 +83,6 @@ export default class GameScene extends Scene {
     this.ball = ball;
 
     this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
-      console.log('updateOpponentPaddle');
       const { x, y } = data;
       this.opponentPaddle?.setX(x);
       this.opponentPaddle?.setY(y);
@@ -88,12 +93,12 @@ export default class GameScene extends Scene {
       this.ball.setY(data.y);
     });
 
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 2 - 30, 30, '0', {
+    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',
     });
-    this.scoreText2 = this.add.text(this.CANVAS_WIDTH / 2 + 30, 30, '0', {
+    this.scoreText2 = this.add.text(3 * this.CANVAS_WIDTH / 4, 30, '0', {
       fontSize: '40px',
       fontFamily: 'Arial, sans-serif',
       color: '#ffffff',

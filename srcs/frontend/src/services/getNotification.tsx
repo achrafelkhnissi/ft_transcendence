@@ -1,11 +1,7 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 
 async function getNotifications() {
-  const { data } = await axios.get(
-    process.env.BACKEND + `/api/users/notifications`,
-    { withCredentials: true },
-  );
-
+  const {data} = await axiosInstance.get(`/api/users/notifications`);
   return data;
 }
 

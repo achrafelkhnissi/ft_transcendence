@@ -39,15 +39,15 @@ const Game = (props: any) => {
             mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: [
+          scene:[
             Preloader,
             new GameScene({ key: 'gamescene' }, socket, playerPosition),
-          ],
+          ] 
         });
         setGame(PhaserGame);
         return () => {
           if (PhaserGame){
-            console.log('game distroyed');
+            console.log('game destroyed');
             PhaserGame.destroy(true);
           }
         };
@@ -57,13 +57,11 @@ const Game = (props: any) => {
   }, [socket]);
 
   return (
-    <>
       <div
-        className="max-w-[1000px] max-h-[500px] self-center"
+        className="max-w-[1000px] max-h-[500px] self-center border-0"
         id="game-container"
         key="game-container"
       ></div>
-    </>
   );
 };
 

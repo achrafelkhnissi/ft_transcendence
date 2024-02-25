@@ -83,7 +83,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         } else {
           unmuteUser(currentUser?.id, conversationId).then((res) => {
             if (res) {
-              console.log('unmute', res);
+              //
             }
           });
           setIsMuted(false);
@@ -125,7 +125,6 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         },
         { withCredentials: true },
       );
-      console.log('data', data);
     }
     setNewMessage('');
   };

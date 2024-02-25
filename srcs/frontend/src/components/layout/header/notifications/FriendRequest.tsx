@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { NotificationsType } from './Notifications';
 import acceptFriendRequest from '@/services/acceptFriendRequest';
-import deleteNotification from '@/services/deleteNotification';
 import declineFirendRequest from '@/services/declineFriendRequest';
 import { useState } from 'react';
 
@@ -16,23 +15,18 @@ const FriendRequest: React.FC<props> = ({ notif, deleteNotif }) => {
   const handleAccept = () => {
     acceptFriendRequest(notif.sender.id).then((res) => {
       if (res) {
-        deleteNotification(notif.id).then((res) => {
-          if (res) {
             deleteNotif(notif.id);
             setActionDone(true);
             setTimeout(() => {
               setActionDone(false);
             }, 2500);
           }
-        });
-      }
     });
   };
 
   const handleDecline = () => {
     declineFirendRequest(notif.sender.id).then((res) => {
       if (res) {
-        console.log('handleDecline', res);
         deleteNotif(notif.id);
         setActionDone(true);
         setTimeout(() => {

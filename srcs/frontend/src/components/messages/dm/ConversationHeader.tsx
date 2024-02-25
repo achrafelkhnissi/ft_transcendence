@@ -4,6 +4,7 @@ import BlockUser from '../../svgAssets/BlockUser';
 import GameInvitation from '../../svgAssets/GameInvitation';
 import { User, UserStatuses } from '../data';
 import { IoIosArrowBack } from 'react-icons/io';
+import { useSocket } from '@/contexts/socketContext';
 
 interface props {
   receiver: User;
@@ -20,6 +21,9 @@ const ConversationHeader: React.FC<props> = ({
   removeConversation,
   conversationId,
 }) => {
+
+  const {socket} = useSocket();
+
   const handleBlockUser = () => {
     blockUser(receiver.id).then((res) => {
       if (res) {
@@ -27,6 +31,13 @@ const ConversationHeader: React.FC<props> = ({
       }
     });
   };
+
+  const handleGameInvitation = () => {
+    if (socket){
+      console.log('emit invite');
+      socket.emit('game-invite', {inviterId: receiver.id});
+    }
+  }
 
   return (
     <div
@@ -37,16 +48,16 @@ const ConversationHeader: React.FC<props> = ({
     >
       <div className="p-2 flex gap-2 self-center">
         <img
-          src={process.env.BACKEND + `/api/users/${receiver.id}/avatar`}
+          src={receiver?.id ? process.env.BACKEND + `/api/users/${receiver.id}/avatar`: ''}
           alt="receiver"
           width={100}
           height={100}
-          className="w-10 h-10 rounded-full self-center"
+          className="w-10 h-10 rounded-full self-center object-cover"
         />
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
           <p className="font-light text-xs text-white/30 ">
-            {receiver?.id && statuses[receiver?.id].toLocaleLowerCase()}
+            {receiver?.id && statuses[receiver?.id]?.toLocaleLowerCase()}
           </p>
         </div>
       </div>
@@ -54,6 +65,7 @@ const ConversationHeader: React.FC<props> = ({
         <div
           className="self-center hover:cursor-pointer
                 drop-shadow-[0_4px_8px_rgba(255,255,255,0.21)]"
+          onClick={handleGameInvitation}
         >
           <GameInvitation color={'#59598E'} width={'29px'} height={'29px'} />
         </div>
