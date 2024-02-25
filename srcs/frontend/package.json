@@ -10,12 +10,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tsparticles/engine": "^3.2.2",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.2.2",
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bufferutil": "^4.0.8",
+    "clsx": "^2.1.0",
     "emoji-picker-react": "^4.6.0",
     "form-data": "^4.0.0",
+    "framer-motion": "^11.0.6",
+    "jsonwebtoken": "^9.0.2",
     "next": "^13.5.4",
     "phaser": "^3.70.0",
     "phaser3spectorjs": "^0.0.8",
@@ -24,6 +30,7 @@
     "react-icons": "^4.11.0",
     "react-toastify": "^10.0.4",
     "socket.io-client": "^4.7.2",
+    "tailwind-merge": "^2.2.1",
     "utf-8-validate": "^5.0.10"
   },
   "devDependencies": {
