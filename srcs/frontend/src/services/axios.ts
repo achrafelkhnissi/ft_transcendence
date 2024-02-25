@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: process.env.BACKEND,
-  withCredentials: true, 
+  withCredentials: true,
 });
 
 instance.interceptors.response.use(
@@ -12,13 +12,11 @@ instance.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-    console.log('error ',error);
-    if (error.response?.status === 401) {
       console.log('Unauthorized access, redirecting to login page...');
       window.location.href = '/';
     }
-    return {data: null};
-  }
+    return { data: null };
+  },
 );
 
 export default instance;
