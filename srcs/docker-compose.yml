@@ -24,12 +24,10 @@ services:
   backend:
     build:
       context: ./backend/
-      dockerfile: Dockerfile
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - POSTGRES_HOST=${POSTGRES_HOST}
         - POSTGRES_PORT=${POSTGRES_PORT}
-    #   target: dev # Used with command to run dev environment
-    # command: npm run start:dev
     container_name: backend
     restart: always
     environment:
@@ -55,17 +53,17 @@ services:
       - frontend_net
     depends_on:
       - db
-    # volumes:
-    #   - ./backend:/app
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:
       context: ./frontend/
-      dockerfile: Dockerfile
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
-      # target: dev
+        - BACKEND_SERVICE=backend:$NEST_PORT
     container_name: frontend
     restart: always
     ports:
@@ -74,12 +72,12 @@ services:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
       - DOMAIN_NAME=${DOMAIN_NAME}
-    networks:
-      - frontend_net
-    # volumes:
-    #   - ./frontend:/app # for hot reloading
     depends_on:
       - backend
+    networks:
+      - frontend_net
+    volumes:
+      - ./frontend:/app
 
 volumes:
   db-data:
