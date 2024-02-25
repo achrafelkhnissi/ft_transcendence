@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   if (request.url.includes('/verify')) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token ?? '', process.env.JWT_SECRET);
       if (decoded) {
         return NextResponse.next();
       }
