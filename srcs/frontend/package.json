@@ -16,6 +16,7 @@
     "bufferutil": "^4.0.8",
     "emoji-picker-react": "^4.7.18",
     "form-data": "^4.0.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "^14.1.0",
     "phaser": "^3.70.0",
     "phaser3spectorjs": "^0.0.8",
