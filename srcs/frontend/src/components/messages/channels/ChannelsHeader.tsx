@@ -42,7 +42,7 @@ const ChannelsHeader: React.FC<ChannelsHeaderProps> = ({
         </div>
       </div>
       <div className="self-center"
-      onClick={() => setShowChannelInfo(!showChannelInfo)}>
+      onClick={() => setShowChannelInfo(true)}>
         <InfoIcon clicked={showChannelInfo} />
       </div>
       <IoIosArrowBack

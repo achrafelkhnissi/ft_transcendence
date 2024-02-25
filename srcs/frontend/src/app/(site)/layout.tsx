@@ -7,6 +7,7 @@ import Header from '../../components/layout/header/Header';
 import { SocketProvider, useSocket } from '@/contexts/socketContext';
 import InvitePopup from '@/components/game/InvitePopUp';
 import { ToastContainer} from 'react-toastify';
+import { useEffect } from 'react';
 
 
 const inter = Inter({ subsets: ['latin'] });
@@ -15,6 +16,7 @@ const inter = Inter({ subsets: ['latin'] });
 //   title: 'PongTime',
 //   description: 'PongTime ',
 // };
+
 
 export default function RootLayout({
   children,

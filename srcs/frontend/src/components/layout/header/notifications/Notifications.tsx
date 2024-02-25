@@ -6,7 +6,7 @@ import { GrNotification } from 'react-icons/gr';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import getNotifications from '@/services/getNotification';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FriendRequest from './FriendRequest';
 import { useSocket } from '@/contexts/socketContext';
 import setNotifAsRead from '@/services/setNotifAsRead';
@@ -32,6 +32,7 @@ const Notifications = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [notifications, setNotifications] = useState<NotificationsType[]>([]);
   const { socket } = useSocket();
+  const notificationRef = useRef(null);
 
   const deleteNotif = (id: number) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
@@ -92,8 +93,27 @@ const Notifications = () => {
     }
   }, [socket]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !(notificationRef.current as any).contains(event.target as Node)
+      ) {
+        console.log('clicked outside');
+        setIsClicked(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
+      ref={notificationRef}
       className={`${
         isClicked && 'bg-white/10'
       } rounded-lg h-9 w-9 flex justify-center cursor-pointer `}

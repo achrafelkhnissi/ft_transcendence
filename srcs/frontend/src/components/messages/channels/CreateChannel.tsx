@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { IoIosAddCircle } from 'react-icons/io';
 import { IoAdd } from 'react-icons/io5';
 import { MdModeEdit } from 'react-icons/md';
@@ -67,9 +67,6 @@ interface props {
 
 const CreateChannel: React.FC<props> = ({
   currentUser,
-  conversationsMap,
-  updateConversations,
-  updateSelectedConversation,
   updateCreateChannelState,
 }) => {
   const [newChannel, setNewChannel] = useState<NewChannel>(defaultChannel);
@@ -81,7 +78,6 @@ const CreateChannel: React.FC<props> = ({
   const [weakPasswrod, setWeakPassword] = useState<boolean>(false);
   const [visiblePass, setVisiblePass] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
-  const { socket } = useSocket();
 
   useEffect(() => {
     getAllChannelNames().then((res) => {
@@ -92,6 +88,7 @@ const CreateChannel: React.FC<props> = ({
     });
   }, []);
 
+  
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
     const extension = /\.(jpeg|jpg|png)$/;
@@ -271,7 +268,7 @@ const CreateChannel: React.FC<props> = ({
       <ToastContainer autoClose={3000} className={'absolute'} />
       <form
         onSubmit={handleSubmit}
-        className="md:pt-8 pt-2 flex justify-start flex-col md:gap-6 gap-2 md:px-6 px-2 relative w-full h-full"
+        className="md:pt-8 pt-4 flex justify-start flex-col md:gap-6 gap-3 md:px-6 px-4 relative w-full h-full"
       >
         <h1 className="mx-auto text-white font-bold md:text-2xl text-lg">
           New Channel
