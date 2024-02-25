@@ -17,7 +17,7 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install --verbose prisma @nestjs/cli 
+RUN npm install --verbose @nestjs/cli 
 
 COPY --chown=node:node . .
 
@@ -42,6 +42,9 @@ RUN npx prisma generate
 RUN npm run build
 
 RUN npm ci --omit=dev --verbose
+
+# Attempt to fix the TODO in the prod stage
+RUN npm install prisma
 
 USER node
 
