@@ -72,5 +72,6 @@ CMD until nc -z $POSTGRES_HOST $POSTGRES_PORT; \
   do echo "Waiting for database connection..."; \
   sleep 2; \
   done && \ 
+  # TODO: prisma not installed here! Why?
   npx prisma db push && \
   node dist/main.js
