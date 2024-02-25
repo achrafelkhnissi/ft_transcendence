@@ -5,6 +5,7 @@ import confirmCode from '@/services/confirmCode';
 import { ChangeEvent } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSearchParams } from 'next/navigation';
 
 const Verify = () => {
   const router = useRouter();
