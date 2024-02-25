@@ -55,7 +55,7 @@ const Game = (props: any) => {
 
   return (
       <div
-        className="max-w-[1428px] max-h-[700px] self-center border-0"
+        className="max-w-[1428px] max-h-[700px] self-center"
         id="game-container"
         key="game-container"
       ></div>

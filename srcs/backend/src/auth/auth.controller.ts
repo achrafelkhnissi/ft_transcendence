@@ -20,6 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { sign } from 'jsonwebtoken';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -49,7 +50,12 @@ export class AuthController {
     if (settings?.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
-      return res.redirect(`${process.env.FRONTEND}/verify`);
+
+      const token = sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: '1m',
+      });
+
+      return res.redirect(`${process.env.FRONTEND}/verify?token=${token}`);
     }
 
     this.logger.debug(

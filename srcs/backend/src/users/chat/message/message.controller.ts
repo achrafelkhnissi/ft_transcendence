@@ -1,3 +1,4 @@
+import { FriendsService } from './../../friends/friends.service';
 import {
   Body,
   Controller,
@@ -31,6 +32,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 export class MessageController {
   constructor(
     private readonly messageService: MessageService,
+    private readonly friendsService: FriendsService,
     private readonly gateway: Gateway,
   ) {}
 
@@ -54,7 +56,24 @@ export class MessageController {
     });
 
     if (msg) {
-      this.gateway.server.to(room).emit('onMessage', msg);
+      const blockedUsersRoomName = `user-${userId}-blocked-users`;
+
+      const blockedUsers = await this.friendsService.getBlockedUsersIds(userId);
+      blockedUsers.forEach((blockedUserId) => {
+        const sockets = this.gateway.server.sockets.adapter.rooms.get(
+          `user-${blockedUserId}`,
+        );
+        sockets.forEach((socketId) => {
+          this.gateway.server.sockets.sockets
+            .get(socketId)
+            .join(blockedUsersRoomName);
+        });
+      });
+
+      this.gateway.server
+        .to(room)
+        .except(blockedUsersRoomName)
+        .emit('onMessage', msg);
     }
     return msg;
   }

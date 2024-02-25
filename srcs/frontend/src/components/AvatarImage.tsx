@@ -12,7 +12,13 @@ const AvatarImage = () => {
 
   if (src != '')
     return (
-      <img src={src} alt="user" width={40} height={40} className="rounded-lg object-fill" />
+      <img
+        src={src}
+        alt="user"
+        width={40}
+        height={40}
+        className="rounded-lg object-fill"
+      />
     );
 };
 

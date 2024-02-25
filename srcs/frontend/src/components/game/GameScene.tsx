@@ -87,6 +87,7 @@ export default class GameScene extends Scene {
     });
 
     this.socket.on('updateBallState', (data) => {
+      console.log('ball state:', data);
       this.ball?.setX(data.x);
       this.ball?.setY(data.y);
     });
