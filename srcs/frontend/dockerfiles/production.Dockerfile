@@ -62,5 +62,4 @@ USER nextjs
 
 EXPOSE 1337
 
-# TODO:  Error: Cannot find module '/app/server.js'
 CMD ["node", "server.js"]
