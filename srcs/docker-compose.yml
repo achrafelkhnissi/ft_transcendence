@@ -66,6 +66,7 @@ services:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
         - BACKEND_SERVICE=backend:$NEST_PORT
+        - DOMAIN_NAME=${DOMAIN_NAME}
         - JWT_SECRET=${JWT_SECRET}
     container_name: frontend
     restart: always
@@ -85,6 +86,8 @@ services:
 
 volumes:
   db-data:
+  frontend-deps:
+  backend-deps:
 
 networks:
   database_net:
