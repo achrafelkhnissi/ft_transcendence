@@ -108,25 +108,6 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  @Delete(':id')
-  @ApiParam({
-    name: 'id',
-    type: Number,
-    required: true,
-    description: 'User id',
-  })
-  @ApiOkResponse({
-    type: UpdateUserDto,
-    description: 'The user has been successfully deleted.',
-  })
-  @ApiNotFoundResponse({
-    description: 'User not found',
-  })
-  @ApiOperation({ summary: 'Delete user by id' })
-  delete(@Param('id', new ParseIntPipe()) id: number) {
-    return this.usersService.remove(id);
-  }
-
   @Get('me')
   @ApiOkResponse({
     type: UpdateUserDto,
