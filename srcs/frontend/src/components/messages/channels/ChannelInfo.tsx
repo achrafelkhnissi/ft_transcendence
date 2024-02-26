@@ -227,7 +227,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   <input
                     type="text"
                     id="password"
-                    value={password}
+                    // value={password}
                     maxLength={13}
                     placeholder={
                       channel.type == 'PROTECTED' ? '**********' : 'password'
