@@ -97,6 +97,8 @@ const SearchInput = () => {
               className="px-2 py-1 w-full text-white/80 bg-[#28285a]/80 rounded-lg
                hover:bg-[#28285a]/70 hover:text-white cursor-pointer"
               onClick={() => {
+                setInput('');
+                setShowSearchResults(false);
                 router.push(`/profile/${user.username}`);
               }}
             >
