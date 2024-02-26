@@ -82,8 +82,8 @@ export class UsersController {
     },
   })
   @ApiOperation({ summary: 'Get all users' })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@User() { id: userId }: UserType) {
+    return this.usersService.findAll(userId);
   }
 
   @Patch(':id')
