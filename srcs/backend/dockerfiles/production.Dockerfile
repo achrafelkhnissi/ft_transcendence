@@ -42,8 +42,6 @@ RUN npx prisma generate
 RUN npm run build
 
 RUN npm ci --omit=dev --verbose
-
-# Attempt to fix the TODO in the prod stage
 RUN npm install prisma
 
 USER node
@@ -75,6 +73,5 @@ CMD until nc -z $POSTGRES_HOST $POSTGRES_PORT; \
   do echo "Waiting for database connection..."; \
   sleep 2; \
   done && \ 
-  # TODO: prisma not installed here! Why?
   npx prisma db push && \
   node dist/main.js

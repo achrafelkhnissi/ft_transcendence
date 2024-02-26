@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 export async function middleware(request: NextRequest) {
-  if (!request.cookies.get('pong-time.sid')?.value) {
+  // if (!request.cookies.get('pong-time.sid')?.value) {
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
+  try {
+    jwt.verify(
+      request.cookies.get('pong-time.auth')?.value,
+      process.env.JWT_SECRET);
+  } catch (err) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

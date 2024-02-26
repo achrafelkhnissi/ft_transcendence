@@ -42,6 +42,17 @@ export class AuthController {
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
     const { settings } = user;
 
+    const token = sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: '1y',
+    });
+
+    res.cookie('pong-time.auth', token, {
+      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+      httpOnly: true,
+      secure: false,
+      domain: process.env.DOMAIN_NAME,
+    });
+
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
       return res.redirect(`${process.env.FRONTEND}/settings`);
@@ -81,6 +92,13 @@ export class AuthController {
 
       req.session.destroy(() => {
         res.clearCookie('pong-time.sid', {
+          path: '/',
+          domain: process.env.DOMAIN_NAME,
+          httpOnly: true,
+          secure: false,
+        });
+
+        res.clearCookie('pong-time.auth', {
           path: '/',
           domain: process.env.DOMAIN_NAME,
           httpOnly: true,

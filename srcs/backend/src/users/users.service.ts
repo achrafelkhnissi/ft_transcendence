@@ -56,8 +56,54 @@ export class UsersService {
     });
   }
 
-  findAll() {
+  findAll(id: number) {
+      const blockedUsers = await this.prisma.friendRequest.findMany({
+      where: {
+        OR: [
+          {
+            sender: {
+              id,
+            },
+          },
+          {
+            receiver: {
+              id,
+            },
+          },
+        ],
+        friendshipStatus: 'BLOCKED',
+      },
+      select: {
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    const blockedUserIds = [
+      ...new Set(
+        blockedUsers.flatMap((req) => [
+          req.sender.id,
+          req.receiver.id,
+        ]),
+      ),
+    ];
+
     return this.prisma.user.findMany({
+      where: {
+        id: {
+          notIn: blockedUserIds,
+        },
+      },
       select: {
         id: true,
         username: true,
