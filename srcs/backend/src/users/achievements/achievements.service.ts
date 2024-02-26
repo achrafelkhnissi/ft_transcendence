@@ -1,11 +1,53 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
+import { Achievements } from 'src/common/enums/achievements.enum';
 
 @Injectable()
-export class AchievementsService {
+export class AchievementsService implements OnModuleInit {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async onModuleInit() {
+    const achievements = await this.findAll();
+
+    if (achievements.length === 0) {
+      const defaultAchievements: CreateAchievementDto[] = [
+        {
+          name: Achievements.VERIFIED,
+          description: 'Verify your phone number',
+          image: 'verified.png',
+        },
+        {
+          name: Achievements.FIRST_GAME,
+          description: 'Play your first game',
+          image: 'first-game.png',
+        },
+        {
+          name: Achievements.FIRST_WIN,
+          description: 'Win your first game',
+          image: 'first-win.png',
+        },
+        {
+          name: Achievements.FIVE_GAMES,
+          description: 'Play 10 games',
+          image: '5-games.png',
+        },
+        {
+          name: Achievements.FIVE_WINS,
+          description: 'Win 10 games',
+          image: '5-wins.png',
+        },
+        {
+          name: Achievements.SOCIAL,
+          description: `Connect with a friend`,
+          image: `social.png`,
+        },
+      ];
+
+      await this.createMany(defaultAchievements);
+    }
+  }
 
   create(createAchievementDto: CreateAchievementDto) {
     return this.prismaService.achievement.create({
@@ -66,10 +108,16 @@ export class AchievementsService {
       .users();
   }
 
-  giveAchievementToUser(achievementId: number, userId: number) {
+  async giveAchievementToUser(userId: number, achievementName: string) {
+    const achievement = await this.findAchievementByName(achievementName);
+
+    if (!achievement) {
+      throw new NotFoundException('Achievement not found');
+    }
+
     return this.prismaService.achievement.update({
       where: {
-        id: achievementId,
+        id: achievement.id,
       },
       data: {
         users: {
@@ -110,5 +158,37 @@ export class AchievementsService {
           image: true,
         },
       });
+  }
+
+  async giveAchievementsToUserAfterGame(userId: number) {
+    const userStats = await this.prismaService.userStats.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        exp: true,
+        wins: true,
+        level: true,
+        losses: true,
+      },
+    });
+
+    if (userStats.wins + userStats.losses + 1 == 1) {
+      await this.giveAchievementToUser(userId, Achievements.FIRST_GAME);
+    }
+
+    if (userStats.wins + 1 == 1) {
+      await this.giveAchievementToUser(userId, Achievements.FIRST_WIN);
+    }
+
+    if (userStats.wins + 1 == 5) {
+      await this.giveAchievementToUser(userId, Achievements.FIVE_WINS);
+    }
+
+    if (userStats.wins + 1 + userStats.losses == 5) {
+      await this.giveAchievementToUser(userId, Achievements.FIVE_GAMES);
+    }
+
+    return userStats;
   }
 }

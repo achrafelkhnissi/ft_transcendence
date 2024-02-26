@@ -51,6 +51,7 @@ async function bootstrap() {
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
       httpOnly: true, // Prevents client side JS from reading the cookie
       secure: false, // Sent over HTTP and HTTPS
+      domain: process.env.DOMAIN_NAME,
     },
   });
 

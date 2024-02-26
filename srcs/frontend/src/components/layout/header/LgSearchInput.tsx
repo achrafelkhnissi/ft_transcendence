@@ -4,17 +4,17 @@
 import { LuSearch } from 'react-icons/lu';
 import { CiSearch } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { User } from '@/components/messages/data';
 import getUsersAll from '@/services/getUsersAll';
 
 const SearchInput = () => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
   const [input, setInput] = useState('');
   const [searchResultsUsers, setSearchResultsUsers] = useState<User[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const searchBarRef = useRef(null);
 
   useEffect(() => {
     getUsersAll().then((data: User[]) => {
@@ -22,6 +22,24 @@ const SearchInput = () => {
         setAllUsers(data);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchBarRef.current &&
+        !(searchBarRef.current as any).contains(event.target as Node)
+      ) {
+        console.log('clicked outside');
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const searchUsers = (query: string) => {
@@ -33,7 +51,10 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative lg:w-[400px] w-[250px] py-[0.1rem z-10 px-2">
+    <div
+      ref={searchBarRef}
+      className="bg-[#424283] border-[0.09rem] border-white/50 rounded-xl relative lg:w-[400px] w-[250px] py-[0.1rem z-10 px-2"
+    >
       <input
         type="text"
         value={input}
@@ -42,9 +63,16 @@ const SearchInput = () => {
         onChange={(event) => {
           setInput(event.target.value);
           searchUsers(event.target.value);
+          if (event.target.value != '') {
+            setShowSearchResults(true);
+          } else {
+            setShowSearchResults(false);
+          }
         }}
-        onClick={() => {
-          setShowSearchResults((prev) => !prev);
+        onFocus={() => {
+          if (input != '') {
+            setShowSearchResults(true);
+          }
         }}
       />
       <div className="absolute top-0 bottom-0 right-2">
@@ -69,16 +97,18 @@ const SearchInput = () => {
               className="px-2 py-1 w-full text-white/80 bg-[#28285a]/80 rounded-lg
                hover:bg-[#28285a]/70 hover:text-white cursor-pointer"
               onClick={() => {
+                setInput('');
+                setShowSearchResults(false);
                 router.push(`/profile/${user.username}`);
               }}
             >
-              <div className='flex '>
+              <div className="flex ">
                 <img
                   src={process.env.BACKEND + `/api/users/${user?.id}/avatar`}
                   alt=""
                   className="w-8 h-8 rounded-full inline-block mr-2 object-fill"
                 />
-                <p className='self-center text-sm'>{user.username}</p>
+                <p className="self-center text-sm">{user.username}</p>
               </div>
             </div>
           ))}

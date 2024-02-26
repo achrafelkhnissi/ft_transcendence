@@ -3,51 +3,47 @@
 #
 FROM node:20-alpine as dev
 
-# Set to dev environment
+LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
+
 ENV NODE_ENV development
 
-# Create app folder
 WORKDIR /app
 
-# Set permissions for node user to /app directory
-RUN chown -R node:node /app
+RUN apk add --no-cache postgresql-client && \
+    rm -rf /var/cache/apk/* && \
+    chown -R node:node /app
 
-# Copy source code into app folder
-COPY --chown=node:node . .
-
-# Install dependencies
-RUN npm install
-
-# Expose port 3000
-EXPOSE 3000
-
-# Set Docker as a non-root user
 USER node
 
+COPY --chown=node:node package*.json ./
+
+RUN npm install --verbose @nestjs/cli 
+
+COPY --chown=node:node . .
+
+EXPOSE 3000 5555
+
+ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
+CMD [ "npm", "run", "start:dev" ]
+
 #
-# 🏡 Production Build
+# 🚀 Production Build
 #
 FROM node:20-alpine as build
 
 WORKDIR /app
-RUN apk add --no-cache libc6-compat
 
-# Set to production environment
 ENV NODE_ENV production
 
-# In order to run `yarn build` we need access to the Nest CLI.
-# Nest CLI is a dev dependency.
 COPY --chown=node:node --from=dev /app/node_modules ./node_modules
-# Copy source code
 COPY --chown=node:node . .
 
-# Generate the production build. The build script runs "nest build" to compile the application.
+RUN npx prisma generate
 RUN npm run build
 
-# Install only the production dependencies and clean cache to optimize image size.
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --verbose
+RUN npm install prisma
 
-# Set Docker as a non-root user
 USER node
 
 #
@@ -55,17 +51,27 @@ USER node
 #
 FROM node:20-alpine as prod
 
-WORKDIR /app
-RUN apk add --no-cache libc6-compat
-
-# Set to production environment
+ARG POSTGRES_HOST
+ARG POSTGRES_PORT
+ENV POSTGRES_HOST $POSTGRES_HOST
+ENV POSTGRES_PORT $POSTGRES_PORT
 ENV NODE_ENV production
 
-# Copy only the necessary files
+# Add glibc compatibility for alpine
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
 COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
+COPY --chown=node:node --from=build /app/uploads uploads
+COPY --chown=node:node --from=build /app/prisma prisma
 
-# Set Docker as non-root user
 USER node
 
-CMD ["node", "dist/main.js"]
+CMD until nc -z $POSTGRES_HOST $POSTGRES_PORT; \
+  do echo "Waiting for database connection..."; \
+  sleep 2; \
+  done && \ 
+  npx prisma db push && \
+  node dist/main.js

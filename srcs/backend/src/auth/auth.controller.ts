@@ -20,6 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import * as jose from 'jose';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -41,6 +42,21 @@ export class AuthController {
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
     const { settings } = user;
 
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const token = await new jose.SignJWT({ id: user.id })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer(process.env.DOMAIN_NAME)
+      .setExpirationTime('1y')
+      .sign(secret);
+
+    res.cookie('pong-time.auth', token, {
+      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+      httpOnly: true,
+      secure: false,
+      domain: process.env.DOMAIN_NAME,
+    });
+
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
       return res.redirect(`${process.env.FRONTEND}/settings`);
@@ -49,7 +65,15 @@ export class AuthController {
     if (settings?.twoFactorEnabled) {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
-      return res.redirect(`${process.env.FRONTEND}/verify`);
+
+      const token = await new jose.SignJWT({ id: user.id })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setIssuer(process.env.DOMAIN_NAME)
+        .setExpirationTime('1m')
+        .sign(secret);
+
+      return res.redirect(`${process.env.FRONTEND}/verify?token=${token}`);
     }
 
     this.logger.debug(
@@ -75,6 +99,12 @@ export class AuthController {
 
       req.session.destroy(() => {
         res.clearCookie('pong-time.sid', {
+          domain: process.env.DOMAIN_NAME,
+          httpOnly: true,
+          secure: false,
+        });
+
+        res.clearCookie('pong-time.auth', {
           path: '/',
           domain: process.env.DOMAIN_NAME,
           httpOnly: true,

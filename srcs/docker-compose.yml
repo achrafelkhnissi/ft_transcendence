@@ -1,5 +1,8 @@
 version: "3.8"
 
+# Note:
+# - Uncomment the volumes and volumes in the backend and frontend services for hot reloading
+
 services:
   db:
     image: postgres:16-alpine
@@ -11,7 +14,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      # - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -19,19 +21,21 @@ services:
     networks:
       - database_net
 
-  # TODO: Make the backend installs its dependencies and then run the frontend
   backend:
     build:
       context: ./backend/
-      dockerfile: Dockerfile # dockerfiles/${NODE_ENV}.Dockerfile
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
+      args:
+        - POSTGRES_HOST=${POSTGRES_HOST}
+        - POSTGRES_PORT=${POSTGRES_PORT}
     container_name: backend
     restart: always
-    # env_file: .env
     environment:
       - NODE_ENV=${NODE_ENV}
       - NEST_PORT=${NEST_PORT}
       - FRONTEND=${FRONTEND}
-      - DATABASE_URL=${DATABASE_URL}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - JWT_SECRET=${JWT_SECRET}
       - FT_CLIENT_ID=${FT_CLIENT_ID}
       - FT_CLIENT_SECRET=${FT_CLIENT_SECRET}
       - FT_REDIRECT_URI=${FT_REDIRECT_URI}
@@ -39,29 +43,30 @@ services:
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
       - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
+      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
     ports:
       - "${NEST_PORT:-3000}:${NEST_PORT:-3000}"
       - "5555:5555"
-    volumes:
-      - ./backend:/app # for hot reloading
-      # - node_modules:/app/node_modules # for faster builds
     networks:
       - database_net
       - frontend_net
     depends_on:
       - db
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run prisma
-        npm run start:dev
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:
       context: ./frontend/
-      dockerfile: Dockerfile
+      dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
+      args:
+        - BACKEND=${BACKEND}
+        - PORT=${NEXT_PORT}
+        - BACKEND_SERVICE=backend:$NEST_PORT
+        - JWT_SECRET=${JWT_SECRET}
     container_name: frontend
     restart: always
     ports:
@@ -70,18 +75,13 @@ services:
       - NEXT_PORT=${NEXT_PORT}
       - BACKEND=${BACKEND}
       - DOMAIN_NAME=${DOMAIN_NAME}
-    volumes:
-      - ./frontend:/app # for hot reloading
-    networks:
-      - frontend_net
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - backend
-    command:
-      - sh
-      - -c
-      - |
-        npm install
-        npm run dev
+    networks:
+      - frontend_net
+    volumes:
+      - ./frontend:/app
 
 volumes:
   db-data:

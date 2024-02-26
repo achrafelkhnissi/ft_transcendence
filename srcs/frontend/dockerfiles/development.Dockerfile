@@ -5,16 +5,17 @@ FROM node:20-alpine
 
 LABEL maintainer="Achraf El Khnissi <achraf.elkhnissi@gmail.com>"
 
+ARG BACKEND_SERVICE
+ENV BACKEND_SERVICE $BACKEND_SERVICE
 ENV NODE_ENV development
+
+RUN apk add --no-cache libc6-compat curl
 
 WORKDIR /app
 
-RUN apk add --no-cache postgresql-client && \
-    rm -rf /var/cache/apk/*
-
 COPY . .
 
-EXPOSE 3000 5555
+EXPOSE 1337
 
 ENTRYPOINT [ "sh", "./scripts/entrypoint.sh" ]
-CMD [ "npm", "run", "start:dev" ]
+CMD ["npm", "run", "dev"]

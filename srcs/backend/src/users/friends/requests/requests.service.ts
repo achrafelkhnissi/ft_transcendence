@@ -1,3 +1,4 @@
+import { AchievementsService } from './../../achievements/achievements.service';
 import {
   BadRequestException,
   Injectable,
@@ -12,6 +13,7 @@ import {
 import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Gateway } from 'src/gateway/gateway';
+import { Achievements } from 'src/common/enums/achievements.enum';
 
 @Injectable()
 export class FriendRequestsService {
@@ -21,6 +23,7 @@ export class FriendRequestsService {
     private readonly prisma: PrismaService,
     private readonly notification: NotificationsService,
     private readonly gateway: Gateway,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   private async isFriends(
@@ -136,6 +139,34 @@ export class FriendRequestsService {
       requestId: request.id,
       requestStatus: RequestStatus.ACCEPTED,
     });
+
+    // Get receiver's friend count
+    const receiverFriendCount: number = await this.prisma.friendRequest.count({
+      where: {
+        receiverId,
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+    if (receiverFriendCount === 1) {
+      await this.achievementsService.giveAchievementToUser(
+        receiverId,
+        Achievements.SOCIAL,
+      );
+    }
+
+    // Get sender's friend count
+    const senderFriendCount: number = await this.prisma.friendRequest.count({
+      where: {
+        senderId,
+        friendshipStatus: FriendshipStatus.ACCEPTED,
+      },
+    });
+    if (senderFriendCount === 1) {
+      await this.achievementsService.giveAchievementToUser(
+        senderId,
+        Achievements.SOCIAL,
+      );
+    }
 
     return request;
   }

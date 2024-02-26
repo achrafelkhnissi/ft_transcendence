@@ -1,3 +1,4 @@
+import { AchievementsService } from './../users/achievements/achievements.service';
 import { PrismaService } from './../prisma/prisma.service';
 import { Inject, Injectable, OnModuleDestroy, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
@@ -24,6 +25,7 @@ export class GameService implements OnModuleDestroy {
     private readonly prismaService: PrismaService,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    private readonly achievementsService: AchievementsService,
   ) {
     this.updateGame();
   }
@@ -136,18 +138,16 @@ export class GameService implements OnModuleDestroy {
   }
 
   async saveMatch(data: CreateGameDto) {
-    const winnerExp: number = await this.prismaService.userStats
-      .findUnique({
-        where: {
-          userId: data.winnerId,
-        },
-        select: {
-          exp: true,
-        },
-      })
-      .then((res) => res.exp);
+    const winnerStats =
+      await this.achievementsService.giveAchievementsToUserAfterGame(
+        data.winnerId,
+      );
 
-    let newExp = winnerExp + 30;
+    await this.achievementsService.giveAchievementsToUserAfterGame(
+      data.loserId,
+    );
+
+    let newExp = winnerStats.exp + 30;
     let levelIncrement = 0;
 
     if (newExp >= 100) {

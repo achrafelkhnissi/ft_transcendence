@@ -12,4 +12,5 @@ module.exports = {
       `${process.env.DOMAIN_NAME}`,
     ],
   },
+  output: "standalone",
 };

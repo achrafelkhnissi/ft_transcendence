@@ -204,4 +204,36 @@ export class FriendsService {
 
     return { message: 'User unblocked', request };
   }
+
+  async getBlockedUsersIds(userId: number): Promise<number[]> {
+    return this.prisma.friendRequest
+      .findMany({
+        where: {
+          OR: [
+            { senderId: { equals: userId } },
+            { receiverId: { equals: userId } },
+          ],
+          friendshipStatus: { equals: FriendshipStatus.BLOCKED },
+        },
+        select: {
+          receiver: {
+            select: {
+              id: true,
+            },
+          },
+          sender: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      })
+      .then((requests) => {
+        return requests.map((request) => {
+          return request.sender.id === userId
+            ? request.receiver.id
+            : request.sender.id;
+        });
+      });
+  }
 }

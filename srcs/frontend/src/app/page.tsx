@@ -1,16 +1,29 @@
 'use client';
 
+import { SparklesCore } from '@/ui/sparkles';
 import Logo_42 from '../components/logos/Logo_42';
-// import Back from "../components/Background";
 import { pixelifySans, roboto } from '../fonts';
 import Link from 'next/link';
-import { PureComponent, useState } from 'react';
+import { useState } from 'react';
+import { TextGenerateEffect } from "../ui/text-generate-effect";
 
 export default function Home() {
   const [isClicked, setIsClicked] = useState(false);
+  const welcome = "Welcome to our Pong game! Get ready to bounce and let the ball roll."
   return (
-    <div className="">
+    <div className="relative">
       {/* <Back /> */}
+      <div className="w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlesfullpage"
+          background="transparent"
+          minSize={0.4}
+          maxSize={0.9}
+          particleDensity={100}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+        />
+      </div>
       <div
         className={`
         flex
@@ -23,20 +36,19 @@ export default function Home() {
       left-0`}
       >
         <h1
-          className={`text-blue-300 
+          className={`text-blue-300/90 
             lg:text-9xl 
             font-extrabold  
             text-center text-7xl 
+            drop-shadow-[0px_20px_20px_rgba(0,0,0,0.6)]
             ${pixelifySans.className ? pixelifySans.className : ''}`}
         >
-          <span className="text-white text-2xl">It&rsquo;s </span>
+          <span className="text-white text-2xl">It&rsquo;s</span>
           PongTime
         </h1>
-        <p
-          className={`text-white pt-6 font-light px-6 text-center mt-4 ${roboto.className}}`}
-        >
-          Welcome to our Pong game! Get ready to bounce and let the ball roll.
-        </p>
+        <div className={`pt-4 px-6 text-center mt-3 `}>
+          <TextGenerateEffect words={welcome} className='font-semibold text-white/90'/>
+        </div>
         <div className="self-center mt-16">
           <Link
             className=""
@@ -70,12 +82,12 @@ export default function Home() {
               >
                 {isClicked && (
                   <div role="status" className="flex gap-4 ">
-                    <span className="text-blue-700/60 font-normal">
+                    <span className="text-blue-300/80 font-normal">
                       Loading...
                     </span>
                     <svg
                       aria-hidden="true"
-                      className="inline w-6 h-6 text-blue-300/60 animate-spin dark:text-gray-600 fill-blue-700  
+                      className="inline w-6 h-6 text-blue-300/60 animate-spin dark:text-gray-600 fill-blue-300  
                       "
                       viewBox="0 0 100 101"
                       fill="none"
