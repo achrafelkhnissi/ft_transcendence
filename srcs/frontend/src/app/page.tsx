@@ -4,10 +4,12 @@ import { SparklesCore } from '@/ui/sparkles';
 import Logo_42 from '../components/logos/Logo_42';
 import { pixelifySans, roboto } from '../fonts';
 import Link from 'next/link';
-import { PureComponent, useState } from 'react';
+import { useState } from 'react';
+import { TextGenerateEffect } from "../ui/text-generate-effect";
 
 export default function Home() {
   const [isClicked, setIsClicked] = useState(false);
+  const welcome = "Welcome to our Pong game! Get ready to bounce and let the ball roll."
   return (
     <div className="relative">
       {/* <Back /> */}
@@ -44,9 +46,9 @@ export default function Home() {
           <span className="text-white text-2xl">It&rsquo;s</span>
           PongTime
         </h1>
-        <p className={`text-white pt-6 font-light px-6 text-center mt-4 \}`}>
-          Welcome to our Pong game! Get ready to bounce and let the ball roll.
-        </p>
+        <div className={`pt-4 px-6 text-center mt-3 `}>
+          <TextGenerateEffect words={welcome} className='font-semibold text-white/90'/>
+        </div>
         <div className="self-center mt-16">
           <Link
             className=""
