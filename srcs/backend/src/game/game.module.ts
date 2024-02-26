@@ -3,9 +3,10 @@ import { GameService } from './game.service';
 import { GameController } from './game.controller';
 import { NotificationsModule } from 'src/users/notifications/notifications.module';
 import { AchievementsModule } from 'src/users/achievements/achievements.module';
+import { GatewayModule } from 'src/gateway/gateway.module';
 
 @Module({
-  imports: [forwardRef(() => NotificationsModule), AchievementsModule],
+  imports: [AchievementsModule, forwardRef(() => GatewayModule)],
   controllers: [GameController],
   providers: [GameService],
   exports: [GameService],

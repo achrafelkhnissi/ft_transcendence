@@ -70,7 +70,7 @@ const InvitePopup = () => {
 
     socket?.on('room not found',()=>{
       toast.error("room not found");
-      router.push('/dashboard');//404
+      router.push("/404");//404
       console.log('room not found');   
     });
 

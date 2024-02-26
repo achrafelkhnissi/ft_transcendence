@@ -41,14 +41,15 @@ interface MessagePayload {
 export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(Gateway.name);
-  private readonly roomCounts = new Map<string, number>();
+   private readonly logger = new Logger(Gateway.name);
+   readonly roomCounts = new Map<string, number>();
 
   @WebSocketServer()
   server: Server;
 
   constructor(
     private readonly gatewayService: GatewayService,
+    @Inject(forwardRef(() => GameService))
     private readonly gameService: GameService,
   ) {}
 
@@ -186,23 +187,5 @@ export class Gateway
     }
     const player = {socket: client, id: user.id};
     this.gameService.handelInviteRooms(player, gameRoom);
-  }
-
-  @SubscribeMessage('in game')
-  async onInGame(client: Socket) {
-    const user = client.request.user;
-    const userRoomName = `user-${user.id}`;
-
-    const roomCount = this.roomCounts.get(userRoomName) || 0;
-    const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
-    rooms.forEach(async (room) => {
-      client.join(room);
-      if (roomCount === 0) {
-        this.server.to(room).emit('playing', {
-          userId: user.id,
-          status: Status.PLAYING
-        });
-      }
-    });
   }
 }
