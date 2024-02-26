@@ -46,8 +46,9 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
 
           return (
             <div
-              className={`flex justify-center  gap-2 h-[5.55rem] px-1 py-3 border-b-[3px] border-b-[#59598ec6] relative hover:cursor-pointer
-                                hover:bg-white/[0.04] hover:shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)]
+              className={`flex ${lastMessage ? 'justify-center' : 'justify-start'} 
+               gap-2 h-[5.55rem] px-1 py-3 border-b-[3px] border-b-[#59598ec6] relative hover:cursor-pointer
+                                hover:bg-white/[0.04] hover:shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)] 
                                 ${selectedConversation == id && 'bg-white/[0.04] shadow-[0_4px_11px_2px_rgba(0,0,0,0.35)]'}`}
               onClick={() => handleClick(id)}
               key={id}
