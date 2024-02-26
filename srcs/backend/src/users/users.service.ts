@@ -336,28 +336,47 @@ export class UsersService {
           .filter((id) => id !== userId);
       });
 
-    return this.prisma.user
+    return this.prisma.userStats
       .findMany({
-        orderBy: {
-          stats: {
-            level: 'desc',
+        where: {
+          userId: {
+            notIn: blockedUsers,
           },
         },
         select: {
-          id: true,
-          avatar: true,
-          username: true,
-          stats: {
+          user: {
             select: {
-              level: true,
-              wins: true,
-              losses: true,
+              id: true,
+              avatar: true,
+              username: true,
+              stats: {
+                select: {
+                  level: true,
+                  wins: true,
+                  losses: true,
+                },
+              },
             },
           },
+          level: true,
+          wins: true,
+          losses: true,
+        },
+        orderBy: {
+          level: 'desc',
         },
       })
       .then((users) => {
-        return users.filter((user) => !blockedUsers.includes(user.id));
+        return users.map((user) => {
+          return {
+            ...user.user,
+            stats: {
+              level: user.level,
+              wins: user.wins,
+              losses: user.losses,
+            },
+          };
+        });
       });
   }
 
