@@ -15,7 +15,6 @@ import {
   defaultInfos,
 } from '@/components/userProfile/types';
 import { useRouter } from 'next/navigation';
-import { resolve } from 'path';
 
 const Home = ({ params }: { params: { name: string } }) => {
   const [user, setUser] = useState<User>(defaultInfos);
@@ -53,7 +52,7 @@ const Home = ({ params }: { params: { name: string } }) => {
       }
     });
   }, [params.name]);
-
+  
   return (
     <div className={`p-4`}>
       <UserInfo {...user} />
@@ -70,7 +69,7 @@ const Home = ({ params }: { params: { name: string } }) => {
           me={user.me}
           currentUserId={currentUserId}
         />
-        <Achievements />
+        <Achievements achievements={user.achievements?? []}/>
       </div>
     </div>
   );

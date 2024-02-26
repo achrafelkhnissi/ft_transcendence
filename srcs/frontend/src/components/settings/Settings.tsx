@@ -308,7 +308,7 @@ const Settings = () => {
             alt="  "
             width={100}
             height={100}
-            className="w-28 h-28 rounded-full border-4 border-purple-400/50 object-fill"
+            className="w-28 h-28 rounded-full border-4 border-purple-400/50 object-cover"
           />
           <div className="flex items-center absolute bottom-2 right-2">
             <label

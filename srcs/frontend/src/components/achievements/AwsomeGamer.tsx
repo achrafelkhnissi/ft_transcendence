@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const AwsomeGame = () => {
+const AwsomeGamer = () => {
   return (
     <div
       className="border-4 w-28 h-28  rounded-[1.5rem]
@@ -16,4 +16,4 @@ const AwsomeGame = () => {
     </div>
   );
 };
-export default AwsomeGame;
+export default AwsomeGamer;

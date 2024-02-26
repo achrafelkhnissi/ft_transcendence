@@ -42,7 +42,6 @@ const Notifications = () => {
       if (notifications?.length > 0) {
         const notifId = notifications[notifications.length - 1].id;
         setNotifAsRead(notifId).then((res) => {
-          console.log('set notif read', res);
           if (res) {
             setNotifications((prev) =>
               prev.map((item) => {
@@ -99,7 +98,6 @@ const Notifications = () => {
         notificationRef.current &&
         !(notificationRef.current as any).contains(event.target as Node)
       ) {
-        console.log('clicked outside');
         setIsClicked(false);
       }
     };

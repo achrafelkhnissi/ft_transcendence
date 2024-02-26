@@ -147,7 +147,7 @@ const ProfileAvatar: React.FC<Props> = ({
               className={`w-[6.1rem] 
             h-[6.1rem]
             rounded-xl
-
+            object-cover
             `}
             />
           )}

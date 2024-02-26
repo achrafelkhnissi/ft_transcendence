@@ -30,7 +30,6 @@ const SearchInput = () => {
         searchBarRef.current &&
         !(searchBarRef.current as any).contains(event.target as Node)
       ) {
-        console.log('clicked outside');
         setShowSearchResults(false);
       }
     };
