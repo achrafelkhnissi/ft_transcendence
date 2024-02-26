@@ -12,6 +12,7 @@ import {
   HttpStatus,
   SerializeOptions,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -100,11 +101,18 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: 'User not found',
   })
+  @ApiForbiddenResponse({
+    description: 'You can not update other users',
+  })
   @ApiOperation({ summary: 'Update user by id' })
   async updateById(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @User() { id: userId }: UserType,
   ) {
+    if (id !== userId) {
+      throw new ForbiddenException('You can only update your own profile');
+    }
     return this.usersService.update(id, updateUserDto);
   }
 
