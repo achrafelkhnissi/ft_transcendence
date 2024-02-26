@@ -56,8 +56,8 @@ export class UsersService {
     });
   }
 
-  findAll(id: number) {
-      const blockedUsers = await this.prisma.friendRequest.findMany({
+  async findAll(id: number) {
+    const blockedUsers = await this.prisma.friendRequest.findMany({
       where: {
         OR: [
           {
@@ -91,10 +91,7 @@ export class UsersService {
 
     const blockedUserIds = [
       ...new Set(
-        blockedUsers.flatMap((req) => [
-          req.sender.id,
-          req.receiver.id,
-        ]),
+        blockedUsers.flatMap((req) => [req.sender.id, req.receiver.id]),
       ),
     ];
 
