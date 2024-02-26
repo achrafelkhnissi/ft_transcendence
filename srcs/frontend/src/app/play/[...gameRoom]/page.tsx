@@ -56,18 +56,11 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   });
 
   const handlePlayClick = () => {
-    console.log('play clicked');
     setIsWaiting(true);
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log('params ', params);
-    console.log('params.gameRoom ', params.gameRoom);
-    if (params.gameRoom[0] !== '0') {
-      console.log('hanaaa froooom');
+    if (params.gameRoom[0] !== '0')
       socket?.emit('joinRoom', params.gameRoom);
-    } else {
+    else
       socket?.emit('joinQueue');
-      console.log('join Queue');
-    }
   };
 
   const handleOpponentFound = useCallback(
@@ -76,7 +69,6 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       opponentId: number;
       username: string;
     }) => {
-      console.log('start game', opponentInfo);
       setgameInfo({
         position: opponentInfo.playerPosition,
         OpponentId: opponentInfo.opponentId,
@@ -86,10 +78,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     [], // Empty dependency array means no external dependencies for memoization
   );
   useEffect(() => {
+    
     socket?.on('start game', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
-      console.log('nta wahid');
       setPlayerNotFound(true);
     });
 

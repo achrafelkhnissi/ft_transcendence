@@ -55,16 +55,31 @@ const InvitePopup = () => {
         toast.info("Invitation refused");
         console.log('invitation refused');
       }
-    })
+    });
 
     socket?.on('invited not available',()=>{
       toast.error("invited not available");
       console.log('invited not available');
     })
 
+    socket?.on('invitation expired',()=>{
+      toast.info("invitation expired");
+      router.push('/dashboard');//404
+      console.log('invitation expired');
+    });
+
+    socket?.on('room not found',()=>{
+      toast.error("room not found");
+      router.push('/dashboard');//404
+      console.log('room not found');   
+    });
+
     return () => {
       socket?.off('game-invite');
+      socket?.off('inviteResponse');
       socket?.off('invited not available');
+      socket?.off('invitation expired');
+      socket?.off('room not found');
     };
   }, [socket]);
 

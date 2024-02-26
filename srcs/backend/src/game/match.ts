@@ -95,8 +95,7 @@ export class Match {
   }
 
   private Collision(paddle: Matter.Body) {
-    let collidePoint =
-      this.ball.position.y - (paddle.position.y + PADDLE_HEIGHT / 2);
+    let collidePoint = this.ball.position.y - paddle.position.y;
     collidePoint = collidePoint / (PADDLE_HEIGHT / 2);
     const angleRad = (Math.PI / 4) * collidePoint;
     const direction = this.ball.position.x < GAMEWIDTH / 2 ? 1 : -1;
@@ -105,7 +104,7 @@ export class Match {
       y: this.speed * Math.sin(angleRad),
     };
     Body.setVelocity(this.ball, velocity);
-    this.speed += 0.1;
+    this.speed += 1;
   }
 
   private resetGame() {

@@ -121,6 +121,26 @@ export class GameService implements OnModuleDestroy {
     this.onlineGamers = this.playerQueue.filter(
       (player) => player.id !== userId,
     );
+    this.removePlayer(userId);
+  }
+
+  handelInviteRooms(user: Player, gameRoom:string) {
+    this.activeRoom[gameRoom].push(user);
+    setTimeout(() => {
+      if (this.activeRoom[gameRoom].length < 2) {
+        user.socket.emit('invitation expired');
+        console.log("invitation expired");
+        delete this.activeRoom[gameRoom];
+      }
+    }, 10000);
+    if (this.activeRoom[gameRoom].length === 2) {
+      const [player1, player2] = this.activeRoom[gameRoom];
+      this.activeRoom[gameRoom] = this.activeRoom[
+        gameRoom
+      ].filter((player) => player !== player1 && player !== player2);
+      delete this.activeRoom[gameRoom];
+      this.inviteGame(player1, player2);
+    }
   }
 
   inviteGame(inviter: Player, invited: Player) {
@@ -228,5 +248,16 @@ export class GameService implements OnModuleDestroy {
     ) 
       return true;
     return false
+  }
+
+  removePlayer(playerToRemove: number): void {
+    for (const roomKey in this.activeRoom) {
+      const playersInRoom = this.activeRoom[roomKey];
+      const index = playersInRoom.findIndex((player) => player.id === playerToRemove);
+  
+      if (index !== -1) {
+        playersInRoom.splice(index, 1);
+      }
+    }
   }
 }

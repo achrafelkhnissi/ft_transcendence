@@ -158,8 +158,6 @@ export class Gateway
         userId: user.id,
         username: user.username,
       });
-    console.log(gameRoom);
-    // this.gameService.inviteGame()
   }
 
   @SubscribeMessage('inviteResponse')
@@ -182,17 +180,12 @@ export class Gateway
     const user = client.request.user;
     console.log('joinroom');
     if (!this.gameService.activeRoom[gameRoom]) {
-      this.gameService.activeRoom[gameRoom] = [];
+      client.emit('room not found');
+      console.log('room not found');
+      return;
     }
-    this.gameService.activeRoom[gameRoom].push({socket: client, id: user.id});
-
-    if (this.gameService.activeRoom[gameRoom].length === 2) {
-      const [player1, player2] = this.gameService.activeRoom[gameRoom];
-      this.gameService.activeRoom[gameRoom] = this.gameService.activeRoom[
-        gameRoom
-      ].filter((player) => player !== player1 && player !== player2);
-      this.gameService.inviteGame(player1, player2);
-    }
+    const player = {socket: client, id: user.id};
+    this.gameService.handelInviteRooms(player, gameRoom);
   }
 
   @SubscribeMessage('in game')
