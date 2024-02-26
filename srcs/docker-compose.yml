@@ -34,6 +34,7 @@ services:
       - NODE_ENV=${NODE_ENV}
       - NEST_PORT=${NEST_PORT}
       - FRONTEND=${FRONTEND}
+      - DOMAIN_NAME=${DOMAIN_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - FT_CLIENT_ID=${FT_CLIENT_ID}
       - FT_CLIENT_SECRET=${FT_CLIENT_SECRET}
@@ -65,6 +66,7 @@ services:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
         - BACKEND_SERVICE=backend:$NEST_PORT
+        - DOMAIN_NAME=${DOMAIN_NAME}
         - JWT_SECRET=${JWT_SECRET}
     container_name: frontend
     restart: always
@@ -84,6 +86,8 @@ services:
 
 volumes:
   db-data:
+  frontend-deps:
+  backend-deps:
 
 networks:
   database_net:

@@ -20,7 +20,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { sign } from 'jsonwebtoken';
+import * as jose from 'jose';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -42,9 +42,13 @@ export class AuthController {
   async ftRedirect(@User() user: UserType, @Res() res: Response) {
     const { settings } = user;
 
-    const token = sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '1y',
-    });
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const token = await new jose.SignJWT({ id: user.id })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer(process.env.DOMAIN_NAME)
+      .setExpirationTime('1y')
+      .sign(secret);
 
     res.cookie('pong-time.auth', token, {
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -62,9 +66,12 @@ export class AuthController {
       this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
 
-      const token = sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1m',
-      });
+      const token = await new jose.SignJWT({ id: user.id })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setIssuer(process.env.DOMAIN_NAME)
+        .setExpirationTime('1m')
+        .sign(secret);
 
       return res.redirect(`${process.env.FRONTEND}/verify?token=${token}`);
     }
@@ -92,7 +99,6 @@ export class AuthController {
 
       req.session.destroy(() => {
         res.clearCookie('pong-time.sid', {
-          path: '/',
           domain: process.env.DOMAIN_NAME,
           httpOnly: true,
           secure: false,

@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
 export async function middleware(request: NextRequest) {
-  
-  if (!request.cookies.get('pong-time.sid')?.value) {
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+  try {
+    const token = request.cookies.get('pong-time.auth')?.value ?? '';
+    await jose.jwtVerify(token, secret, {
+      issuer: process.env.DOMAIN_NAME ?? 'localhost',
+    });
+  } catch (err) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  const token = request.nextUrl.searchParams.get('token');
-
   if (request.url.includes('/verify')) {
     try {
-      const decoded = jwt.verify(
-        token ?? '',
-        process.env.JWT_SECRET ?? 'pong-time',
-      );
-      if (decoded) {
-        return NextResponse.next();
-      }
+      const token = request.nextUrl.searchParams.get('token') ?? '';
+      await jose.jwtVerify(token, secret, {
+        issuer: process.env.DOMAIN_NAME ?? 'localhost',
+      });
     } catch (err) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }

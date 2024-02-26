@@ -42,7 +42,7 @@ RUN npx prisma generate
 RUN npm run build
 
 RUN npm ci --omit=dev --verbose
-RUN npm install prisma
+RUN npm install prisma sharp
 
 USER node
 
