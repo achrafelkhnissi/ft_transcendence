@@ -224,7 +224,6 @@ const Settings = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let id = data.id;
-
     try {
       if (newData.newAvatar) await uploadAvatar(newData.newAvatar);
 
@@ -238,7 +237,7 @@ const Settings = () => {
         newData.settings.verified
       ) {
         modifyUser(id, { phoneNumber: newData.phoneNumber });
-        modifyUser(id, { settings: { update: { verified: false } } });
+        modifyUser(id, { settings: { verified: false } });
       }
 
       if (
@@ -247,7 +246,7 @@ const Settings = () => {
       ) {
         modifyUser(id, {
           settings: {
-            update: { twoFactorEbabled: newData.settings.twoFactorEnabled },
+            twoFactorEnabled: newData.settings.twoFactorEnabled,
           },
         });
       }
