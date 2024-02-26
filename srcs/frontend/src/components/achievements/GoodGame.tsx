@@ -4,7 +4,7 @@ const GoodGame = () => {
   return (
     <div
       className=" w-28 h-28  rounded-[1.5rem]
-         bg-black p-1 shadow-xl"
+         bg-black p-1 shadow-xl shadow-black/30"
     >
       <Image
         width={400}

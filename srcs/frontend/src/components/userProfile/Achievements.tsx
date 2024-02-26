@@ -11,7 +11,7 @@ const Achievements = () => {
       header="achievements"
       icon={<GiAchievement className="text-[#6C61A4] w-6 h-6 " />}
     >
-      <div className=' p-2 flex flex-wrap max-h-[280px] gap-2'>
+      <div className=' p-2 flex flex-wrap max-h-[280px] gap-3 justify-center'>
         <Noob />
         <ProGamer />
         <GoodGame/>

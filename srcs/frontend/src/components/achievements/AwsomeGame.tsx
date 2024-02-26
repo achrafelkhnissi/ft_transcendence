@@ -4,7 +4,7 @@ const AwsomeGame = () => {
   return (
     <div
       className="border-4 w-28 h-28  rounded-[1.5rem]
-        border-pink-400/10 bg-purple-200 p-1 shadow-xl"
+        border-pink-400/10 bg-purple-200 p-1 shadow-xl shadow-white/15"
     >
       <Image
         width={400}
