@@ -56,7 +56,7 @@ export class UsersService {
     });
   }
 
-  findAll(id: number) {
+  async findAll(id: number) {
       const blockedUsers = await this.prisma.friendRequest.findMany({
       where: {
         OR: [
