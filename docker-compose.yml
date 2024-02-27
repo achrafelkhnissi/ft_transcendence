@@ -23,7 +23,7 @@ services:
 
   backend:
     build:
-      context: ./backend/
+      context: ./srcs/backend/
       dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - POSTGRES_HOST=${POSTGRES_HOST}
@@ -55,12 +55,12 @@ services:
       - frontend_net
     depends_on:
       - db
-    volumes:
-      - ./backend:/app
+    # volumes:
+    #   - ./srcs/backend:/app
 
   frontend:
     build:
-      context: ./frontend/
+      context: ./srcs/frontend/
       dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - BACKEND=${BACKEND}
@@ -81,13 +81,11 @@ services:
       - backend
     networks:
       - frontend_net
-    volumes:
-      - ./frontend:/app
+    # volumes:
+    #   - ./srcs/frontend:/app
 
 volumes:
   db-data:
-  frontend-deps:
-  backend-deps:
 
 networks:
   database_net:

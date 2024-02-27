@@ -17,7 +17,7 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install --verbose @nestjs/cli 
+RUN npm install @nestjs/cli 
 
 COPY --chown=node:node . .
 
@@ -41,7 +41,7 @@ COPY --chown=node:node . .
 RUN npx prisma generate
 RUN npm run build
 
-RUN npm ci --omit=dev --verbose
+RUN npm ci --omit=dev 
 RUN npm install prisma sharp
 
 USER node
