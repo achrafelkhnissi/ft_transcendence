@@ -246,9 +246,17 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
             >
               <button
                 className={`self-center pl-[1.3rem] hover:cursor-pointer
-                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative ${isMuted && 'cursor-not-allowed'} `}
+                drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)] relative ${
+                  isMuted &&
+                  conversationsMap[conversationId].type != 'DM' &&
+                  'cursor-not-allowed'
+                } `}
                 onClick={toggleEmojiPicker}
-                disabled={isMuted}
+                disabled={
+                  isMuted && conversationsMap[conversationId].type != 'DM'
+                    ? true
+                    : false
+                }
               >
                 <Emoji color={'#20204A'} width={'29px'} height={'29px'} />
                 <div className="absolute bottom-10 left-0 ">
@@ -270,13 +278,13 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
                   placeholder="Type a message here..."
                   className={`bg-transparent w-full h-full outline-none px-6
                                 placeholder:text-white/20 placeholder:text-[0.60rem]  resize-none pt-[0.7rem] overflow-y-auto sm:placeholder:text-sm 
-                  ${isMuted && 'cursor-not-allowed'} `}
+                  ${isMuted && conversationsMap[conversationId].type != 'DM' && 'cursor-not-allowed'} `}
                 />
               </div>
               <button
                 className={`self-center pr-[1.3rem] hover:cursor-pointer
                 drop-shadow-[0_3px_8px_rgba(255,255,255,0.15)]
-                ${isMuted && 'cursor-not-allowed'} `}
+                ${isMuted && conversationsMap[conversationId].type != 'DM' && 'cursor-not-allowed'} `}
                 onClick={() => {
                   handleSend();
                 }}
