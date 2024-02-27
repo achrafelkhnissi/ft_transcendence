@@ -53,13 +53,13 @@ const MessagesPreview: React.FC<MessagesPreviewProps> = ({
               onClick={() => handleClick(id)}
               key={id}
             >
-              <div className="self-center relative">
+              <div className="self-center w-12 h-12 relative">
                 <img
                   src={process.env.BACKEND + `/api/users/${friend?.id}/avatar`}
                   alt=""
                   width={100}
                   height={100}
-                  className="w-12 h-12 rounded-full object-fill"
+                  className="w-12 h-12 rounded-full object-cover"
                 />
                 <div
                   className={`w-2 h-2 rounded-full ${
