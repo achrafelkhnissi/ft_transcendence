@@ -136,7 +136,7 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
 
     if (!onlySpacesRegex.test(newMessage)) {
       const { data } = await axios.post(
-        process.env.BACKEND + '/api/message', // TODO: Change this to /api/users/chat/message
+        process.env.BACKEND + '/api/users/chat/message',
         {
           content: newMessage,
           conversationId: Number(conversationId),
