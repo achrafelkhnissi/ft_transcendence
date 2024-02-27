@@ -12,6 +12,7 @@ import YouLose from '@/components/game/YouLose';
 import { User } from '@/components/userProfile/types';
 import getCurrentUser from '@/services/getCurrentUser';
 import { useRouter } from 'next/navigation';
+import GameImages from '@/components/game/gameImages';
 
 const DEFAUL_TCOLOR: string = '#000000';
 
@@ -56,18 +57,11 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   });
 
   const handlePlayClick = () => {
-    console.log('play clicked');
     setIsWaiting(true);
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log('params ', params);
-    console.log('params.gameRoom ', params.gameRoom);
-    if (params.gameRoom[0] !== '0') {
-      console.log('hanaaa froooom');
+    if (params.gameRoom[0] !== '0')
       socket?.emit('joinRoom', params.gameRoom);
-    } else {
+    else
       socket?.emit('joinQueue');
-      console.log('join Queue');
-    }
   };
 
   const handleOpponentFound = useCallback(
@@ -76,7 +70,6 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       opponentId: number;
       username: string;
     }) => {
-      console.log('start game', opponentInfo);
       setgameInfo({
         position: opponentInfo.playerPosition,
         OpponentId: opponentInfo.opponentId,
@@ -86,10 +79,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     [], // Empty dependency array means no external dependencies for memoization
   );
   useEffect(() => {
+    
     socket?.on('start game', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
-      console.log('nta wahid');
       setPlayerNotFound(true);
     });
 
@@ -113,7 +106,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   }, [socket, handleOpponentFound]);
 
   return (
-    <div className={`flex justify-center w-full h-full relative border-0`}>
+    <div className={`flex justify-center w-full h-full relative scrol ${!isWaiting && GameInfo.OpponentId !== 0 && 'scrol overflow-hidden'}`}>
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
@@ -144,7 +137,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
           </button>
           {playerNotFound && (
             <div
-              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} `}
+              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} transition ease-out duration-300`}
               onClick={() => {
                 window.location.reload();
               }}
@@ -157,7 +150,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {gameisFinished && (
         <div
-          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} `}
+          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} transition ease-out duration-300 `}
           onClick={() => {
             router.push('/dashboard');
           }}
@@ -169,53 +162,9 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
         <>
-          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 ">
-            {GameInfo.position == 'leftPaddle' && (
-              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
-                <img
-                  src={
-                    process.env.BACKEND + `/api/users/${currentUser.id}/avatar`
-                  }
-                  alt="player"
-                  width={10}
-                  height={10}
-                  className="w-20 h-20 rounded-full self-center"
-                />
-                <img
-                  src={
-                    process.env.BACKEND +
-                    `/api/users/${GameInfo.OpponentId}/avatar`
-                  }
-                  alt="opponent"
-                  width={10}
-                  height={10}
-                  className="w-20 h-20 rounded-full self-center"
-                />
-              </div>
-            )}
-            {GameInfo.position == 'rightPaddle' && (
-              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
-                <img
-                  src={
-                    process.env.BACKEND +
-                    `/api/users/${GameInfo.OpponentId}/avatar`
-                  }
-                  alt="opponent"
-                  width={10}
-                  height={10}
-                  className="w-20 h-20 rounded-full self-center"
-                />
-                <img
-                  src={
-                    process.env.BACKEND + `/api/users/${currentUser.id}/avatar`
-                  }
-                  alt="player"
-                  width={10}
-                  height={10}
-                  className="w-20 h-20 rounded-full self-center"
-                />
-              </div>
-            )}
+          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-[1428px] gap-4 pt-2 px-8 py-8">
+            <GameImages position={GameInfo.position} opponentId={GameInfo.OpponentId}
+             currentUserId={currentUser.id} />
           </div>
           <Game position={GameInfo.position} color={bgColor} />
         </>

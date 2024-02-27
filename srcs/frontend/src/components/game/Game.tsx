@@ -19,6 +19,7 @@ const Game = (props: any) => {
       const { default: GameScene } = await import('./GameScene');
       console.log('game color', props.color);
       if (socket) {
+        const gamescene = new GameScene({ key: 'gamescene' }, socket, playerPosition)
         const PhaserGame = new Phaser.Game({
           type: Phaser.AUTO,
           width: RESOLUTION.width,
@@ -36,16 +37,21 @@ const Game = (props: any) => {
             smoothStep: true,
           },
           scale: {
-            mode: Phaser.Scale.FIT,
+            mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
-          scene: new GameScene({ key: 'gamescene' }, socket, playerPosition)
+          scene: gamescene,
         });
         setGame(PhaserGame);
         return () => {
-          if (PhaserGame){
+          if (PhaserGame) {
+            // socket.removeAllListeners();
             console.log('game destroyed');
             PhaserGame.destroy(true);
+            PhaserGame.scene?.remove('gamescene');
+            // if (gamescene) {
+            //   gamescene?.destroy();
+            // }
           }
         };
       }
@@ -54,10 +60,10 @@ const Game = (props: any) => {
   }, [socket]);
 
   return (
-      <div
-        className="max-w-[1428px] max-h-[700px] self-center"
-        id="game-container"
-        key="game-container"
+    <div
+      className="max-w-[1428px] md:max-h-[700px] self-center"
+      id="game-container"
+      key="game-container"
       ></div>
   );
 };

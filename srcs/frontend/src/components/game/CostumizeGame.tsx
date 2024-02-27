@@ -7,6 +7,9 @@ interface CostumizeGameProps {
 
 const CostumizeGame: React.FC<CostumizeGameProps> = ({ setBgColor }) => {
   const [isSelected, setIsSelected] = useState('');
+  const hideOtherButtons = () => {
+    setIsSelected('');
+  };
   return (
     <div
       className="

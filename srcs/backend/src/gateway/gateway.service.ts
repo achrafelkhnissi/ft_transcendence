@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Status } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+
 @Injectable()
 export class GatewayService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService
+    ) {}
 
   async getRoomsByUserId(userId: number): Promise<string[]> {
     return this.prisma.conversation

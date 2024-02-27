@@ -1,12 +1,11 @@
 import { AchievementsService } from './../users/achievements/achievements.service';
 import { PrismaService } from './../prisma/prisma.service';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
-import { UserType } from 'src/common/interfaces/user.interface';
-import { NotificationsService } from 'src/users/notifications/notifications.service';
 import { Gateway } from 'src/gateway/gateway';
+import { Status } from 'src/common/enums/status.enum';
 
 interface Player {
   socket: Socket;
@@ -14,23 +13,28 @@ interface Player {
 }
 
 @Injectable()
-export class GameService {
+export class GameService implements OnModuleDestroy {
   private activeMatches: { [key: string]: Match } = {};
   public activeRoom: { [key: string]: Player[] } = {};
   private playerQueue: Player[] = [];
   private onlineGamers: Player[] = [];
+  updateGameInterval: NodeJS.Timeout;
 
   constructor(
     private readonly prismaService: PrismaService,
-    @Inject(forwardRef(() => NotificationsService))
-    private readonly notificationsService: NotificationsService,
     private readonly achievementsService: AchievementsService,
+    @Inject(forwardRef(() => Gateway))
+    private readonly gateway: Gateway,
   ) {
     this.updateGame();
   }
+  onModuleDestroy() {
+    console.log('clearing interval');
+   clearInterval(this.updateGameInterval);
+  }
 
   updateGame() {
-    setInterval(async () => {
+    this.updateGameInterval = setInterval(async () => {
       const matchesToRemove = [];
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
@@ -43,6 +47,8 @@ export class GameService {
             loserId: match.score.player1 < match.score.player2 ? id1 : id2,
             score: `${match.score.player1} - ${match.score.player2}`,
           });
+          this.toggleUserStatus(id1, Status.ONLINE);
+          this.toggleUserStatus(id2, Status.ONLINE);
           match.isFinished = false;
           matchesToRemove.push(key);
         }
@@ -79,7 +85,11 @@ export class GameService {
     const matchKey = `${player1.id}-${player2.id}`;
     const match = new Match(player1.socket, player2.socket);
     this.activeMatches[matchKey] = match;
-    setTimeout(() => match.gameStart(), 5000);
+    this.toggleUserStatus(player1.id, Status.PLAYING);
+    this.toggleUserStatus(player2.id, Status.PLAYING);
+    setTimeout(async () =>{
+      match.gameStart()
+    }, 5000);
     this.onlineGamers.push(player1);
     this.onlineGamers.push(player2);
   }
@@ -116,6 +126,26 @@ export class GameService {
     this.onlineGamers = this.playerQueue.filter(
       (player) => player.id !== userId,
     );
+    this.removePlayer(userId);
+  }
+
+  handelInviteRooms(user: Player, gameRoom:string) {
+    this.activeRoom[gameRoom].push(user);
+    setTimeout(() => {
+      if (this.activeRoom[gameRoom].length < 2) {
+        user.socket.emit('invitation expired');
+        console.log("invitation expired");
+        delete this.activeRoom[gameRoom];
+      }
+    }, 30000);
+    if (this.activeRoom[gameRoom].length === 2) {
+      const [player1, player2] = this.activeRoom[gameRoom];
+      this.activeRoom[gameRoom] = this.activeRoom[
+        gameRoom
+      ].filter((player) => player !== player1 && player !== player2);
+      delete this.activeRoom[gameRoom];
+      this.inviteGame(player1, player2);
+    }
   }
 
   inviteGame(inviter: Player, invited: Player) {
@@ -223,5 +253,59 @@ export class GameService {
     ) 
       return true;
     return false
+  }
+
+  removePlayer(playerToRemove: number): void {
+    for (const roomKey in this.activeRoom) {
+      const playersInRoom = this.activeRoom[roomKey];
+      const index = playersInRoom.findIndex((player) => player.id === playerToRemove);
+  
+      if (index !== -1) {
+        playersInRoom.splice(index, 1);
+      }
+    }
+  }
+
+  private async getRoomsByUserId(userId: number): Promise<string[]> {
+    return this.prismaService.conversation
+      .findMany({
+        where: {
+          OR: [
+            {
+              participants: {
+                some: {
+                  id: userId,
+                },
+              },
+            },
+            {
+              admins: {
+                some: {
+                  id: userId,
+                },
+              },
+            },
+            {
+              ownerId: userId,
+            },
+          ],
+        },
+      })
+      .then((rooms) => rooms.map((room) => room.name));
+  }
+
+  async toggleUserStatus(userId: number, status: Status): Promise<void> {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { status: 'PLAYING' },
+    });
+
+    const rooms: string[] = await this.getRoomsByUserId(userId);
+    rooms.forEach(async (room) => {
+        this.gateway.server.to(room).emit('status', {
+          userId: userId,
+          status: status,
+        });
+    });
   }
 }

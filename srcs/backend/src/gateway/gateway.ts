@@ -41,14 +41,15 @@ interface MessagePayload {
 export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private readonly logger = new Logger(Gateway.name);
-  private readonly roomCounts = new Map<string, number>();
+   private readonly logger = new Logger(Gateway.name);
+   readonly roomCounts = new Map<string, number>();
 
   @WebSocketServer()
   server: Server;
 
   constructor(
     private readonly gatewayService: GatewayService,
+    @Inject(forwardRef(() => GameService))
     private readonly gameService: GameService,
   ) {}
 
@@ -158,8 +159,6 @@ export class Gateway
         userId: user.id,
         username: user.username,
       });
-    console.log(gameRoom);
-    // this.gameService.inviteGame()
   }
 
   @SubscribeMessage('inviteResponse')
@@ -182,34 +181,11 @@ export class Gateway
     const user = client.request.user;
     console.log('joinroom');
     if (!this.gameService.activeRoom[gameRoom]) {
-      this.gameService.activeRoom[gameRoom] = [];
+      client.emit('room not found');
+      console.log('room not found');
+      return;
     }
-    this.gameService.activeRoom[gameRoom].push({socket: client, id: user.id});
-
-    if (this.gameService.activeRoom[gameRoom].length === 2) {
-      const [player1, player2] = this.gameService.activeRoom[gameRoom];
-      this.gameService.activeRoom[gameRoom] = this.gameService.activeRoom[
-        gameRoom
-      ].filter((player) => player !== player1 && player !== player2);
-      this.gameService.inviteGame(player1, player2);
-    }
-  }
-
-  @SubscribeMessage('in game')
-  async onInGame(client: Socket) {
-    const user = client.request.user;
-    const userRoomName = `user-${user.id}`;
-
-    const roomCount = this.roomCounts.get(userRoomName) || 0;
-    const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
-    rooms.forEach(async (room) => {
-      client.join(room);
-      if (roomCount === 0) {
-        this.server.to(room).emit('playing', {
-          userId: user.id,
-          status: Status.PLAYING
-        });
-      }
-    });
+    const player = {socket: client, id: user.id};
+    this.gameService.handelInviteRooms(player, gameRoom);
   }
 }
