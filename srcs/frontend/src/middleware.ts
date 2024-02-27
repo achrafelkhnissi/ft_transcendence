@@ -4,12 +4,16 @@ import * as jose from 'jose';
 export async function middleware(request: NextRequest) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-  try {
-    const token = request.cookies.get('pong-time.auth')?.value ?? '';
-    await jose.jwtVerify(token, secret, {
-      issuer: process.env.DOMAIN_NAME ?? 'localhost',
-    });
-  } catch (err) {
+  const response = await fetch(
+    process.env.BACKEND + '/api/auth/is-authenticated',
+    {
+      headers: {
+        cookie: request.headers.get('cookie') ?? '',
+      },
+    },
+  );
+
+  if (response.status === 401) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

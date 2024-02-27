@@ -55,13 +55,6 @@ export class AuthController {
       .setExpirationTime('1y')
       .sign(secret);
 
-    res.cookie('pong-time.auth', token, {
-      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-      httpOnly: true,
-      secure: false,
-      domain: process.env.DOMAIN_NAME,
-    });
-
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
       await this.achievements.giveAchievementToUser(user.id, Achievements.NOOB);
@@ -111,13 +104,6 @@ export class AuthController {
           secure: false,
         });
 
-        res.clearCookie('pong-time.auth', {
-          path: '/',
-          domain: process.env.DOMAIN_NAME,
-          httpOnly: true,
-          secure: false,
-        });
-
         this.logger.debug(`Session destroyed`);
 
         res.redirect(process.env.FRONTEND);
@@ -128,8 +114,8 @@ export class AuthController {
   @Get('is-authenticated')
   @ApiOperation({ summary: 'Check if user is authenticated' })
   @SerializeOptions({ strategy: 'excludeAll' })
-  async isAuthenticated(@Req() req: Request, @Res() res: Response) {
-    if (req.isAuthenticated()) {
+  async isAuthenticated(@Res() res: Response, @User() user: UserType) {
+    if (user) {
       return res.status(HttpStatus.OK).send();
     }
 
