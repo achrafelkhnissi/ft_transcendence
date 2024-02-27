@@ -61,7 +61,7 @@ const TopPlayers = () => {
                   >
                     <td className=" flex h-full gap-3 justify-center px-2 py-[0.6rem] text-white/30 text-center">
                       <p className="self-center">#{index + 1}</p>
-                      <Link href={`/profile/${item.username}`}>
+                      <Link href={`/profile/${item.username}`} className='w-10 h-10'>
                         <img
                           src={
                             process.env.BACKEND + `/api/users/${item.id}/avatar`
@@ -72,7 +72,7 @@ const TopPlayers = () => {
                           className="w-10 h-10 
                                         self-center
                                         rounded-full
-                                        object-fill"
+                                        object-cover"
                         />
                       </Link>
                     </td>

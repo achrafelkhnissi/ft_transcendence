@@ -21,13 +21,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import * as jose from 'jose';
+import { AchievementsService } from 'src/users/achievements/achievements.service';
+import { Achievements } from 'src/common/enums/achievements.enum';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly smsService: SmsService) {}
+  constructor(
+    private readonly smsService: SmsService,
+    private readonly achievements: AchievementsService,
+  ) {}
 
   @ApiOperation({ summary: 'OAuth2.0 42 API' })
   @Get('ft')
@@ -59,6 +64,8 @@ export class AuthController {
 
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
+      await this.achievements.giveAchievementToUser(user.id, Achievements.NOOB);
+
       return res.redirect(`${process.env.FRONTEND}/settings`);
     }
 

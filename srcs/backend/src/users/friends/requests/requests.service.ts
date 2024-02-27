@@ -147,12 +147,6 @@ export class FriendRequestsService {
         friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
-    if (receiverFriendCount === 1) {
-      await this.achievementsService.giveAchievementToUser(
-        receiverId,
-        Achievements.SOCIAL,
-      );
-    }
 
     // Get sender's friend count
     const senderFriendCount: number = await this.prisma.friendRequest.count({
@@ -161,12 +155,6 @@ export class FriendRequestsService {
         friendshipStatus: FriendshipStatus.ACCEPTED,
       },
     });
-    if (senderFriendCount === 1) {
-      await this.achievementsService.giveAchievementToUser(
-        senderId,
-        Achievements.SOCIAL,
-      );
-    }
 
     return request;
   }

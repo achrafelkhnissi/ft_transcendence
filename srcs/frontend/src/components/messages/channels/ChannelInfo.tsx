@@ -99,7 +99,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
         }
       });
     } else {
-      if (password != '') {
+      if (password != '' && !weakPasswrod) {
         try {
           hashedpass = await hashPassword(password);
           updateChannelType(channel.id, {
@@ -122,6 +122,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   };
 
   const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const pass = e.target.value;
@@ -133,7 +134,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
       setPassword(pass);
     } else {
       setWeakPassword(true);
-      setPassword('');
     }
   };
 
@@ -227,7 +227,7 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
                   <input
                     type="text"
                     id="password"
-                    // value={password}
+                    value={password}
                     maxLength={13}
                     placeholder={
                       channel.type == 'PROTECTED' ? '**********' : 'password'

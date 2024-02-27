@@ -224,7 +224,6 @@ const Settings = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let id = data.id;
-
     try {
       if (newData.newAvatar) await uploadAvatar(newData.newAvatar);
 
@@ -238,7 +237,7 @@ const Settings = () => {
         newData.settings.verified
       ) {
         modifyUser(id, { phoneNumber: newData.phoneNumber });
-        modifyUser(id, { settings: { update: { verified: false } } });
+        modifyUser(id, { settings: { verified: false } });
       }
 
       if (
@@ -247,7 +246,7 @@ const Settings = () => {
       ) {
         modifyUser(id, {
           settings: {
-            update: { twoFactorEbabled: newData.settings.twoFactorEnabled },
+            twoFactorEnabled: newData.settings.twoFactorEnabled,
           },
         });
       }
@@ -309,7 +308,7 @@ const Settings = () => {
             alt="  "
             width={100}
             height={100}
-            className="w-28 h-28 rounded-full border-4 border-purple-400/50 object-fill"
+            className="w-28 h-28 rounded-full border-4 border-purple-400/50 object-cover"
           />
           <div className="flex items-center absolute bottom-2 right-2">
             <label
