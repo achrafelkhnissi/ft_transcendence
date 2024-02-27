@@ -107,6 +107,9 @@ export class Gateway
 
     const userRoomName = `user-${user.id}`;
 
+    //remove from the game
+    this.gameService.removeUserById(user.id);
+
     console.log(`${user.username} disconnected`);
 
     // Check if room user.username is empty
