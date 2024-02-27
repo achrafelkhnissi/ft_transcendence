@@ -1,10 +1,8 @@
 'use client';
 
 import { Scene } from 'phaser';
-
 import { cursorTo } from 'readline';
 import { PADDLE_WIDTH, PADDLE_HEIGHT, BALLRADIUS, PADDLE_SPEED } from './constants';
-import { Vector } from 'matter';
 import { Socket } from 'socket.io-client';
 
 export default class GameScene extends Scene {
@@ -77,9 +75,7 @@ export default class GameScene extends Scene {
               this.paddle = right;
               this.opponentPaddle = left;
             }
-            this.ball = ball;
-            console.log('ball :',this.ball);
-            
+            this.ball = ball;            
             this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
               const { x, y } = data;
               this.opponentPaddle?.setX(x);
@@ -87,7 +83,6 @@ export default class GameScene extends Scene {
     });
 
     this.socket.on('updateBallState', (data) => {
-      console.log('ball state:', data);
       this.ball?.setX(data.x);
       this.ball?.setY(data.y);
     });
@@ -113,10 +108,8 @@ export default class GameScene extends Scene {
     const newPaddleVelocity = new Phaser.Math.Vector2(0, 0);
     
     if (this.cursors?.up.isDown) {
-      console.log('up');
       newPaddleVelocity.y -= PADDLE_SPEED;
     } else if (this.cursors?.down.isDown) {
-      console.log('down');
       newPaddleVelocity.y += PADDLE_SPEED;
     } else newPaddleVelocity.y = 0;
 
