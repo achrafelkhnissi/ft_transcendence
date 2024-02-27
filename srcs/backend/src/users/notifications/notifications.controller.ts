@@ -1,8 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
   Param,
   Delete,
   UseGuards,
@@ -10,16 +8,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import {
   ApiBadRequestResponse,
-  ApiBody,
-  ApiConflictResponse,
-  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -35,16 +29,6 @@ import { NotificationDto } from './dto/notification.dto';
 @Controller()
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
-
-  @ApiBody({ type: CreateNotificationDto })
-  @ApiCreatedResponse({ description: 'Notification created' })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiConflictResponse({ description: 'Conflict' })
-  @ApiOperation({ summary: 'Create notification' })
-  @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
-  }
 
   @ApiOkResponse({
     description: 'Notification found',
