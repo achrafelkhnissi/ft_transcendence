@@ -23,7 +23,7 @@ services:
 
   backend:
     build:
-      context: ./backend/
+      context: ./srcs/backend/
       dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - POSTGRES_HOST=${POSTGRES_HOST}
@@ -56,16 +56,17 @@ services:
     depends_on:
       - db
     volumes:
-      - ./backend:/app
+      - ./srcs/backend:/app
 
   frontend:
     build:
-      context: ./frontend/
+      context: ./srcs/frontend/
       dockerfile: ./dockerfiles/${NODE_ENV}.Dockerfile
       args:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
         - BACKEND_SERVICE=backend:$NEST_PORT
+        - DOMAIN_NAME=${DOMAIN_NAME}
         - JWT_SECRET=${JWT_SECRET}
     container_name: frontend
     restart: always
@@ -81,7 +82,7 @@ services:
     networks:
       - frontend_net
     volumes:
-      - ./frontend:/app
+      - ./srcs/frontend:/app
 
 volumes:
   db-data:

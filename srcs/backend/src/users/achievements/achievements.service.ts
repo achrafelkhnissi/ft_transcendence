@@ -1,11 +1,16 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
 import { Achievements } from 'src/common/enums/achievements.enum';
 
 @Injectable()
-export class AchievementsService implements OnModuleInit {
+export class AchievementsService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly prismaService: PrismaService) {}
 
   async onModuleInit() {
@@ -39,14 +44,18 @@ export class AchievementsService implements OnModuleInit {
           image: '5-wins.png',
         },
         {
-          name: Achievements.SOCIAL,
-          description: `Connect with a friend`,
-          image: `social.png`,
+          name: Achievements.NOOB,
+          description: `First log in`,
+          image: `noob.png`,
         },
       ];
 
       await this.createMany(defaultAchievements);
     }
+  }
+
+  async onModuleDestroy() {
+    await this.prismaService.achievement.deleteMany({});
   }
 
   create(createAchievementDto: CreateAchievementDto) {

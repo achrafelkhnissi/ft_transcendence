@@ -41,6 +41,11 @@ export interface GameHistoryProps {
   score: string;
 }
 
+export interface Achievement {
+  name: string;
+  description: string;
+}
+
 export interface User {
   id: number | null;
   username: string;
@@ -56,6 +61,7 @@ export interface User {
   friends: FriendsProps[];
   games: GameHistoryProps[];
   blockedUsers? : BlockedProps[];
+  achievements?: Achievement[];
 }
 
 export const defaultInfos: User = {

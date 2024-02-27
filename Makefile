@@ -30,9 +30,9 @@ define print_credit
 endef
 
 define copy_env
-	@if [ ! -f ./srcs/.env ]; then \
+	@if [ ! -f ./.env ]; then \
 		printf "$(INFO) $(PROJECT): Copying .env file from .env.example\n"; \
-			cp ./srcs/.env.example ./srcs/.env; \
+			cp ./.env.example ./.env; \
 	else \
 		printf "$(INFO) $(PROJECT): $(WARNING) The .env file already exists.\n"; \
 	fi
@@ -58,13 +58,13 @@ $(NAME):
 	$(call print_credit)
 	$(call copy_env)
 
-	docker-compose -f srcs/docker-compose.yml up --force-recreate --build
+	docker-compose -f docker-compose.yml up --force-recreate --build
 
 	@printf "$(PROJECT) $(SUCCESS): build completed\n"
 
 clean:
 	@printf "$(PROJECT) $(INFO): $(WARNING) Removing all containers\n"
-	docker-compose -f srcs/docker-compose.yml down -v --remove-orphans
+	docker-compose -f docker-compose.yml down -v --remove-orphans
 	$(call remove_dependencies)
 	@rm -rf ./srcs/.env
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
@@ -78,29 +78,17 @@ fclean: clean
 
 restart	:
 	@printf "$(PROJECT) $(INFO): $(WARNING) Restarting all containers\n"
-	docker-compose -f srcs/docker-compose.yml restart
+	docker-compose -f docker-compose.yml restart
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 log:
 	@printf "$(PROJECT) $(INFO): Showing logs\n"
-	docker-compose -f srcs/docker-compose.yml logs -f
+	docker-compose -f docker-compose.yml logs -f
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 ps:
 	@printf "$(PROJECT) $(INFO): Showing containers status\n"
-	docker-compose -f srcs/docker-compose.yml ps
+	docker-compose -f docker-compose.yml ps
 	@printf "$(PROJECT) $(SUCCESS): $@ completed\n"
 
 re: clean all
-
-frontend:
-	$(call copy_env)
-	docker-compose -f srcs/docker-compose.yml up --build frontend
-
-backend:
-	$(call copy_env)
-	docker-compose -f srcs/docker-compose.yml up --build backend
-
-update-db:
-	$(call copy_env)
-	docker-compose -f srcs/docker-compose.yml exec backend npx prisma db push

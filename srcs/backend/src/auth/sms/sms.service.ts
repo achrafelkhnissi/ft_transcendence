@@ -99,7 +99,6 @@ export class SmsService {
         userId,
       },
       data: {
-        twoFactorEnabled: true,
         verified: true,
       },
     });

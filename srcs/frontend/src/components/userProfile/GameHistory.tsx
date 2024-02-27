@@ -36,7 +36,7 @@ const GameHistory: React.FC<HistroyProps> = ({history, userId}) => {
                   width={40}
                   height={40}
                   className="w-10 h-10 
-                                      object-fit
+                                      object-cover
                                       self-center
                                       rounded-full"
                 />

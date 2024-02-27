@@ -28,7 +28,7 @@ import { UserType } from 'src/common/interfaces/user.interface';
 
 @UseGuards(AuthGuard)
 @ApiTags('message')
-@Controller('message')
+@Controller()
 export class MessageController {
   constructor(
     private readonly messageService: MessageService,

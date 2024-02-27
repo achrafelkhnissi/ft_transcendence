@@ -21,7 +21,7 @@ const FriendAvatar: React.FC<FriendAvatarProps> = ({ avatar, name }) => {
                         outline-2 
                         outline-offset-[1.5px]
                         outline-gray-400/70 
-                        object-fill"
+                        object-cover"
           />
         </div>
         <p className="self-center text-center  text-white/70 text-sm font-light">

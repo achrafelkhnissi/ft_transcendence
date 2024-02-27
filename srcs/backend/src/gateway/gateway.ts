@@ -70,14 +70,13 @@ export class Gateway
 
     const userRoomName = `user-${user.id}`;
 
-    console.log(`${user.username} connected`);
-
     // Join the user's room to keep track of all the user's sockets
     client.join(userRoomName);
 
     // Keep track of the number of sockets connected to the user's room
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount + 1);
+
     if (roomCount === 0) {
       this.logger.debug(`Client ${user.username} connected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
@@ -110,9 +109,6 @@ export class Gateway
 
     console.log(`${user.username} disconnected`);
 
-     //remove from the game
-    this.gameService.removeUserById(user.id);
-
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
     // and we can set the user's status to offline
@@ -133,6 +129,8 @@ export class Gateway
         });
       }
     });
+
+    client.leave(userRoomName);
 
     return `disconnected`;
   }

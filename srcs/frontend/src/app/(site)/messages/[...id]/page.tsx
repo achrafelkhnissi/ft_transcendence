@@ -153,7 +153,11 @@ const Home = ({ params }: { params: { id: number } }) => {
       const initialOrder = sortedConversations.map((convo) => convo.id);
       const initialConversationsMap =
         initialConversations.reduce<ConversationsMap>((acc, convo) => {
-          acc[convo.id] = convo;
+          const sortedMessagesConvo = convo.messages.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          );
+          acc[convo.id] = {...convo, messages: sortedMessagesConvo};
           return acc;
         }, {});
 

@@ -82,13 +82,12 @@ const CreateChannel: React.FC<props> = ({
   useEffect(() => {
     getAllChannelNames().then((res) => {
       if (res) {
-        const data: string[] = res.data;
+        const data: string[] = res;
         setChannelNames(data);
       }
     });
   }, []);
 
-  
   const isValidFile = (file: File) => {
     const maxSize = 1024 * 1024 * 2; // 2MB
     const extension = /\.(jpeg|jpg|png)$/;
@@ -167,13 +166,13 @@ const CreateChannel: React.FC<props> = ({
     if (newMember != '' && newMember != currentUser?.username) {
       getUser(newMember).then((res) => {
         if (res) {
-          const user : User = res;
+          const user: User = res;
           if (newChannel.participants.every((id) => id != user.id)) {
             setMemeberError(0);
             setNewChannel((prev) => {
               return {
                 ...prev,
-                participants: [...prev.participants, user.id? user.id : 0],
+                participants: [...prev.participants, user.id ? user.id : 0],
                 participantsInfos: [...prev.participantsInfos, user],
               };
             });
@@ -231,8 +230,9 @@ const CreateChannel: React.FC<props> = ({
     if (newChannel.name != '') {
       if (newChannel.imageFile) {
         const res = await uploadChannelImage(newChannel.imageFile);
+
         if (res) {
-          img = res.data;
+          img = res;
         }
       }
       if (password != '') {

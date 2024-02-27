@@ -10,22 +10,28 @@ import Logo from '../../logos/ PongTimeLogo';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/contexts/socketContext';
+import getCurrentUser from '@/services/getCurrentUser';
 
 const Sidebar = () => {
   const route = useRouter();
   const [clicked, setClicked] = useState<string>('');
   const { socket } = useSocket();
   const [newMessages, setNewMessages] = useState(false);
-  const pathname = usePathname()
-  
+  const pathname = usePathname();
+
   useEffect(() => {
+    
     if (socket) {
       socket.on('onMessage', (message: any) => {
-        if (!pathname.includes('/messages') )
-          setNewMessages(true);
+        getCurrentUser().then((res) => {
+          if (res) {
+            if (!pathname.includes('/messages') && message.sender.id != res?.id)
+              setNewMessages(true);
+          }
+        });
       });
     }
-    
+
     return () => {
       if (socket) {
         socket.off('onMessage');
@@ -60,17 +66,19 @@ const Sidebar = () => {
                         relative`}
               onClick={() => {
                 if (item.label === 'Messages') setNewMessages(false);
-                setClicked(item.label)
+                setClicked(item.label);
               }}
             >
               {item.icon}
               <span className="text-[0.66rem] ">{item.label}</span>
-              {newMessages && item.label == "Messages" && <div
-                className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] `}
-              >
-                <span className="animate-ping absolute h-full w-full rounded-full bg-white/95 "></span>
-                <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
-              </div>}
+              {newMessages && item.label == 'Messages' && (
+                <div
+                  className={`absolute  top-[0.22rem] right-[0.3rem]  w-[0.5rem] h-[0.5rem] `}
+                >
+                  <span className="animate-ping absolute h-full w-full rounded-full bg-white/95 "></span>
+                  <span className="bg-[#6257FE] h-full w-full absolute rounded-full "></span>
+                </div>
+              )}
             </Link>
           );
         })}

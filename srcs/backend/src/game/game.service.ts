@@ -297,7 +297,7 @@ export class GameService implements OnModuleDestroy {
   async toggleUserStatus(userId: number, status: Status): Promise<void> {
     await this.prismaService.user.update({
       where: { id: userId },
-      data: { status: 'PLAYING' },
+      data: { status: status },
     });
 
     const rooms: string[] = await this.getRoomsByUserId(userId);

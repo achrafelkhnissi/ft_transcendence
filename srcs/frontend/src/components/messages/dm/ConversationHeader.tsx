@@ -5,6 +5,7 @@ import GameInvitation from '../../svgAssets/GameInvitation';
 import { User, UserStatuses } from '../data';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useSocket } from '@/contexts/socketContext';
+import Link from 'next/link';
 
 interface props {
   receiver: User;
@@ -47,6 +48,7 @@ const ConversationHeader: React.FC<props> = ({
         bg-[#25244E] "
     >
       <div className="p-2 flex gap-2 self-center">
+        <Link href={`/profile/${receiver?.username}`}>
         <img
           src={receiver?.id ? process.env.BACKEND + `/api/users/${receiver.id}/avatar`: ''}
           alt="receiver"
@@ -54,6 +56,7 @@ const ConversationHeader: React.FC<props> = ({
           height={100}
           className="w-10 h-10 rounded-full self-center object-cover"
         />
+        </Link>
         <div className="flex flex-col self-center">
           <h6 className="font-semibold text-sm ">{receiver.username}</h6>
           <p className="font-light text-xs text-white/30 ">
