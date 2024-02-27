@@ -367,9 +367,17 @@ export class UsersService {
           wins: true,
           losses: true,
         },
-        orderBy: {
-          level: 'desc',
-        },
+        orderBy: [
+          {
+            level: 'desc',
+          },
+          {
+            wins: 'desc',
+          },
+          {
+            losses: 'asc',
+          },
+        ],
       })
       .then((users) => {
         return users.map((user) => {
