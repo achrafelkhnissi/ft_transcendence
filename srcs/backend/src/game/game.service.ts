@@ -126,7 +126,7 @@ export class GameService implements OnModuleDestroy {
     this.onlineGamers = this.playerQueue.filter(
       (player) => player.id !== userId,
     );
-    this.removePlayer(userId);
+    this.removePlayerFromroom(userId);
   }
 
   handelInviteRooms(user: Player, gameRoom:string) {
@@ -255,7 +255,7 @@ export class GameService implements OnModuleDestroy {
     return false
   }
 
-  removePlayer(playerToRemove: number): void {
+  removePlayerFromroom(playerToRemove: number): void {
     for (const roomKey in this.activeRoom) {
       const playersInRoom = this.activeRoom[roomKey];
       const index = playersInRoom.findIndex((player) => player.id === playerToRemove);
