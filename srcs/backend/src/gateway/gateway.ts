@@ -111,7 +111,7 @@ export class Gateway
     console.log(`${user.username} disconnected`);
 
      //remove from the game
-     this.gameService.removeUserById(user.id);
+    this.gameService.removeUserById(user.id);
 
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
