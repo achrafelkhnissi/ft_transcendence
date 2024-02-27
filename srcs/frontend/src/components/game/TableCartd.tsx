@@ -26,6 +26,10 @@ const TableCard: React.FC<TableCardPorps> = ({
     setIsHovered(false);
   };
 
+  const handleButtonClick = () => {
+    setBgColor(color);
+  };
+
   return (
     <div
       className={`
@@ -87,11 +91,9 @@ const TableCard: React.FC<TableCardPorps> = ({
                             text-white/80
                             transition ease-in-out delay-100 duration-500
                             shadow-[inset_0_12px_11px_rgba(255,255,255,0.26)]
-                            ${!isHovered && 'hidden'}
+                            ${isSelected === color || isHovered ? '' : 'hidden'}
                             `}
-        onClick={() => {
-          setBgColor(color);
-        }}
+        onClick={handleButtonClick}
       >
         select
       </button>

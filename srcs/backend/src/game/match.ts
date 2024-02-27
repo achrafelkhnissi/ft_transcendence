@@ -108,6 +108,7 @@ export class Match {
   }
 
   private resetGame() {
+    this.speed = SPEED;
     Body.setPosition(this.ball, BALLPOSITION);
     Body.setVelocity(this.ball, {
       x: (Math.random() > 0.5 ? 1 : -1) * this.speed,
