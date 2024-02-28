@@ -54,15 +54,13 @@ export class Gateway
   ) {}
 
   afterInit() {
-    this.logger.debug('AppGateway initialized');
+    this.logger.logs('AppGateway initialized');
   }
 
   async handleConnection(client: Socket): Promise<string> {
     const { user } = client.request;
 
     if (!user) {
-      client.emit('unauthorized');
-      this.logger.error('Unauthorized');
       return 'unauthorized';
     }
     //remove from the game
@@ -78,7 +76,7 @@ export class Gateway
     this.roomCounts.set(userRoomName, roomCount + 1);
 
     if (roomCount === 0) {
-      this.logger.debug(`Client ${user.username} connected`);
+      this.logger.logs(`Client ${user.username} connected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
     }
 
@@ -100,8 +98,6 @@ export class Gateway
     const user = client.request.user;
 
     if (!user) {
-      client.emit('unauthorized');
-      this.logger.error('Unauthorized');
       return 'unauthorized';
     }
 

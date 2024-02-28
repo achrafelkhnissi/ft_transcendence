@@ -42,12 +42,10 @@ export class MessageService {
   }
 
   findAll() {
-    this.logger.log('Finding all messages');
     return this.prismaService.message.findMany();
   }
 
   findOne(id: number) {
-    this.logger.log(`Finding message with id ${id}`);
     return this.prismaService.message.findUniqueOrThrow({
       where: {
         id,
@@ -56,7 +54,6 @@ export class MessageService {
   }
 
   findByChatId(conversationId: number) {
-    this.logger.log(`Finding messages with conversationId ${conversationId}`);
     return this.prismaService.message.findMany({
       where: {
         conversationId,
@@ -87,7 +84,6 @@ export class MessageService {
   }
 
   remove(id: number) {
-    this.logger.log(`Deleting message with id ${id}`);
     return this.prismaService.message.delete({
       where: {
         id,

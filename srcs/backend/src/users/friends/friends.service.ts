@@ -102,8 +102,6 @@ export class FriendsService {
   }
 
   async listBlockedUsers(userId: number) {
-    this.logger.log(`Listing blocked users for user <${userId}>`);
-
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         AND: [
@@ -175,8 +173,6 @@ export class FriendsService {
   }
 
   async unblockUser(userId: number, friendId: number) {
-    this.logger.debug(`User ID <${userId}> is unblocking user <${friendId}>`);
-
     const friendRequest = await this.prisma.friendRequest.findFirst({
       where: {
         AND: [

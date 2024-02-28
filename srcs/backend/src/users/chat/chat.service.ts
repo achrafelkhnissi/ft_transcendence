@@ -30,8 +30,6 @@ export class ChatService {
   }
 
   async create(createChatDto: CreateChatDto) {
-    this.logger.log(`Creating chat with data ${JSON.stringify(createChatDto)}`);
-
     const data: ChatData = {
       type: createChatDto.type,
       name: createChatDto.name,
@@ -60,7 +58,6 @@ export class ChatService {
   }
 
   async findAll(userId: number) {
-    this.logger.log('Finding all chats');
     return this.prismaService.conversation
       .findMany({
         where: {
@@ -174,13 +171,11 @@ export class ChatService {
         });
       })
       .catch((err) => {
-        this.logger.error(err.message);
         throw new NotFoundException(err.message);
       });
   }
 
   findOne(id: number) {
-    this.logger.log(`Finding chat with id ${id}`);
     return this.prismaService.conversation.findUniqueOrThrow({
       where: {
         id,
@@ -190,8 +185,6 @@ export class ChatService {
   }
 
   update(id: number, data: { type?: ConversationType; password?: string }) {
-    this.logger.log(`Updating chat with id ${id}`);
-
     return this.prismaService.conversation.update({
       where: {
         id,
@@ -202,7 +195,6 @@ export class ChatService {
   }
 
   async remove(id: number) {
-    this.logger.log(`Removing chat with id ${id}`);
     const chat = await this.prismaService.conversation.delete({
       where: {
         id,
@@ -216,7 +208,6 @@ export class ChatService {
       fs.existsSync(imagePath) &&
       !imagePath.startsWith('uploads/chat-default-images')
     ) {
-      this.logger.log(`Removing image at path ${imagePath}`);
       fs.unlinkSync(imagePath);
     }
 
@@ -224,7 +215,6 @@ export class ChatService {
   }
 
   findMessages(id: number) {
-    this.logger.log(`Finding messages for chat with id ${id}`);
     return this.prismaService.conversation
       .findUniqueOrThrow({
         where: {
@@ -235,7 +225,6 @@ export class ChatService {
   }
 
   findParticipants(id: number) {
-    this.logger.log(`Finding participants for chat with id ${id}`);
     return this.prismaService.conversation
       .findUniqueOrThrow({
         where: {
@@ -246,7 +235,6 @@ export class ChatService {
   }
 
   findAdmins(id: number) {
-    this.logger.log(`Finding admins for chat with id ${id}`);
     return this.prismaService.conversation
       .findUniqueOrThrow({
         where: {
@@ -257,7 +245,6 @@ export class ChatService {
   }
 
   findOwner(id: number) {
-    this.logger.log(`Finding owner for chat with id ${id}`);
     return this.prismaService.conversation
       .findUniqueOrThrow({
         where: {
@@ -352,7 +339,6 @@ export class ChatService {
         select: conversationSelect,
       })
       .catch((err) => {
-        this.logger.error(err.message);
         throw new NotFoundException(err.message);
       });
   }

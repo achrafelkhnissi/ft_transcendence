@@ -30,10 +30,6 @@ export class FriendRequestsService {
     senderId: number,
     receiverId: number,
   ): Promise<boolean> {
-    this.logger.log(
-      `Checking if users <${senderId}> and <${receiverId}> are friends`,
-    );
-
     if (senderId === receiverId) {
       return false;
     }
@@ -106,10 +102,6 @@ export class FriendRequestsService {
         `Friend request from <${senderId}> to <${receiverId}> already exists`,
       );
     }
-
-    this.logger.log(
-      `User <${senderId}> sent a friend request to <${receiverId}>`,
-    );
 
     return friendRequest;
   }
@@ -188,7 +180,6 @@ export class FriendRequestsService {
   }
 
   async listSentFriendRequests(userId: number) {
-    this.logger.log(`Listing sent friend requests for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         AND: [
@@ -206,7 +197,6 @@ export class FriendRequestsService {
   }
 
   async listReceivedFriendRequests(userId: number) {
-    this.logger.log(`Listing received friend requests for user <${userId}>`);
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         AND: [

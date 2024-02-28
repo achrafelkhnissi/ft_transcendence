@@ -28,13 +28,9 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const email = profile.emails[0].value;
     const url = process.env.FT_PROFILE_URL + username;
 
-    this.logger.debug(`validating user ${username}`);
-
     try {
       return await this.usersService.findByEmail(email);
     } catch (error) {
-      this.logger.warn(error.message);
-
       const avatar = await this.usersService.getAvatarFrom42API(
         'https://api.intra.42.fr/v2/me',
         accessToken,

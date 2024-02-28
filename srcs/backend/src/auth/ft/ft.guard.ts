@@ -17,7 +17,6 @@ export class FtAuthGuard extends AuthGuard('42') {
       await super.logIn(request);
       return result;
     } catch (e) {
-      this.logger.error(`Error authenticating user: ${e.message}`);
       throw new UnauthorizedException(
         'You are not authorized to access this resource',
         {
