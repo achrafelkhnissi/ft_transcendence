@@ -14,7 +14,10 @@ import {
 import { GameService } from './game.service';
 import { Status } from '../common/enums/status.enum';
 
-enum players { Player1, Player2}
+enum players {
+  Player1,
+  Player2,
+}
 
 interface Player {
   socket: Socket;
@@ -37,7 +40,6 @@ export class Match {
     public player2: Player,
     readonly gameService: GameService,
   ) {
-
     this.gameService.toggleUserStatus(player1.id, Status.PLAYING);
     this.gameService.toggleUserStatus(player2.id, Status.PLAYING);
     this.isFinished = false;
@@ -76,17 +78,23 @@ export class Match {
     World.add(this.world, [this.leftPaddle, this.rightPaddle, this.ball]);
     this.speed = SPEED;
 
-    player1.socket.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
-      const { x, y } = data;
-      Body.setPosition(this.leftPaddle, { x, y });
-      player2.socket.emit('updateOpponentPaddle', data);
-    });
+    player1.socket.on(
+      'sendMyPaddlePosition',
+      (data: { x: number; y: number }) => {
+        const { x, y } = data;
+        Body.setPosition(this.leftPaddle, { x, y });
+        player2.socket.emit('updateOpponentPaddle', data);
+      },
+    );
 
-    player2.socket.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
-      const { x, y } = data;
-      Body.setPosition(this.rightPaddle, { x, y });
-      player1.socket.emit('updateOpponentPaddle', data);
-    });
+    player2.socket.on(
+      'sendMyPaddlePosition',
+      (data: { x: number; y: number }) => {
+        const { x, y } = data;
+        Body.setPosition(this.rightPaddle, { x, y });
+        player1.socket.emit('updateOpponentPaddle', data);
+      },
+    );
 
     player1.socket.on('disconnect', () => {
       this.score.player1 = 0;
@@ -196,25 +204,31 @@ export class Match {
     World.clear(this.world, false);
     Engine.clear(this.engine);
     clearInterval(this.loop);
-    this.player1.socket.removeAllListeners();
-    this.player2.socket.removeAllListeners();
     await this.gameService.saveMatch({
-      winnerId: this.score.player1 > this.score.player2 ? this.player1.id : this.player2.id,
-      loserId: this.score.player1 < this.score.player2 ? this.player1.id : this.player2.id,
+      winnerId:
+        this.score.player1 > this.score.player2
+          ? this.player1.id
+          : this.player2.id,
+      loserId:
+        this.score.player1 < this.score.player2
+          ? this.player1.id
+          : this.player2.id,
       score: `${this.score.player1} - ${this.score.player2}`,
     });
     await this.gameService.toggleUserStatus(this.player1.id, Status.ONLINE);
     await this.gameService.toggleUserStatus(this.player2.id, Status.ONLINE);
+    this.gameService.removeUserById(this.player1.id);
+    this.gameService.removeUserById(this.player2.id);
     this.isFinished = true;
   }
 
   private setWinner(player: Number) {
     if (player === players.Player1) {
-      this.player1.socket.emit('Game is finished', { youWon: true });
-      this.player2.socket.emit('Game is finished', { youWon: false });
+      this.player1.socket.emit('Game-is-finished', { youWon: true });
+      this.player2.socket.emit('Game-is-finished', { youWon: false });
     } else if (player === players.Player2) {
-      this.player1.socket.emit('Game is finished', { youWon: false });
-      this.player2.socket.emit('Game is finished', { youWon: true });
+      this.player1.socket.emit('Game-is-finished', { youWon: false });
+      this.player2.socket.emit('Game-is-finished', { youWon: true });
     }
   }
 }

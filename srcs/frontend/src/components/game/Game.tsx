@@ -15,11 +15,15 @@ const Game = (props: any) => {
 
   useEffect(() => {
     async function initPhaser() {
-      try{
+      try {
         const Phaser = await import('phaser');
         const { default: GameScene } = await import('./GameScene');
         if (socket) {
-          const gamescene = new GameScene({ key: 'gamescene' }, socket, playerPosition)
+          const gamescene = new GameScene(
+            { key: 'gamescene' },
+            socket,
+            playerPosition,
+          );
           const PhaserGame = new Phaser.Game({
             type: Phaser.AUTO,
             width: RESOLUTION.width,
@@ -45,20 +49,16 @@ const Game = (props: any) => {
           setGame(PhaserGame);
           return () => {
             if (PhaserGame) {
-              // socket.removeAllListeners();
               PhaserGame.destroy(true);
               PhaserGame.scene?.remove('gamescene');
-              if (gamescene) {
-                gamescene?.destroy();
-              }
             }
           };
         }
-      }catch(e){
+      } catch (e) {
         console.error('Error loading phaser', e);
-    };
-  }
-    initPhaser();  
+      }
+    }
+    initPhaser();
   }, [socket]);
 
   return (
@@ -66,7 +66,7 @@ const Game = (props: any) => {
       className="max-w-[1400px] max-h-[700px] self-center max-[500px]:mb-40"
       id="game-container"
       key="game-container"
-      ></div>
+    ></div>
   );
 };
 

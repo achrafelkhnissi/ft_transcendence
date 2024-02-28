@@ -3,16 +3,20 @@ import getCurrentUser from '@/services/getCurrentUser';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 // Importing toastify module
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
- 
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 // Import toastify css file
 
 const InvitePopup = () => {
   const [showPopup, setShowPopup] = useState(false);
   const { socket } = useSocket();
   const router = useRouter();
-  const [inviter, setInviter] = useState<{room:string, userId: Number, username: string }>({room:'', userId: 0, username: '' });
+  const [inviter, setInviter] = useState<{
+    room: string;
+    userId: Number;
+    username: string;
+  }>({ room: '', userId: 0, username: '' });
   const [currentUser, setCurrentUser] = useState<{
     id: number;
     username: string;
@@ -20,58 +24,67 @@ const InvitePopup = () => {
 
   const refuseInvitation = () => {
     setShowPopup(false);
-    socket?.emit('inviteResponse',  {response: false, gameRoom: inviter.room, inviter: inviter.userId});
+    socket?.emit('inviteResponse', {
+      response: false,
+      gameRoom: inviter.room,
+      inviter: inviter.userId,
+    });
   };
 
   const acceptInvitation = () => {
     setShowPopup(false);
-    socket?.emit('inviteResponse', {response: true,gameRoom: inviter.room,inviter: inviter.userId});
+    socket?.emit('inviteResponse', {
+      response: true,
+      gameRoom: inviter.room,
+      inviter: inviter.userId,
+    });
     router.push(`/play/${inviter.room}`);
   };
 
-
-  useEffect(()=>{
-    getCurrentUser().then((res : { id: number, username: string }) => {
+  useEffect(() => {
+    getCurrentUser().then((res: { id: number; username: string }) => {
       if (res) {
         setCurrentUser(res);
       }
     });
-  },[])
+  }, []);
 
   useEffect(() => {
-    if (socket) console.log(socket);
     socket?.on('game-invite', (data) => {
       console.log('data', data);
-      setInviter({room:data.room, userId: data.userId, username: data.username });
+      setInviter({
+        room: data.room,
+        userId: data.userId,
+        username: data.username,
+      });
       setShowPopup(true);
     });
 
-    socket?.on('inviteResponse', (data)=>{
+    socket?.on('inviteResponse', (data) => {
       console.log('invite response reveived ', data);
-      if (data.response){
+      if (data.response) {
         router.push(`/play/${data.room}`);
-      }
-      else {
-        toast.info("Invitation refused");
+      } else {
+        toast.info('Invitation refused');
         console.log('invitation refused');
       }
     });
 
-    socket?.on('invited not available',()=>{
-      toast.error("invited not available");
+    socket?.on('invited not available', () => {
+      toast.error('invited not available');
       console.log('invited not available');
-    })
+    });
 
-    socket?.on('invitation expired',()=>{
-      toast.info("invitation expired");
-      router.push('/dashboard');//404
+    socket?.on('invitation expired', () => {
+      toast.info('invitation expired');
+      router.push('/dashboard'); //404
       console.log('invitation expired');
     });
 
-    socket?.on('room not found',()=>{
-      toast.error("room not found");
-      router.push("/404");//404
-      console.log('room not found');   
+    socket?.on('room not found', () => {
+      toast.error('room not found');
+      router.push('/404'); //404
+      console.log('room not found');
     });
 
     return () => {
@@ -90,16 +103,18 @@ const InvitePopup = () => {
     >
       <div className="md:w-[35rem] md:h-[18rem] border-2 border-purple-900 self-center bg-[#17194A] rounded-[3.5rem] flex flex-col gap-8 justify-center  shadow-lg bg-origin-padding">
         <img
-          src={inviter?.userId ? process.env.BACKEND + `/api/users/${inviter?.userId}/avatar`: ''}
+          src={
+            inviter?.userId
+              ? process.env.BACKEND + `/api/users/${inviter?.userId}/avatar`
+              : ''
+          }
           alt="player"
           width={200}
           height={200}
           className="w-20 h-20 rounded-xl self-center"
         />
         <p>
-          Hey {currentUser?.username}, {inviter.username} has challenged you to a
-          thrilling game of ping pong. Are you up for the challenge? Accept and
-          let the games begin!
+          Hey {currentUser?.username}, {inviter.username} has challenged you
         </p>
         <div className="flex flex-row self-center">
           <button

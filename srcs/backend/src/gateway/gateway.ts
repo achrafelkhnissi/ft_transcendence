@@ -73,6 +73,10 @@ export class Gateway
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount + 1);
 
+    console.log(
+      `${user.username} connected ${roomCount + 1} sockets - id: ${client.id}`,
+    );
+
     if (roomCount === 0) {
       this.logger.log(`Client ${user.username} connected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
@@ -98,7 +102,7 @@ export class Gateway
     if (!user) {
       return 'unauthorized';
     }
-
+    console.log('user disconnected', user.id);
     //remove from the game
     this.gameService.removeUserById(user.id);
 
@@ -112,6 +116,10 @@ export class Gateway
       this.logger.log(`Client ${user.username} disconnected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.OFFLINE);
     }
+
+    console.log(
+      `${user.username} disconnected ${roomCount - 1} sockets - id: ${client.id}`,
+    );
 
     const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
     rooms.forEach(async (room) => {
@@ -169,7 +177,6 @@ export class Gateway
     if (payload.response === false) {
       delete this.gameService.activeRoom[payload.gameRoom];
     }
-
   }
 
   @SubscribeMessage('joinRoom')

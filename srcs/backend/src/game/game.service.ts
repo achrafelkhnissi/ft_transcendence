@@ -43,10 +43,14 @@ export class GameService implements OnModuleDestroy {
       const matchesToRemove = [];
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
+        const client1 = parseInt(key.split('-')[0]);
+        const client2 = parseInt(key.split('-')[1]);
         if (match.isFinished) {
           console.log('delete match');
           match.isFinished = false;
           matchesToRemove.push(key);
+          this.removeUserById(client1);
+          this.removeUserById(client2);
         }
       }
       matchesToRemove.forEach((key) => {
@@ -63,7 +67,7 @@ export class GameService implements OnModuleDestroy {
       console.log('Player added to the queue');
     } else {
       console.log('Player is already in the queue');
-      user.socket.emit('already in the game');
+      user.socket.emit('already-in-the-game');
     }
   }
 
@@ -91,7 +95,7 @@ export class GameService implements OnModuleDestroy {
   readyForGame() {
     setTimeout(() => {
       if (this.getAllUsers().length == 1)
-        this.removeUser().socket.emit('nta wahid');
+        this.removeUser().socket.emit('nta-wahid');
     }, 30000);
     let size = this.playerQueue.length;
     console.log(size);
@@ -99,11 +103,11 @@ export class GameService implements OnModuleDestroy {
       console.log('readyForGame');
       const client1 = this.removeUser();
       const client2 = this.removeUser();
-      client1.socket.emit('start game', {
+      client1.socket.emit('start-game', {
         playerPosition: 'leftPaddle',
         opponentId: client2.id,
       });
-      client2.socket.emit('start game', {
+      client2.socket.emit('start-game', {
         playerPosition: 'rightPaddle',
         opponentId: client1.id,
       });
@@ -145,11 +149,11 @@ export class GameService implements OnModuleDestroy {
   inviteGame(inviter: Player, invited: Player) {
     console.log('gameroom start');
     console.log('gameroom start');
-    inviter.socket.emit('start game', {
+    inviter.socket.emit('start-game', {
       playerPosition: 'leftPaddle',
       opponentId: invited.id,
     });
-    invited.socket.emit('start game', {
+    invited.socket.emit('start-game', {
       playerPosition: 'rightPaddle',
       opponentId: inviter.id,
     });
