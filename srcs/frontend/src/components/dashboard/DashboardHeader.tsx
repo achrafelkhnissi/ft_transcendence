@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const DashboardHeader = () => {
   return (
     <div className="w-full h-80 px-4 ">
@@ -15,7 +17,7 @@ const DashboardHeader = () => {
           <source src="/videos/pong.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <button
+        <Link href="/play/0"
           className="absolute 
                             text-[#60B3FF] 
                             bg-[#4E4B8B]/70 
@@ -34,9 +36,8 @@ const DashboardHeader = () => {
                             active:shadow-none
             "
         >
-          {' '}
-          Play Now{' '}
-        </button>
+          Play Now
+        </Link>
       </div>
     </div>
   );

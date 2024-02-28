@@ -58,10 +58,8 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
   const handlePlayClick = () => {
     setIsWaiting(true);
-    if (params.gameRoom[0] !== '0')
-      socket?.emit('joinRoom', params.gameRoom);
-    else
-      socket?.emit('joinQueue');
+    if (params.gameRoom[0] !== '0') socket?.emit('joinRoom', params.gameRoom);
+    else socket?.emit('joinQueue');
   };
 
   const handleOpponentFound = useCallback(
@@ -79,16 +77,15 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     [], // Empty dependency array means no external dependencies for memoization
   );
   useEffect(() => {
-    
     socket?.on('start game', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
       setPlayerNotFound(true);
     });
 
-    socket?.on('already in the game', ()=>{
+    socket?.on('already in the game', () => {
       setIsWaiting(false);
-    })
+    });
 
     socket?.on('Game is finished', (state) => {
       console.log('you won ', state);
@@ -137,7 +134,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
           </button>
           {playerNotFound && (
             <div
-              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'}`}
+              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} z-10`}
               onClick={() => {
                 window.location.reload();
               }}
@@ -150,7 +147,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {gameisFinished && (
         <div
-          className={`absolute w-full h-full flex justify-center ${gameisFinished && ''} transition ease-out duration-300 `}
+          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} transition ease-out duration-300 z-10`}
           onClick={() => {
             router.push('/dashboard');
           }}
@@ -161,12 +158,15 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       )}
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
-        <div className='w-full h-full flex flex-col justify-center gap-1'>
+        <div className="w-full h-full flex flex-col justify-center gap-1">
           <div className=" w-full max-w-[1428px] gap-4 pt-2 p-1 self-center max-[500px]:mt-40">
-            <GameImages position={GameInfo.position} opponentId={GameInfo.OpponentId}
-             currentUser={currentUser} />
+            <GameImages
+              position={GameInfo.position}
+              opponentId={GameInfo.OpponentId}
+              currentUser={currentUser}
+            />
           </div>
-          <Game position={GameInfo.position} color={bgColor}/>
+          <Game position={GameInfo.position} color={bgColor} />
         </div>
       )}
     </div>
