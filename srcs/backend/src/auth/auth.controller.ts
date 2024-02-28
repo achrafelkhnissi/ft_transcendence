@@ -38,7 +38,6 @@ export class AuthController {
   @Get('ft')
   @UseGuards(FtAuthGuard)
   async ft() {
-    this.logger.debug('ft');
   }
 
   @ApiOperation({ summary: 'OAuth2.0 42 API redirect' })
@@ -48,22 +47,14 @@ export class AuthController {
     const { settings } = user;
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const token = await new jose.SignJWT({ id: user.id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setIssuer(process.env.DOMAIN_NAME)
-      .setExpirationTime('1y')
-      .sign(secret);
 
     if (user.isNew) {
-      this.logger.debug(`Redirecting user ${user.username} to settings page`);
       await this.achievements.giveAchievementToUser(user.id, Achievements.NOOB);
 
       return res.redirect(`${process.env.FRONTEND}/settings`);
     }
 
     if (settings?.twoFactorEnabled) {
-      this.logger.debug(`Redirecting user ${user.username} to verify 2FA page`);
       await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
 
       const token = await new jose.SignJWT({ id: user.id })
@@ -76,9 +67,6 @@ export class AuthController {
       return res.redirect(`${process.env.FRONTEND}/verify?token=${token}`);
     }
 
-    this.logger.debug(
-      `Redirecting user ${user.username} to ${process.env.FRONTEND}/dashboard`,
-    );
     res.redirect(`${process.env.FRONTEND}/dashboard`);
   }
 
@@ -90,12 +78,8 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     req.logout((err) => {
       if (err) {
-        this.logger.error(`Error logging out`);
         return err;
       }
-      this.logger.debug(
-        `Redirecting to ${process.env.FRONTEND} after logging out`,
-      );
 
       req.session.destroy(() => {
         res.clearCookie('pong-time.sid', {
@@ -103,8 +87,6 @@ export class AuthController {
           httpOnly: true,
           secure: false,
         });
-
-        this.logger.debug(`Session destroyed`);
 
         res.redirect(process.env.FRONTEND);
       });

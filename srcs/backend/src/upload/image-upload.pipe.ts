@@ -6,8 +6,6 @@ import * as path from 'path';
 @Injectable()
 export class ImageUploadPipe implements PipeTransform {
   async transform(image: Express.Multer.File) {
-    console.log('MyCustomFileValidator');
-
     if (!image) {
       throw new BadRequestException('No image found');
     }

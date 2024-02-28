@@ -90,7 +90,6 @@ export class FriendsController {
   })
   @ApiOperation({ summary: 'List blocked users' })
   async listBlockedUsers(@User() user: UserType) {
-    this.logger.log(`Listing blocked users for user <${user?.id}>`);
     return this.friendsService.listBlockedUsers(user.id);
   }
 
@@ -112,8 +111,6 @@ export class FriendsController {
     @Query('id', new ParseIntPipe()) id: number,
     @User() user: UserType,
   ) {
-    this.logger.log(`User <${user?.id}> is blocking user <${id}>`);
-
     const request = await this.friendsService.blockUser(user.id, id);
 
     if (request) {
@@ -147,8 +144,6 @@ export class FriendsController {
     @Query('id', ParseIntPipe) id: number,
     @User() user: UserType,
   ) {
-    this.logger.log(`User <${user?.id}> is unblocking user <${id}>`);
-
     return this.friendsService.unblockUser(user.id, id);
   }
 }

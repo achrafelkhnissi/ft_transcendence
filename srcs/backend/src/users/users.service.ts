@@ -42,7 +42,6 @@ export class UsersService {
   }
 
   create(createUserDto: CreateUserDto): Promise<User> | null {
-    this.logger.log(`creating user ${createUserDto.username}`);
     return this.prisma.user.create({
       data: {
         ...createUserDto,
@@ -453,7 +452,6 @@ export class UsersService {
         },
       })
       .catch((error) => {
-        this.logger.error(error);
         throw new NotFoundException(`User <${username}> not found`);
       });
   }

@@ -48,7 +48,6 @@ export class UploadController {
     @UploadedFileValidator() image: Express.Multer.File,
     @User() user: UserType,
   ) {
-    this.logger.debug(`Uploading avatar for user ${user.id}`);
     return this.uploadService.uploadUserAvatar(user.id, image);
   }
 

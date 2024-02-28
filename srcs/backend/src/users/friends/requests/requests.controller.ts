@@ -56,10 +56,6 @@ export class FriendRequestsController {
     const senderId = user?.id;
     const receiverId = id;
 
-    this.logger.log(
-      `User <${senderId}> is adding user ${receiverId} as a friend`,
-    );
-
     return this.friendRequestsService.sendFriendRequest(senderId, receiverId);
   }
 
@@ -82,10 +78,6 @@ export class FriendRequestsController {
   ) {
     const senderId = id; // because the user is accepting the request from the sender
     const receiverId = user?.id;
-
-    this.logger.log(
-      `User <${receiverId}> is accepting a friend request from user <${senderId}>`,
-    );
 
     const request = await this.friendRequestsService.acceptFriendRequest(
       receiverId,
@@ -125,10 +117,6 @@ export class FriendRequestsController {
     const senderId = id;
     const receiverId = user?.id;
 
-    this.logger.log(
-      `User <${senderId}> is declining a friend request from user <${receiverId}>`,
-    );
-
     const request = await this.friendRequestsService.declineFriendRequest(
       receiverId,
       senderId,
@@ -156,7 +144,6 @@ export class FriendRequestsController {
   })
   @Get('sent')
   async listSentFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing sent friend requests for user <${user?.id}>`);
     return this.friendRequestsService.listSentFriendRequests(user.id);
   }
 
@@ -169,7 +156,6 @@ export class FriendRequestsController {
   })
   @Get('received')
   async listReceivedFriendRequests(@User() user: UserType) {
-    this.logger.log(`Listing received friend requests for user <${user?.id}>`);
     return this.friendRequestsService.listReceivedFriendRequests(user.id);
   }
 
@@ -191,10 +177,6 @@ export class FriendRequestsController {
   ) {
     const receiverId = id;
     const senderId = user?.id;
-
-    this.logger.log(
-      `User <${senderId}> is cancelling a friend request to user <${receiverId}>`,
-    );
 
     const request = await this.friendRequestsService.cancelFriendRequest(
       senderId,
