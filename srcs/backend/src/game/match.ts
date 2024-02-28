@@ -93,7 +93,6 @@ export class Match {
       this.score.player2 = 1;
       this.setWinner(players.Player2);
       this.endGame();
-      console.log('player1.socket Disconnect');
     });
 
     player2.socket.on('disconnect', () => {
@@ -101,7 +100,6 @@ export class Match {
       this.score.player2 = 0;
       this.setWinner(players.Player1);
       this.endGame();
-      console.log('player2.socket Disconnect');
     });
   }
 
@@ -128,7 +126,6 @@ export class Match {
   }
 
   public gameStart() {
-    console.log('game start');
     Events.on(this.engine, 'collisionStart', (event) => {
       const pair = event.pairs[0];
       const object = pair.bodyA === this.ball ? pair.bodyB : pair.bodyA;
@@ -209,7 +206,6 @@ export class Match {
     await this.gameService.toggleUserStatus(this.player1.id, Status.ONLINE);
     await this.gameService.toggleUserStatus(this.player2.id, Status.ONLINE);
     this.isFinished = true;
-    console.log('endgame');
   }
 
   private setWinner(player: Number) {
