@@ -48,12 +48,6 @@ export class AuthController {
     const { settings } = user;
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const token = await new jose.SignJWT({ id: user.id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setIssuer(process.env.DOMAIN_NAME)
-      .setExpirationTime('1y')
-      .sign(secret);
 
     if (user.isNew) {
       this.logger.debug(`Redirecting user ${user.username} to settings page`);
