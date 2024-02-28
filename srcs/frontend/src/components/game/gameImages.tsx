@@ -24,7 +24,7 @@ const GameImages = (props: gameImage) => {
       console.log('game images rendered');
   }, []);
   return (
-      <div className="flex px-4 md:px-8 md:py-4 w-full border-white md:border-4 border-2 border-purple-500/20 rounded-2xl bg-white/10 justify-center">
+      <div className="flex px-4 md:px-8 md:py-4 w-full md:border-4 border-2 border-purple-500/20 rounded-2xl bg-white/10 justify-center">
             {props.position == 'leftPaddle' && (
               <div className="flex  h-20 rounded-t-[2rem] justify-between w-full">
                 <img

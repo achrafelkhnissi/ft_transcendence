@@ -70,17 +70,13 @@ const Member: React.FC<MemberProps> = ({
 
   const handleMuteUser = (param: string) => {
     if (param == 'UNMUTE') {
-      console.log('unmute');
       unmuteUser(id, channelId).then((res) => {
         if (res) {
-          console.log('unmute', res);
         }
       });
     } else {
-      console.log('duration', param);
       muteUser(id, channelId, param).then((res) => {
         if (res) {
-          console.log('mute', res);
         }
       });
     }
@@ -96,7 +92,6 @@ const Member: React.FC<MemberProps> = ({
     } else {
       banUser(id, channelId).then((res) => {
         if (res) {
-          console.log({ res });
           // updateConversations(res);
         }
       });

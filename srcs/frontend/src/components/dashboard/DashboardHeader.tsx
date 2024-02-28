@@ -15,9 +15,9 @@ const DashboardHeader = () => {
           loop
         >
           <source src="/videos/pong.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
-        <Link href="/play/0"
+        <Link href="/play/0">
+        <button 
           className="absolute 
                             text-[#60B3FF] 
                             bg-[#4E4B8B]/70 
@@ -34,9 +34,11 @@ const DashboardHeader = () => {
                             hover:bg-[#4E4B8B]
                             hover:text-[#64beff]
                             active:shadow-none
+
             "
         >
           Play Now
+        </button>
         </Link>
       </div>
     </div>

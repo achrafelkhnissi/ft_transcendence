@@ -7,7 +7,6 @@ const instance = axios.create({
 
 instance.interceptors.response.use(
   (response) => {
-    // console.log('Response was received', response.data);
     return response;
   },
   (error) => {

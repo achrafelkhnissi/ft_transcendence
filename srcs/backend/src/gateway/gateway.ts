@@ -151,6 +151,7 @@ export class Gateway
       payload.inviterId,
       user.id,
     );
+    this.gameService.activeRoom[gameRoom] = [];
     this.server.to(`user-${payload.inviterId}`).emit('game-invite', {
       room: gameRoom,
       userId: user.id,
@@ -169,6 +170,10 @@ export class Gateway
       response: payload.response,
       room: payload.gameRoom,
     });
+    if (payload.response === false) {
+      delete this.gameService.activeRoom[payload.gameRoom];
+    }
+
   }
 
   @SubscribeMessage('joinRoom')

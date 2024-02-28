@@ -19,7 +19,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   } catch (err) {
-    console.error(err);
   }
 
   if (request.url.includes('/verify')) {

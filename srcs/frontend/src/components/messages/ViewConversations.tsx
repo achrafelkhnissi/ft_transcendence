@@ -99,7 +99,6 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
         infoRef.current &&
         !(infoRef.current as any).contains(event.target as Node)
       ) {
-        console.log('clicked outside');
         setShowChannelInfo(false);
       }
     };

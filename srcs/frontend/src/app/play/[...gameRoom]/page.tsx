@@ -108,7 +108,8 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
       {GameInfo.OpponentId === 0 && (
-        <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4">
+        <div className=" flex flex-col justify-center w-full h-full md:gap-20 gap-4" 
+        >
           <div className="text-center p-4 flex justify-center">
             <CostumizeGame setBgColor={setBgColor} />
           </div>
@@ -147,8 +148,9 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {gameisFinished && (
         <div
-          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} transition ease-out duration-300 z-10`}
+          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} z-10 `}
           onClick={() => {
+            console.log('game finished');
             router.push('/dashboard');
           }}
         >
@@ -159,7 +161,8 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
         <div className="w-full h-full flex flex-col justify-center gap-1">
-          <div className=" w-full max-w-[1428px] gap-4 pt-2 p-1 self-center max-[500px]:mt-40">
+          <div className=" w-full max-w-[1428px] gap-4 pt-2 p-1 self-center max-[500px]:mt-40"
+         >
             <GameImages
               position={GameInfo.position}
               opponentId={GameInfo.OpponentId}

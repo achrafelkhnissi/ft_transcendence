@@ -35,7 +35,6 @@ const Contacts: React.FC<ContactsProps> = ({
         setFriendshipState(false);
       });
       socket.on('friend-request-accepted', (data) => {
-        console.log('friend-request-accepted', data);
         setFriendshipState(FriendshipStatus.ACCEPTED);
       });
       socket.on('friend-removed', (data) => {
@@ -70,7 +69,6 @@ const Contacts: React.FC<ContactsProps> = ({
 
   const handleCancelFriendRequest = () => {
     cancelFriendRequest(id).then((res) => {
-      console.log({ res });
       res && setFriendshipState(false);
     });
   };

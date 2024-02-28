@@ -29,7 +29,6 @@ const Friends: React.FC<FriendsComponentProps> = ({
   }, [blockedUsers]);
 
   const handleUnBlock = (id: number) => {
-    console.log('unblock', id);
     unblockUser(id).then((res) => {
       if (res) {
         setBlockedUsersList((prev) =>

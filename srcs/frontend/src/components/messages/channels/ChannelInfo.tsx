@@ -81,7 +81,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
   const handleLeaveChannel = () => {
     leaveChannel(channel.id, currentUser?.id).then((res) => {
       if (res) {
-        console.log('left channel');
       }
     });
   };
@@ -115,7 +114,6 @@ const ChannelInfo: React.FC<ChannelInfoProps> = ({
             setPassword('');
           });
         } catch (error) {
-          console.log('Error hashing password: ', error);
         }
       }
     }
