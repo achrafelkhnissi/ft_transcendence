@@ -17,7 +17,6 @@ const Game = (props: any) => {
     async function initPhaser() {
       try{
         const Phaser = await import('phaser');
-        // const { default: Preloader } = await import('./Preloader');
         const { default: GameScene } = await import('./GameScene');
         if (socket) {
           const gamescene = new GameScene({ key: 'gamescene' }, socket, playerPosition)
