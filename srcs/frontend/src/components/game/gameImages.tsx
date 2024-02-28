@@ -21,7 +21,6 @@ const GameImages = (props: gameImage) => {
      setScorePlayer1(`${data.scorePlayer1}`);
       setScorePlayer2(`${data.scorePlayer2}`);
     });
-      console.log('game images rendered');
   }, []);
   return (
       <div className="flex px-4 md:px-8 md:py-4 w-full md:border-4 border-2 border-purple-500/20 rounded-2xl bg-white/10 justify-center">

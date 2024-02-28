@@ -34,7 +34,6 @@ export class GameService implements OnModuleDestroy {
     this.updateGame();
   }
   onModuleDestroy() {
-    console.log('clearing interval');
     clearInterval(this.updateGameInterval);
   }
 
@@ -46,15 +45,13 @@ export class GameService implements OnModuleDestroy {
         const client1 = parseInt(key.split('-')[0]);
         const client2 = parseInt(key.split('-')[1]);
         if (match.isFinished) {
-          console.log('delete match');
-          match.isFinished = false;
           matchesToRemove.push(key);
           this.removeUserById(client1);
           this.removeUserById(client2);
         }
       }
       matchesToRemove.forEach((key) => {
-        delete this.activeMatches[key];
+        delete this.activeMatches[key];  
       });
     }, 100);
   }
@@ -64,9 +61,7 @@ export class GameService implements OnModuleDestroy {
 
     if (this.PlayerisAvailable(userId)) {
       this.playerQueue.push(user);
-      console.log('Player added to the queue');
     } else {
-      console.log('Player is already in the queue');
       user.socket.emit('already-in-the-game');
     }
   }
@@ -80,9 +75,7 @@ export class GameService implements OnModuleDestroy {
   }
 
   createMatch(player1: Player, player2: Player): void {
-    console.log('match creat');
     const matchKey = `${player1.id}-${player2.id}`;
-    console.log(matchKey);
     const match = new Match(player1, player2, this);
     this.activeMatches[matchKey] = match;
     setTimeout(async () => {
@@ -98,9 +91,7 @@ export class GameService implements OnModuleDestroy {
         this.removeUser().socket.emit('nta-wahid');
     }, 30000);
     let size = this.playerQueue.length;
-    console.log(size);
     if (size >= 2) {
-      console.log('readyForGame');
       const client1 = this.removeUser();
       const client2 = this.removeUser();
       client1.socket.emit('start-game', {
@@ -111,13 +102,11 @@ export class GameService implements OnModuleDestroy {
         playerPosition: 'rightPaddle',
         opponentId: client1.id,
       });
-      console.log('event sent');
       this.createMatch(client1, client2);
     }
   }
 
   removeUserById(userId: number): void {
-    console.log('player removed by id from the queue');
     this.playerQueue = this.playerQueue.filter(
       (player) => player.id !== userId,
     );
@@ -132,7 +121,6 @@ export class GameService implements OnModuleDestroy {
     setTimeout(() => {
       if (this.activeRoom[gameRoom] && this.activeRoom[gameRoom].length < 2) {
         user.socket.emit('invitation expired');
-        console.log('invitation expired');
         delete this.activeRoom[gameRoom];
       }
     }, 30000);
@@ -147,8 +135,6 @@ export class GameService implements OnModuleDestroy {
   }
 
   inviteGame(inviter: Player, invited: Player) {
-    console.log('gameroom start');
-    console.log('gameroom start');
     inviter.socket.emit('start-game', {
       playerPosition: 'leftPaddle',
       opponentId: invited.id,
@@ -172,9 +158,6 @@ export class GameService implements OnModuleDestroy {
         losses: true,
       },
     });
-
-    console.log(`winner is ${data.winnerId}`);
-    console.log(`stats are ${winnerStats}`);
 
     let newExp = winnerStats.exp + 30;
     let levelIncrement = 0;

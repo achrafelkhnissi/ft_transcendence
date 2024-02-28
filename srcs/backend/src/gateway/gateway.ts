@@ -73,10 +73,6 @@ export class Gateway
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount + 1);
 
-    console.log(
-      `${user.username} connected ${roomCount + 1} sockets - id: ${client.id}`,
-    );
-
     if (roomCount === 0) {
       this.logger.log(`Client ${user.username} connected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
@@ -102,7 +98,6 @@ export class Gateway
     if (!user) {
       return 'unauthorized';
     }
-    console.log('user disconnected', user.id);
     //remove from the game
     this.gameService.removeUserById(user.id);
 
@@ -116,10 +111,6 @@ export class Gateway
       this.logger.log(`Client ${user.username} disconnected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.OFFLINE);
     }
-
-    console.log(
-      `${user.username} disconnected ${roomCount - 1} sockets - id: ${client.id}`,
-    );
 
     const rooms: string[] = await this.gatewayService.getRoomsByUserId(user.id);
     rooms.forEach(async (room) => {
@@ -169,7 +160,6 @@ export class Gateway
     payload: { response: boolean; gameRoom: string; inviter: number },
   ) {
     const user = client.request.user;
-    console.log('sent response to ', payload.inviter);
     this.server.to(`user-${payload.inviter}`).emit('inviteResponse', {
       response: payload.response,
       room: payload.gameRoom,
@@ -184,7 +174,6 @@ export class Gateway
     const user = client.request.user;
     if (!this.gameService.activeRoom[gameRoom]) {
       client.emit('room not found');
-      console.log('room not found');
       return;
     }
     const player = { socket: client, id: user.id };

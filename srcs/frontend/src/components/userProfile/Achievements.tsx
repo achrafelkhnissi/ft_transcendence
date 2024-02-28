@@ -14,7 +14,6 @@ interface AchievementsProps {
 }
 
 const Achievements: React.FC<AchievementsProps> = ({ achievements }) => {
-  console.log(achievements);
   return (
     <Card
       header="achievements"

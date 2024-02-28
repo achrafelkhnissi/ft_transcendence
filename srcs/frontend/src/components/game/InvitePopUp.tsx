@@ -51,7 +51,6 @@ const InvitePopup = () => {
 
   useEffect(() => {
     socket?.on('game-invite', (data) => {
-      console.log('data', data);
       setInviter({
         room: data.room,
         userId: data.userId,
@@ -61,30 +60,25 @@ const InvitePopup = () => {
     });
 
     socket?.on('inviteResponse', (data) => {
-      console.log('invite response reveived ', data);
       if (data.response) {
         router.push(`/play/${data.room}`);
       } else {
         toast.info('Invitation refused');
-        console.log('invitation refused');
       }
     });
 
     socket?.on('invited not available', () => {
       toast.error('invited not available');
-      console.log('invited not available');
     });
 
     socket?.on('invitation expired', () => {
       toast.info('invitation expired');
       router.push('/dashboard'); //404
-      console.log('invitation expired');
     });
 
     socket?.on('room not found', () => {
       toast.error('room not found');
       router.push('/404'); //404
-      console.log('room not found');
     });
 
     return () => {

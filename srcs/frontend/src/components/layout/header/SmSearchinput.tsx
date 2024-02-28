@@ -11,7 +11,6 @@ const SmSearchInput = () => {
     setInput(''); // clear input
     const encodedQuery = encodeURIComponent(searchQuery);
     router.push(`/search?query=${encodedQuery}`);
-    console.log('searching for', searchQuery);
   };
 
   return (

@@ -223,7 +223,6 @@ const Home = ({ params }: { params: { id: number } }) => {
 
     if (socket) {
       socket.on('onMessage', (message: Message) => {
-        console.log('message', message);
         addMessageToConversation(message);
       });
 

@@ -45,7 +45,6 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   useEffect(() => {
     getCurrentUser().then((res) => {
       if (res) {
-        console.log(res);
         setCurrentUser(res);
       }
     });
@@ -85,7 +84,6 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     });
 
     socket?.on('Game-is-finished', (state) => {
-      console.log('you won ', state);
       setGameisFinished({ gameisFinished: true, youWon: state.youWon });
     });
 

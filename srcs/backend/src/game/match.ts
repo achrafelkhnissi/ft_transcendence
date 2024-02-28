@@ -13,6 +13,7 @@ import {
 } from './game.constants';
 import { GameService } from './game.service';
 import { Status } from '../common/enums/status.enum';
+import { match } from 'assert';
 
 enum players {
   Player1,
@@ -97,6 +98,7 @@ export class Match {
     );
 
     player1.socket.on('disconnect', () => {
+      if (this.isFinished) return;
       this.score.player1 = 0;
       this.score.player2 = 1;
       this.setWinner(players.Player2);
@@ -104,6 +106,7 @@ export class Match {
     });
 
     player2.socket.on('disconnect', () => {
+      if (this.isFinished) return;
       this.score.player1 = 1;
       this.score.player2 = 0;
       this.setWinner(players.Player1);
