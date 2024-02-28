@@ -41,8 +41,8 @@ interface MessagePayload {
 export class Gateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-   private readonly logger = new Logger(Gateway.name);
-   readonly roomCounts = new Map<string, number>();
+  private readonly logger = new Logger(Gateway.name);
+  readonly roomCounts = new Map<string, number>();
 
   @WebSocketServer()
   server: Server;
@@ -54,7 +54,7 @@ export class Gateway
   ) {}
 
   afterInit() {
-    this.logger.logs('AppGateway initialized');
+    this.logger.log('AppGateway initialized');
   }
 
   async handleConnection(client: Socket): Promise<string> {
@@ -76,7 +76,7 @@ export class Gateway
     this.roomCounts.set(userRoomName, roomCount + 1);
 
     if (roomCount === 0) {
-      this.logger.logs(`Client ${user.username} connected`);
+      this.logger.log(`Client ${user.username} connected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.ONLINE);
     }
 
@@ -109,7 +109,7 @@ export class Gateway
     const roomCount = this.roomCounts.get(userRoomName) || 0;
     this.roomCounts.set(userRoomName, roomCount - 1);
     if (roomCount - 1 <= 0) {
-      this.logger.debug(`Client ${user.username} disconnected`);
+      this.logger.log(`Client ${user.username} disconnected`);
       await this.gatewayService.toggleUserStatus(user.id, Status.OFFLINE);
     }
 
@@ -139,21 +139,19 @@ export class Gateway
   @SubscribeMessage('game-invite')
   InviteToGame(client: Socket, payload: { inviterId: number }): void {
     const user = client.request.user;
-    if (!this.gameService.PlayerisAvailable(payload.inviterId)){
+    if (!this.gameService.PlayerisAvailable(payload.inviterId)) {
       client.emit('invited not available');
-      return ;
+      return;
     }
     const gameRoom = this.gameService.createGameRoomName(
       payload.inviterId,
       user.id,
     );
-    this.server
-      .to(`user-${payload.inviterId}`)
-      .emit('game-invite', {
-        room: gameRoom,
-        userId: user.id,
-        username: user.username,
-      });
+    this.server.to(`user-${payload.inviterId}`).emit('game-invite', {
+      room: gameRoom,
+      userId: user.id,
+      username: user.username,
+    });
   }
 
   @SubscribeMessage('inviteResponse')
@@ -163,12 +161,10 @@ export class Gateway
   ) {
     const user = client.request.user;
     console.log('sent response to ', payload.inviter);
-    this.server
-      .to(`user-${payload.inviter}`)
-      .emit('inviteResponse', {
-        response: payload.response,
-        room: payload.gameRoom,
-      });
+    this.server.to(`user-${payload.inviter}`).emit('inviteResponse', {
+      response: payload.response,
+      room: payload.gameRoom,
+    });
   }
 
   @SubscribeMessage('joinRoom')
@@ -180,7 +176,7 @@ export class Gateway
       console.log('room not found');
       return;
     }
-    const player = {socket: client, id: user.id};
+    const player = { socket: client, id: user.id };
     this.gameService.handelInviteRooms(player, gameRoom);
   }
 }
