@@ -1,6 +1,11 @@
 import { AchievementsService } from './../users/achievements/achievements.service';
 import { PrismaService } from './../prisma/prisma.service';
-import { Inject, Injectable, OnModuleDestroy, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  OnModuleDestroy,
+  forwardRef,
+} from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Match } from './match';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -30,7 +35,7 @@ export class GameService implements OnModuleDestroy {
   }
   onModuleDestroy() {
     console.log('clearing interval');
-   clearInterval(this.updateGameInterval);
+    clearInterval(this.updateGameInterval);
   }
 
   updateGame() {
@@ -87,8 +92,8 @@ export class GameService implements OnModuleDestroy {
     this.activeMatches[matchKey] = match;
     this.toggleUserStatus(player1.id, Status.PLAYING);
     this.toggleUserStatus(player2.id, Status.PLAYING);
-    setTimeout(async () =>{
-      match.gameStart()
+    setTimeout(async () => {
+      match.gameStart();
     }, 5000);
     this.onlineGamers.push(player1);
     this.onlineGamers.push(player2);
@@ -129,20 +134,20 @@ export class GameService implements OnModuleDestroy {
     this.removePlayer(userId);
   }
 
-  handelInviteRooms(user: Player, gameRoom:string) {
+  handelInviteRooms(user: Player, gameRoom: string) {
     this.activeRoom[gameRoom].push(user);
     setTimeout(() => {
       if (this.activeRoom[gameRoom].length < 2) {
         user.socket.emit('invitation expired');
-        console.log("invitation expired");
+        console.log('invitation expired');
         delete this.activeRoom[gameRoom];
       }
     }, 30000);
     if (this.activeRoom[gameRoom].length === 2) {
       const [player1, player2] = this.activeRoom[gameRoom];
-      this.activeRoom[gameRoom] = this.activeRoom[
-        gameRoom
-      ].filter((player) => player !== player1 && player !== player2);
+      this.activeRoom[gameRoom] = this.activeRoom[gameRoom].filter(
+        (player) => player !== player1 && player !== player2,
+      );
       delete this.activeRoom[gameRoom];
       this.inviteGame(player1, player2);
     }
@@ -163,14 +168,17 @@ export class GameService implements OnModuleDestroy {
   }
 
   async saveMatch(data: CreateGameDto) {
-    const winnerStats =
-      await this.achievementsService.giveAchievementsToUserAfterGame(
-        data.winnerId,
-      );
-
-    await this.achievementsService.giveAchievementsToUserAfterGame(
-      data.loserId,
-    );
+    const winnerStats = await this.prismaService.userStats.findUnique({
+      where: {
+        userId: data.winnerId,
+      },
+      select: {
+        exp: true,
+        wins: true,
+        level: true,
+        losses: true,
+      },
+    });
 
     let newExp = winnerStats.exp + 30;
     let levelIncrement = 0;
@@ -203,6 +211,14 @@ export class GameService implements OnModuleDestroy {
         },
       },
     });
+
+    await this.achievementsService.giveAchievementsToUserAfterGame(
+      data.winnerId,
+    );
+
+    await this.achievementsService.giveAchievementsToUserAfterGame(
+      data.loserId,
+    );
 
     return this.prismaService.game.create({
       data,
@@ -246,20 +262,22 @@ export class GameService implements OnModuleDestroy {
     return `room-${sortedIds[0]}-${sortedIds[1]}`;
   }
 
-  PlayerisAvailable(playerId: number){
+  PlayerisAvailable(playerId: number) {
     if (
       !this.playerQueue.find((player) => player.id === playerId) &&
       !this.onlineGamers.find((player) => player.id === playerId)
-    ) 
+    )
       return true;
-    return false
+    return false;
   }
 
   removePlayer(playerToRemove: number): void {
     for (const roomKey in this.activeRoom) {
       const playersInRoom = this.activeRoom[roomKey];
-      const index = playersInRoom.findIndex((player) => player.id === playerToRemove);
-  
+      const index = playersInRoom.findIndex(
+        (player) => player.id === playerToRemove,
+      );
+
       if (index !== -1) {
         playersInRoom.splice(index, 1);
       }
@@ -302,10 +320,10 @@ export class GameService implements OnModuleDestroy {
 
     const rooms: string[] = await this.getRoomsByUserId(userId);
     rooms.forEach(async (room) => {
-        this.gateway.server.to(room).emit('status', {
-          userId: userId,
-          status: status,
-        });
+      this.gateway.server.to(room).emit('status', {
+        userId: userId,
+        status: status,
+      });
     });
   }
 }

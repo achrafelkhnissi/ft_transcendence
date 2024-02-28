@@ -182,19 +182,19 @@ export class AchievementsService implements OnModuleInit, OnModuleDestroy {
       },
     });
 
-    if (userStats.wins + userStats.losses + 1 == 1) {
+    if (userStats.wins + userStats.losses === 1) {
       await this.giveAchievementToUser(userId, Achievements.FIRST_GAME);
     }
 
-    if (userStats.wins + 1 == 1) {
+    if (userStats.wins === 1) {
       await this.giveAchievementToUser(userId, Achievements.FIRST_WIN);
     }
 
-    if (userStats.wins + 1 == 5) {
+    if (userStats.wins === 5) {
       await this.giveAchievementToUser(userId, Achievements.FIVE_WINS);
     }
 
-    if (userStats.wins + 1 + userStats.losses == 5) {
+    if (userStats.wins + userStats.losses === 5) {
       await this.giveAchievementToUser(userId, Achievements.FIVE_GAMES);
     }
 
