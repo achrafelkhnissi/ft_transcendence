@@ -33,11 +33,9 @@ export default class GameScene extends Scene {
     }
     
     create() {
-      console.log('gamescene is created');
       this.CANVAS_HEIGHT = this.sys.canvas.height;
       this.CANVAS_WIDTH = this.sys.canvas.width;
-      
-      this.cursors = this.input.keyboard?.createCursorKeys();
+
       const middleLine = this.add.graphics({ lineStyle: { width: 2, color: 0xffffff } });
       middleLine.beginPath();
       middleLine.moveTo(this.CANVAS_WIDTH/2, 0);
@@ -92,12 +90,6 @@ export default class GameScene extends Scene {
   
   update() {
     const newPaddleVelocity = new Phaser.Math.Vector2(0, 0);
-    
-    if (this.cursors?.up.isDown) {
-      newPaddleVelocity.y -= PADDLE_SPEED;
-    } else if (this.cursors?.down.isDown) {
-      newPaddleVelocity.y += PADDLE_SPEED;
-    } else newPaddleVelocity.y = 0;
 
     this.input.on('pointermove',  (pointer : any) => {
       this.paddle?.setY(Phaser.Math.Clamp(pointer.y, PADDLE_HEIGHT / 2,
