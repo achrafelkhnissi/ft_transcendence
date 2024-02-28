@@ -11,8 +11,15 @@ import {
   PADDLE_WIDTH,
   SPEED,
 } from './game.constants';
+import { GameService } from './game.service';
+import { Status } from '../common/enums/status.enum';
 
 enum players { Player1, Player2}
+
+interface Player {
+  socket: Socket;
+  id: number;
+}
 
 export class Match {
   private engine: Matter.Engine;
@@ -26,9 +33,13 @@ export class Match {
   public isFinished: boolean;
 
   constructor(
-    public player1: Socket,
-    public player2: Socket,
+    public player1: Player,
+    public player2: Player,
+    readonly gameService: GameService,
   ) {
+
+    this.gameService.toggleUserStatus(player1.id, Status.PLAYING);
+    this.gameService.toggleUserStatus(player2.id, Status.PLAYING);
     this.isFinished = false;
     this.score = { player1: 0, player2: 0 };
     this.engine = Engine.create();
@@ -65,32 +76,32 @@ export class Match {
     World.add(this.world, [this.leftPaddle, this.rightPaddle, this.ball]);
     this.speed = SPEED;
 
-    player1.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
+    player1.socket.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
       const { x, y } = data;
       Body.setPosition(this.leftPaddle, { x, y });
-      player2.emit('updateOpponentPaddle', data);
+      player2.socket.emit('updateOpponentPaddle', data);
     });
 
-    player2.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
+    player2.socket.on('sendMyPaddlePosition', (data: { x: number; y: number }) => {
       const { x, y } = data;
       Body.setPosition(this.rightPaddle, { x, y });
-      player1.emit('updateOpponentPaddle', data);
+      player1.socket.emit('updateOpponentPaddle', data);
     });
 
-    player1.on('disconnect', () => {
+    player1.socket.on('disconnect', () => {
       this.score.player1 = 0;
       this.score.player2 = 1;
       this.setWinner(players.Player2);
       this.endGame();
-      console.log('player1 Disconnect');
+      console.log('player1.socket Disconnect');
     });
 
-    player2.on('disconnect', () => {
+    player2.socket.on('disconnect', () => {
       this.score.player1 = 1;
       this.score.player2 = 0;
       this.setWinner(players.Player1);
       this.endGame();
-      console.log('player2 Disconnect');
+      console.log('player2.socket Disconnect');
     });
   }
 
@@ -164,8 +175,8 @@ export class Match {
 
   private ballPosition() {
     const data = { x: this.ball.position.x, y: this.ball.position.y };
-    this.player1.emit('updateBallState', data);
-    this.player2.emit('updateBallState', data);
+    this.player1.socket.emit('updateBallState', data);
+    this.player2.socket.emit('updateBallState', data);
   }
 
   private updateScore() {
@@ -173,8 +184,8 @@ export class Match {
       scorePlayer1: this.score.player1,
       scorePlayer2: this.score.player2,
     };
-    this.player1.emit('updateScore', data);
-    this.player2.emit('updateScore', data);
+    this.player1.socket.emit('updateScore', data);
+    this.player2.socket.emit('updateScore', data);
   }
 
   private updateGame() {
@@ -183,24 +194,31 @@ export class Match {
     }, 1000 / 60);
   }
 
-  private endGame() {
+  private async endGame() {
     World.remove(this.world, [this.leftPaddle, this.rightPaddle, this.ball]);
     World.clear(this.world, false);
     Engine.clear(this.engine);
     clearInterval(this.loop);
-    this.player1.removeAllListeners();
-    this.player2.removeAllListeners();
+    this.player1.socket.removeAllListeners();
+    this.player2.socket.removeAllListeners();
+    await this.gameService.saveMatch({
+      winnerId: this.score.player1 > this.score.player2 ? this.player1.id : this.player2.id,
+      loserId: this.score.player1 < this.score.player2 ? this.player1.id : this.player2.id,
+      score: `${this.score.player1} - ${this.score.player2}`,
+    });
+    await this.gameService.toggleUserStatus(this.player1.id, Status.ONLINE);
+    await this.gameService.toggleUserStatus(this.player2.id, Status.ONLINE);
     this.isFinished = true;
     console.log('endgame');
   }
 
   private setWinner(player: Number) {
     if (player === players.Player1) {
-      this.player1.emit('Game is finished', { youWon: true });
-      this.player2.emit('Game is finished', { youWon: false });
+      this.player1.socket.emit('Game is finished', { youWon: true });
+      this.player2.socket.emit('Game is finished', { youWon: false });
     } else if (player === players.Player2) {
-      this.player1.emit('Game is finished', { youWon: false });
-      this.player2.emit('Game is finished', { youWon: true });
+      this.player1.socket.emit('Game is finished', { youWon: false });
+      this.player2.socket.emit('Game is finished', { youWon: true });
     }
   }
 }

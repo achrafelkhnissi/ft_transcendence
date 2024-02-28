@@ -44,21 +44,11 @@ export class GameService implements OnModuleDestroy {
       for (const key in this.activeMatches) {
         const match = this.activeMatches[key];
         if (match.isFinished) {
-          console.log('save match');
-          const id1: number = parseInt(key.split('-')[0]);
-          const id2: number = parseInt(key.split('-')[1]);
-          await this.saveMatch({
-            winnerId: match.score.player1 > match.score.player2 ? id1 : id2,
-            loserId: match.score.player1 < match.score.player2 ? id1 : id2,
-            score: `${match.score.player1} - ${match.score.player2}`,
-          });
-          this.toggleUserStatus(id1, Status.ONLINE);
-          this.toggleUserStatus(id2, Status.ONLINE);
+          console.log('delete match');
           match.isFinished = false;
           matchesToRemove.push(key);
         }
       }
-
       matchesToRemove.forEach((key) => {
         delete this.activeMatches[key];
       });
@@ -88,10 +78,9 @@ export class GameService implements OnModuleDestroy {
   createMatch(player1: Player, player2: Player): void {
     console.log('match creat');
     const matchKey = `${player1.id}-${player2.id}`;
-    const match = new Match(player1.socket, player2.socket);
+    console.log(matchKey);
+    const match = new Match(player1, player2, this);
     this.activeMatches[matchKey] = match;
-    this.toggleUserStatus(player1.id, Status.PLAYING);
-    this.toggleUserStatus(player2.id, Status.PLAYING);
     setTimeout(async () => {
       match.gameStart();
     }, 5000);
@@ -179,6 +168,9 @@ export class GameService implements OnModuleDestroy {
         losses: true,
       },
     });
+
+    console.log(`winner is ${data.winnerId}`);
+    console.log(`stats are ${winnerStats}`);
 
     let newExp = winnerStats.exp + 30;
     let levelIncrement = 0;
