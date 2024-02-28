@@ -169,9 +169,8 @@ export class Gateway
   }
 
   @SubscribeMessage('joinRoom')
-  JoingameRoom(client: Socket, gameRoom: string) {
+  joinGameRoom(client: Socket, gameRoom: string) {
     const user = client.request.user;
-    console.log('joinroom');
     if (!this.gameService.activeRoom[gameRoom]) {
       client.emit('room not found');
       console.log('room not found');
