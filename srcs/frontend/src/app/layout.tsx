@@ -17,10 +17,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Head>
-        <meta name="viewport" content="viewport-fit=cover" />
-        <link rel="icon" type="image/png" href="/favicon.png"></link>
-      </Head>
       <body className={`${inter.className} `}>{children}</body>
     </html>
   );
