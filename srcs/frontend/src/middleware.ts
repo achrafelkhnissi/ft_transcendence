@@ -6,6 +6,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     const response = await fetch(
+      // 'http://backend:3000' + '/api/auth/is-authenticated', // In development
       process.env.BACKEND + '/api/auth/is-authenticated',
       {
         headers: {
@@ -18,8 +19,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   } catch (err) {
-    console.error('err ',err);
-    // return NextResponse.redirect(new URL('/', request.url));
+    console.error(err);
   }
 
   if (request.url.includes('/verify')) {
