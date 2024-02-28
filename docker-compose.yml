@@ -65,7 +65,7 @@ services:
       args:
         - BACKEND=${BACKEND}
         - PORT=${NEXT_PORT}
-        - BACKEND_SERVICE=backend:$NEST_PORT
+        - BACKEND_SERVICE=http://backend:$NEST_PORT
         - DOMAIN_NAME=${DOMAIN_NAME}
         - JWT_SECRET=${JWT_SECRET}
     container_name: frontend
