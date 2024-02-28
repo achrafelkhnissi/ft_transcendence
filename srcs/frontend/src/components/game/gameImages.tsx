@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 
 interface gameImage {  
     position: string;
@@ -8,9 +9,9 @@ interface gameImage {
 
 const GameImages = (props: gameImage) => {
   return (
-      <div className="flex justify-center px-8 py-8 ">
-            {props.position == 'leftPaddle' && (
-              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
+      <div className="flex justify-center px-8 py-8 border-2 border-white">
+            {/* {props.position == 'leftPaddle' && (
+              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60 border-2">
                 <img
                   src={
                     process.env.BACKEND + `/api/users/${props.currentUserId}/avatar`
@@ -33,7 +34,7 @@ const GameImages = (props: gameImage) => {
               </div>
             )}
             {props.position == 'rightPaddle' && (
-              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60">
+              <div className="flex justify-center h-20 rounded-t-[2rem] gap-x-60 border-2">
                 <img
                   src={
                     process.env.BACKEND +
@@ -54,7 +55,7 @@ const GameImages = (props: gameImage) => {
                   className="w-14 h-14 md:w-20 md:h-20 rounded-full self-center"
                 />
               </div>
-            )}
+            )} */}
           </div>
   );
 }

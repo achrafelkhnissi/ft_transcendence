@@ -162,10 +162,10 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
         <>
-          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-[1428px] gap-4 pt-2 px-8 py-8">
+          {/* <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-[1428px] gap-4 pt-2 px-8 py-8 border-2 ">
             <GameImages position={GameInfo.position} opponentId={GameInfo.OpponentId}
              currentUserId={currentUser.id} />
-          </div>
+          </div> */}
           <Game position={GameInfo.position} color={bgColor} />
         </>
       )}

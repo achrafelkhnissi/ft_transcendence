@@ -270,7 +270,11 @@ const ViewConversations: React.FC<ViewConversationsProps> = ({
               </button>
               <div className="w-full h-full flex py-2">
                 <textarea
-                  disabled={isMuted}
+                  disabled={
+                    isMuted && conversationsMap[conversationId].type != 'DM'
+                      ? true
+                      : false
+                  }
                   name="message"
                   value={newMessage}
                   onKeyDown={handleKeyDown}

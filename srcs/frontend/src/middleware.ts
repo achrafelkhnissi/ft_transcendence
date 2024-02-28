@@ -4,17 +4,22 @@ import * as jose from 'jose';
 export async function middleware(request: NextRequest) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-  const response = await fetch(
-    process.env.BACKEND + '/api/auth/is-authenticated',
-    {
-      headers: {
-        cookie: request.headers.get('cookie') ?? '',
+  try {
+    const response = await fetch(
+      process.env.BACKEND + '/api/auth/is-authenticated',
+      {
+        headers: {
+          cookie: request.headers.get('cookie') ?? '',
+        },
       },
-    },
-  );
+    );
 
-  if (response.status === 401) {
-    return NextResponse.redirect(new URL('/', request.url));
+    if (response.status === 401) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  } catch (err) {
+    console.error('err ',err);
+    // return NextResponse.redirect(new URL('/', request.url));
   }
 
   if (request.url.includes('/verify')) {
