@@ -106,7 +106,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
   }, [socket, handleOpponentFound]);
 
   return (
-    <div className={`flex justify-center w-full h-full relative scrol ${!isWaiting && GameInfo.OpponentId !== 0 && 'scrol overflow-hidden'}`}>
+    <div className={`flex justify-center w-full h-full`}>
       <Link href="/dashboard">
         <RxExit className="md:h-10 md:w-8 text-white/80 absolute md:top-4 top-1 md:right-4 right-2 h-8 w-6" />
       </Link>
@@ -137,7 +137,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
           </button>
           {playerNotFound && (
             <div
-              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'} transition ease-out duration-300`}
+              className={`absolute w-full h-full flex justify-center ${playerNotFound && 'blur-container'}`}
               onClick={() => {
                 window.location.reload();
               }}
@@ -150,7 +150,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
 
       {gameisFinished && (
         <div
-          className={`absolute w-full h-full flex justify-center ${gameisFinished && 'blur-container'} transition ease-out duration-300 `}
+          className={`absolute w-full h-full flex justify-center ${gameisFinished && ''} transition ease-out duration-300 `}
           onClick={() => {
             router.push('/dashboard');
           }}
@@ -161,13 +161,13 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
       )}
 
       {!isWaiting && GameInfo.OpponentId !== 0 && (
-        <>
-          {/* <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-[1428px] gap-4 pt-2 px-8 py-8 border-2 ">
+        <div className='w-full h-full flex flex-col justify-center gap-1'>
+          <div className=" w-full max-w-[1428px] gap-4 pt-2 p-1 self-center max-[500px]:mt-40">
             <GameImages position={GameInfo.position} opponentId={GameInfo.OpponentId}
-             currentUserId={currentUser.id} />
-          </div> */}
-          <Game position={GameInfo.position} color={bgColor} />
-        </>
+             currentUser={currentUser} />
+          </div>
+          <Game position={GameInfo.position} color={bgColor}/>
+        </div>
       )}
     </div>
   );

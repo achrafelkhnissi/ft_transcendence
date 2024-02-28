@@ -17,8 +17,6 @@ export default class GameScene extends Scene {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
   private socket: Socket;
   private playerNumber: string | null;
-  private scoreText1!: Phaser.GameObjects.Text;
-  private scoreText2!: Phaser.GameObjects.Text;
   
   public background!: Phaser.GameObjects.Image;
   
@@ -69,6 +67,7 @@ export default class GameScene extends Scene {
             
             this.physics.add.existing(left);
             this.physics.add.existing(right);
+            this.physics.add.existing(ball);
             
             if (this.playerNumber === 'leftPaddle') {
               this.paddle = left;
@@ -77,9 +76,8 @@ export default class GameScene extends Scene {
               this.paddle = right;
               this.opponentPaddle = left;
             }
-            this.ball = ball;
-            console.log('ball :',this.ball);
-            
+
+            this.ball = ball;         
             this.socket.on('updateOpponentPaddle', (data: { x: number; y: number }) => {
               const { x, y } = data;
               this.opponentPaddle?.setX(x);
@@ -87,25 +85,8 @@ export default class GameScene extends Scene {
     });
 
     this.socket.on('updateBallState', (data) => {
-      console.log('ball state:', data);
       this.ball?.setX(data.x);
       this.ball?.setY(data.y);
-    });
-    
-    this.scoreText1 = this.add.text(this.CANVAS_WIDTH / 4, 30, '0', {
-      fontSize: '40px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ffffff',
-    });
-    this.scoreText2 = this.add.text(3 * this.CANVAS_WIDTH / 4, 30, '0', {
-      fontSize: '40px',
-      fontFamily: 'Arial, sans-serif',
-      color: '#ffffff',
-    });
-    
-    this.socket.on('updateScore', (data) => {
-      this.scoreText1.setText(`${data.scorePlayer1}`);
-      this.scoreText2.setText(`${data.scorePlayer2}`);
     });
   }
   
@@ -113,10 +94,8 @@ export default class GameScene extends Scene {
     const newPaddleVelocity = new Phaser.Math.Vector2(0, 0);
     
     if (this.cursors?.up.isDown) {
-      console.log('up');
       newPaddleVelocity.y -= PADDLE_SPEED;
     } else if (this.cursors?.down.isDown) {
-      console.log('down');
       newPaddleVelocity.y += PADDLE_SPEED;
     } else newPaddleVelocity.y = 0;
 
@@ -146,11 +125,8 @@ export default class GameScene extends Scene {
     }
     
     if (this.paddle) this.prevY = this.paddle.y;
-    this.socket.on('updateScore', (data) => {
-      this.scoreText1.setText(`${data.scorePlayer1}`);
-      this.scoreText2.setText(`${data.scorePlayer2}`);
-    });
   }
+  
   destroy() {
     this.socket.removeAllListeners();
     this.socket.off('updateOpponentPaddle');

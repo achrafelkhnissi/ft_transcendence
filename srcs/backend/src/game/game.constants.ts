@@ -1,5 +1,5 @@
 export const GAMEHEIGHT: number = 700;
-export const GAMEWIDTH: number = 1428;
+export const GAMEWIDTH: number = 1400;
 export const PADDLE_HEIGHT: number = 100;
 export const PADDLE_WIDTH: number = 10;
 export const PADDLE1_POSITION = { x: PADDLE_WIDTH / 2 + 10, y: GAMEHEIGHT / 2 };

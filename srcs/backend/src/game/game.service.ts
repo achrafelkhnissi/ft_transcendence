@@ -98,7 +98,7 @@ export class GameService implements OnModuleDestroy {
     setTimeout(() => {
       if (this.getAllUsers().length == 1)
         this.removeUser().socket.emit('nta wahid');
-    }, 10000);
+    }, 30000);
     let size = this.playerQueue.length;
     console.log(size);
     if (size >= 2) {

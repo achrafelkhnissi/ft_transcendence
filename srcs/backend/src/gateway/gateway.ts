@@ -65,8 +65,6 @@ export class Gateway
       this.logger.error('Unauthorized');
       return 'unauthorized';
     }
-    //remove from the game
-    this.gameService.removeUserById(user.id);
 
     const userRoomName = `user-${user.id}`;
 
@@ -106,6 +104,9 @@ export class Gateway
     }
 
     const userRoomName = `user-${user.id}`;
+    
+    //remove from the game
+    this.gameService.removeUserById(user.id);
 
     // Check if room user.username is empty
     // If it is, then the user has no more sockets connected
