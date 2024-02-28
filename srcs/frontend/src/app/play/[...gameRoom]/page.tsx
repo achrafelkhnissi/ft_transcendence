@@ -62,21 +62,20 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     else socket?.emit('joinQueue');
   };
 
-  const handleOpponentFound = useCallback(
-    (opponentInfo: {
-      playerPosition: string;
-      opponentId: number;
-      username: string;
-    }) => {
-      setgameInfo({
-        position: opponentInfo.playerPosition,
-        OpponentId: opponentInfo.opponentId,
-      });
-      setIsWaiting(false);
-    },
-    [], // Empty dependency array means no external dependencies for memoization
-  );
+  
   useEffect(() => {
+    const handleOpponentFound = 
+      (opponentInfo: {
+        playerPosition: string;
+        opponentId: number;
+        username: string;
+      }) => {
+        setgameInfo({
+          position: opponentInfo.playerPosition,
+          OpponentId: opponentInfo.opponentId,
+        });
+        setIsWaiting(false);
+      };
     socket?.on('start game', handleOpponentFound);
 
     socket?.on('nta wahid', () => {
@@ -100,7 +99,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
         socket?.off('already in the game');
       }
     };
-  }, [socket, handleOpponentFound]);
+  }, [socket]);
 
   return (
     <div className={`flex justify-center w-full h-full`}>

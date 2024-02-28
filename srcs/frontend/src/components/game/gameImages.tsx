@@ -36,9 +36,9 @@ const GameImages = (props: gameImage) => {
                   height={10}
                   className="w-14 h-14 md:w-20 md:h-20 rounded-full self-center"
                 />
-                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">{scorePlayer1}</p>
+                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">0{scorePlayer1}</p>
                 <p></p>
-                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">{scorePlayer2}</p>
+                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">0{scorePlayer2}</p>
                 <img
                   src={
                     process.env.BACKEND +
@@ -63,8 +63,8 @@ const GameImages = (props: gameImage) => {
                   height={10}
                   className="w-14 h-14 md:w-20 md:h-20 rounded-full self-center"
                 />
-                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">{scorePlayer1}</p>
-                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">{scorePlayer2}</p>
+                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">0{scorePlayer1}</p>
+                <p className="text-white text-xl md:text-[2rem] font-semibold self-center">0{scorePlayer2}</p>
                 <img
                   src={
                     process.env.BACKEND + `/api/users/${props.currentUser?.id}/avatar`

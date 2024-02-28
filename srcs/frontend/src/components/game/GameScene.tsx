@@ -129,7 +129,5 @@ export default class GameScene extends Scene {
   
   destroy() {
     this.socket.removeAllListeners();
-    this.socket.off('updateOpponentPaddle');
-    this.socket.off('updateBallState');
   }
 }

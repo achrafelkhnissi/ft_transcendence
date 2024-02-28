@@ -19,7 +19,6 @@ const Game = (props: any) => {
         const Phaser = await import('phaser');
         // const { default: Preloader } = await import('./Preloader');
         const { default: GameScene } = await import('./GameScene');
-        console.log('game color', props.color);
         if (socket) {
           const gamescene = new GameScene({ key: 'gamescene' }, socket, playerPosition)
           const PhaserGame = new Phaser.Game({
@@ -48,7 +47,6 @@ const Game = (props: any) => {
           return () => {
             if (PhaserGame) {
               // socket.removeAllListeners();
-              console.log('game destroyed');
               PhaserGame.destroy(true);
               PhaserGame.scene?.remove('gamescene');
               if (gamescene) {

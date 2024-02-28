@@ -137,7 +137,7 @@ export class GameService implements OnModuleDestroy {
   handelInviteRooms(user: Player, gameRoom: string) {
     this.activeRoom[gameRoom].push(user);
     setTimeout(() => {
-      if (this.activeRoom[gameRoom].length < 2) {
+      if (this.activeRoom[gameRoom] && this.activeRoom[gameRoom].length < 2) {
         user.socket.emit('invitation expired');
         console.log('invitation expired');
         delete this.activeRoom[gameRoom];
