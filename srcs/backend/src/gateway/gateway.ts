@@ -63,8 +63,6 @@ export class Gateway
     if (!user) {
       return 'unauthorized';
     }
-    //remove from the game
-    this.gameService.removeUserById(user.id);
 
     const userRoomName = `user-${user.id}`;
 
@@ -100,6 +98,9 @@ export class Gateway
     if (!user) {
       return 'unauthorized';
     }
+
+    //remove from the game
+    this.gameService.removeUserById(user.id);
 
     const userRoomName = `user-${user.id}`;
 
