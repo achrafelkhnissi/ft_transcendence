@@ -49,6 +49,7 @@ PongTime is a simple web application platform that allow users to play classic p
   - API: Nest.js
   - Real-time communication: Socket.io
   - Database: PostgreSQL
+  - ORM: Prisma
   - Authentication: Passport.js
   - 2FA: Twilio
   - Infrastructure: Docker, Docker Compose
