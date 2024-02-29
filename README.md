@@ -66,7 +66,7 @@ PongTime is a simple web application platform that allow users to play classic p
 - [x] Two Factor Authentication (2FA)
 - [x] Leaderboard
 - [x] Private chat
-- [x] Public chat rooms (public, private, protected with a password)
+- [x] Chat rooms (public, private, protected with a password)
 - [x] User profile (avatar, stats, achievements, friends, etc.)
 
 ## Usage
