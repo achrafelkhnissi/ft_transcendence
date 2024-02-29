@@ -26,6 +26,8 @@
 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
+- [Authors](#authors)
+- [Technologies](#technologies)
 - [Features](#features)
 - [Usage](#usage)
 - [Screenshots](#screenshots)
@@ -33,6 +35,24 @@
 ## Introduction
 
 PongTime is a simple web application platform that allow users to play classic ping-pong with other users in real-time.
+
+## Authors
+
+- [Fathiya Olatokunbo Jamia](https://github.com/fathjami) - Frontend & Design
+- [Achraf El Khnissi](https://twitter.com/ashrafelkhnissi) - Backend & DevOps
+- [Zaineb Sarir](https://github.com/zsarir23) - Game (Frontend & Backend)
+
+## Technologies
+
+- Frontend: Next.js, Tailwind CSS
+- Backend:
+  - API: Nest.js
+  - Real-time communication: Socket.io
+  - Database: PostgreSQL
+  - Authentication: Passport.js
+  - 2FA: Twilio
+  - Infrastructure: Docker, Docker Compose
+- Game: Phaser.js, Matter.js
 
 ## Features
 
