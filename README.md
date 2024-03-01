@@ -38,13 +38,13 @@ PongTime is a simple web application platform that allow users to play classic p
 
 ## Authors
 
-- [Fathiya Olatokunbo Jamia](https://github.com/fathjami) - Frontend & Design
+- [Fathiya Olatokunbo Jamia](https://github.com/fathjami) - Frontend & UX/UI Design
 - [Achraf El Khnissi](https://twitter.com/ashrafelkhnissi) - Backend & DevOps
 - [Zaineb Sarir](https://github.com/zsarir23) - Game (Frontend & Backend)
 
 ## Technologies
 
-- Frontend: Next.js, Tailwind CSS
+- Frontend: Next.js, Typescript, Tailwind CSS, Socket.io
 - Backend:
   - API: Nest.js
   - Real-time communication: Socket.io
@@ -53,7 +53,7 @@ PongTime is a simple web application platform that allow users to play classic p
   - Authentication: Passport.js
   - 2FA: Twilio
   - Infrastructure: Docker, Docker Compose
-- Game: Phaser.js, Matter.js
+- Game: Phaser.js, Matter.js, Next.js, Nestjs
 
 ## Features
 
