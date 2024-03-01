@@ -75,6 +75,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async google() {}
 
+  @ApiOperation({ summary: 'OAuth2.0 42 API redirect' })
   @Get('google/redirect')
   @UseGuards(GoogleAuthGuard)
   async googleRedirect(@User() user: UserType, @Res() res: Response) {
