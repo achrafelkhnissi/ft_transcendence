@@ -23,7 +23,7 @@ model User {
   email                  String          @unique
   phoneNumber            String?         @unique
   avatar                 String?         @default("https://i.imgur.com/6VBx3io.png")
-  url                    String          @unique
+  url                    String?          
   status                 Status?         @default(ONLINE)
   settings               UserSettings?
   friendRequestsSent     FriendRequest[] @relation("SentFriendRequests")

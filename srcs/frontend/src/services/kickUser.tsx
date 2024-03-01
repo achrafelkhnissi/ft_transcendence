@@ -1,13 +1,22 @@
 import axiosInstance from './axios';
 
-const kickUser = async (userId: number | undefined, channelId: number) => {
+const kickUser = async (
+  userId: number | undefined,
+  channelId: number,
+  role: string,
+) => {
   const requestBody = {
     userId: userId,
   };
 
-  const {data} = await axiosInstance.delete(`/api/users/chat/${channelId}/participants/remove`, { 
-    data: requestBody,
-  });
+  const participant = role === 'admin' ? '' : 'participants/';
+
+  const { data } = await axiosInstance.delete(
+    `/api/users/chat/${channelId}/${participant}remove`,
+    {
+      data: requestBody,
+    },
+  );
   return data;
 };
 

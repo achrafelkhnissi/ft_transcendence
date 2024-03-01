@@ -45,7 +45,7 @@ const Member: React.FC<MemberProps> = ({
   const [banHover, setBanHover] = useState<boolean>(false);
 
   const handleKickUser = () => {
-    kickUser(id, channelId).then((res) => {
+    kickUser(id, channelId, role).then((res) => {
       if (res) {
         updateConversations(res);
       }
@@ -102,12 +102,12 @@ const Member: React.FC<MemberProps> = ({
     <div className="w-full h-14 bg-white/10  rounded-2xl flex justify-between px-4 relative">
       <div className="self-center flex justify-center gap-2 md:text-sm text-xs ">
         <div className="relative self-center ">
-          <Link href={`/profile/${currentUserId == id ? 'me' :username}`}>
-          <img
-            src={process.env.BACKEND + `/api/users/${id}/avatar`}
-            alt=""
-            className="w-10 h-10 rounded-full self-center object-cover"
-          />
+          <Link href={`/profile/${currentUserId == id ? 'me' : username}`}>
+            <img
+              src={process.env.BACKEND + `/api/users/${id}/avatar`}
+              alt=""
+              className="w-10 h-10 rounded-full self-center object-cover"
+            />
           </Link>
           <div
             className={`absolute w-2 h-2 rounded-full bottom-0 right-0
@@ -115,7 +115,9 @@ const Member: React.FC<MemberProps> = ({
           ></div>
         </div>
         <div>
-          <p className="self-center">{currentUserId == id ? 'You' : username}</p>
+          <p className="self-center">
+            {currentUserId == id ? 'You' : username}
+          </p>
           <p className="self-center text-xs text-white/30">{role}</p>
         </div>
       </div>
