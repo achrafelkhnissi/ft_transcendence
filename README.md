@@ -6,7 +6,7 @@
 
 <p align="center">
 	<b><i>Project developed at <a href="https://www.1337.ma/">1337 Khouribga </a> coding school.</i></b><br>
-    <b><i>Authors: <a href="https://github.com/fathjami">@JamiaFathiya</a> & <a href="https://twitter.com/ashrafelkhnissi">@achrafelkhnissi</a> & <a href="https://github.com/zsarir23">@zsarir</a></i></b>
+    <b><i>Authors: <a href="https://github.com/fathjami">@fathjami</a> & <a href="https://twitter.com/ashrafelkhnissi">@achrafelkhnissi</a> & <a href="https://github.com/zsarir23">@zsarir</a></i></b>
 <!--
  <b><i>Grade: 125/100</i></b>
 -->
