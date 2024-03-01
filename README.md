@@ -92,7 +92,7 @@ make
 
 4. Open your browser and go to `http://${DOMAIN_NAME}:${NEXT_PORT}` to access the application and `http://${DOMAIN_NAME}:${NEXT_PORT}/api` to access the API
 
-- Change `${DOMAIN_NAME}` and `${NEXT_PORT}` with your environment variables set in the `.env` file
+- Change `${DOMAIN_NAME}` and `${NEST_PORT}` with your environment variables set in the `.env` file
 
 ---
 
