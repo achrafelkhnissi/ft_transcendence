@@ -1,6 +1,6 @@
 import { AchievementsService } from './../../users/achievements/achievements.service';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { SmsService } from './sms.service';
+// import { SmsService } from './sms.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
 import { PhoneNumberDto } from './dto/phone-number.dto';
@@ -23,7 +23,7 @@ import {
 @Controller('sms')
 export class SmsController {
   constructor(
-    private readonly smsService: SmsService,
+    // private readonly smsService: SmsService,
     private readonly achievementsService: AchievementsService,
   ) {}
 
@@ -34,9 +34,9 @@ export class SmsController {
   verify(@User() user: UserType, @Body() body: PhoneNumberDto) {
     const { phoneNumber } = body;
 
-    return this.smsService.initiatePhoneNumberVerification(
-      phoneNumber ?? user?.phoneNumber,
-    );
+    // return this.smsService.initiatePhoneNumberVerification(
+    //   phoneNumber ?? user?.phoneNumber,
+    // );
   }
 
   @ApiBody({ type: ConfirmationCodeDto })
@@ -46,19 +46,19 @@ export class SmsController {
   async confirm(@User() user: UserType, @Body() body: ConfirmationCodeDto) {
     const { code, phoneNumber } = body;
 
-    const result = await this.smsService.confirmPhoneNumberVerification(
-      user.id,
-      phoneNumber ?? user?.phoneNumber,
-      code,
-    );
+    // const result = await this.smsService.confirmPhoneNumberVerification(
+    //   user.id,
+    //   phoneNumber ?? user?.phoneNumber,
+    //   code,
+    // );
 
-    if (result?.status !== 'error') {
-      await this.achievementsService.giveAchievementToUser(
-        user.id,
-        Achievements.VERIFIED,
-      );
-    }
+    // if (result?.status !== 'error') {
+    //   await this.achievementsService.giveAchievementToUser(
+    //     user.id,
+    //     Achievements.VERIFIED,
+    //   );
+    // }
 
-    return result;
+    // return result;
   }
 }

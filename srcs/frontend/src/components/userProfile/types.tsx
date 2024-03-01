@@ -50,6 +50,7 @@ export interface User {
   id: number | null;
   username: string;
   url: string;
+  email: string;
   stats: {
     exp: number;
     level: number;
@@ -60,7 +61,7 @@ export interface User {
   isFriend: false | FriendshipStatus;
   friends: FriendsProps[];
   games: GameHistoryProps[];
-  blockedUsers? : BlockedProps[];
+  blockedUsers?: BlockedProps[];
   achievements?: Achievement[];
 }
 
@@ -68,6 +69,7 @@ export const defaultInfos: User = {
   id: null,
   username: '',
   url: '',
+  email: '',
   stats: {
     exp: 0,
     level: 0,

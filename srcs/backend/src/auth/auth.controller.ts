@@ -13,7 +13,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserType } from 'src/common/interfaces/user.interface';
-import { SmsService } from './sms/sms.service';
+// import { SmsService } from './sms/sms.service';
 import {
   ApiForbiddenResponse,
   ApiFoundResponse,
@@ -23,6 +23,7 @@ import {
 import * as jose from 'jose';
 import { AchievementsService } from 'src/users/achievements/achievements.service';
 import { Achievements } from 'src/common/enums/achievements.enum';
+import { GoogleAuthGuard } from './google/google.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -30,15 +31,14 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
   constructor(
-    private readonly smsService: SmsService,
+    // private readonly smsService: SmsService,
     private readonly achievements: AchievementsService,
   ) {}
 
   @ApiOperation({ summary: 'OAuth2.0 42 API' })
   @Get('ft')
   @UseGuards(FtAuthGuard)
-  async ft() {
-  }
+  async ft() {}
 
   @ApiOperation({ summary: 'OAuth2.0 42 API redirect' })
   @Get('ft/redirect')
@@ -55,7 +55,41 @@ export class AuthController {
     }
 
     if (settings?.twoFactorEnabled) {
-      await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
+      // await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
+
+      const token = await new jose.SignJWT({ id: user.id })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setIssuer(process.env.DOMAIN_NAME)
+        .setExpirationTime('1m')
+        .sign(secret);
+
+      return res.redirect(`${process.env.FRONTEND}/verify?token=${token}`);
+    }
+
+    res.redirect(`${process.env.FRONTEND}/dashboard`);
+  }
+
+  @ApiOperation({ summary: 'OAuth2.0 Google API' })
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async google() {}
+
+  @Get('google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  async googleRedirect(@User() user: UserType, @Res() res: Response) {
+    const { settings } = user;
+
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+    if (user.isNew) {
+      await this.achievements.giveAchievementToUser(user.id, Achievements.NOOB);
+
+      return res.redirect(`${process.env.FRONTEND}/settings`);
+    }
+
+    if (settings?.twoFactorEnabled) {
+      // await this.smsService.initiatePhoneNumberVerification(user.phoneNumber);
 
       const token = await new jose.SignJWT({ id: user.id })
         .setProtectedHeader({ alg: 'HS256' })

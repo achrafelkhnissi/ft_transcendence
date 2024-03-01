@@ -104,6 +104,7 @@ export class UsersService {
         id: true,
         username: true,
         status: true,
+        email: true,
       },
     });
   }
@@ -118,6 +119,7 @@ export class UsersService {
         avatar: true,
         url: true,
         status: true,
+        email: true,
         // stats: {
         //   select: {
         //     exp: true,
@@ -161,6 +163,7 @@ export class UsersService {
         phoneNumber: true,
         avatar: true,
         url: true,
+        email: true,
         status: true,
         // stats: {
         //   select: {
@@ -234,6 +237,7 @@ export class UsersService {
         avatar: true,
         url: true,
         status: true,
+        email: true,
         stats: {
           select: {
             exp: true,
@@ -353,6 +357,7 @@ export class UsersService {
               id: true,
               avatar: true,
               username: true,
+              email: true,
               stats: {
                 select: {
                   level: true,
@@ -398,6 +403,7 @@ export class UsersService {
       username: true,
       avatar: true,
       status: true,
+      email: true,
     };
 
     return this.prisma.conversation

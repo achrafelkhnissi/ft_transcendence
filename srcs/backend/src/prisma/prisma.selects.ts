@@ -4,6 +4,7 @@ export const userSelect = {
     username: true,
     avatar: true,
     status: true,
+    email: true,
   },
 };
 

@@ -1,12 +1,12 @@
 import { UsersService } from 'src/users/users.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
+import { Strategy, Profile } from 'passport-google-oauth20';
 import { Request } from 'express';
 
 @Injectable()
-export class FtStrategy extends PassportStrategy(Strategy, 'google') {
-  private readonly logger = new Logger(FtStrategy.name);
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+  private readonly logger = new Logger(GoogleStrategy.name);
 
   constructor(private readonly usersService: UsersService) {
     super({
@@ -14,7 +14,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
       passReqToCallback: true,
-      Scope: ['profile', 'email'],
+      scope: ['profile', 'email'],
     });
   }
 
@@ -24,19 +24,14 @@ export class FtStrategy extends PassportStrategy(Strategy, 'google') {
     refreshToken: string,
     profile: Profile,
   ) {
-    // TODO: Get these information from the Google API
-    const { username } = profile;
+    const username = profile.displayName.replace(/ /g, '').toLowerCase();
     const email = profile.emails[0].value;
-    const url = process.env.FT_PROFILE_URL + username;
+    const avatar = profile.photos[0].value;
+    const url = '';
 
     try {
       return await this.usersService.findByEmail(email);
     } catch (error) {
-      const avatar = await this.usersService.getAvatarFrom42API(
-        'https://api.intra.42.fr/v2/me',
-        accessToken,
-      );
-
       const user = await this.usersService.create({
         email,
         username,
