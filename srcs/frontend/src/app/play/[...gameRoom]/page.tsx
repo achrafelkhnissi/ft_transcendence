@@ -30,6 +30,7 @@ const PlayPage = ({ params }: { params: { gameRoom: string } }) => {
     id: null,
     username: '',
     url: '',
+    email: '',
     stats: {
       exp: 0,
       level: 0,
