@@ -41,7 +41,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "emoji-picker-react": "^4.7.18",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "express-session": "^1.18.0",
     "file-type": "^19.0.0",
     "jose": "^5.2.2",
